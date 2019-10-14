@@ -9,12 +9,13 @@
 <head>
 <meta http-equiv="Content-Type"
 	content="text/html; charset=windows-1256">
-<title>${entityProperty.entityName}</title>
+<title>Management::${entityProperty.entityName}</title>
 <link rel="icon" href="<c:url value="/res/img/javaEE.ico"></c:url >"
 	type="image/x-icon">
 <link rel="stylesheet" type="text/css"
-	href=<c:url value="/res/style/style.css?version=1"></c:url> />
-
+	href=<c:url value="/res/css/bootstrap.css?version=1"></c:url> />
+<link rel="stylesheet" type="text/css"
+	href=<c:url value="/res/css/shop.css?version=1"></c:url> />
 <script src="<c:url value="/res/js/ajax.js"></c:url >"></script>
 <script src="<c:url value="/res/js/util.js"></c:url >"></script>
 <script type="text/javascript">
@@ -26,53 +27,15 @@
 	var idField = "${entityProperty.idField}";
 	 
 </script>
-<style>
-body {
-	background-image: url("<c:url value="/ res/ img/ sea-bg.jpg "></c:url >");
-	background-position: center;
-	background-size: cover;
-	background-repeat: no-repeat;
-}
 
-.login-field {
-	width: 100%;
-	height: 15%;
-	border: none;
-	color: green;
-}
-
-.tombol[name='login'] {
-	border: solid 3px orange;
-	margin: auto;
-	width: 40%;
-	padding: 5px;
-	margin: auto;
-	color: white;
-	background-color: orange;
-	font-size: 20px;
-	transition-duration: 0.4s;
-}
-
-.tombol[name='login']:hover {
-	color: orange;
-	background-color: rgba(255, 255, 255, 0.8);
-	cursor: pointer;
-}
-
-.wrapper-login-form {
-	margin-left: 65%;
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0
-		rgba(0, 0, 0, 0.19);
-	text-align: center;
-	margin-right: 10%;
-	margin-top: 10%
-}
-</style>
 </head>
 <body>
+	<div class="container">
 	<div id="loading-div"></div>
-	<h2>${entityProperty.entityName}Management</h2>
-	<div class="body">
+	<jsp:include page="../include/head.jsp"></jsp:include>
+	<div class="content">
+		<h2>${entityProperty.entityName}-Management</h2>
+		<p></p>
 		<div id="entity-input-form" class="form">
 			<table style="layout: fixed">
 				<c:forEach var="element" items="${entityProperty.elements}">
@@ -131,31 +94,64 @@ body {
 			</table>
 
 		</div>
-		<div id="filter-panel">
-			<p>Filter by</p>
-			<select id="filter-field">
-				<c:forEach var="element" items="${entityProperty.elements}">
-					<option value="${element.id }">${element.id }</option>
-				</c:forEach>
-			</select>
-			<p>Filter value</p>
-			<input onkeyup="loadEntity()" id="filter-value" /> <br>
-			<button onclick="loadEntity(-1)" id="search">OK</button>
-			<div id="navigation-panel"></div>
-		</div>
-		<table id="list-table" style="layout: fixed">
 
-		</table>
+		<ul class="pagination" id="navigation-panel"></ul>
+		<div style="overflow: scroll; width: 100%; border: solid 1px">
+			<table class="table" id="list-table" style="layout: fixed">
+				<thead id="entity-th">
+				</thead>
+				<tbody id="entity-tb">
+				</tbody>
+			</table>
+		</div>
+		
+	</div>
+	<jsp:include page="../include/foot.jsp"></jsp:include>
 	</div>
 	<script type="text/javascript">
 		var fields = document.getElementsByClassName("input-field");
+		var filterFields = document.getElementsByClassName("filter-field");
+		var entityTBody = document.getElementById("entity-tb");
+		var entityTHead = document.getElementById("entity-th");
 		var entitiesTable = document.getElementById("list-table");
 		var filterField = document.getElementById("filter-field");
 		var filterValue = document.getElementById("filter-value");
 		var navigationPanel = document.getElementById("navigation-panel");
+		var orderBy = null;
+		var orderType = null;
 		
-		function withFilter(){
+		function clearFilter(){
+			filterValue.innerHTML = "";
+			orderBy = null;
+			orderType = null;
+		}
+		
+		/* function withFilter(){
 			return filterField.value !="" && filterValue.value != "";
+		} */
+		
+		function deleteEntity(entityId){
+			console.log("Delete: ",entityId);
+			var requestObject ={
+					"entity":entityName,
+					"filter":{
+						
+					}
+				};
+		 	requestObject.filter.fieldsFilter = {};
+			requestObject.filter.fieldsFilter[idField] = entityId;
+			 
+			postReq("<spring:url value="/api/entity/delete" />"  ,
+					requestObject, function(xhr) {
+						var response = (xhr.data);
+						var code = response.code;
+						if(code == "00"){
+							alert("success deleted");
+							loadEntity(page);
+						}else{
+							alert("error deleting");
+						}
+			});
 		}
 		
 		function getById(entityId){
@@ -193,14 +189,19 @@ body {
 					"filter":{
 						"limit":limit,
 						"page":page,
+						"orderBy":orderBy,
+						"orderType":orderType
 						
 					}
 				};
-			if(withFilter()){
-				requestObject.filter.fieldsFilter = {};
-				requestObject.filter.fieldsFilter[filterField.value] = filterValue.value;
+			requestObject.filter.fieldsFilter = {};
+			for(let i=0;i<filterFields.length;i++){
+				let filterField = filterFields[i];
+				if(filterField.value!=""){
+					let fieldName = filterField.getAttribute("field");
+					requestObject.filter.fieldsFilter[fieldName] = filterField.value;
+				}
 			}
-			
 			postReq("<spring:url value="/api/entity/get" />"  ,
 					requestObject, function(xhr) {
 						var response = (xhr.data);
@@ -234,12 +235,23 @@ body {
 			navigationPanel.append(createNavigationButton( buttonCount-1, ">|")); 
 		}
 		
+		function createAnchor(id, html, url){
+			var a = document.createElement("a");
+			a.id = id;
+			a.innerHTML = html;
+			a.href = url
+			return a;
+		}
+		
 		function createNavigationButton(id, html){
-			var button = createButton(id,html);
-			button.onclick = function(){
+			var btn= createButton(id,html);
+			btn.className = "btn btn-default";
+			btn.onclick = function(){
 				 loadEntity(id);
 			}
-			return button;
+			var li = document.createElement("li");
+			li.append(btn);
+			return li;
 		}
 		
 		function createButton(id, html){
@@ -255,16 +267,16 @@ body {
 			return column;
 		}
 		
+		function createInputText(id, className){
+			let input = document.createElement("input");
+			input.id = id;
+			input.setAttribute("class",className);
+			return input;
+		}
+		
 		function populateTable(entities){
-			entitiesTable.innerHTML = "";
-			//HEADER
-			let row = document.createElement("tr");
-			row.append(createCell("No"));
-			for (let i = 0; i < fieldNames.length; i++) {
-				let fieldName = fieldNames[i];
-				row.append(createCell(fieldName));
-			}
-			entitiesTable.append(row);
+			entityTBody.innerHTML = "";
+			
 			//CONTENT
 			for(let i=0;i<entities.length;i++){
 				let entity = entities[i];
@@ -297,8 +309,48 @@ body {
 				optionCell.append(buttonEdit);
 				optionCell.append(buttonDelete);
 				row.append(optionCell);
-				entitiesTable.append(row);
+				entityTBody.append(row);
 			}
+		}
+		
+		function createTableHeader(){
+			//HEADER
+			entityTHead.innerHTML = "";
+			let row = document.createElement("tr");
+			row.append(createCell("No"));
+			for (let i = 0; i < fieldNames.length; i++) {
+				let fieldName = fieldNames[i];
+				let cell =createCell(fieldName);
+				let input =createInputText("filter-"+fieldName,"filter-field");
+				input.setAttribute("field",fieldName);
+				input.onkeyup = function(){
+					loadEntity();
+				}
+				cell.append(createBr());
+				cell.append(input);
+				cell.append(createBr());
+				let ascButton = createButton("sort-asc-"+fieldName,"asc");
+				let descButton = createButton("sort-desc-"+fieldName,"desc");
+				descButton.onclick=function(){
+					orderType = "desc";
+					orderBy = fieldName;
+					loadEntity(page);
+				}
+				ascButton.onclick=function(){
+					orderType = "asc";
+					orderBy = fieldName;
+					loadEntity(page);
+				} 
+				cell.append(ascButton);
+				cell.append(descButton);
+				row.append(cell);
+			}
+			row.append(createCell("Option"));
+			entityTHead.append(row);
+		}
+		
+		function createBr(){
+			return document.createElement("br");
 		}
 		
 		function populateForm(entity){
@@ -371,8 +423,9 @@ body {
 						clear();
 					});
 		};
-		
+		createTableHeader();
 		loadEntity(page);
+	
 	</script>
 </body>
 </html>

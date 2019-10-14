@@ -95,7 +95,7 @@ public class EntityService {
 
 	public ShopApiResponse filter(ShopApiRequest request) {
 		Class entityClass = null;
-		
+
 		switch (request.getEntity()) {
 		case "unit":
 			entityClass = Unit.class;
@@ -111,35 +111,34 @@ public class EntityService {
 			break;
 		}
 
-		
 		Filter filter = request.getFilter();
 		String entityName = request.getEntity();
 		Integer offset = filter.getPage() * filter.getLimit();
-		boolean withLimit = filter.getLimit()>0;
-		boolean withOrder = filter.getOrderBy() != null && filter.getOrderType() != null &&!filter.getOrderBy().equals("") &&!filter.getOrderType() .equals("") ;
+		boolean withLimit = filter.getLimit() > 0;
+		boolean withOrder = filter.getOrderBy() != null && filter.getOrderType() != null
+				&& !filter.getOrderBy().equals("") && !filter.getOrderType().equals("");
 		boolean contains = filter.isContains();
 		boolean exacts = filter.isExacts();
 		boolean withFilteredField = filter.getFieldsFilter().isEmpty() == false;
 		String orderType = filter.getOrderType();
 		String orderBy = filter.getOrderBy();
-		String tableName =getTableName(entityClass);
-		String orderSQL = withOrder? orderSQL(orderType, orderBy) : "";
-		String limitSQL = withLimit?" LIMIT "+filter.getLimit():"";
-		String filterSQL = withFilteredField? createFilterSQL(entityClass,filter.getFieldsFilter(), contains, exacts):"";
-		
-		String sql = "select * from `"+tableName+"` "
-				+ filterSQL + orderSQL +limitSQL + " OFFSET "+offset;
-		String sqlCount = "select COUNT(*) from `"+tableName+"` "
-				+ filterSQL;
-		System.out.println("==============SQL: "+sql);
-		List<BaseEntity> entities= repositoryCustom.filterAndSort(sql, entityClass);
+		String tableName = getTableName(entityClass);
+		String orderSQL = withOrder ? orderSQL(orderType, orderBy) : "";
+		String limitSQL = withLimit ? " LIMIT " + filter.getLimit() : "";
+		String filterSQL = withFilteredField ? createFilterSQL(entityClass, filter.getFieldsFilter(), contains, exacts)
+				: "";
+
+		String sql = "select * from `" + tableName + "` " + filterSQL + orderSQL + limitSQL + " OFFSET " + offset;
+		String sqlCount = "select COUNT(*) from `" + tableName + "` " + filterSQL;
+		System.out.println("==============SQL: " + sql);
+		List<BaseEntity> entities = repositoryCustom.filterAndSort(sql, entityClass);
 		Integer count = repositoryCustom.countFilterAndSort(sqlCount);
 		return ShopApiResponse.builder().entities(entities).totalData(count).filter(filter).build();
 	}
-	
+
 	private Field getFieldByName(String name, List<Field> fields) {
 		for (Field field : fields) {
-			if(field.getName().equals(name)) {
+			if (field.getName().equals(name)) {
 				return field;
 			}
 		}
@@ -150,38 +149,58 @@ public class EntityService {
 		// TODO Auto-generated method stub
 		List<String> filters = new ArrayList<String>();
 		List<Field> fields = EntityUtil.getDeclaredFields(entityClass);
-		for(String key:filter.keySet()) {
+		for (String key : filter.keySet()) {
 			Field field = getFieldByName(key, fields);
-			if(field == null)
+			if (field == null)
 				continue;
-			String columnName =((Column) field.getAnnotation(Column.class)).name();
-			if(columnName==null || columnName.equals("") ) {
+			String columnName = ((Column) field.getAnnotation(Column.class)).name();
+			if (columnName == null || columnName.equals("")) {
 				columnName = key;
 			}
-			String sqlItem = " `"+columnName+"` ";
-			if(contains) {
-				sqlItem+=" LIKE '%"+filter.get(key)+"%' ";
-			}else if(exacts) {
-				sqlItem+=" = '"+filter.get(key)+"' ";
+			String sqlItem = " `" + columnName + "` ";
+			if (contains) {
+				sqlItem += " LIKE '%" + filter.get(key) + "%' ";
+			} else if (exacts) {
+				sqlItem += " = '" + filter.get(key) + "' ";
 			}
 			filters.add(sqlItem);
 		}
-		return " WHERE "+String.join(" AND ", filters);
+		return " WHERE " + String.join(" AND ", filters);
 	}
 
 	private String orderSQL(String orderType, String orderBy) {
 		// TODO Auto-generated method stub
-		return " ORDER BY `"+orderBy+"` "+orderType;
+		return " ORDER BY `" + orderBy + "` " + orderType;
 	}
 
 	private String getTableName(Class entityClass) {
 		Table table = (Table) entityClass.getAnnotation(Table.class);
 		if (table != null) {
-			if (table.name() != null &&!table.name().equals("")) {
+			if (table.name() != null && !table.name().equals("")) {
 				return table.name();
 			}
 		}
 		return entityClass.getSimpleName().toLowerCase();
+	}
+
+	public ShopApiResponse delete(ShopApiRequest request) {
+		Map<String, Object> filter = request.getFilter().getFieldsFilter();
+		try {
+			switch (request.getEntity()) {
+			case "unit":
+				unitRepository.deleteById(Long.parseLong(filter.get("id").toString()));
+			case "product":
+				productRepository.deleteById(Long.parseLong(filter.get("id").toString()));
+			case "customer":
+				customerRepository.deleteById(Long.parseLong(filter.get("id").toString()));
+			case "supplier":
+				supplierRepository.deleteById(Long.parseLong(filter.get("id").toString()));
+			}
+			return ShopApiResponse.builder(). build();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return ShopApiResponse.builder().code("01").message("failed").build();
+		}
 	}
 
 }

@@ -57,5 +57,13 @@ public class EntityApiController {
 		ShopApiResponse response = entityService.filter(request );
 		return response;
 	}
+	
+	@PostMapping(value = "/delete", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ShopApiResponse delete(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+		log.info("register {}", request);
+		ShopApiResponse response = entityService.delete(request );
+		return response;
+	}
 
 }

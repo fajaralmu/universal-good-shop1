@@ -1,7 +1,6 @@
 package com.fajar.entity;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -12,15 +11,7 @@ import javax.persistence.PrePersist;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
-import com.fajar.config.EntityElement;
-import com.fajar.config.EntityElement.EntityElementBuilder;
 import com.fajar.util.JSONUtil;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Dto
 @MappedSuperclass

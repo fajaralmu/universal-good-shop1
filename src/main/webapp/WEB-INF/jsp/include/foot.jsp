@@ -1,3 +1,3 @@
 <div class="footer">
-<p align="center">Puskesmas Sehat 2018</p>
+<p align="center">Universal Shop 2019</p>
 </div>
