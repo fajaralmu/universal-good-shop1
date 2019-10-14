@@ -1,0 +1,505 @@
+/*body {
+	
+	background-image: url("/puskesmas/res/img/sea-bg.jpg");
+	background-position: center;
+	background-size: cover;
+}*/
+body{
+	font-family:  Segoe UI
+}
+table {
+	margin: auto;
+}
+
+.judul {
+	font-family: "Calibri";
+	margin: auto;
+	width: 100%;
+	opacity: 0.5;
+	padding: 10px;
+}
+
+.judul[name=app] {
+	font-size: 40px;
+	background-color: green;
+	color: white;
+}
+
+.judul[name=ket] {
+	font-size: 20px;
+	background-color: black;
+	color: white;
+}
+
+.login-form {
+	font-size: 20px;
+	font-family: Segoe UI;
+	text-align: left;
+	/* border-radius: 30px; */
+	left: 25%;
+	padding: 15%;
+	background-color: rgba(255, 255, 255,0.6);
+	color: black;
+}
+
+
+.th td {
+	border-bottom: solid 2px;
+	border-top: solid 2px;
+	padding: 0px;
+	font-size: 20px;
+	color: black;
+	text-align: center;
+	padding: 0px;
+}
+
+.filterbox {
+	/* border-top: solid 2px;
+	border-bottom: solid 2px;
+	border-color: orange;
+	 */background-color: rgba(239, 202, 20, 0.6);
+	margin: auto;
+	margin-top: 5px;
+	margin-bottom: 10px;
+	width: 80%;
+	padding: 5px;
+	color: maroon;
+	text-align: center;
+}
+
+.footer {
+	padding: 5px;
+	margin: auto;
+	margin-top: 10px;
+	width: 80%;
+	/* border-bottom: solid 2px;
+	border-top: solid 2px;
+	border-color: orange;
+	 */background-color: rgba(20, 180, 10, 0.8);
+	color: white;
+}
+
+select {
+	background-color: white;
+}
+
+.filterinput {
+	width: 20%;
+	height: 30px;
+	margin: 5px;
+}
+
+.filtercb {
+	width: 20%;
+	height: 35px;
+	margin: 5px;
+	background-color: white;
+}
+
+.btn_tambah {
+	margin-left: 10px;
+}
+/* LIST */
+.konten_list {
+	background-color: white;
+	height: 60%;
+	overflow: auto;
+	margin: auto;
+	width: 80%;
+	border-top: solid 2px;
+	border-bottom: solid 2px;
+	border-color: green;
+	padding-bottom: 20px;
+}
+
+/*form opsi dan edit*/
+#formopsi, #formopsi_transaksi {
+	background-color: rgba(200, 200, 200, 0.8);
+	width: 20%;
+	margin: auto;
+	position: fixed;
+	padding: 20px;
+	display: none;
+	right: 40%;
+	top: 30%;
+	text-align: center;
+}
+
+.rowedit {
+	transition-duration: 0.4s;
+}
+
+.rowedit:hover {
+	cursor: pointer;
+	background-color: rgb(255, 255, 200);
+	color: red;
+}
+
+#formedit { /*
+	border: solid 2px;
+	border-color: blue;*/
+	background-color: rgba(200, 200, 200, 0.8);
+	width: 50%;
+	margin: auto;
+	position: fixed;
+	padding: 20px;
+	display: none;
+	right: 20%;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0
+		rgba(0, 0, 0, 0.19);
+	top: 5%;
+
+	/*
+	Move it to 	the	right for	50%	of	parent	element	*/
+}
+
+#forminput{
+	margin:auto;
+	width:70%;
+	border: solid 1px;
+}
+
+#formedit input, select, textarea{
+	width:80%;
+}
+
+#formedit p[id=judul_form] {
+	background-color: ORANGE;
+	color: white;
+	font-size: 30px;
+}
+
+/*Tombol operasi entitas
+*/
+.navigasi{
+	transition-duration: 0.4s;
+	border: solid 1px;
+	border-color:rgb(200, 200, 200);
+	margin: 2px;
+	color: gray;
+	
+}
+
+.navigasi:hover{
+	background-color: BLUE;
+	color: black;
+	cursor: pointer;
+}
+
+.tombol {
+	color: WHITE;
+	text-align: center;
+	border-radius: 2px;
+	padding: 5px;
+	transition-duration: 0.4s;
+	border: 2px solid;
+	margin: 2px;
+}
+
+.tombol[disabled='disabled'] {
+	display: none;
+}
+
+.tombol[name='hapus'],.tombol[name='reset'] {
+	border-color: RED;
+	background-color: RED;
+}
+
+.tombol[name='tutup']{
+	border-color: ORANGE;
+	background-color: ORANGE;
+}
+
+.tombol[name='tambah'],.tombol[name='simpan'] {
+	border-color: BLUE;
+	background-color: BLUE;
+}
+
+.tombol[name='edit'] {
+	border-color: rgb(128, 0, 0);
+	background-color: rgb(128, 0, 0);
+}
+
+.tombol[name='tampil'] {
+	border-color: GREEN;
+	background-color: GREEN;
+}
+
+.tombol[name='oke'],.tombol[name='simpan'] {
+	border-color: BLUE;
+	background-color: BLUE;
+}
+
+.tombol[name='cetak'] {
+	border-color: rgb(200,200,100);
+	background-color: rgb(200,200,100);
+	
+}
+
+.tombol:hover {
+	color: currentColor;
+	background-color: white;
+	cursor: pointer;
+}
+
+.tombol img{
+	width:20px;	
+}
+
+#judul_grafik {
+	background-color: yellow;
+	margin: auto;
+	width: 70%;
+}
+
+#grafik {
+	display: none;
+	width: 600px; /*50%*/
+	background-color: rgba(70, 70, 70, 0.5);
+	position: fixed;
+	left: 25%;
+	top: 7%;
+	text-align: center;
+	padding: 5px;
+}
+
+.wrapperpilihan {
+	position: absolute;
+	overflow: auto;
+	max-height: 300px; //
+	border: solid 1px blue;
+}
+
+/*          
+*
+*ALL HEAD
+*
+*/
+.nav {
+	background-color: black;
+	top: 0px;
+	opacity: 0.7;
+	width: 99%;
+	height: 99%;
+	margin-top: 0px;
+	text-align: center;
+	display: none;
+	position: fixed;
+}
+
+.mainmenu {
+	margin: auto;
+}
+
+.mainmenu td {
+	max-width: 150px;
+	min-width: 150px;
+	border: solid 2px;
+	border-color: yellow;
+	color: white;
+	font-size: 20px;
+	margin: 5%;
+	transition-duration: 0.4s;
+}
+
+.mainmenu td:hover {
+	background-color: gray;
+}
+
+.mainmenu img {
+	width: 100px;
+}
+
+.menu_user { 
+	background-color: rgba(20, 180, 10, 0.8);
+	width: 80%; //
+	height: 10%;
+	padding: 5px;
+	color: white;
+	margin: auto;
+}
+
+.profil {
+	background-color: rgba(250, 250, 250, 0.4);
+	transition-duration: 0.4s;
+}
+
+.profil:hover {
+	background-color: rgba(250, 250, 250, 0.8);
+}
+
+.profil_link {
+	width:90%;
+	padding:5px;
+	margin-right:5px;
+	transition-duration: 0.4s;
+}
+
+.profil_link:hover {
+	background-color: rgba(250, 250, 250, 0.8);
+	color:green;
+}
+
+.menu_profil {
+	display: none;
+	width: 15%;
+	position: absolute;
+	background-color: rgb(130, 240, 130);
+	text-align: right;
+	padding: 5px;
+}
+
+.shownav {
+	color: orange;
+	border-radius: 5px;
+	width: 17%;
+	background-color: rgba(250, 250, 250, 0.8);
+	height: 80px;
+	position: fixed;
+	border-radius: 5px;
+	border: solid 3px orange;
+	font-size: 30px;
+	left: 0%;
+	bottom: 50%;
+	text-align: center;
+	transform: rotate(-90deg);
+	transition-duration: 0.4s;
+}
+
+.shownav:hover {
+	color: white;
+	background-color: orange;
+	cursor: pointer;
+}
+
+.nav_entitas {
+	font-size: 21px;
+	margin: auto;
+}
+
+.nav_entitas td {
+	height: 100px;
+	max-width: 100px;
+	background-color: gray;
+	transition-duration: 0.4s;
+}
+
+.nav_entitas td:hover {
+	background-color: #e2e2e0;
+	cursor: pointer;
+}
+
+.nav_entitas img {
+	width: 70px;
+}
+
+a {
+	text-decoration: none;
+	color: #FFf;
+}
+
+.header {
+	background-color: white;
+	margin: auto;
+	width: 80%;
+	text-align: center;
+	padding: 0;
+}
+
+.header p[id=judul] {
+	font-size: 40px;
+	color: white;
+	background-color: rgb(20, 100, 200);
+}
+
+.header p[id=keterangan] {
+	color: green;
+	font-size: 20px;
+}
+
+/*
+*
+*ALL ENTITAS
+*
+*/
+#tableheader {
+	table-layout: fixed;
+	width: 90%;
+}
+
+#tableheader td {
+	word-wrap: break-word width:5%;
+}
+
+#tabelentitas {
+	table-layout: fixed;
+	width: 90%;
+	text-align: center;
+}
+
+#rincianobat {
+	table-layout: fixed;
+	width: 90%;
+}
+
+#tabelentitas td {
+	word-wrap: break-word width:5%;
+}
+/*
+*
+*LOADING
+*
+*/
+#info {
+	bottom: 5%;
+	right: 5%;
+	color: blue;
+	position: fixed;
+	background-color: appworkspace;
+	opacity: 0.5;
+	font-size: 1.5em;
+}
+
+#warning {
+	color: red;
+}
+
+/*
+CARI STOK
+*/
+.pilih {
+	font-size: inherit; //
+	width: inherit;
+}
+
+.pilih:hover {
+	cursor: pointer;
+	background-color: rgb(200, 200, 200);
+	color: #fff;
+}
+
+.pilihan {
+	width: 100%;
+	background-color: white;
+	margin: auto;
+}
+
+.rincian {
+	margin-top: 10px;
+	width: 100% fixed;
+	background-color: rgba(210, 210, 210, 0.6);
+}
+
+#wrapperrincianobat {
+	border:solid 1px;
+	background-color: white;
+	width: 70%;
+	height: 400px;
+	overflow: auto;
+	margin: auto
+}
+
+#tabelobat td, th {
+	padding-bottom: 10px;
+	width: 100px;
+}
