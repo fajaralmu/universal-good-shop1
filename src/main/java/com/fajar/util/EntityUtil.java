@@ -71,6 +71,13 @@ public class EntityUtil {
 					entityElement.setOptionItemName(formField.optionItemName());
 					entityElement.setOptions(referenceEntityList);
 					entityElement.setJsonList(JSONUtil.listToJson(referenceEntityList));
+				}else if (!formField.entityReferenceName().equals("") && fieldType.equals("dynamiclist")
+						&& listObject != null) {
+					Class referenceEntityClass = field.getType();
+					Field idField = getIdField(referenceEntityClass);
+					entityElement.setOptionValueName(idField.getName());
+					entityElement.setOptionItemName(formField.optionItemName());
+					entityElement.setEntityReferenceClass(referenceEntityClass.getSimpleName());
 				}
 
 				entityElements.add(entityElement);

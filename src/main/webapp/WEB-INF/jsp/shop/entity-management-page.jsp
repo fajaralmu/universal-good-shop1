@@ -31,26 +31,26 @@
 </head>
 <body>
 	<div class="container">
-	<div id="loading-div"></div>
-	<jsp:include page="../include/head.jsp"></jsp:include>
-	<div class="content">
-		<h2>${entityProperty.entityName}-Management</h2>
-		<p></p>
-		<div id="entity-input-form" class="form">
-			<table style="layout: fixed">
-				<c:forEach var="element" items="${entityProperty.elements}">
-					<tr valign="top">
-						<td><label>${element.lableName }</label></td>
-						<td><c:choose>
-								<c:when test="${  element.type == 'fixedlist'}">
-									<select class="input-field" id="${element.id }"
-										required="${element.required }"
-										identity="${element.identity }"
-										itemValueField="${element.optionValueName}"
-										itemNameField="${element.optionItemName}">
+		<div id="loading-div"></div>
+		<jsp:include page="../include/head.jsp"></jsp:include>
+		<div class="content">
+			<h2>${entityProperty.entityName}-Management</h2>
+			<p></p>
+			<div id="entity-input-form" class="form">
+				<table style="layout: fixed">
+					<c:forEach var="element" items="${entityProperty.elements}">
+						<tr valign="top">
+							<td><label>${element.lableName }</label></td>
+							<td><c:choose>
+									<c:when test="${  element.type == 'fixedlist'}">
+										<select class="input-field" id="${element.id }"
+											required="${element.required }"
+											identity="${element.identity }"
+											itemValueField="${element.optionValueName}"
+											itemNameField="${element.optionItemName}">
 
-									</select>
-									<script>
+										</select>
+										<script>
 											var valueField_${element.id } ="${element.optionValueName}";
 											var itemField_${element.id } = "${element.optionItemName}";
 											let options = ${element.jsonList};
@@ -62,51 +62,69 @@
 												document.getElementById("${element.id }").append(option);
 											}
 										</script>
-								</c:when>
-								<c:when test="${  element.type == 'textarea'}">
-									<textarea class="input-field" id="${element.id }"
-										type="${element.type }" required="${element.required }"
-										identity="${element.identity }">
+									</c:when>
+									<c:when test="${  element.type == 'dynamiclist'}">
+										<input onkeyup="loadList(this)" name="${element.id }"
+											id="input-${element.id }" type="text" />
+										<br />
+										<select style="width: 100px" class="input-field"
+											id="${element.id }" required="${element.required }"
+											multiple="multiple" identity="${element.identity }"
+											itemValueField="${element.optionValueName}"
+											itemNameField="${element.optionItemName}"
+											name=${element.entityReferenceClass}
+										>
+
+										</select>
+										<script>
+											var valueField_${element.id } ="${element.optionValueName}";
+											var itemField_${element.id } = "${element.optionItemName}";
+											</script>
+									</c:when>
+									<c:when test="${  element.type == 'textarea'}">
+										<textarea class="input-field" id="${element.id }"
+											type="${element.type }" required="${element.required }"
+											identity="${element.identity }">
 							</textarea>
-								</c:when>
-								<c:when test="${ element.identity}">
-									<input class="input-field" disabled="disabled"
-										id="${element.id }" type="text"
-										required="${element.required }"
-										identity="${element.identity }" />
-								</c:when>
-								<c:otherwise>
-									<input class="input-field" id="${element.id }"
-										type="${element.type }" required="${element.required }"
-										identity="${element.identity }" />
-								</c:otherwise>
-							</c:choose></td>
+									</c:when>
+									<c:when test="${ element.identity}">
+										<input class="input-field" disabled="disabled"
+											id="${element.id }" type="text"
+											required="${element.required }"
+											identity="${element.identity }" />
+									</c:when>
+									<c:otherwise>
+										<input class="input-field" id="${element.id }"
+											type="${element.type }" required="${element.required }"
+											identity="${element.identity }" />
+									</c:otherwise>
+								</c:choose></td>
+						</tr>
+					</c:forEach>
+					<tr>
+						<td>
+							<button id="btn-submit" onclick="submit()" class="btn btn-ok">Submit</button>
+						</td>
+						<td>
+							<button id="btn-clear" onclick="clear()" class="btn btn-ok">Clear</button>
+						</td>
 					</tr>
-				</c:forEach>
-				<tr>
-					<td>
-						<button id="btn-submit" onclick="submit()" class="btn btn-ok">Submit</button>
-					</td>
-					<td>
-						<button id="btn-clear" onclick="clear()" class="btn btn-ok">Clear</button>
-					</td>
-				</tr>
-			</table>
+				</table>
+
+			</div>
+
+			<ul class="pagination" id="navigation-panel"></ul>
+			<div style="overflow: scroll; width: 100%; border: solid 1px">
+				<table class="table" id="list-table" style="layout: fixed">
+					<thead id="entity-th">
+					</thead>
+					<tbody id="entity-tb">
+					</tbody>
+				</table>
+			</div>
 
 		</div>
-
-		<ul class="pagination" id="navigation-panel"></ul>
-		<div style="overflow: scroll; width: 100%; border: solid 1px">
-			<table class="table" id="list-table" style="layout: fixed">
-				<thead id="entity-th">
-				</thead>
-				<tbody id="entity-tb">
-				</tbody>
-			</table>
-		</div>
-		
-	</div>
-	<jsp:include page="../include/foot.jsp"></jsp:include>
+		<jsp:include page="../include/foot.jsp"></jsp:include>
 	</div>
 	<script type="text/javascript">
 		var fields = document.getElementsByClassName("input-field");
@@ -126,9 +144,44 @@
 			orderType = null;
 		}
 		
-		/* function withFilter(){
-			return filterField.value !="" && filterValue.value != "";
-		} */
+		function loadList(inputElement){
+			
+			let element = document.getElementById(inputElement.name);
+			element.innerHTML = "";
+			let itemField = element.getAttribute("itemNameField");
+			let valueField = element.getAttribute("itemValueField");
+			let filterValue = inputElement.value;
+			var requestObject ={
+					"entity":element.name,
+					"filter":{
+						 "page":0,
+						 "limit":10
+					}
+				};
+		 	requestObject.filter.fieldsFilter = {};
+			requestObject.filter.fieldsFilter[itemField] = filterValue;
+			 
+			postReq("<spring:url value="/api/entity/get" />"  ,
+					requestObject, function(xhr) {
+						var response = (xhr.data);
+						var entities = response.entities;
+						if(entities != null && entities[0] != null){
+							for (let i=0 ;i<entities.length;i++) {
+								let entity = entities[i];
+								let option = document.createElement("option");
+								option.value = entity[valueField];
+								option.innerHTML = entity[itemField];
+								option.onclick = function(){
+									inputElement.value = option.innerHTML;
+								}
+								element.append(option);
+							}
+							
+						}else{
+							alert("data not found");
+						}
+			});
+		}
 		
 		function deleteEntity(entityId){
 			console.log("Delete: ",entityId);
@@ -154,7 +207,7 @@
 			});
 		}
 		
-		function getById(entityId){
+		function getById(entityId, callback){
 			var requestObject ={
 					"entity":entityName,
 					"filter":{
@@ -173,7 +226,7 @@
 						var response = (xhr.data);
 						var entities = response.entities;
 						if(entities != null && entities[0] != null){
-							populateForm(entities[0]);
+							callback(entities[0]);
 						}else{
 							alert("data not found");
 						}
@@ -297,7 +350,9 @@
 				let buttonEdit = createButton("edit_"+i, "Edit");
 				buttonEdit.onclick = function(){
 					alert("will Edit: "+entity[idField]);
-					getById(entity[idField]);
+					getById(entity[idField], function(entity){
+						populateForm(entity);
+					});
 				}
 				let buttonDelete = createButton("delete_"+i, "Delete");
 				buttonDelete.onclick = function(){
@@ -357,12 +412,29 @@
 			clear();
 			for (let j = 0; j < fieldNames.length; j++) {
 				let entityValue = entity[fieldNames[j]];
-				if(typeof(entityValue) == "object" && entityValue != null){
-					console.log("TYPE ",typeof(entityValue), fieldNames[j]);
+				let entityValueAsObject =entityValue;
+				let elementField =document.getElementById(fieldNames[j]); 
+				let isMultipleSelect = false;
+				 if(typeof(entityValue) == "object" && entityValue != null){
+					  isMultipleSelect = elementField.nodeName == "SELECT" && elementField.getAttribute("multiple")=="multiple";
+					console.log("TYPE ",typeof(entityValue), fieldNames[j],"multiple: ",isMultipleSelect);
 					let objectValueName = window["valueField_"+fieldNames[j]]
-					entityValue = entityValue[objectValueName];
+					entityValue = entityValueAsObject[objectValueName];
+					
+					if(isMultipleSelect){
+						let option = document.createElement("option");
+						objectValueName  = elementField.getAttribute("itemvaluefield");
+						option.value = entityValueAsObject[objectValueName];
+						let objectItemName  = elementField.getAttribute("itemnamefield");
+						option.innerHTML = entityValueAsObject[objectItemName];
+						option.selected = true;
+						elementField.append(option);
+						let inputField = document.getElementById("input-"+fieldNames[j]);
+						inputField.value =  entityValueAsObject[objectItemName];
+					} 
 				}
-				document.getElementById(fieldNames[j]).value = entityValue;	
+				if(!isMultipleSelect)
+					elementField.value = entityValue;	 
 			}
 		}
 		
@@ -370,8 +442,14 @@
 			fields = document.getElementsByClassName("input-field");
 			for (let i = 0; i < fields.length; i++) {
 				let id = fields[i].id;
-				document.getElementById(id).value = null;
-				document.getElementById(id).value = "";
+				let element = document.getElementById(id);
+				if(element.nodeName == "SELECT" && element.getAttribute("multiple") == "multiple"){
+					element.innerHTML = "";
+					document.getElementById("input-"+id).value = "";
+				}else{
+					element.value = null;
+					element.value = "";
+				}
 			}
 		}
 

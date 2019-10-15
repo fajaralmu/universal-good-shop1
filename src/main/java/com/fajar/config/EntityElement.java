@@ -32,5 +32,6 @@ public class EntityElement implements Serializable{
 	private String optionItemName;
 	private String optionValueName;
 	private String entityReferenceName;
+	private String entityReferenceClass;
 
 }

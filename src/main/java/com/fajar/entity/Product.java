@@ -44,7 +44,7 @@ public class Product extends BaseEntity implements Serializable {
 	private String type;
 	@JoinColumn(name = "unit_id")
 	@ManyToOne
-	@FormField (entityReferenceName="unit",optionItemName="name",type="fixedlist")
+	@FormField (entityReferenceName="unit",optionItemName="name",type="dynamiclist")
 	private Unit unit;
 
 }

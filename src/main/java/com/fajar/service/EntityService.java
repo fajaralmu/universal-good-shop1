@@ -42,7 +42,7 @@ public class EntityService {
 
 	public ShopApiResponse addEntity(ShopApiRequest request, boolean newRecord) {
 
-		switch (request.getEntity()) {
+		switch (request.getEntity().toLowerCase()) {
 		case "unit":
 			return saveUnit(request.getUnit(), newRecord);
 		case "product":
@@ -96,7 +96,7 @@ public class EntityService {
 	public ShopApiResponse filter(ShopApiRequest request) {
 		Class entityClass = null;
 
-		switch (request.getEntity()) {
+		switch (request.getEntity().toLowerCase()) {
 		case "unit":
 			entityClass = Unit.class;
 			break;
@@ -124,11 +124,11 @@ public class EntityService {
 		String orderBy = filter.getOrderBy();
 		String tableName = getTableName(entityClass);
 		String orderSQL = withOrder ? orderSQL(orderType, orderBy) : "";
-		String limitSQL = withLimit ? " LIMIT " + filter.getLimit() : "";
+		String limitOffsetSQL = withLimit ? " LIMIT " + filter.getLimit()+" OFFSET " + offset : "";
 		String filterSQL = withFilteredField ? createFilterSQL(entityClass, filter.getFieldsFilter(), contains, exacts)
 				: "";
 
-		String sql = "select * from `" + tableName + "` " + filterSQL + orderSQL + limitSQL + " OFFSET " + offset;
+		String sql = "select * from `" + tableName + "` " + filterSQL + orderSQL + limitOffsetSQL;
 		String sqlCount = "select COUNT(*) from `" + tableName + "` " + filterSQL;
 		System.out.println("==============SQL: " + sql);
 		List<BaseEntity> entities = repositoryCustom.filterAndSort(sql, entityClass);
