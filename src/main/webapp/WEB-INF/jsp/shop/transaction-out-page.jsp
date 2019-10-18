@@ -250,9 +250,13 @@
 			stockIdField.value = entity.id;
 
 			//get remaining
+			let ID = entity.id;
+			if(entity.flowReferenceId != null){
+				ID = entity.flowReferenceId;
+			}
 			var requestObject = {
 				"productFlow" : {
-					"id" : entity.id
+					"id" : ID
 				}
 			}
 
@@ -317,10 +321,11 @@
 
 		function setCurrentProductFlow(entity) {
 			currentProductFlow = entity;
-			setCurrentProduct(entity);
+		
 			priceField.value = entity.price;
-			quantityField.value = entity.count;
+		//	quantityField.value = entity.productFlowStock.remainingStock;
 			expiryDateField.value = entity.expiryDate;
+			setCurrentProduct(entity);
 		}
 	</script>
 </body>
