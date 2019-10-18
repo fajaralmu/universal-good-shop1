@@ -46,6 +46,12 @@ public class TransactionService {
 	@Autowired
 	private RepositoryCustom<ProductFlow> productFlowRepositoryCustom;
 
+	/**
+	 * add stock from supplier
+	 * @param request
+	 * @param httpRequest
+	 * @return
+	 */
 	public ShopApiResponse submitNew(ShopApiRequest request, HttpServletRequest httpRequest) {
 		User user = userSessionService.getUser(httpRequest);
 		if (null == user) {
@@ -89,6 +95,11 @@ public class TransactionService {
 		}
 	}
 
+	/**
+	 * check remaining stock of a product flow
+	 * @param productFlow
+	 * @return
+	 */
 	private ProductFlowStock checkStock(ProductFlow productFlow) {
 
 		// validate product flow
@@ -153,6 +164,12 @@ public class TransactionService {
 		}
 	}
 
+	/**
+	 * add purchase transaction
+	 * @param request
+	 * @param httpRequest
+	 * @return
+	 */
 	public ShopApiResponse addPurchaseTransaction(ShopApiRequest request, HttpServletRequest httpRequest) {
 
 		User user = userSessionService.getUser(httpRequest);

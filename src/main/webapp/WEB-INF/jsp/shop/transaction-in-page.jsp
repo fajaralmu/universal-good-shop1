@@ -115,7 +115,8 @@
 						var code = response.code;
 						if (code == "00") {
 							alert("transaction success")
-
+							productFlows = [];
+							populateProductFlow(productFlows);
 						} else {
 							alert("transaction failed");
 						}
@@ -134,7 +135,8 @@
 			requestObject.filter.fieldsFilter = {};
 			requestObject.filter.fieldsFilter["name"] = inputSupplierField.value;
 
-			loadEntityList("<spring:url value="/api/entity/get" />",
+			loadEntityList(
+					"<spring:url value="/api/entity/get" />",
 					requestObject,
 					function(entities) {
 						for (let i = 0; i < entities.length; i++) {
@@ -166,20 +168,20 @@
 			requestObject.filter.fieldsFilter = {};
 			requestObject.filter.fieldsFilter["name"] = inputProductField.value;
 
-			loadEntityList("<spring:url value="/api/entity/get" />",requestObject, function(entities) {
-				for (let i = 0; i < entities.length; i++) {
-					let entity = entities[i];
-					let option = document.createElement("option");
-					option.value = entity["id"];
-					option.innerHTML = entity["name"];
-					option.onclick = function() {
-						setCurrentProduct(entity);
-					}
-					productListDropDown.append(option);
-				}
-			});
+			loadEntityList("<spring:url value="/api/entity/get" />",
+					requestObject, function(entities) {
+						for (let i = 0; i < entities.length; i++) {
+							let entity = entities[i];
+							let option = document.createElement("option");
+							option.value = entity["id"];
+							option.innerHTML = entity["name"];
+							option.onclick = function() {
+								setCurrentProduct(entity);
+							}
+							productListDropDown.append(option);
+						}
+					});
 		}
-
 	</script>
 	<script type="text/javascript">
 		var priceField = document.getElementById("product-price");

@@ -37,16 +37,20 @@
 									Unit :<span id="unit-name"></span>
 								</p>
 								<p>Stock ID</p>
-								<input disabled="disabled" type="number" class="form-control" id="stock-id"
-									required="required" />
+								<input disabled="disabled" type="number" class="form-control"
+									id="stock-id" required="required" />
 								<p>Stock</p>
-								<input disabled="disabled" type="number" class="form-control" id="product-quantity"
+								<input disabled="disabled" type="number" class="form-control"
+									id="stock-quantity" required="required" />
+								<p>Product Quantity</p>
+								<input type="number" class="form-control" id="product-quantity"
 									required="required" />
 								<p>Price @Unit</p>
-								<input disabled="disabled" type="number" class="form-control" id="product-price"
-									required="required" />
+								<input disabled="disabled" type="number" class="form-control"
+									id="product-price" required="required" />
 								<p>Expiry Date</p>
-								<input disabled="disabled" type="date" class="form-control" id="product-exp-date" />
+								<input disabled="disabled" type="date" class="form-control"
+									id="product-exp-date" />
 								<p></p>
 								<button id="add-product" onclick="addToChart()">Submit</button>
 							</div>
@@ -85,6 +89,7 @@
 						<th>Expiry Date</th>
 						<th>Quantity</th>
 						<th>Price @Item</th>
+						<th>Reff Stock ID</th>
 						<th>Option</th>
 					</tr>
 				</thead>
@@ -113,13 +118,14 @@
 				"customer" : currentCustomer,
 				"productFlows" : productFlows
 			}
-			postReq("<spring:url value="/api/transaction/supply" />",
+			postReq("<spring:url value="/api/transaction/purchase" />",
 					requestObject, function(xhr) {
 						var response = (xhr.data);
 						var code = response.code;
 						if (code == "00") {
 							alert("transaction success")
-
+							productFlows = [];
+							populateProductFlow(productFlows);
 						} else {
 							alert("transaction failed");
 						}
@@ -138,7 +144,8 @@
 			requestObject.filter.fieldsFilter = {};
 			requestObject.filter.fieldsFilter["name"] = inputCustomerField.value;
 
-			loadEntityList("<spring:url value="/api/entity/get" />",
+			loadEntityList(
+					"<spring:url value="/api/entity/get" />",
 					requestObject,
 					function(entities) {
 						for (let i = 0; i < entities.length; i++) {
@@ -161,31 +168,32 @@
 		function loadPrductList() {
 			productListDropDown.innerHTML = "";
 			var requestObject = {
-				"product":{
-					"name":inputProductField.value
+				"product" : {
+					"name" : inputProductField.value
 				}
 			};
-			 
-			loadEntityList("<spring:url value="/api/transaction/stocks" />",requestObject, function(entities) {
-				for (let i = 0; i < entities.length; i++) {
-					let flowEntity = entities[i];
-					let entity = flowEntity.product;
-					let option = document.createElement("option");
-					option.value = entity["id"];
-					option.innerHTML = flowEntity.id+ "-"+entity["name"] ;
-					option.onclick = function() {
-						setCurrentProduct(flowEntity);
-					}
-					productListDropDown.append(option);
-				}
-			});
-		}
 
-		
+			loadEntityList("<spring:url value="/api/transaction/stocks" />",
+					requestObject, function(entities) {
+						for (let i = 0; i < entities.length; i++) {
+							let flowEntity = entities[i];
+							let entity = flowEntity.product;
+							let option = document.createElement("option");
+							option.value = entity["id"];
+							option.innerHTML = flowEntity.id + "-"
+									+ entity["name"];
+							option.onclick = function() {
+								setCurrentProduct(flowEntity);
+							}
+							productListDropDown.append(option);
+						}
+					});
+		}
 	</script>
 	<script type="text/javascript">
 		var priceField = document.getElementById("product-price");
-		var quantityField = document.getElementById("product-quantity");
+		var quantityField = document.getElementById("stock-quantity");
+		var inputQuantityField = document.getElementById("product-quantity");
 		var expiryDateField = document.getElementById("product-exp-date");
 
 		function addToChart() {
@@ -193,7 +201,10 @@
 				alert("Product is not specified!");
 				return;
 			}
-
+			if (inputQuantityField.value*1 > quantityField.value*1) {
+				alert("Quantity insufficient");
+				return;
+			}
 			let ID = Math.floor(Math.random() * 1000);
 			if (currentProductFlow != null && currentProductFlow.id != null) {
 				ID = currentProductFlow.id;
@@ -203,8 +214,9 @@
 				"id" : ID,
 				"product" : currentProduct,
 				"price" : priceField.value,
-				"count" : quantityField.value,
-				"expiryDate" : expiryDateField.value
+				"count" : inputQuantityField.value,
+				//"expiryDate" : expiryDateField.value,
+				"flowReferenceId":stockIdField.value
 
 			};
 
@@ -222,7 +234,9 @@
 			document.getElementById("product-dropdown").innerHTML = "";
 			priceField.value = "";
 			quantityField.value = "";
+			inputQuantityField.value = "";
 			expiryDateField.value = "";
+			stockIdField.value = "";
 		}
 
 		function setCurrentProduct(entity) {
@@ -230,20 +244,22 @@
 			document.getElementById("unit-name").innerHTML = entity.product.unit.name;
 			currentProduct = entity.product;
 			priceField.value = entity.product.price;
-			
+			inputQuantityField.value = entity.count;
+
 			expiryDateField.value = entity.expiryDate;
 			stockIdField.value = entity.id;
-			
-			
+
 			//get remaining
 			var requestObject = {
-					"productFlow":{
-						"id":entity.id
-					}
+				"productFlow" : {
+					"id" : entity.id
+				}
 			}
-			
-			postReq("<spring:url value="/api/transaction/stockinfo" />",
-					requestObject, function(xhr) {
+
+			postReq(
+					"<spring:url value="/api/transaction/stockinfo" />",
+					requestObject,
+					function(xhr) {
 						var response = (xhr.data);
 						var code = response.code;
 						if (code == "00") {
@@ -275,7 +291,7 @@
 				row.append(createCell(productFlow.expiryDate));
 				row.append(createCell(productFlow.count));
 				row.append(createCell(productFlow.price));
-
+				row.append(createCell(productFlow.flowReferenceId));
 				let optionCell = createCell("");
 				let btnEdit = createButton("edit-" + productFlow.id, "edit");
 
@@ -301,7 +317,7 @@
 
 		function setCurrentProductFlow(entity) {
 			currentProductFlow = entity;
-			setCurrentProduct(entity.product);
+			setCurrentProduct(entity);
 			priceField.value = entity.price;
 			quantityField.value = entity.count;
 			expiryDateField.value = entity.expiryDate;
