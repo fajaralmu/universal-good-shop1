@@ -16,14 +16,20 @@ import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Customer;
+import com.fajar.entity.Menu;
 import com.fajar.entity.Product;
 import com.fajar.entity.Supplier;
 import com.fajar.entity.Unit;
+import com.fajar.entity.User;
+import com.fajar.entity.UserRole;
 import com.fajar.repository.CustomerRepository;
+import com.fajar.repository.MenuRepository;
 import com.fajar.repository.ProductRepository;
 import com.fajar.repository.RepositoryCustomImpl;
 import com.fajar.repository.SupplierRepository;
 import com.fajar.repository.UnitRepository;
+import com.fajar.repository.UserRepository;
+import com.fajar.repository.UserRoleRepository;
 import com.fajar.util.EntityUtil;
 
 @Service
@@ -39,6 +45,12 @@ public class EntityService {
 	private SupplierRepository supplierRepository;
 	@Autowired
 	private RepositoryCustomImpl repositoryCustom;
+	@Autowired
+	private UserRoleRepository userRoleRepository;
+	@Autowired
+	private MenuRepository menuRepository;
+	@Autowired
+	private UserRepository userRepository;
 
 	public ShopApiResponse addEntity(ShopApiRequest request, boolean newRecord) {
 
@@ -51,9 +63,25 @@ public class EntityService {
 			return saveCustomer(request.getCustomer(), newRecord);
 		case "supplier":
 			return saveSupplier(request.getSupplier(), newRecord);
+		case "user":
+			return saveUser(request.getUser(), newRecord);
+		case "menu":
+			return saveMenu(request.getMenu(), newRecord);
 		}
 
 		return ShopApiResponse.builder().code("01").message("failed").build();
+	}
+
+	private ShopApiResponse saveUser(User user, boolean newRecord) {
+		user = (User) copyNewElement(user, newRecord);
+		User newUser = userRepository.save(user);
+		return ShopApiResponse.builder().entity(newUser).build();
+	}
+	
+	private ShopApiResponse saveMenu(Menu menu, boolean newRecord) {
+		menu = (Menu) copyNewElement(menu, newRecord);
+		Menu newMenu = menuRepository.save(menu);
+		return ShopApiResponse.builder().entity(newMenu).build();
 	}
 
 	private ShopApiResponse saveSupplier(Supplier supplier, boolean newRecord) {
@@ -108,6 +136,12 @@ public class EntityService {
 			break;
 		case "supplier":
 			entityClass = Supplier.class;
+			break;
+		case "user":
+			entityClass = User.class;
+			break;
+		case "menu":
+			entityClass = Menu.class;
 			break;
 		}
 
@@ -195,12 +229,20 @@ public class EntityService {
 				customerRepository.deleteById(Long.parseLong(filter.get("id").toString()));
 			case "supplier":
 				supplierRepository.deleteById(Long.parseLong(filter.get("id").toString()));
+			case "user":
+				userRepository.deleteById(Long.parseLong(filter.get("id").toString()));
+			case "menu":
+				menuRepository.deleteById(Long.parseLong(filter.get("id").toString()));
 			}
 			return ShopApiResponse.builder(). build();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return ShopApiResponse.builder().code("01").message("failed").build();
 		}
+	}
+
+	public List<UserRole> getAllUserRole() {
+		return  userRoleRepository.findAll();
 	}
 
 }

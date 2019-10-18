@@ -16,7 +16,9 @@
 	href=<c:url value="/res/css/bootstrap.css?version=1"></c:url> />
 <link rel="stylesheet" type="text/css"
 	href=<c:url value="/res/css/shop.css?version=1"></c:url> />
+<script src="<c:url value="/res/js/bootstrap.js"></c:url >"></script>
 <script src="<c:url value="/res/js/ajax.js"></c:url >"></script>
+
 <script src="<c:url value="/res/js/util.js"></c:url >"></script>
 <script type="text/javascript">
 	var entityName = "${entityProperty.entityName}";
@@ -27,7 +29,25 @@
 	var idField = "${entityProperty.idField}";
 	 
 </script>
+<style>
+#entity-input-form {
+	margin-right:50%;
+	margin-left:50%;
+	position:fixed;
+	background-color: white;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0
+		rgba(0, 0, 0, 0.19);
+	text-align: left;
+	padding:20px;
+	 
+}
 
+.entity-record:hover{
+	cursor: pointer;
+	background-color: olive;
+	color:white;
+}
+</style>
 </head>
 <body>
 	<div class="container">
@@ -36,6 +56,7 @@
 		<div class="content">
 			<h2>${entityProperty.entityName}-Management</h2>
 			<p></p>
+			<button id="btn-show-form" onclick="show('entity-input-form')" >Show Form</button>
 			<div id="entity-input-form" class="form">
 				<table style="layout: fixed">
 					<c:forEach var="element" items="${entityProperty.elements}">
@@ -51,14 +72,14 @@
 
 										</select>
 										<script>
-											var valueField_${element.id } ="${element.optionValueName}";
-											var itemField_${element.id } = "${element.optionItemName}";
+											window["valueField_${element.id}"] ="${element.optionValueName}";
+											window["itemField_${element.id}"] = "${element.optionItemName}";
 											let options = ${element.jsonList};
 											for(let i=0;i<options.length;i++){
 												let option  = document.createElement("option");
 												let optionItem = options[i];
-												option.value = optionItem[valueField_${element.id }];
-												option.innerHTML = optionItem[itemField_${element.id }];
+												option.value = optionItem["${element.optionValueName}"];
+												option.innerHTML = optionItem["${element.optionItemName}"];
 												document.getElementById("${element.id }").append(option);
 											}
 										</script>
@@ -67,7 +88,7 @@
 										<input onkeyup="loadList(this)" name="${element.id }"
 											id="input-${element.id }" type="text" />
 										<br />
-										<select style="width: 100px" class="input-field"
+										<select style="width: 200px" class="input-field"
 											id="${element.id }" required="${element.required }"
 											multiple="multiple" identity="${element.identity }"
 											itemValueField="${element.optionValueName}"
@@ -77,8 +98,8 @@
 
 										</select>
 										<script>
-											var valueField_${element.id } ="${element.optionValueName}";
-											var itemField_${element.id } = "${element.optionItemName}";
+											window["valueField_${element.id}"] ="${element.optionValueName}";
+											window["itemField_${element.id}"] = "${element.optionItemName}";
 											</script>
 									</c:when>
 									<c:when test="${  element.type == 'textarea'}">
@@ -107,6 +128,7 @@
 						</td>
 						<td>
 							<button id="btn-clear" onclick="clear()" class="btn btn-ok">Clear</button>
+							<button id="btn-close-form" onclick="hide('entity-input-form')" class="btn btn-ok">Close</button>
 						</td>
 					</tr>
 				</table>
@@ -288,44 +310,7 @@
 			navigationPanel.append(createNavigationButton( buttonCount-1, ">|")); 
 		}
 		
-		function createAnchor(id, html, url){
-			var a = document.createElement("a");
-			a.id = id;
-			a.innerHTML = html;
-			a.href = url
-			return a;
-		}
-		
-		function createNavigationButton(id, html){
-			var btn= createButton(id,html);
-			btn.className = "btn btn-default";
-			btn.onclick = function(){
-				 loadEntity(id);
-			}
-			var li = document.createElement("li");
-			li.append(btn);
-			return li;
-		}
-		
-		function createButton(id, html){
-			var button = document.createElement("button");
-			button.id = id;
-			button.innerHTML = html;
-			return button;
-		}
-		
-		function createCell(val){
-			let column = document.createElement("td");
-			column.innerHTML = val;
-			return column;
-		}
-		
-		function createInputText(id, className){
-			let input = document.createElement("input");
-			input.id = id;
-			input.setAttribute("class",className);
-			return input;
-		}
+	
 		
 		function populateTable(entities){
 			entityTBody.innerHTML = "";
@@ -335,6 +320,7 @@
 				let entity = entities[i];
 				let row = document.createElement("tr");
 				row.setAttribute("valign","top");
+				row.setAttribute("class","entity-record");
 				number = i*1+1 + page*limit;
 				row.append(createCell(number));
 				for (let j = 0; j < fieldNames.length; j++) {
@@ -349,6 +335,12 @@
 				let optionCell = createCell("");
 				let buttonEdit = createButton("edit_"+i, "Edit");
 				buttonEdit.onclick = function(){
+					alert("will Edit: "+entity[idField]);
+					getById(entity[idField], function(entity){
+						populateForm(entity);
+					});
+				}
+				row.onclick = function(){
 					alert("will Edit: "+entity[idField]);
 					getById(entity[idField], function(entity){
 						populateForm(entity);
@@ -436,6 +428,7 @@
 				if(!isMultipleSelect)
 					elementField.value = entityValue;	 
 			}
+			show("entity-input-form");
 		}
 		
 		function clear() {
@@ -494,6 +487,7 @@
 						var response = (xhr.data);
 						if (response != null && response.code == "00") {
 							alert("SUCCESS");
+							hide("entity-input-form");
 							loadEntity(page);
 						} else {
 							alert("FAILS");
@@ -503,7 +497,7 @@
 		};
 		createTableHeader();
 		loadEntity(page);
-	
+		hide("entity-input-form");
 	</script>
 </body>
 </html>

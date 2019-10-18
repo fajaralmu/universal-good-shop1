@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.config.EntityProperty;
 import com.fajar.entity.Unit;
+import com.fajar.entity.UserRole;
 import com.fajar.parameter.Routing;
 import com.fajar.service.EntityService;
 import com.fajar.service.UserSessionService;
@@ -84,6 +85,34 @@ public class ManagementController {
 		listObject.put("unit", units);
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Product", listObject);
 		model.addAttribute("entityProperty", entityProperty);
+		log.info("============ENTITY PROPERTY: "+entityProperty);
+		return "shop/entity-management-page";
+	}
+	
+	@RequestMapping(value = { "/user" })
+	public String user(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(Routing.ROOT_ROUTE + "account/login");
+		}
+		HashMap<String, Object> listObject= new HashMap<>();
+		List<UserRole> roles =entityService.getAllUserRole();
+		listObject.put("userRole", roles);
+		EntityProperty entityProperty = EntityUtil.createEntityProperty("User", listObject);
+		model.addAttribute("entityProperty", entityProperty);
+		log.info("============ENTITY PROPERTY: "+entityProperty);
+		return "shop/entity-management-page";
+	}
+	
+	@RequestMapping(value = { "/menu" })
+	public String menu(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(Routing.ROOT_ROUTE + "account/login");
+		}
+		EntityProperty entityProperty = EntityUtil.createEntityProperty("Menu", null);
+		model.addAttribute("entityProperty", entityProperty);
+		log.info("============ENTITY PROPERTY: "+entityProperty);
 		return "shop/entity-management-page";
 	}
 

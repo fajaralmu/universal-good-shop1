@@ -4,8 +4,6 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -84,6 +82,7 @@ public class EntityUtil {
 			}
 			entityProperty.setElements(entityElements);
 			entityProperty.setFieldNames(JSONUtil.listToJson(fieldNames));
+			System.out.println("============ENTITY PROPERTY: "+entityProperty);
 			return entityProperty;
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 	@Override
 	public List<T> filterAndSort(String q, Class clazz, String entityGraph) {
 		log.info("native query: " + q);
-		 List<T> ls = em.createNativeQuery(q, clazz).getResultList();
+		List<T> ls = em.createNativeQuery(q, clazz).getResultList();
 		return ls;
 
 	}
@@ -39,12 +40,9 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 	}
 
 	@Override
-	public List<T> toDesiredObject(List<Object> l_o) {
-//		List<T> l_t = new ArrayList<>();
-//		for(Object o:l_o) {
-//			l_t.add((T) o);
-//		}
-		return null;
+	public Query createNativeQuery(String sql) {
+		Query q = em.createNativeQuery(sql);
+		return q;
 	}
 
 }

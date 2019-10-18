@@ -7,6 +7,8 @@ import java.util.List;
 
 import com.fajar.annotation.Dto;
 import com.fajar.entity.BaseEntity;
+import com.fajar.entity.ProductFlowStock;
+import com.fajar.entity.Transaction;
 import com.fajar.entity.User;
 
 import lombok.AllArgsConstructor;
@@ -37,6 +39,8 @@ public class ShopApiResponse implements Serializable {
 	private BaseEntity entity;
 	private Filter filter;
 	private Integer totalData;
+	private Transaction transaction;
+	private ProductFlowStock productFlowStock;
 
 	public ShopApiResponse(String code, String message) {
 		this.code = code;

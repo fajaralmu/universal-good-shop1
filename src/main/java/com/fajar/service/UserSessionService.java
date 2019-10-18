@@ -1,8 +1,5 @@
 package com.fajar.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +16,10 @@ public class UserSessionService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	public User getUser(HttpServletRequest request) {
+		return (User) request.getSession(false).getAttribute("user");
+	}
 
 	public boolean hasSession(HttpServletRequest request) {
 		if (request.getSession().getAttribute("user") == null) {

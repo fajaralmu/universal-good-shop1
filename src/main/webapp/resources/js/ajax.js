@@ -17,3 +17,17 @@ function postReq(url, requestObject, callback) {
 	}
 	request.send(param);
 }
+
+function loadEntityList(url, requestObject, callback) {
+	postReq(url, requestObject,
+			function(xhr) {
+				var response = (xhr.data);
+				var entities = response.entities;
+				if (entities != null && entities[0] != null) {
+					callback(entities);
+
+				} else {
+					alert("data not found");
+				}
+			});
+}

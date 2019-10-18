@@ -14,6 +14,7 @@
 	href=<c:url value="/res/css/shop.css?version=1"></c:url> />
 <script src="<c:url value="/res/js/ajax.js"></c:url >"></script>
 <script src="<c:url value="/res/js/util.js"></c:url >"></script>
+<script src="<c:url value="/res/js/bootstrap.js"></c:url >"></script>
 </head>
 <body>
 	<div class="container">

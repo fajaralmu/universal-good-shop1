@@ -2,6 +2,9 @@ package com.fajar.repository;
 
 import java.util.List;
 
+import javax.persistence.Query;
+
+ 
 
 public interface RepositoryCustom<T> {
 
@@ -9,7 +12,7 @@ public interface RepositoryCustom<T> {
 	
 	List<T> filterAndSort(String q, Class clazz);
 	
-	int countFilterAndSort(String q);
+	int countFilterAndSort(String q); 
 	
-	List<T> toDesiredObject(List<Object> l_o);
+	Query createNativeQuery(String sql);
 }

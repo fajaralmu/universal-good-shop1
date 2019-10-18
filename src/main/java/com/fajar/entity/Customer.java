@@ -8,10 +8,20 @@ import javax.persistence.Table;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fajar.entity.Menu.MenuBuilder;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Dto
 @Entity
 @Table
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Customer extends BaseEntity implements Serializable{
 
 	 /**
@@ -23,7 +33,7 @@ public class Customer extends BaseEntity implements Serializable{
 	private String username;
 	@Column(name="display_name")
 	@FormField 
-	private String displayName;
+	private String name;
 	@Column
 	@FormField(required=false, type="textarea") 
 	private String address;
@@ -37,53 +47,7 @@ public class Customer extends BaseEntity implements Serializable{
 	@FormField 
 	private String email;
 
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
+	 
 	
 	
 	

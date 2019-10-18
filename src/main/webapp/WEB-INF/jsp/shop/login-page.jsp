@@ -16,6 +16,7 @@
 	href=<c:url value="/res/css/bootstrap.css?version=1"></c:url> />
 <link rel="stylesheet" type="text/css"
 	href=<c:url value="/res/css/shop.css?version=1"></c:url> />
+<script src="<c:url value="/res/js/bootstrap.js"></c:url >"></script>
 <script src="<c:url value="/res/js/ajax.js"></c:url >"></script>
 <script src="<c:url value="/res/js/util.js"></c:url >"></script>
 <script type="text/javascript">
@@ -34,7 +35,7 @@
 		postReq(
 				"<spring:url value="/api/account/login" />",
 				requestObject,
-				function(xhr) { 
+				function(xhr) {
 					var response = (xhr.data);
 					if (response != null && response.code == "00") {
 						alert("LOGIN SUCCESS");
@@ -44,11 +45,11 @@
 					}
 				});
 	}
-	
-	function goToRegister(){
-		window.location.href ="<spring:url value="/account/register" />";
+
+	function goToRegister() {
+		window.location.href = "<spring:url value="/account/register" />";
 	}
-</script> 
+</script>
 </head>
 <body>
 	<div id="loading-div"></div>
@@ -57,15 +58,16 @@
 		<div class="wrapper-login-form">
 
 			<div class="login-form">
-			
-				<span style="font-size: 2em;">Silakan Login</span> <br>  
-				<label for="useraname"> Username </label> <br>  <input
-					id="useraname" class="form-control" type="text" /> <br />  
-				<label for="password"> Kata sandi </label> <br><input
-					id="password" type="password" class="form-control" /> <br />  
-				<button class="btn btn-default"   onclick="login(); return false;">Login</button>
-				<button class="btn btn-default"  onclick="goToRegister(); return false;">Register</button>
-				
+
+				<span style="font-size: 2em;">Silakan Login</span> <br> <label
+					for="useraname"> Username </label> <br> <input id="useraname"
+					class="form-control" type="text" /> <br /> <label for="password">
+					Kata sandi </label> <br>
+				<input id="password" type="password" class="form-control" /> <br />
+				<button class="btn btn-default" onclick="login(); return false;">Login</button>
+				<button class="btn btn-default"
+					onclick="goToRegister(); return false;">Register</button>
+
 			</div>
 		</div>
 	</div>

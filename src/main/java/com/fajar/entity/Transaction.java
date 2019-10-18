@@ -44,7 +44,7 @@ public class Transaction extends BaseEntity implements Serializable {
 	private Customer customer;
 	@JoinColumn(name = "supplier_id")
 	@ManyToOne
-	private Customer supplier;
+	private Supplier supplier;
 	@Column
 	private String type;
 	@OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)

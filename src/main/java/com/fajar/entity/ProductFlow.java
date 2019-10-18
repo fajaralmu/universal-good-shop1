@@ -1,5 +1,5 @@
 package com.fajar.entity;
-
+ 
 import java.io.Serializable;
 import java.util.Date;
 
@@ -8,10 +8,10 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fajar.annotation.Dto;
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiRequest.ShopApiRequestBuilder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +20,8 @@ import lombok.NoArgsConstructor;
 
 @Dto
 @Entity
-@Table(name="product_flow")@Data
+@Table(name="product_flow")
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,6 +34,7 @@ public class ProductFlow extends BaseEntity implements Serializable{
 	private static final long serialVersionUID = 8994131360292840583L;
 	@JoinColumn(name="transaction_id")
 	@ManyToOne
+	@JsonIgnore
 	private Transaction transaction;
 	@Column(name="expiry_date")
 	private Date expiryDate;
@@ -45,5 +47,13 @@ public class ProductFlow extends BaseEntity implements Serializable{
 	@JoinColumn(name="product_id")
 	@ManyToOne
 	private Product product;
+	@Transient
+	private Long transactionId;
+	@Transient
+	private ProductFlowStock productFlowStock;
+	
+	 
+	
+	
 	
 }

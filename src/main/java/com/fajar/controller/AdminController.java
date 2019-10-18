@@ -10,12 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.fajar.parameter.EntityParameter;
 import com.fajar.parameter.Routing;
-import com.fajar.service.RealtimeService;
+import com.fajar.service.TransactionService;
 import com.fajar.service.UserSessionService;
 
 /**
@@ -30,6 +28,9 @@ public class AdminController {
 	Logger log = LoggerFactory.getLogger(AdminController.class);
 	@Autowired
 	private UserSessionService userService;
+	@Autowired
+	private TransactionService transactionService;
+	
 	public AdminController() {
 		log.info("-----------------AdminController------------------");
 	}
@@ -41,6 +42,25 @@ public class AdminController {
 			response.sendRedirect(Routing.ROOT_ROUTE+"account/login");
 		}
 		return "shop/home-page";
+	}
+	
+	@RequestMapping(value = { "/transaction/in" })
+	public String incomingTransaction(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(Routing.ROOT_ROUTE+"account/login");
+		}
+		return "shop/transaction-in-page";
+	}
+	
+	@RequestMapping(value = { "/transaction/out" })
+	public String outTransaction(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(Routing.ROOT_ROUTE+"account/login");
+		}
+	
+		return "shop/transaction-out-page";
 	}
 	
 	

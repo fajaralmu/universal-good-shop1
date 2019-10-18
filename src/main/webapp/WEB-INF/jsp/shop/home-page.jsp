@@ -13,6 +13,7 @@
 	href=<c:url value="/res/css/shop.css?version=1"></c:url> />
 <script src="<c:url value="/res/js/ajax.js"></c:url >"></script>
 <script src="<c:url value="/res/js/util.js"></c:url >"></script>
+<script src="<c:url value="/res/js/bootstrap.js"></c:url >"></script>
 </head>
 <body>
 	<div class="container">
@@ -29,6 +30,12 @@
 						Management</a></li>
 				<li><a href="<spring:url value="/management/product"/>">Product
 						Management</a></li>
+				<li><a href="<spring:url value="/management/user"/>">User
+						Management</a></li>
+					<li><a href="<spring:url value="/management/menu"/>">Menu
+						Management</a></li>
+				<li><a href="<spring:url value="/admin/transaction/in"/>">Incoming Product</a></li>
+				<li><a href="<spring:url value="/admin/transaction/out"/>">Transaction</a></li>
 				<li><a href="<spring:url value="/account/logout"/>">logout</a></li>
 			</ul>
 		</div>

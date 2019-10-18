@@ -9,6 +9,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fajar.annotation.Dto;
+import com.fajar.annotation.FormField;
 
 @Dto
 @Entity
@@ -20,13 +21,17 @@ public class User extends BaseEntity implements Serializable{
 	 */
 	private static final long serialVersionUID = -3896877759244837620L;
 	@Column
+	@FormField
 	private String username;
 	@Column(name="display_name")
+	@FormField
 	private String displayName;
 	@Column
+	@FormField
 	private String password;
 	@JoinColumn(name="role_id")
 	@ManyToOne
+	@FormField(entityReferenceName="userRole",type="fixedlist",optionItemName="name")
 	private UserRole role;
 	public String getUsername() {
 		return username;
