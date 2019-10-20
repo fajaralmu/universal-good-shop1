@@ -3,7 +3,6 @@ package com.fajar.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
@@ -218,8 +217,10 @@ public class TransactionService {
 			Transaction newTransaction = transactionRepository.save(transaction);
 			for (ProductFlow productFlow : productFlows) {
 				productFlow.setTransaction(newTransaction);
-				productFlowRepository.save(productFlow);
+				productFlow.setPrice(productFlow.getProduct().getPrice());
+				productFlow=	productFlowRepository.save(productFlow);
 			}
+			newTransaction.setProductFlows(productFlows);
 			return ShopApiResponse.builder().transaction(newTransaction).build();
 		} catch (Exception ex) {
 			ex.printStackTrace();

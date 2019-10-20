@@ -37,9 +37,9 @@ public class AdminController {
 
 	@RequestMapping(value = { "/home" })
 	public String index(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+		
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(Routing.ROOT_ROUTE+"account/login");
+			response.sendRedirect(request.getContextPath()+"/account/login");
 		}
 		return "shop/home-page";
 	}
@@ -48,7 +48,7 @@ public class AdminController {
 	public String incomingTransaction(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(Routing.ROOT_ROUTE+"account/login");
+			response.sendRedirect(request.getContextPath()+"/account/login");
 		}
 		return "shop/transaction-in-page";
 	}
@@ -57,7 +57,7 @@ public class AdminController {
 	public String outTransaction(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(Routing.ROOT_ROUTE+"account/login");
+			response.sendRedirect(request.getContextPath()+"/account/login");
 		}
 	
 		return "shop/transaction-out-page";

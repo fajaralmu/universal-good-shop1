@@ -12,6 +12,7 @@ import javax.persistence.PrePersist;
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
 import com.fajar.util.JSONUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Dto
 @MappedSuperclass
@@ -21,10 +22,13 @@ public class BaseEntity {
 	
 	
 	@Column(name="created_date")
+	@JsonIgnore
 	private Date createdDate;
 	@Column(name="modified_date")
+	@JsonIgnore
 	private Date modifiedDate;
 	@Column(name="deleted")
+	@JsonIgnore
 	private boolean deleted;
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

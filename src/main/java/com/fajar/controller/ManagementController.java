@@ -45,7 +45,7 @@ public class ManagementController {
 	public String unit(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(Routing.ROOT_ROUTE + "account/login");
+			response.sendRedirect(request.getContextPath() + "/account/login");
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Unit", null);
 		model.addAttribute("entityProperty", entityProperty);
@@ -56,7 +56,7 @@ public class ManagementController {
 	public String supplier(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(Routing.ROOT_ROUTE + "account/login");
+			response.sendRedirect(request.getContextPath() + "/account/login");
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Supplier", null);
 		model.addAttribute("entityProperty", entityProperty);
@@ -67,7 +67,7 @@ public class ManagementController {
 	public String customer(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(Routing.ROOT_ROUTE + "account/login");
+			response.sendRedirect(request.getContextPath() + "/account/login");
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Customer", null);
 		model.addAttribute("entityProperty", entityProperty);
@@ -78,7 +78,7 @@ public class ManagementController {
 	public String product(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(Routing.ROOT_ROUTE + "account/login");
+			response.sendRedirect(request.getContextPath() + "/account/login");
 		}
 		HashMap<String, Object> listObject= new HashMap<>();
 		List<Unit> units =entityService.getAllUnit();
@@ -93,7 +93,7 @@ public class ManagementController {
 	public String user(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(Routing.ROOT_ROUTE + "account/login");
+			response.sendRedirect(request.getContextPath() + "/account/login");
 		}
 		HashMap<String, Object> listObject= new HashMap<>();
 		List<UserRole> roles =entityService.getAllUserRole();
@@ -108,7 +108,7 @@ public class ManagementController {
 	public String menu(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(Routing.ROOT_ROUTE + "account/login");
+			response.sendRedirect(request.getContextPath() + "/account/login");
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Menu", null);
 		model.addAttribute("entityProperty", entityProperty);

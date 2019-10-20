@@ -29,7 +29,7 @@ public class AccountController {
 	@RequestMapping(value = { "/login" })
 	public String login(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if (userSessionService.hasSession(request)) {
-			response.sendRedirect(Routing.ROOT_ROUTE+"admin/home");
+			response.sendRedirect(request.getContextPath()+"/admin/home");
 		}
 		return "shop/login-page";
 	}
@@ -45,7 +45,7 @@ public class AccountController {
 	@RequestMapping(value = { "/register" })
 	public String register(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if (userSessionService.hasSession(request)) {
-			response.sendRedirect(Routing.ROOT_ROUTE+"admin/home");
+			response.sendRedirect(request.getContextPath()+ "/admin/home");
 		}
 		return "shop/register-page";
 	}
