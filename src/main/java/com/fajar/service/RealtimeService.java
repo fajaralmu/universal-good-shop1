@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -13,52 +14,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.Physical;
-import com.fajar.dto.OutputMessage;
 import com.fajar.dto.Entity;
+import com.fajar.dto.OutputMessage;
+import com.fajar.dto.Physical;
 import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
 import com.fajar.parameter.EntityParameter;
-import javax.annotation.PostConstruct;
 @Service
 public class RealtimeService {
 	Logger log = LoggerFactory.getLogger(RealtimeService.class);
 	
 	private Integer bonusCount=0;
 	private List<Entity> entities = new ArrayList<>();
-	private List<Entity> layouts = new ArrayList<>();
-	private Random random = new Random();
+	 private Random random = new Random();
 	private Long currentTime = new Date().getTime();
 	private Boolean isRegistering = false;
 	private Long deltaTime= 8000L;
 	
 	@Autowired
 	private SimpMessagingTemplate webSocket;
-	@Autowired
-	private LayoutService layoutService;
-	
+ 
 	public RealtimeService() {
 		log.info("-----------------REALTIME SERVICE-------------------");
 		startThread();
 		
 	}
+	 
 	
-	@PostConstruct
-	private void loadLayout() {
-		List<Entity> layouts = layoutService.getLayouts();
-		this.layouts.addAll(layouts);
-	}
-	
-	
-	
-	public List<Entity> getLayouts() {
-		return layouts;
-	}
-
-	public void setLayouts(List<Entity> layouts) {
-		this.layouts = layouts;
-	}
-
+	 
 	private void startThread() {
 		currentTime = new Date().getTime();
 		Thread thread  = new Thread(new Runnable() {
@@ -69,7 +52,7 @@ public class RealtimeService {
 					Long systemDate = new Date().getTime();
 					Long delta =systemDate - currentTime;
 				 	if(delta >= deltaTime && isRegistering == false) {
-						addBonusLife();
+						//addBonusLife();
 						currentTime=systemDate;
 					}
 				}
@@ -86,14 +69,7 @@ public class RealtimeService {
 		return entities;
 	}
 	
-	private boolean intersectLayout(Entity player) {
-		for (Entity layoutItem : layouts) {
-			if(Physical.intersect(player, layoutItem))
-				return true;
-		}
-		return false;
-	}
-	
+	 
 	public Entity getUser(Integer id) {
 		for(Entity user:entities) {
 			if(user.getId().equals(id)) {
@@ -153,34 +129,7 @@ public class RealtimeService {
 		}
 	}
 	
-	public void addBonusLife() {
-		Random rand = new Random();
-		Entity bonus = new Entity();
-		bonus.setId(rand.nextInt(101010)+1);
-		bonus.setActive(true);
-		bonus.setName("Extra Life "+bonus.getId());
-		bonus.setLife(rand.nextInt(9)+1);
-		Physical entity = new Physical();
-		Integer x = rand.nextInt(EntityParameter.WIN_W-entity.getW());
-		Integer y = rand.nextInt(EntityParameter.WIN_H-entity.getH());
-		entity.setRole(EntityParameter.ROLE_BONUS_LIFE);
-		entity.setPeriod(10000L);
-		entity.setX(x);
-		entity.setY(y);
-		bonus.setPhysical(entity);
-		removeByRole(EntityParameter.ROLE_BONUS_LIFE);
-		if(intersectLayout(bonus)) {
-			return;
-		}
-		entities.add(bonus);
-		bonusCount++;
-		RealtimeResponse response = new  RealtimeResponse("00","OK");
-		response.setEntities(entities);
-		log.info("..............Adding new Bonus");
-		
-		webSocket.convertAndSend("/wsResp/players", response);
-		
-	}
+	 
 	
 	private synchronized void removeByRole(Integer role) {
 		List<Entity> playerList = new ArrayList<>();

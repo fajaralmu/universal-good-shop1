@@ -105,6 +105,9 @@
 		var inputSupplierField = document.getElementById("input-supplier");
 		var supplierListDropDown = document.getElementById("supplier-dropdown");
 		function send() {
+			if(!confirm("Are You Ready To Submit Transaction?"))
+				return;
+			
 			var requestObject = {
 				"supplier" : currentSupplier,
 				"productFlows" : productFlows

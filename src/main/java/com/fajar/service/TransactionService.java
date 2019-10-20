@@ -137,20 +137,31 @@ public class TransactionService {
 		
 		return ShopApiResponse.builder().productFlowStock(productFlowStock).build();
 	}
-
+	
+	
 	public ShopApiResponse getStocks(ShopApiRequest request, boolean withCount) {
 		try {
 			String productName = request.getProduct().getName();
-			String sql = "select * from product_flow left join `transaction` on transaction_id = transaction.id "
-					+ "left join product on product_id = product.id "
-					+ "where transaction.`type` = 'IN' and product.name like '%" + productName + "%' limit 20";
+//			String sql = "select * from product_flow left join `transaction` on transaction_id = transaction.id "
+//					+ "left join product on product_id = product.id "
+//					+ "where transaction.`type` = 'IN' and product.name like '%" + productName + "%' limit 20";
 
+			String sql = "select product_flow.id as flowId, product_flow.count as flowCount, " + 
+					"(select sum(count) as total_count from product_flow where flow_ref_id=flowId and deleted!=1) as used,  " + 
+					" product_flow.* from product_flow  " + 
+					"left join `transaction` on product_flow.transaction_id = transaction.id " + 
+					"left join product on product_flow.product_id = product.id " + 
+					"where transaction.`type` = 'IN' and product.name like '%"+productName+"%' having(used is null or flowCount-used>0) limit 20";
+			
 			List<ProductFlow> productFlows = productFlowRepositoryCustom.filterAndSort(sql, ProductFlow.class);
 			List<BaseEntity> entities = new ArrayList<>();
 			for (ProductFlow productFlow : productFlows) {
 				if (withCount) {
 					ProductFlowStock productFlowStock = checkStock(productFlow);
 					productFlowStock.setProductFlow(null);
+					if(productFlowStock.getRemainingStock()<=0) {
+						continue;
+					}
 					productFlow.setProductFlowStock(productFlowStock);
 				}
 				productFlow.setTransactionId(productFlow.getTransaction().getId());

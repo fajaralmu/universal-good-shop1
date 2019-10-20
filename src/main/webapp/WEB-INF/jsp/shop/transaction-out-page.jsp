@@ -25,7 +25,11 @@
 				<tr>
 					<td>
 						<div class="form">
-							<p>ProductName</p>
+							<p>Stock ID</p>
+								<input  type="number" class="form-control"
+									id="stock-id"  required="required" />
+									<button id="search-stock" onclick ="stockInfo()">OK</button>
+							<p>Or Put ProductName</p>
 							<input id="input-product" type="text" onkeyup="loadPrductList()"
 								class="form-control" /> <br /> <select style="width: 300px"
 								id="product-dropdown" class="form-control" multiple="multiple">
@@ -36,9 +40,7 @@
 								<p>
 									Unit :<span id="unit-name"></span>
 								</p>
-								<p>Stock ID</p>
-								<input disabled="disabled" type="number" class="form-control"
-									id="stock-id" required="required" />
+								
 								<p>Stock</p>
 								<input disabled="disabled" type="number" class="form-control"
 									id="stock-quantity" required="required" />
@@ -114,6 +116,8 @@
 		var inputCustomerField = document.getElementById("input-customer");
 		var customerListDropDown = document.getElementById("customer-dropdown");
 		function send() {
+			if(!confirm("Are You Ready To Submit Transaction?"))
+				return;
 			var requestObject = {
 				"customer" : currentCustomer,
 				"productFlows" : productFlows
@@ -183,7 +187,7 @@
 							option.innerHTML = flowEntity.id + "-"
 									+ entity["name"];
 							option.onclick = function() {
-								setCurrentProduct(flowEntity);
+								setCurrentProduct(flowEntity, true);
 							}
 							productListDropDown.append(option);
 						}
@@ -239,7 +243,7 @@
 			stockIdField.value = "";
 		}
 
-		function setCurrentProduct(entity) {
+		function setCurrentProduct(entity, loadNewStock) {
 			inputProductField.value = entity.product.name;
 			document.getElementById("unit-name").innerHTML = entity.product.unit.name;
 			currentProduct = entity.product;
@@ -254,25 +258,36 @@
 			if(entity.flowReferenceId != null){
 				ID = entity.flowReferenceId;
 			}
+			if(loadNewStock)
+				getStock(ID, false);
+
+		}
+		
+		function  stockInfo(){
+			getStock(stockIdField.value,true);
+		}
+		
+		function  getStock(ID, updateProduct){
 			var requestObject = {
-				"productFlow" : {
-					"id" : ID
+					"productFlow" : {
+						"id" : ID
+					}
 				}
-			}
 
-			postReq(
-					"<spring:url value="/api/transaction/stockinfo" />",
-					requestObject,
-					function(xhr) {
-						var response = (xhr.data);
-						var code = response.code;
-						if (code == "00") {
-							quantityField.value = response.productFlowStock.remainingStock;
-						} else {
-							alert("server error");
-						}
-					});
-
+				postReq("<spring:url value="/api/transaction/stockinfo" />",
+						requestObject,
+						function(xhr) {
+							var response = (xhr.data);
+							var code = response.code;
+							if (code == "00") {
+								quantityField.value = response.productFlowStock.remainingStock;
+								if(updateProduct){
+									setCurrentProduct(response.productFlowStock.productFlow, false);
+								}
+							} else {
+								alert("server error");
+							}
+						});
 		}
 
 		function removeFromProductFlowsById(ID) {
@@ -302,7 +317,7 @@
 				let btnDelete = createButton("delete-" + productFlow.id,
 						"delete");
 				btnEdit.onclick = function() {
-					setCurrentProductFlow(productFlow);
+					setCurrentProductFlow(productFlow, true);
 				}
 				btnDelete.onclick = function() {
 					if (!confirm("Are you sure wnat to delete?")) {
@@ -325,7 +340,7 @@
 			priceField.value = entity.price;
 		//	quantityField.value = entity.productFlowStock.remainingStock;
 			expiryDateField.value = entity.expiryDate;
-			setCurrentProduct(entity);
+			setCurrentProduct(entity, true);
 		}
 	</script>
 </body>
