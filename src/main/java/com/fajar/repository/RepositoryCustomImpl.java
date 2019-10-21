@@ -1,6 +1,7 @@
 package com.fajar.repository;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -19,10 +20,14 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 	EntityManager em;
 
 	@Override
-	public List<T> filterAndSort(String q, Class clazz, String entityGraph) {
-		log.info("native query: " + q);
-		List<T> ls = em.createNativeQuery(q, clazz).getResultList();
-		return ls;
+	public List<T> filterAndSort(String sql, Class clazz, String entityGraph) {
+		log.info("==============GET LIST FROM NATIVE SQL: " + sql);
+		List<T> resultList = em.createNativeQuery(sql, clazz).getResultList();
+		if(resultList == null) {
+			resultList = new ArrayList<>();
+		}
+		log.info("==============SQL OK: {}",resultList.size());
+		return resultList;
 
 	}
 
@@ -33,10 +38,11 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 	}
 
 	@Override
-	public int countFilterAndSort(String q) {
-		BigInteger count = (BigInteger) em.createNativeQuery(q).getSingleResult();
-		// System.out.println("COUNT : "+count);
-		return count.intValue();
+	public Object getSingleResult(String sql) {
+		log.info("=============GETTING SINGLE RESULT SQL: {}",sql);
+		Object result =  em.createNativeQuery(sql).getSingleResult();
+		log.info("=============RESULT SQL: {}, type: {}",result, result != null? result.getClass().getCanonicalName():null);
+		return result;
 	}
 
 	@Override

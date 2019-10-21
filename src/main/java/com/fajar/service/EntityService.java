@@ -1,6 +1,7 @@
 package com.fajar.service;
 
 import java.lang.reflect.Field;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -190,9 +191,12 @@ public class EntityService {
 		String sql = "select  `" + tableName + "`.* from `" + tableName + "` " + joinSql + " " + filterSQL + orderSQL
 				+ limitOffsetSQL;
 		String sqlCount = "select COUNT(*) from `" + tableName + "` " + joinSql + " " + filterSQL;
-		System.out.println("==============SQL: " + sql);
 		List<BaseEntity> entities = repositoryCustom.filterAndSort(sql, entityClass);
-		Integer count = repositoryCustom.countFilterAndSort(sqlCount);
+		Integer count = 0;
+		Object countResult = repositoryCustom.getSingleResult(sqlCount);
+		if(countResult != null) {
+			count = ((BigInteger) countResult).intValue();
+		}
 		return ShopApiResponse.builder().entities(entities).totalData(count).filter(filter).build();
 	}
 

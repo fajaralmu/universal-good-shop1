@@ -15,10 +15,12 @@ import com.fajar.config.EntityElement;
 import com.fajar.config.EntityProperty;
 import com.fajar.entity.BaseEntity;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class EntityUtil {
 
 	public static EntityProperty createEntityProperty(String entityName, HashMap<String, Object> listObject) {
-		// TODO Auto-generated method stub
 		EntityProperty entityProperty = EntityProperty.builder().entityName(entityName.toLowerCase()).build();
 		try {
 			Class clazz = Class.forName("com.fajar.entity." + entityName);
@@ -85,10 +87,9 @@ public class EntityUtil {
 			}
 			entityProperty.setElements(entityElements);
 			entityProperty.setFieldNames(JSONUtil.listToJson(fieldNames));
-			System.out.println("============ENTITY PROPERTY: " + entityProperty);
+			log.info("============ENTITY PROPERTY: {} ",entityProperty);
 			return entityProperty;
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -105,7 +106,6 @@ public class EntityUtil {
 			}
 			return field;
 		} catch (NoSuchFieldException | SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

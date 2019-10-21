@@ -12,7 +12,7 @@ public interface RepositoryCustom<T> {
 	
 	List<T> filterAndSort(String q, Class clazz);
 	
-	int countFilterAndSort(String q); 
+	Object getSingleResult(String q); 
 	
 	Query createNativeQuery(String sql);
 }
