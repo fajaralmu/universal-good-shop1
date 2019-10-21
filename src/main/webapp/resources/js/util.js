@@ -2,10 +2,8 @@
 
 
 function infoLoading() {
-	document.getElementById("loading-div").innerHTML = ""
-			+ ""
-			+ "<img width='60px' src=\"/universal-good-shop/res/img/loading-disk.gif\"/><br/>"
-			+ "Mohon menunggu...";
+	document.getElementById("loading-div").innerHTML = 
+		"<img width='60px'  src=\""+ctxPath+"/res/img/loading-disk.gif\" />";
 }
 
 function infoDone() {

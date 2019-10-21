@@ -24,15 +24,15 @@ import com.fajar.service.UserSessionService;
 @CrossOrigin
 @RestController
 @RequestMapping("/api/transaction")
-public class TransactionApiController {
-	Logger log = LoggerFactory.getLogger(TransactionApiController.class);
+public class RestTransactionController {
+	Logger log = LoggerFactory.getLogger(RestTransactionController.class);
 	@Autowired
 	private UserSessionService userSessionService;
 	@Autowired
 	private TransactionService transactionService;
 
-	public TransactionApiController() {
-		log.info("------------------EntityApiController-----------------");
+	public RestTransactionController() {
+		log.info("------------------RestTransactionController-----------------");
 	}
 
 	@PostMapping(value = "/supply", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

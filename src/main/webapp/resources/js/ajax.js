@@ -1,9 +1,11 @@
 function postReq(url, requestObject, callback) {
+	 infoLoading();
 	var request = new XMLHttpRequest();
 	var param = JSON.stringify(requestObject);
 	request.open("POST", url, true);
 	request.setRequestHeader("Content-type", "application/json");
 	request.onreadystatechange = function() {
+		
 		if (this.readyState == this.DONE) {
 			console.log("RESPONSE ", this.status, this);
 			try {
@@ -12,7 +14,9 @@ function postReq(url, requestObject, callback) {
 				this['data'] = "{}";
 			}
 			callback(this);
+			infoDone();
 		}
+		
 
 	}
 	request.send(param);

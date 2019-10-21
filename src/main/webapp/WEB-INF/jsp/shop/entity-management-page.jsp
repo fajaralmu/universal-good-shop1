@@ -4,23 +4,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type"
-	content="text/html; charset=windows-1256">
-<title>Management::${entityProperty.entityName}</title>
-<link rel="icon" href="<c:url value="/res/img/javaEE.ico"></c:url >"
-	type="image/x-icon">
-<link rel="stylesheet" type="text/css"
-	href=<c:url value="/res/css/bootstrap.css?version=1"></c:url> />
-<link rel="stylesheet" type="text/css"
-	href=<c:url value="/res/css/shop.css?version=1"></c:url> />
-<script src="<c:url value="/res/js/bootstrap.js"></c:url >"></script>
-<script src="<c:url value="/res/js/ajax.js"></c:url >"></script>
 
-<script src="<c:url value="/res/js/util.js"></c:url >"></script>
-<script type="text/javascript">
+	
+	<script type="text/javascript">
 	var entityName = "${entityProperty.entityName}";
 	var page = 0;
 	var limit = 5;
@@ -28,31 +14,8 @@
 	var fieldNames = ${entityProperty.fieldNames};
 	var idField = "${entityProperty.idField}";
 	 
-</script>
-<style>
-#entity-input-form {
-	margin-right:50%;
-	margin-left:50%;
-	position:fixed;
-	background-color: white;
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0
-		rgba(0, 0, 0, 0.19);
-	text-align: left;
-	padding:20px;
-	 
-}
-
-.entity-record:hover{
-	cursor: pointer;
-	background-color: olive;
-	color:white;
-}
-</style>
-</head>
-<body>
-	<div class="container">
-		<div id="loading-div"></div>
-		<jsp:include page="../include/head.jsp"></jsp:include>
+</script> 
+		
 		<div class="content">
 			<h2>${entityProperty.entityName}-Management</h2>
 			<p></p>
@@ -146,8 +109,7 @@
 			</div>
 
 		</div>
-		<jsp:include page="../include/foot.jsp"></jsp:include>
-	</div>
+		
 	<script type="text/javascript">
 		var fields = document.getElementsByClassName("input-field");
 		var filterFields = document.getElementsByClassName("filter-field");
@@ -499,5 +461,3 @@
 		loadEntity(page);
 		hide("entity-input-form");
 	</script>
-</body>
-</html>

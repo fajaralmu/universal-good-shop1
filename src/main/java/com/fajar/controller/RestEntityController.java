@@ -23,15 +23,15 @@ import com.fajar.service.EntityService;
 @CrossOrigin
 @RestController
 @RequestMapping("/api/entity")
-public class EntityApiController {
-	Logger log = LoggerFactory.getLogger(EntityApiController.class);
+public class RestEntityController {
+	Logger log = LoggerFactory.getLogger(RestEntityController.class);
 	@Autowired
 	private AccountService accountService;
 	@Autowired
 	private EntityService entityService;
 
-	public EntityApiController() {
-		log.info("------------------EntityApiController-----------------");
+	public RestEntityController() {
+		log.info("------------------RestEntityController-----------------");
 	}
 
 	@PostMapping(value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

@@ -16,10 +16,13 @@
 	href=<c:url value="/res/css/bootstrap.css?version=1"></c:url> />
 <link rel="stylesheet" type="text/css"
 	href=<c:url value="/res/css/shop.css?version=1"></c:url> />
+<script src="<c:url value="/res/js/jquery-3.3.1.slim.min.js"></c:url >"></script>
+<script src="<c:url value="/res/js/bootstrap.bundle.js"></c:url >"></script>
 <script src="<c:url value="/res/js/bootstrap.js"></c:url >"></script>
-<script src="<c:url value="/res/js/ajax.js"></c:url >"></script>
-<script src="<c:url value="/res/js/util.js"></c:url >"></script>
+<script src="<c:url value="/res/js/ajax.js?v=1"></c:url >"></script>
+<script src="<c:url value="/res/js/util.js?v=1"></c:url >"></script>
 <script type="text/javascript">
+	var ctxPath = "${contextPath}";
 	function login() {
 
 		var username = document.getElementById("useraname").value;
@@ -36,6 +39,7 @@
 				"<spring:url value="/api/account/login" />",
 				requestObject,
 				function(xhr) {
+					infoDone();
 					var response = (xhr.data);
 					if (response != null && response.code == "00") {
 						alert("LOGIN SUCCESS");
@@ -51,8 +55,8 @@
 	}
 </script>
 </head>
-<body>
-	<div id="loading-div"></div>
+<body> 
+<div id="loading-div"> </div>
 	<div class="body">
 		<p id="info" align="center"></p>
 		<div class="wrapper-login-form">

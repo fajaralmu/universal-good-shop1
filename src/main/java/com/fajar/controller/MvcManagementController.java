@@ -29,16 +29,16 @@ import com.fajar.util.EntityUtil;
  */
 @Controller
 @RequestMapping("management")
-public class ManagementController {
+public class MvcManagementController {
 
-	Logger log = LoggerFactory.getLogger(ManagementController.class);
+	Logger log = LoggerFactory.getLogger(MvcManagementController.class);
 	@Autowired
 	private UserSessionService userService;
 	@Autowired
 	private EntityService entityService;
 
-	public ManagementController() {
-		log.info("-----------------AdminController------------------");
+	public MvcManagementController() {
+		log.info("-----------------MvcManagementController------------------");
 	}
 
 	@RequestMapping(value = { "/unit" })
@@ -49,7 +49,8 @@ public class ManagementController {
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Unit", null);
 		model.addAttribute("entityProperty", entityProperty);
-		return "shop/entity-management-page";
+		model  =constructCommonModel(request, model, "Unit");
+		return "BASE_PAGE";
 	}
 
 	@RequestMapping(value = { "/supplier" })
@@ -60,7 +61,8 @@ public class ManagementController {
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Supplier", null);
 		model.addAttribute("entityProperty", entityProperty);
-		return "shop/entity-management-page";
+		model  =constructCommonModel(request, model, "Supplier");
+		return "BASE_PAGE";
 	}
 	
 	@RequestMapping(value = { "/customer" })
@@ -71,7 +73,8 @@ public class ManagementController {
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Customer", null);
 		model.addAttribute("entityProperty", entityProperty);
-		return "shop/entity-management-page";
+		model  =constructCommonModel(request, model, "Customer");
+		return "BASE_PAGE";
 	}
 	
 	@RequestMapping(value = { "/product" })
@@ -86,7 +89,8 @@ public class ManagementController {
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Product", listObject);
 		model.addAttribute("entityProperty", entityProperty);
 		log.info("============ENTITY PROPERTY: "+entityProperty);
-		return "shop/entity-management-page";
+		model  =constructCommonModel(request, model, "Product");
+		return "BASE_PAGE";
 	}
 	
 	@RequestMapping(value = { "/user" })
@@ -101,7 +105,8 @@ public class ManagementController {
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("User", listObject);
 		model.addAttribute("entityProperty", entityProperty);
 		log.info("============ENTITY PROPERTY: "+entityProperty);
-		return "shop/entity-management-page";
+		model  =constructCommonModel(request, model, "User");
+		return "BASE_PAGE";
 	}
 	
 	@RequestMapping(value = { "/menu" })
@@ -113,7 +118,15 @@ public class ManagementController {
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Menu", null);
 		model.addAttribute("entityProperty", entityProperty);
 		log.info("============ENTITY PROPERTY: "+entityProperty);
-		return "shop/entity-management-page";
+		model  =constructCommonModel(request, model, "Menu");
+		return "BASE_PAGE";
+	}
+	
+	private Model constructCommonModel(HttpServletRequest request, Model model, String title) {
+		model.addAttribute("contextPath",request.getContextPath());
+		model.addAttribute("title", "Management::"+title);
+		model.addAttribute("pageUrl", "shop/entity-management-page");
+		return model;
 	}
 
 

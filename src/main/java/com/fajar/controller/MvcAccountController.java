@@ -17,13 +17,13 @@ import com.fajar.service.UserSessionService;
 
 @Controller 
 @RequestMapping("account")
-public class AccountController {
-	Logger log = LoggerFactory.getLogger(AccountController.class);
+public class MvcAccountController {
+	Logger log = LoggerFactory.getLogger(MvcAccountController.class);
 	@Autowired
 	private UserSessionService userSessionService;
 	
-	public AccountController() {
-		log.info("----------------ACCOUNT CONTROLLER---------------");
+	public MvcAccountController() {
+		log.info("----------------MvcAccountController---------------");
 	}
 
 	@RequestMapping(value = { "/login" })
@@ -31,6 +31,7 @@ public class AccountController {
 		if (userSessionService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath()+"/admin/home");
 		}
+		model.addAttribute("contextPath",request.getContextPath());
 		return "shop/login-page";
 	}
 	
@@ -39,6 +40,7 @@ public class AccountController {
 		if (userSessionService.hasSession(request)) {
 			userSessionService.logout(request);
 		}
+		model.addAttribute("contextPath",request.getContextPath());
 		return "shop/login-page";
 	}
 	
@@ -47,6 +49,7 @@ public class AccountController {
 		if (userSessionService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath()+ "/admin/home");
 		}
+		model.addAttribute("contextPath",request.getContextPath());
 		return "shop/register-page";
 	}
 }

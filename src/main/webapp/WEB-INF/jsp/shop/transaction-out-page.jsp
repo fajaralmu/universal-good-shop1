@@ -3,21 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Shop::Purchase</title>
-<link rel="stylesheet" type="text/css"
-	href=<c:url value="/res/css/bootstrap.css?version=1"></c:url> />
-<link rel="stylesheet" type="text/css"
-	href=<c:url value="/res/css/shop.css?version=1"></c:url> />
-<script src="<c:url value="/res/js/bootstrap.js"></c:url >"></script>
-<script src="<c:url value="/res/js/ajax.js"></c:url >"></script>
-<script src="<c:url value="/res/js/util.js"></c:url >"></script>
-</head>
-<body>
-	<div class="container">
-		<jsp:include page="../include/head.jsp"></jsp:include>
+
 		<div class="content">
 			<h2>Purchasing</h2>
 
@@ -54,7 +40,7 @@
 								<input disabled="disabled" type="date" class="form-control"
 									id="product-exp-date" />
 								<p></p>
-								<button id="add-product" onclick="addToChart()">Submit</button>
+								<button class="btn btn-submit" id="add-product" onclick="addToChart()">Add</button>
 							</div>
 						</div>
 					</td>
@@ -80,7 +66,7 @@
 				</tr>
 			</table>
 			<div>
-				<button id="btn-send" onclick="send()">Transaction</button>
+				<button class="btn btn-submit"  id="btn-send" onclick="send()">Submit Transaction</button>
 			</div>
 			<table class="table">
 				<thead>
@@ -94,6 +80,16 @@
 						<th>Reff Stock ID</th>
 						<th>Option</th>
 					</tr>
+					<tr>
+						<th> </th>
+						<th> </th>
+						<th> </th>
+						<th> </th>
+						<th> </th>
+						<th>Total:<span id="total-price"></span> </th>
+						<th></th>
+						<th></th>
+					</tr>
 				</thead>
 				<tbody id="product-flows">
 
@@ -101,8 +97,6 @@
 			</table>
 		</div>
 
-		<jsp:include page="../include/foot.jsp"></jsp:include>
-	</div>
 	<script type="text/javascript">
 		var productFlows = new Array();
 		var currentProductFlow;
@@ -110,6 +104,7 @@
 		var currentCustomer;
 		var inputProductField = document.getElementById("input-product");
 		var stockIdField = document.getElementById("stock-id");
+		var totalPriceLabel = document.getElementById("total-price");
 		var productListDropDown = document.getElementById("product-dropdown");
 		var productFlowTable = document.getElementById("product-flows");
 
@@ -193,8 +188,9 @@
 						}
 					});
 		}
-	</script>
-	<script type="text/javascript">
+
+		/***COMPONENT OPERATION***/
+		
 		var priceField = document.getElementById("product-price");
 		var quantityField = document.getElementById("stock-quantity");
 		var inputQuantityField = document.getElementById("product-quantity");
@@ -301,6 +297,7 @@
 
 		function populateProductFlow(productFlows) {
 			productFlowTable.innerHTML = "";
+			let totalPrice = 0;
 			for (let i = 0; i < productFlows.length; i++) {
 				let productFlow = productFlows[i];
 				let row = document.createElement("tr");
@@ -311,9 +308,10 @@
 				row.append(createCell(productFlow.count));
 				row.append(createCell(productFlow.price));
 				row.append(createCell(productFlow.flowReferenceId));
+				
 				let optionCell = createCell("");
+				
 				let btnEdit = createButton("edit-" + productFlow.id, "edit");
-
 				let btnDelete = createButton("delete-" + productFlow.id,
 						"delete");
 				btnEdit.onclick = function() {
@@ -330,8 +328,13 @@
 				optionCell.append(btnDelete);
 				row.append(optionCell);
 				productFlowTable.append(row);
+
+				totalPrice = totalPrice*1+(productFlow.price * productFlow.count);
+				
+				
 			}
 
+			totalPriceLabel.innerHTML = totalPrice;
 		}
 
 		function setCurrentProductFlow(entity) {

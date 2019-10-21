@@ -19,14 +19,14 @@ import com.fajar.service.RealtimeService;
  */
 @Controller
 @RequestMapping("web")
-public class GeneralController {
+public class MvcGeneralController {
 	
-	Logger log = LoggerFactory.getLogger(GeneralController.class);
+	Logger log = LoggerFactory.getLogger(MvcGeneralController.class);
 	@Autowired
 	private RealtimeService realtimeService;
 	
-	public GeneralController() {
-		log.info("-----------------GENERAL CONTROLLER------------------");
+	public MvcGeneralController() {
+		log.info("-----------------MvcGeneralController------------------");
 	}
 
 	@GetMapping(value = "notfound")

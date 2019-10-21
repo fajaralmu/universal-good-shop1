@@ -22,14 +22,14 @@ import com.fajar.service.AccountService;
 @CrossOrigin
 @RestController
 @RequestMapping("/api/account")
-public class AccountApiController {
-	Logger log = LoggerFactory.getLogger(AccountApiController.class);
+public class RestAccountController {
+	Logger log = LoggerFactory.getLogger(RestAccountController.class);
 	@Autowired
 	private AccountService accountService;
  
 	
-	public AccountApiController() {
-		log.info("------------------AccountApiController-----------------");
+	public RestAccountController() {
+		log.info("------------------RestAccountController-----------------");
 	}
 
 	@PostMapping(value =  "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
