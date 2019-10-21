@@ -57,20 +57,23 @@ public class EntityUtil {
 				entityElement.setLableName(lableName.toUpperCase());
 				entityElement.setRequired(formField.required());
 				entityElement.setType(isId ? "hidden" : fieldType);
+				entityElement.setClassName(field.getType().getCanonicalName());
 				if (!formField.entityReferenceName().equals("") && fieldType.equals("fixedlist")
 						&& listObject != null) {
-					List<BaseEntity> referenceEntityList = (List<BaseEntity>) listObject
-							.get(formField.entityReferenceName());
-					if (referenceEntityList == null)
-						continue;
-					Class referenceEntityClass = referenceEntityList.get(0).getClass();
+
+					Class referenceEntityClass = field.getType();
 					Field idField = getIdField(referenceEntityClass);
 					entityElement.setOptionValueName(idField.getName());
 					entityElement.setOptionItemName(formField.optionItemName());
-					entityElement.setOptions(referenceEntityList);
-					entityElement.setJsonList(JSONUtil.listToJson(referenceEntityList));
-				}else if (!formField.entityReferenceName().equals("") && fieldType.equals("dynamiclist")
-						&& listObject != null) {
+
+					List<BaseEntity> referenceEntityList = (List<BaseEntity>) listObject
+							.get(formField.entityReferenceName());
+					if (referenceEntityList != null) {
+						entityElement.setOptions(referenceEntityList);
+						entityElement.setJsonList(JSONUtil.listToJson(referenceEntityList));
+					}
+
+				} else if (!formField.entityReferenceName().equals("") && fieldType.equals("dynamiclist")) {
 					Class referenceEntityClass = field.getType();
 					Field idField = getIdField(referenceEntityClass);
 					entityElement.setOptionValueName(idField.getName());
@@ -82,7 +85,7 @@ public class EntityUtil {
 			}
 			entityProperty.setElements(entityElements);
 			entityProperty.setFieldNames(JSONUtil.listToJson(fieldNames));
-			System.out.println("============ENTITY PROPERTY: "+entityProperty);
+			System.out.println("============ENTITY PROPERTY: " + entityProperty);
 			return entityProperty;
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -91,6 +94,23 @@ public class EntityUtil {
 		return null;
 	}
 
+	public static Field getDeclaredField(Class clazz, String fieldName) {
+		try {
+			Field field = clazz.getDeclaredField(fieldName);
+			if(field == null) {
+				if (clazz.getSuperclass() != null) {
+					return clazz.getSuperclass() .getDeclaredField(fieldName);
+				}
+				return null;
+			}
+			return field;
+		} catch (NoSuchFieldException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public static List<Field> getDeclaredFields(Class clazz) {
 		Field[] baseField = clazz.getDeclaredFields();
 

@@ -83,13 +83,33 @@ public class MvcManagementController {
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
 		}
-		HashMap<String, Object> listObject= new HashMap<>();
-		List<Unit> units =entityService.getAllUnit();
-		listObject.put("unit", units);
-		EntityProperty entityProperty = EntityUtil.createEntityProperty("Product", listObject);
+		 EntityProperty entityProperty = EntityUtil.createEntityProperty("Product", null);
 		model.addAttribute("entityProperty", entityProperty);
-		log.info("============ENTITY PROPERTY: "+entityProperty);
 		model  =constructCommonModel(request, model, "Product");
+		return "BASE_PAGE";
+	}
+	
+	@RequestMapping(value = { "/category" })
+	public String category(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(request.getContextPath() + "/account/login");
+		}
+		 EntityProperty entityProperty = EntityUtil.createEntityProperty("Category", null);
+		model.addAttribute("entityProperty", entityProperty);
+		model  =constructCommonModel(request, model, "Category");
+		return "BASE_PAGE";
+	}
+	
+	@RequestMapping(value = { "/transaction" })
+	public String transaction(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(request.getContextPath() + "/account/login");
+		}
+		 EntityProperty entityProperty = EntityUtil.createEntityProperty("Transaction", null);
+		model.addAttribute("entityProperty", entityProperty);
+		model  =constructCommonModel(request, model, "Transaction");
 		return "BASE_PAGE";
 	}
 	

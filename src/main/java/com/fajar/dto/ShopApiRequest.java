@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fajar.annotation.Dto;
+import com.fajar.entity.Category;
 import com.fajar.entity.Customer;
 import com.fajar.entity.Menu;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Supplier;
+import com.fajar.entity.Transaction;
 import com.fajar.entity.Unit;
 import com.fajar.entity.User;
 import com.fajar.entity.UserRole;
@@ -41,6 +43,8 @@ public class ShopApiRequest implements Serializable {
 	private UserRole userRole;
 	private Filter filter;
 	private ProductFlow productFlow;
+	private Transaction transaction;
+	private Category category;
 	@Builder.Default
 	private List<ProductFlow> productFlows = new ArrayList<ProductFlow>();
 

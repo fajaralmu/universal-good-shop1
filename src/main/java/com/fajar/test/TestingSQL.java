@@ -37,5 +37,16 @@ public class TestingSQL {
 		}
 		
 	}
+	
+	public static void mainDD(String[] xxx) {
+		for(int i=1;i<=82;i++) {
+			Random rand = new Random();
+			Integer catId = rand.nextInt(13)+1;
+			String sql= "UPDATE goodshop.product " + 
+					"SET category_id="+catId+  
+					" WHERE id="+i+"; " ;
+			System.out.println(sql);
+		}
+	}
 
 }

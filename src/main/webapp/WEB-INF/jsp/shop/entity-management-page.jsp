@@ -15,13 +15,13 @@
 	var idField = "${entityProperty.idField}";
 	 
 </script> 
-		
-		<div class="content">
-			<h2>${entityProperty.entityName}-Management</h2>
-			<p></p>
-			<button id="btn-show-form" onclick="show('entity-input-form')" >Show Form</button>
-			<div id="entity-input-form" class="form">
+		<div id="entity-input-form" class="form">
 				<table style="layout: fixed">
+				<tr>
+				<td colspan="2">
+					<h3>${title } Form</h3>
+				</td>
+				</tr>
 					<c:forEach var="element" items="${entityProperty.elements}">
 						<tr valign="top">
 							<td><label>${element.lableName }</label></td>
@@ -97,7 +97,12 @@
 				</table>
 
 			</div>
-
+		
+		<div class="content">
+			<h2>${entityProperty.entityName}-Management</h2>
+			<p></p>
+			<button id="btn-show-form" onclick="show('entity-input-form')" >Show Form</button>
+			
 			<ul class="pagination" id="navigation-panel"></ul>
 			<div style="overflow: scroll; width: 100%; border: solid 1px">
 				<table class="table" id="list-table" style="layout: fixed">

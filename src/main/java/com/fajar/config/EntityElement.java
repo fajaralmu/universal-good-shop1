@@ -24,6 +24,7 @@ public class EntityElement implements Serializable{
 	private static final long serialVersionUID = -6768302238247458766L;
 	private String id; 
 	private String type;
+	private String className;
 	private boolean identity;
 	private boolean required;
 	private String lableName;
