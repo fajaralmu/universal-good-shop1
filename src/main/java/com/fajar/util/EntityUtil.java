@@ -37,7 +37,7 @@ public class EntityUtil {
 				if (formField == null) {
 					continue;
 				}
-				
+
 				EntityElement entityElement = new EntityElement();
 				boolean isId = field.getAnnotation(Id.class) != null;
 				if (isId) {
@@ -84,16 +84,16 @@ public class EntityUtil {
 					entityElement.setEntityReferenceClass(referenceEntityClass.getSimpleName());
 				}
 
-				if(field.getType().equals(Date.class)) {
+				if (field.getType().equals(Date.class)) {
 					entityProperty.getDateElements().add(entityElement.getId());
 				}
 				entityElements.add(entityElement);
 			}
 			entityProperty.setDateElementsJson(JSONUtil.listToJson(entityProperty.getDateElements()));
 			entityProperty.setElements(entityElements);
-			
+
 			entityProperty.setFieldNames(JSONUtil.listToJson(fieldNames));
-			log.info("============ENTITY PROPERTY: {} ",entityProperty);
+			log.info("============ENTITY PROPERTY: {} ", entityProperty);
 			return entityProperty;
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -104,19 +104,25 @@ public class EntityUtil {
 	public static Field getDeclaredField(Class clazz, String fieldName) {
 		try {
 			Field field = clazz.getDeclaredField(fieldName);
-			if(field == null) {
-				if (clazz.getSuperclass() != null) {
-					return clazz.getSuperclass() .getDeclaredField(fieldName);
-				}
-				return null;
+			if (field == null) {
+
 			}
 			return field;
 		} catch (NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
 		}
+		if (clazz.getSuperclass() != null) {
+			try {
+				return clazz.getSuperclass().getDeclaredField(fieldName);
+			} catch (NoSuchFieldException | SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 		return null;
 	}
-	
+
 	public static List<Field> getDeclaredFields(Class clazz) {
 		Field[] baseField = clazz.getDeclaredFields();
 

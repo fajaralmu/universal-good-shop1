@@ -40,7 +40,10 @@ import com.fajar.repository.UserRepository;
 import com.fajar.repository.UserRoleRepository;
 import com.fajar.util.EntityUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class EntityService {
 
 	@Autowired
@@ -252,17 +255,50 @@ public class EntityService {
 		String tableName = getTableName(entityClass);
 		List<String> filters = new ArrayList<String>();
 		List<Field> fields = EntityUtil.getDeclaredFields(entityClass);
+		log.info("=======FILTER: {}",filter);
 		for (String key : filter.keySet()) {
-			Field field = getFieldByName(key, fields);
+			if(filter.get(key) == null)
+				continue;
 			String columnName = key;
+			//check if date
+			boolean dayFilter = key.endsWith("-day");
+			boolean monthFilter = key.endsWith("-month");
+			boolean yearFilter = key.endsWith("-year");
+			if(dayFilter || monthFilter || yearFilter) {
+				String fieldName = key;
+				String mode = "DAY";
+				String sqlItem = " $MODE(`$TABLE_NAME`.`$COLUMN_NAME`) = $VALUE ";
+				if(dayFilter) {
+					fieldName = key.replace("-day", "");
+					mode = "DAY";
+					
+				}else if(monthFilter) {
+					fieldName = key.replace("-month", "");
+					mode = "MONTH";
+				}else if(yearFilter) {
+					fieldName = key.replace("-year", "");
+					mode = "YEAR";
+				}
+				Field field = getFieldByName(fieldName, fields);
+				if (field == null)
+					continue;
+				columnName = getColumnName(field);
+				sqlItem  =sqlItem
+						.replace("$TABLE_NAME", tableName)
+						.replace("$MODE", mode)
+						.replace("$COLUMN_NAME", columnName)
+						.replace("$VALUE", filter.get(key).toString());
+				filters.add(sqlItem);
+				continue;
+			}
+			
+			
+			Field field = getFieldByName(key, fields);
+		
 			if (field == null)
 				continue;
-			if (field.getAnnotation(Column.class) != null) {
-				columnName = ((Column) field.getAnnotation(Column.class)).name();
-				if (columnName == null || columnName.equals("")) {
-					columnName = key;
-				}
-			}
+			columnName = getColumnName(field);
+		 
 			String sqlItem = " `" + tableName + "`.`" + columnName + "` ";
 			if (field.getAnnotation(JoinColumn.class) != null) {
 				Class fieldClass = field.getType();

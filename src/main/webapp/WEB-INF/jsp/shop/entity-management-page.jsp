@@ -259,12 +259,47 @@
 		function createNavigationButtons(){
 			navigationPanel.innerHTML = "";
 			var buttonCount = Math.ceil(totalData/limit);
+			let prevPage = this.page == 0 ? 0: this.page -1; 
+			//prev and first button
 			navigationPanel.append(createNavigationButton(0, "|<")); 
-			let prevPage = this.page == 0 ? 0: this.page -1;
-			let prevButton =createNavigationButton(prevPage, "<");
-			navigationPanel.append(prevButton); 
+			navigationPanel.append(createNavigationButton(prevPage, "<")); 
+			
+			/* DISPLAYED BUTTONS */
+			let displayed_buttons = new Array();
+			let min = this.page-2; 
+			let max = this.page+2;
+			for(let i=min;i<=max;i++){
+				displayed_buttons.push(i);
+			}
+			let firstSeparated = false;
+			let lastSeparated  = false;
+			
 			for (let i = 0; i < buttonCount; i++) {
 				let buttonValue = i*1+1;
+				let included = false;
+				for(let j=0;j<displayed_buttons.length;j++){
+					if(displayed_buttons[j] == i && !included){
+						included = true;
+					}
+				}
+				if(!lastSeparated && this.page < i-2 && (i*1+1) == (buttonCount-1)){
+					//console.log("btn id",btn.id,"MAX",max,"LAST",(jumlahTombol-1));
+					lastSeparated = true;
+					var lastSeparator = document.createElement("span");
+					lastSeparator.innerHTML = "...";
+					navigationPanel.appendChild(lastSeparator);
+					
+				}
+				if(!included && i!=0 && !firstSeparated ){
+					firstSeparated = true;
+					var firstSeparator = document.createElement("span");
+					firstSeparator.innerHTML = "...";
+					navigationPanel.appendChild(firstSeparator);
+						
+				}
+				if(!included && i!=0 && i!= (buttonCount-1) ){
+					continue;
+				}
 				if(i == page){
 					buttonValue = "<u>"+buttonValue+"</u>";
 				}
@@ -272,9 +307,9 @@
 				 navigationPanel.append(button);
 			}
 
-			let nextPage = this.page == buttonCount-1 ? this.page : this.page+1;
-			let nextButton =createNavigationButton(nextPage, ">");
-			navigationPanel.append(nextButton);
+			let nextPage = this.page == buttonCount-1 ? this.page : this.page+1; 
+			//next & last button
+			navigationPanel.append(createNavigationButton(nextPage, ">"));
 			navigationPanel.append(createNavigationButton( buttonCount-1, ">|")); 
 		}
 		
@@ -351,11 +386,35 @@
 				let cell =createCell(fieldName);
 				let input =createInputText("filter-"+fieldName,"filter-field");
 				input.setAttribute("field",fieldName);
+				
 				input.onkeyup = function(){
 					loadEntity();
 				}
 				cell.append(createBr());
-				cell.append(input);
+				let isDateField = false
+				if(isDate(fieldName)){
+					input.id = "filter-"+fieldName+"-day";
+					input.setAttribute("field",fieldName+"-day");
+					input.style.width="30%";
+					let inputMonth =createInputText("filter-"+fieldName+"-month","filter-field");
+					inputMonth.setAttribute("field",fieldName+"-month");
+					inputMonth.style.width="30%";
+					inputMonth.onkeyup = function(){
+						loadEntity();
+					}
+					let inputYear =createInputText("filter-"+fieldName+"-year","filter-field");
+					inputYear.setAttribute("field",fieldName+"-year");
+					inputYear.style.width="30%";
+					inputYear.onkeyup = function(){
+						loadEntity();
+					}
+					cell.append(input);
+					cell.append(inputMonth);
+					cell.append(inputYear);
+					isDateField= true;
+				}
+				if(!isDateField)
+					cell.append(input);
 				cell.append(createBr());
 				let ascButton = createButton("sort-asc-"+fieldName,"asc");
 				let descButton = createButton("sort-desc-"+fieldName,"desc");
