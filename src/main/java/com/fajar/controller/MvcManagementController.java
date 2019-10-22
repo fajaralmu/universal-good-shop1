@@ -110,6 +110,7 @@ public class MvcManagementController {
 		 EntityProperty entityProperty = EntityUtil.createEntityProperty("Transaction", null);
 		model.addAttribute("entityProperty", entityProperty);
 		model  =constructCommonModel(request, model, "Transaction");
+		model.addAttribute("editable",false);
 		return "BASE_PAGE";
 	}
 	
@@ -145,6 +146,7 @@ public class MvcManagementController {
 	private Model constructCommonModel(HttpServletRequest request, Model model, String title) {
 		model.addAttribute("contextPath",request.getContextPath());
 		model.addAttribute("title", "Management::"+title);
+		model.addAttribute("editable",true);
 		model.addAttribute("pageUrl", "shop/entity-management-page");
 		return model;
 	}

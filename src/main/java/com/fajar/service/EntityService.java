@@ -297,7 +297,8 @@ public class EntityService {
 		
 			if (field == null)
 				continue;
-			columnName = getColumnName(field);
+			if (field.getAnnotation( Column.class) != null)
+				columnName = getColumnName(field);
 		 
 			String sqlItem = " `" + tableName + "`.`" + columnName + "` ";
 			if (field.getAnnotation(JoinColumn.class) != null) {
