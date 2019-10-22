@@ -215,7 +215,7 @@
 				"product" : currentProduct,
 				"price" : priceField.value,
 				"count" : inputQuantityField.value,
-				//"expiryDate" : expiryDateField.value,
+				"expiryDate" : expiryDateField.value,
 				"flowReferenceId":stockIdField.value
 
 			};
@@ -245,8 +245,9 @@
 			currentProduct = entity.product;
 			priceField.value = entity.product.price;
 			inputQuantityField.value = entity.count;
-
-			expiryDateField.value = entity.expiryDate;
+			let expDate=new Date(entity.expiryDate);
+			
+			expiryDateField.value = toDateInput(expDate);
 			stockIdField.value = entity.id;
 
 			//get remaining

@@ -11,6 +11,7 @@
 	var page = 0;
 	var limit = 5;
 	var totalData = 0;
+	var dateElements = ${entityProperty.dateElementsJson};
 	var fieldNames = ${entityProperty.fieldNames};
 	var idField = "${entityProperty.idField}";
 	 
@@ -277,6 +278,16 @@
 			navigationPanel.append(createNavigationButton( buttonCount-1, ">|")); 
 		}
 		
+		function isDate(id){
+			for (var i = 0; i < dateElements.length; i++) {
+				var array_element = dateElements[i];
+				if(id == array_element){
+					return true;
+				}
+				
+			}
+			return false;
+		}
 	
 		
 		function populateTable(entities){
@@ -296,6 +307,9 @@
 						console.log("TYPE ",typeof(entityValue), fieldNames[j]);
 						let objectFieldName = window["itemField_"+fieldNames[j]];
 						entityValue = entityValue[objectFieldName];
+					}
+					if(isDate(fieldNames[j])){
+						entityValue = new Date(entityValue);
 					}
 					row.append(createCell(entityValue));
 				}

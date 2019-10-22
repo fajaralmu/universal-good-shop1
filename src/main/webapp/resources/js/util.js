@@ -58,3 +58,14 @@ function show(id){
 	document.getElementById(id).style.display = "block";
 }
 	 
+
+function toDateInput(date){
+	let dateStr  ="";
+	let yearStr=date.getFullYear();
+	let monthStr =( date.getMonth()+1) >=10?( date.getMonth()+1):"0"+( date.getMonth()+1);
+	let dayStr =( date.getDate()+1) >=10?( date.getDate()+1):"0"+( date.getDate()+1);
+	dateStr = yearStr+"-"+monthStr+"-"+dayStr;
+	
+	return dateStr;
+	
+};

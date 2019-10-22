@@ -1,6 +1,7 @@
 package com.fajar.config;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fajar.annotation.Dto;
@@ -24,6 +25,9 @@ public class EntityProperty implements Serializable{/**
 	private List<EntityElement> elements;
 	private String fieldNames;
 	private String idField;
-	
+	@Builder.Default
+	private List<String> dateElements = new ArrayList<String>();
+	private String dateElementsJson;
+ 	
 
 }

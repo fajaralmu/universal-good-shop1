@@ -2,6 +2,7 @@ package com.fajar.entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -50,6 +51,9 @@ public class Transaction extends BaseEntity implements Serializable {
 	@Column
 	@FormField
 	private String type;
+	@Column(name="transaction_date")
+	@FormField(type = "date")
+	private Date transactionDate;
 	@JoinColumn(name = "user_id")
 	@ManyToOne
 	@FormField (entityReferenceName="user",optionItemName="username",type="dynamiclist")

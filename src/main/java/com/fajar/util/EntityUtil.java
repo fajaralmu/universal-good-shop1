@@ -3,6 +3,7 @@ package com.fajar.util;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +37,7 @@ public class EntityUtil {
 				if (formField == null) {
 					continue;
 				}
-
+				
 				EntityElement entityElement = new EntityElement();
 				boolean isId = field.getAnnotation(Id.class) != null;
 				if (isId) {
@@ -83,9 +84,14 @@ public class EntityUtil {
 					entityElement.setEntityReferenceClass(referenceEntityClass.getSimpleName());
 				}
 
+				if(field.getType().equals(Date.class)) {
+					entityProperty.getDateElements().add(entityElement.getId());
+				}
 				entityElements.add(entityElement);
 			}
+			entityProperty.setDateElementsJson(JSONUtil.listToJson(entityProperty.getDateElements()));
 			entityProperty.setElements(entityElements);
+			
 			entityProperty.setFieldNames(JSONUtil.listToJson(fieldNames));
 			log.info("============ENTITY PROPERTY: {} ",entityProperty);
 			return entityProperty;
