@@ -12,11 +12,12 @@ public @interface FormField {
 	public String type() default "text";
 
 	public boolean required() default true;
-	 
 
 	public String lableName() default "";
 
 	public String optionItemName() default "";
 
 	public String entityReferenceName() default "";
+
+	public String defaultValue() default "";
 }

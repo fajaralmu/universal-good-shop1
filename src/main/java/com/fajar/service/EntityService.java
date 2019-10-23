@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
@@ -107,6 +108,24 @@ public class EntityService {
 
 	private ShopApiResponse saveMenu(Menu menu, boolean newRecord) {
 		menu = (Menu) copyNewElement(menu, newRecord);
+		String base64Image = menu.getIconUrl();
+		if (base64Image != null && !base64Image.equals("")  ) {
+			try {
+				String imageName = fileService.writeImage("MN",base64Image);
+				menu.setIconUrl(imageName);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				menu.setIconUrl(null);
+				e.printStackTrace();
+			}
+		}else {
+			if(!newRecord) {
+				Optional<Menu> dbMenu = menuRepository.findById(menu.getId());
+				if(dbMenu.isPresent()) {
+					menu.setIconUrl(dbMenu.get().getIconUrl());
+				}
+			}
+		}
 		Menu newMenu = menuRepository.save(menu);
 		return ShopApiResponse.builder().entity(newMenu).build();
 	}
@@ -132,15 +151,23 @@ public class EntityService {
 	private ShopApiResponse saveProduct(Product product, boolean newRecord) {
 
 		product = (Product) copyNewElement(product, newRecord);
+		
 		String base64Image = product.getImageUrl();
-		if(base64Image!=null && base64Image.equals("")==false) {
+		if (base64Image != null && !base64Image.equals("")  ) {
 			try {
-				String imageName = fileService.writeImage(base64Image);
+				String imageName = fileService.writeImage("PRD",base64Image);
 				product.setImageUrl(imageName);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				product.setImageUrl(null);
 				e.printStackTrace();
+			}
+		}else {
+			if(!newRecord) {
+				Optional<Product> dbProduct = productRepository.findById(product.getId());
+				if(dbProduct.isPresent()) {
+					product.setImageUrl(dbProduct.get().getImageUrl());
+				}
 			}
 		}
 		Product newProduct = productRepository.save(product);
@@ -212,11 +239,12 @@ public class EntityService {
 		List<BaseEntity> entities = repositoryCustom.filterAndSort(sql, entityClass);
 		Integer count = 0;
 		Object countResult = repositoryCustom.getSingleResult(sqlCount);
-		if(countResult != null) {
+		if (countResult != null) {
 			count = ((BigInteger) countResult).intValue();
 		}
-		return ShopApiResponse.builder().entities(entities).totalData(count).filter(filter).build();
+		return ShopApiResponse.builder().entities(EntityUtil.validateDefaultValue(entities)).totalData(count).filter(filter).build();
 	}
+
 
 	private static Field getFieldByName(String name, List<Field> fields) {
 		for (Field field : fields) {
@@ -270,27 +298,27 @@ public class EntityService {
 		String tableName = getTableName(entityClass);
 		List<String> filters = new ArrayList<String>();
 		List<Field> fields = EntityUtil.getDeclaredFields(entityClass);
-		log.info("=======FILTER: {}",filter);
+		log.info("=======FILTER: {}", filter);
 		for (String key : filter.keySet()) {
-			if(filter.get(key) == null)
+			if (filter.get(key) == null)
 				continue;
 			String columnName = key;
-			//check if date
+			// check if date
 			boolean dayFilter = key.endsWith("-day");
 			boolean monthFilter = key.endsWith("-month");
 			boolean yearFilter = key.endsWith("-year");
-			if(dayFilter || monthFilter || yearFilter) {
+			if (dayFilter || monthFilter || yearFilter) {
 				String fieldName = key;
 				String mode = "DAY";
 				String sqlItem = " $MODE(`$TABLE_NAME`.`$COLUMN_NAME`) = $VALUE ";
-				if(dayFilter) {
+				if (dayFilter) {
 					fieldName = key.replace("-day", "");
 					mode = "DAY";
-					
-				}else if(monthFilter) {
+
+				} else if (monthFilter) {
 					fieldName = key.replace("-month", "");
 					mode = "MONTH";
-				}else if(yearFilter) {
+				} else if (yearFilter) {
 					fieldName = key.replace("-year", "");
 					mode = "YEAR";
 				}
@@ -298,23 +326,19 @@ public class EntityService {
 				if (field == null)
 					continue;
 				columnName = getColumnName(field);
-				sqlItem  =sqlItem
-						.replace("$TABLE_NAME", tableName)
-						.replace("$MODE", mode)
-						.replace("$COLUMN_NAME", columnName)
-						.replace("$VALUE", filter.get(key).toString());
+				sqlItem = sqlItem.replace("$TABLE_NAME", tableName).replace("$MODE", mode)
+						.replace("$COLUMN_NAME", columnName).replace("$VALUE", filter.get(key).toString());
 				filters.add(sqlItem);
 				continue;
 			}
-			
-			
+
 			Field field = getFieldByName(key, fields);
-		
+
 			if (field == null)
 				continue;
-			if (field.getAnnotation( Column.class) != null)
+			if (field.getAnnotation(Column.class) != null)
 				columnName = getColumnName(field);
-		 
+
 			String sqlItem = " `" + tableName + "`.`" + columnName + "` ";
 			if (field.getAnnotation(JoinColumn.class) != null) {
 				Class fieldClass = field.getType();

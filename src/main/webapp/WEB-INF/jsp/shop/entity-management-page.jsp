@@ -74,27 +74,28 @@
 							</c:when>
 							<c:when test="${  element.type == 'textarea'}">
 								<textarea class="input-field" id="${element.id }"
-									type="${element.type }" required="${element.required }"
+									type="${element.type }" ${element.required?'required':'' }
 									identity="${element.identity }">
 								</textarea>
 							</c:when>
 							<c:when test="${ element.type=='img'}">
 								<input class="input-field"  
-									id="${element.id }" type="file" required="${element.required }"
+									id="${element.id }" type="file"  ${element.required?'required':'' }
 									identity="${element.identity }" />
-									<button id="${element.id }-file-btn" onclick="addImagesData('${element.id}')" >ok</button>
+									<button id="${element.id }-file-ok-btn" onclick="addImagesData('${element.id}')" >ok</button>
+									<button id="${element.id }-file-cancel-btn" onclick="cancelImagesData('${element.id}')" >cancel</button>
 								<div>
 									<img id="${element.id }-display" width="50" height="50" />
 								</div>
 							</c:when>
 							<c:when test="${ element.identity}">
 								<input class="input-field" disabled="disabled"
-									id="${element.id }" type="text" required="${element.required }"
+									id="${element.id }" type="text"  ${element.required?'required':'' }
 									identity="${element.identity }" />
 							</c:when>
 							<c:otherwise>
 								<input class="input-field" id="${element.id }"
-									type="${element.type }" required="${element.required }"
+									type="${element.type }"  ${element.required?'required':'' }
 									identity="${element.identity }" />
 							</c:otherwise>
 						</c:choose></td>
@@ -145,14 +146,21 @@
 	var orderType = null;
 	
 	function addImagesData(id){
+		let imageTag = document.getElementById(id+"-display");
 		toBase64(document.getElementById(id), function(result){
 			let imageData={
 				id : result
 			};
-			document.getElementById(id+"-display").src = result;
+			imageTag.src = result;
 			imagesData[id] = result;
 			console.log("Images Data",imagesData);
 		});
+	}
+	
+	function cancelImagesData(id){
+		document.getElementById(id).value = null;
+		let imageTag = document.getElementById(id+"-display"); 
+		imageTag.src =imageTag.getAttribute("originaldata");
 	}
 
 	function clearFilter() {
@@ -361,7 +369,7 @@
 				if (isDate(fieldNames[j])) {
 					entityValue = new Date(entityValue);
 				}else if (isImage(fieldNames[j])) {
-					entityValue = "<img width=\"30\" height=\"30\" src=\"${host}/${contextPath}/res/img/upload/"+ (entityValue) + "\" />";
+					entityValue = "<img width=\"30\" height=\"30\" src=\"${host}/${contextPath}/${imagePath}/"+ (entityValue) + "\" />";
 				}
 				row.append(createCell(entityValue));
 			}
@@ -492,7 +500,9 @@
 			}
 			if(isImageField){
 				let displayElement = document.getElementById(fieldNames[j]+"-display");
-				displayElement.src = "${host}/${contextPath}/res/img/upload/"+ entityValue;
+				let resourceUrl = "${host}/${contextPath}/${imagePath}/"+ entityValue;
+				displayElement.src = resourceUrl;
+				displayElement.setAttribute("originaldata",resourceUrl);
 			}else			
 			if (!isMultipleSelect)
 				elementField.value = entityValue;
@@ -514,6 +524,7 @@
 				element.value = "";
 			}
 		}
+		imagesData = [];
 	}
 
 	createTableHeader();

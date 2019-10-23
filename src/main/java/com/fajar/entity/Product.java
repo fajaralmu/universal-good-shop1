@@ -43,7 +43,7 @@ public class Product extends BaseEntity implements Serializable {
 	@FormField 
 	private String type;
 	@Column(name="image_url")
-	@FormField (type="img", required = false)
+	@FormField (type="img", required = false, defaultValue="Default.BMP")
 	private String imageUrl;
 	@JoinColumn(name = "unit_id")
 	@ManyToOne

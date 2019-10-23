@@ -1,20 +1,13 @@
 package com.fajar.util;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Date;
 import java.util.ArrayList;
-import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
-import javax.imageio.ImageIO;
 import javax.persistence.Id;
 
 import com.fajar.annotation.Dto;
@@ -24,11 +17,9 @@ import com.fajar.config.EntityProperty;
 import com.fajar.entity.BaseEntity;
 
 import lombok.extern.slf4j.Slf4j;
-import sun.misc.BASE64Decoder;
 
 @Slf4j
 public class EntityUtil {
-
 
 	public static EntityProperty createEntityProperty(String entityName, HashMap<String, Object> listObject) {
 		EntityProperty entityProperty = EntityProperty.builder().entityName(entityName.toLowerCase()).build();
@@ -129,7 +120,7 @@ public class EntityUtil {
 				return clazz.getSuperclass().getDeclaredField(fieldName);
 			} catch (NoSuchFieldException | SecurityException e) {
 				// TODO Auto-generated catch block
-				System.out.println("FAILED Getting FIELD: "+fieldName);
+				System.out.println("FAILED Getting FIELD: " + fieldName);
 				e.printStackTrace();
 			}
 		}
@@ -213,6 +204,29 @@ public class EntityUtil {
 			}
 		}
 		return targetObject;
+	}
+
+	public static List<BaseEntity> validateDefaultValue(List<BaseEntity> entities) {
+		for (BaseEntity baseEntity : entities) {
+			List<Field> fields = EntityUtil.getDeclaredFields(baseEntity.getClass());
+			for (Field field : fields) {
+				FormField formField = field.getAnnotation(FormField.class);
+				if (field.getType().equals(String.class) && formField != null
+						&& formField.defaultValue().equals("") == false) {
+					field.setAccessible(true);
+					try {
+						Object value = field.get(baseEntity);
+						if (value == null || value.toString().equals("")) {
+							field.set(baseEntity, formField.defaultValue());
+						}
+					} catch (IllegalArgumentException | IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return entities;
 	}
 
 }

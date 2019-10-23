@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,7 +21,9 @@ import com.fajar.entity.UserRole;
 import com.fajar.parameter.Routing;
 import com.fajar.service.EntityService;
 import com.fajar.service.UserSessionService;
+import com.fajar.service.WebAppConfiguration;
 import com.fajar.util.EntityUtil;
+import com.fajar.util.MVCUtil;
 
 /**
  * 
@@ -36,11 +39,20 @@ public class MvcManagementController {
 	private UserSessionService userService;
 	@Autowired
 	private EntityService entityService;
+	@Autowired
+	private WebAppConfiguration webAppConfiguration;
+	
+	private static String basePage;
 
 	public MvcManagementController() {
 		log.info("-----------------MvcManagementController------------------");
 	}
 
+	@PostConstruct
+	private void init() {
+		basePage =webAppConfiguration.getBasePage();
+	}
+	
 	@RequestMapping(value = { "/unit" })
 	public String unit(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -50,7 +62,7 @@ public class MvcManagementController {
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Unit", null);
 		model.addAttribute("entityProperty", entityProperty);
 		model  =constructCommonModel(request, model, "Unit");
-		return "BASE_PAGE";
+		return basePage;
 	}
 
 	@RequestMapping(value = { "/supplier" })
@@ -62,7 +74,7 @@ public class MvcManagementController {
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Supplier", null);
 		model.addAttribute("entityProperty", entityProperty);
 		model  =constructCommonModel(request, model, "Supplier");
-		return "BASE_PAGE";
+		return basePage;
 	}
 	
 	@RequestMapping(value = { "/customer" })
@@ -74,7 +86,7 @@ public class MvcManagementController {
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Customer", null);
 		model.addAttribute("entityProperty", entityProperty);
 		model  =constructCommonModel(request, model, "Customer");
-		return "BASE_PAGE";
+		return basePage;
 	}
 	
 	@RequestMapping(value = { "/product" })
@@ -86,7 +98,7 @@ public class MvcManagementController {
 		 EntityProperty entityProperty = EntityUtil.createEntityProperty("Product", null);
 		model.addAttribute("entityProperty", entityProperty);
 		model  =constructCommonModel(request, model, "Product");
-		return "BASE_PAGE";
+		return basePage;
 	}
 	
 	@RequestMapping(value = { "/category" })
@@ -98,7 +110,7 @@ public class MvcManagementController {
 		 EntityProperty entityProperty = EntityUtil.createEntityProperty("Category", null);
 		model.addAttribute("entityProperty", entityProperty);
 		model  =constructCommonModel(request, model, "Category");
-		return "BASE_PAGE";
+		return basePage;
 	}
 	
 	@RequestMapping(value = { "/transaction" })
@@ -111,7 +123,7 @@ public class MvcManagementController {
 		model.addAttribute("entityProperty", entityProperty);
 		model  =constructCommonModel(request, model, "Transaction");
 		model.addAttribute("editable",false);
-		return "BASE_PAGE";
+		return basePage;
 	}
 	
 	@RequestMapping(value = { "/user" })
@@ -127,7 +139,7 @@ public class MvcManagementController {
 		model.addAttribute("entityProperty", entityProperty);
 		log.info("============ENTITY PROPERTY: "+entityProperty);
 		model  =constructCommonModel(request, model, "User");
-		return "BASE_PAGE";
+		return basePage;
 	}
 	
 	@RequestMapping(value = { "/menu" })
@@ -140,18 +152,17 @@ public class MvcManagementController {
 		model.addAttribute("entityProperty", entityProperty);
 		log.info("============ENTITY PROPERTY: "+entityProperty);
 		model  =constructCommonModel(request, model, "Menu");
-		return "BASE_PAGE";
+		return basePage;
 	}
 	
 	private Model constructCommonModel(HttpServletRequest request, Model model, String title) {
 		model.addAttribute("contextPath",request.getContextPath());
-		StringBuffer url = request.getRequestURL();
-		String uri = request.getRequestURI();
-		String host = url.substring(0, url.indexOf(uri)); //result
-		System.out.println("================HOST: "+host);
+		String host = MVCUtil.getHost(request);
 		model.addAttribute("host", host);
+		model.addAttribute("imagePath","WebAsset/Shop1/Images");
 		model.addAttribute("title", "Management::"+title);
 		model.addAttribute("editable",true);
+		
 		model.addAttribute("pageUrl", "shop/entity-management-page");
 		return model;
 	}

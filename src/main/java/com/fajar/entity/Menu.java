@@ -21,9 +21,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Menu extends BaseEntity implements Serializable{/**
-	 * 
-	 */
+public class Menu extends BaseEntity implements Serializable {
+	/**
+	* 
+	*/
 	private static final long serialVersionUID = -6895624969478733293L;
 
 	@FormField
@@ -38,10 +39,8 @@ public class Menu extends BaseEntity implements Serializable{/**
 	@FormField
 	@Column
 	private String page;
-	@FormField
-	@Column(name="icon_url")
+	@FormField(type = "img", required = false, defaultValue = "DefaultIcon.BMP")
+	@Column(name = "icon_url")
 	private String iconUrl;
-	
-	
-	
+
 }

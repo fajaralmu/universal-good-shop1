@@ -2,6 +2,7 @@ package com.fajar.controller;
 
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,6 +17,8 @@ import com.fajar.parameter.Routing;
 import com.fajar.service.ComponentService;
 import com.fajar.service.TransactionService;
 import com.fajar.service.UserSessionService;
+import com.fajar.service.WebAppConfiguration;
+import com.fajar.util.MVCUtil;
 
 /**
  * 
@@ -33,9 +36,18 @@ public class MvcAdminController {
 	private TransactionService transactionService;
 	@Autowired
 	private ComponentService componentService;
+	@Autowired
+	private WebAppConfiguration webAppConfiguration;
+	
+	private static String basePage;
 	
 	public MvcAdminController() {
 		log.info("-----------------MvcAdminController------------------");
+	}
+	
+	@PostConstruct
+	private void init() {
+		this.basePage = webAppConfiguration.getBasePage();
 	}
 
 	@RequestMapping(value = { "/home" })
@@ -45,10 +57,12 @@ public class MvcAdminController {
 			response.sendRedirect(request.getContextPath()+"/account/login");
 		}
 		model.addAttribute("menus", componentService.getDashboardMenus(request));
+		model.addAttribute("host", MVCUtil.getHost(request));
+		model.addAttribute("imagePath","WebAsset/Shop1/Images");
 		model.addAttribute("contextPath",request.getContextPath());
 		model.addAttribute("title", "Shop::Dashboard");
 		model.addAttribute("pageUrl", "shop/home-page");
-		return "BASE_PAGE";
+		return basePage;
 	}
 	
 	@RequestMapping(value = { "/management" })
@@ -58,10 +72,12 @@ public class MvcAdminController {
 			response.sendRedirect(request.getContextPath()+"/account/login");
 		}
 		model.addAttribute("menus", componentService.getManagementMenus(request));
+		model.addAttribute("host", MVCUtil.getHost(request));
+		model.addAttribute("imagePath","WebAsset/Shop1/Images");
 		model.addAttribute("contextPath",request.getContextPath());
 		model.addAttribute("title", "Shop::Management");
 		model.addAttribute("pageUrl", "shop/management-page");
-		return "BASE_PAGE";
+		return basePage;
 	}
 	
 	@RequestMapping(value = { "/transaction" })
@@ -71,10 +87,12 @@ public class MvcAdminController {
 			response.sendRedirect(request.getContextPath()+"/account/login");
 		}
 		model.addAttribute("menus", componentService.getTransactionMenus(request));
+		model.addAttribute("host", MVCUtil.getHost(request));
+		model.addAttribute("imagePath","WebAsset/Shop1/Images");
 		model.addAttribute("contextPath",request.getContextPath());
 		model.addAttribute("title", "Shop::Transaction");
 		model.addAttribute("pageUrl", "shop/transaction-page");
-		return "BASE_PAGE";
+		return basePage;
 	}
 	
 	@RequestMapping(value = { "/transaction/in" })
@@ -86,7 +104,7 @@ public class MvcAdminController {
 		model.addAttribute("contextPath",request.getContextPath()); 
 		model.addAttribute("title", "Shop::Supply");
 		model.addAttribute("pageUrl", "shop/transaction-in-page");
-		return "BASE_PAGE";
+		return basePage;
 	}
 	
 	@RequestMapping(value = { "/transaction/out" })
@@ -99,7 +117,7 @@ public class MvcAdminController {
 		model.addAttribute("contextPath",request.getContextPath());
 		model.addAttribute("title", "Shop::Purchase");
 		model.addAttribute("pageUrl", "shop/transaction-out-page");
-		return "BASE_PAGE";
+		return basePage;
 	}
 	
 	 
