@@ -28,6 +28,9 @@ public class EntityProperty implements Serializable{/**
 	@Builder.Default
 	private List<String> dateElements = new ArrayList<String>();
 	private String dateElementsJson;
+	@Builder.Default
+	private List<String> imageElements = new ArrayList<String>();
+	private String imageElementsJson;
  	
 
 }

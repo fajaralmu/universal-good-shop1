@@ -38,7 +38,7 @@ public class RestEntityController {
 	public ShopApiResponse add(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("register {}", request);
-		ShopApiResponse response = entityService.addEntity(request, true);
+		ShopApiResponse response = entityService.addEntity(request,httpRequest, true);
 		return response;
 	}
 	
@@ -46,7 +46,7 @@ public class RestEntityController {
 	public ShopApiResponse update(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("register {}", request);
-		ShopApiResponse response = entityService.addEntity(request, false);
+		ShopApiResponse response = entityService.addEntity(request,httpRequest, false);
 		return response;
 	}
 	

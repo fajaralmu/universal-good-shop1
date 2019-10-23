@@ -22,8 +22,8 @@ public class BaseEntity {
 	
 	
 	@Column(name="created_date")
-	//@JsonIgnore
-	@FormField
+	@JsonIgnore
+//	@FormField
 	private Date createdDate;
 	@Column(name="modified_date")
 	@JsonIgnore

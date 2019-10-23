@@ -145,6 +145,11 @@ public class MvcManagementController {
 	
 	private Model constructCommonModel(HttpServletRequest request, Model model, String title) {
 		model.addAttribute("contextPath",request.getContextPath());
+		StringBuffer url = request.getRequestURL();
+		String uri = request.getRequestURI();
+		String host = url.substring(0, url.indexOf(uri)); //result
+		System.out.println("================HOST: "+host);
+		model.addAttribute("host", host);
 		model.addAttribute("title", "Management::"+title);
 		model.addAttribute("editable",true);
 		model.addAttribute("pageUrl", "shop/entity-management-page");

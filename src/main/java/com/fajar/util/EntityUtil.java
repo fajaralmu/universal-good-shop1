@@ -1,13 +1,20 @@
 package com.fajar.util;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
+import javax.imageio.ImageIO;
 import javax.persistence.Id;
 
 import com.fajar.annotation.Dto;
@@ -17,9 +24,11 @@ import com.fajar.config.EntityProperty;
 import com.fajar.entity.BaseEntity;
 
 import lombok.extern.slf4j.Slf4j;
+import sun.misc.BASE64Decoder;
 
 @Slf4j
 public class EntityUtil {
+
 
 	public static EntityProperty createEntityProperty(String entityName, HashMap<String, Object> listObject) {
 		EntityProperty entityProperty = EntityProperty.builder().entityName(entityName.toLowerCase()).build();
@@ -48,13 +57,15 @@ public class EntityUtil {
 					lableName = formField.lableName();
 				}
 				String fieldType = formField.type();
+				entityElement.setId(field.getName());
 				if (fieldType.equals("") || fieldType.equals("text")) {
 					if (isNumber(field)) {
 						fieldType = "number";
 					}
+				} else if (fieldType.equals("img")) {
+					entityProperty.getImageElements().add(entityElement.getId());
 				}
 
-				entityElement.setId(field.getName());
 				fieldNames.add(field.getName());
 				entityElement.setIdentity(isId);
 				entityElement.setLableName(lableName.toUpperCase());
@@ -90,6 +101,7 @@ public class EntityUtil {
 				entityElements.add(entityElement);
 			}
 			entityProperty.setDateElementsJson(JSONUtil.listToJson(entityProperty.getDateElements()));
+			entityProperty.setImageElementsJson(JSONUtil.listToJson(entityProperty.getImageElements()));
 			entityProperty.setElements(entityElements);
 
 			entityProperty.setFieldNames(JSONUtil.listToJson(fieldNames));
@@ -113,9 +125,11 @@ public class EntityUtil {
 		}
 		if (clazz.getSuperclass() != null) {
 			try {
+				System.out.println("TRY ACCESS SUPERCLASS");
 				return clazz.getSuperclass().getDeclaredField(fieldName);
 			} catch (NoSuchFieldException | SecurityException e) {
 				// TODO Auto-generated catch block
+				System.out.println("FAILED Getting FIELD: "+fieldName);
 				e.printStackTrace();
 			}
 		}
@@ -161,7 +175,7 @@ public class EntityUtil {
 				|| field.getType().equals(BigInteger.class);
 	}
 
-	public static void main(String[] ss) {
+	public static void maiXXn(String[] ss) {
 		EntityProperty properties = createEntityProperty("Product", null);
 		List<EntityElement> elements = properties.getElements();
 		for (EntityElement entityElement : elements) {
@@ -185,30 +199,17 @@ public class EntityUtil {
 				if (field.getAnnotation(Id.class) != null && !withId) {
 					continue;
 				}
+
+				Field currentField = getDeclaredField(targetClass, field.getName());
+				currentField.setAccessible(true);
+				field.setAccessible(true);
 				try {
-					Field currentField = targetClass.getDeclaredField(field.getName());
-					currentField.setAccessible(true);
-					field.setAccessible(true);
 					currentField.set(targetObject, field.get(source));
-				} catch (SecurityException | NoSuchFieldException | IllegalArgumentException
-						| IllegalAccessException e) {
+				} catch (IllegalArgumentException | IllegalAccessException e) {
 					// TODO Auto-generated catch block
-					if (e.getClass().equals(NoSuchFieldException.class) && field.getAnnotation(Id.class) != null) {
-						try {
-							Field currentField = targetClass.getSuperclass().getDeclaredField(field.getName());
-							currentField.setAccessible(true);
-							field.setAccessible(true);
-
-							currentField.set(targetObject, field.get(source));
-						} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
-								| SecurityException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-					}
-
 					e.printStackTrace();
 				}
+
 			}
 		}
 		return targetObject;

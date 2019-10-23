@@ -15,8 +15,24 @@ public class ComponentService {
 	@Autowired
 	private MenuRepository menuRepository;
 	
-	public List<Menu> getHomeMenus(HttpServletRequest request){
+	public List<Menu> getDashboardMenus(HttpServletRequest request){
 		List<Menu> menus =  menuRepository.findByPage("HOME");
+		for (Menu menu : menus) {
+			menu.setUrl(request.getContextPath()+menu.getUrl());
+		}
+		return menus;
+	}
+
+	public Object getManagementMenus(HttpServletRequest request) {
+		List<Menu> menus =  menuRepository.findByPage("MNGMNT");
+		for (Menu menu : menus) {
+			menu.setUrl(request.getContextPath()+menu.getUrl());
+		}
+		return menus;
+	}
+
+	public Object getTransactionMenus(HttpServletRequest request) {
+		List<Menu> menus =  menuRepository.findByPage("TRX");
 		for (Menu menu : menus) {
 			menu.setUrl(request.getContextPath()+menu.getUrl());
 		}

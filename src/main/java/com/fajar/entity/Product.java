@@ -42,6 +42,9 @@ public class Product extends BaseEntity implements Serializable {
 	@Column
 	@FormField 
 	private String type;
+	@Column(name="image_url")
+	@FormField (type="img", required = false)
+	private String imageUrl;
 	@JoinColumn(name = "unit_id")
 	@ManyToOne
 	@FormField (entityReferenceName="unit",optionItemName="name",type="dynamiclist")

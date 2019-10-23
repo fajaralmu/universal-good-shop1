@@ -11,9 +11,10 @@
 	var page = 0;
 	var limit = 5;
 	var totalData = 0;
-
+	var imgElements = ${ entityProperty.imageElementsJson };
 	var dateElements = ${ entityProperty.dateElementsJson };
 	var fieldNames = ${ entityProperty.fieldNames };
+	var imagesData = {};
 	var idField = "${entityProperty.idField}";
 </script> 
 	<div id="entity-input-form" class="form">
@@ -75,7 +76,16 @@
 								<textarea class="input-field" id="${element.id }"
 									type="${element.type }" required="${element.required }"
 									identity="${element.identity }">
-							</textarea>
+								</textarea>
+							</c:when>
+							<c:when test="${ element.type=='img'}">
+								<input class="input-field"  
+									id="${element.id }" type="file" required="${element.required }"
+									identity="${element.identity }" />
+									<button id="${element.id }-file-btn" onclick="addImagesData('${element.id}')" >ok</button>
+								<div>
+									<img id="${element.id }-display" width="50" height="50" />
+								</div>
 							</c:when>
 							<c:when test="${ element.identity}">
 								<input class="input-field" disabled="disabled"
@@ -133,6 +143,17 @@
 	var navigationPanel = document.getElementById("navigation-panel");
 	var orderBy = null;
 	var orderType = null;
+	
+	function addImagesData(id){
+		toBase64(document.getElementById(id), function(result){
+			let imageData={
+				id : result
+			};
+			document.getElementById(id+"-display").src = result;
+			imagesData[id] = result;
+			console.log("Images Data",imagesData);
+		});
+	}
 
 	function clearFilter() {
 		filterValue.innerHTML = "";
@@ -296,6 +317,18 @@
 		navigationPanel.append(createNavigationButton(buttonCount - 1, ">|"));
 	}
 
+	function isImage(id){
+		
+		for (var i = 0; i < imgElements.length; i++) {
+			var array_element = imgElements[i];
+			if (id == array_element) {
+				return true;
+			}
+
+		}
+		return false;
+	}
+	
 	function isDate(id) {
 		for (var i = 0; i < dateElements.length; i++) {
 			var array_element = dateElements[i];
@@ -327,6 +360,8 @@
 				}
 				if (isDate(fieldNames[j])) {
 					entityValue = new Date(entityValue);
+				}else if (isImage(fieldNames[j])) {
+					entityValue = "<img width=\"30\" height=\"30\" src=\"${host}/${contextPath}/res/img/upload/"+ (entityValue) + "\" />";
 				}
 				row.append(createCell(entityValue));
 			}
@@ -431,6 +466,7 @@
 			let entityValueAsObject = entityValue;
 			let elementField = document.getElementById(fieldNames[j]);
 			let isMultipleSelect = false;
+			let isImageField  = isImage(fieldNames[j]);
 			if (typeof (entityValue) == "object" && entityValue != null) {
 				isMultipleSelect = elementField.nodeName == "SELECT"
 						&& elementField.getAttribute("multiple") == "multiple";
@@ -454,6 +490,10 @@
 					inputField.value = entityValueAsObject[objectItemName];
 				}
 			}
+			if(isImageField){
+				let displayElement = document.getElementById(fieldNames[j]+"-display");
+				displayElement.src = "${host}/${contextPath}/res/img/upload/"+ entityValue;
+			}else			
 			if (!isMultipleSelect)
 				elementField.value = entityValue;
 		}
@@ -508,7 +548,9 @@
 				let idField = field.getAttribute("itemValueField");
 				entity[fieldId] = {};
 				entity[fieldId][idField] = field.value;
-			} else {
+			} else if(isImage(fieldId)){
+				entity[fieldId] = imagesData[fieldId];
+			}  else {
 				entity[fieldId] = field.value;
 			}
 		}

@@ -63,7 +63,7 @@
 
 			<div class="login-form">
 
-				<span style="font-size: 2em;">Silakan Login</span> <br> <label
+				<span style="font-size: 2em;">Please Login</span> <br> <label
 					for="useraname"> Username </label> <br> <input id="useraname"
 					class="form-control" type="text" /> <br /> <label for="password">
 					Kata sandi </label> <br>

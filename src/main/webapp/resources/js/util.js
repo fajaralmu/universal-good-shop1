@@ -69,3 +69,12 @@ function toDateInput(date){
 	return dateStr;
 	
 };
+
+function toBase64(file, callback){
+	const reader = new FileReader();
+    reader.readAsDataURL(file.files[0]);
+    reader.onload = () => callback(reader.result);
+    reader.onerror = error => {
+    	alert("Error Loading File");
+    }
+}

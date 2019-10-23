@@ -39,15 +39,41 @@ public class MvcAdminController {
 	}
 
 	@RequestMapping(value = { "/home" })
+	public String menuDashboard(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(request.getContextPath()+"/account/login");
+		}
+		model.addAttribute("menus", componentService.getDashboardMenus(request));
+		model.addAttribute("contextPath",request.getContextPath());
+		model.addAttribute("title", "Shop::Dashboard");
+		model.addAttribute("pageUrl", "shop/home-page");
+		return "BASE_PAGE";
+	}
+	
+	@RequestMapping(value = { "/management" })
+	public String menuManagement(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(request.getContextPath()+"/account/login");
+		}
+		model.addAttribute("menus", componentService.getManagementMenus(request));
+		model.addAttribute("contextPath",request.getContextPath());
+		model.addAttribute("title", "Shop::Management");
+		model.addAttribute("pageUrl", "shop/management-page");
+		return "BASE_PAGE";
+	}
+	
+	@RequestMapping(value = { "/transaction" })
 	public String index(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath()+"/account/login");
 		}
-		model.addAttribute("menus", componentService.getHomeMenus(request));
+		model.addAttribute("menus", componentService.getTransactionMenus(request));
 		model.addAttribute("contextPath",request.getContextPath());
-		model.addAttribute("title", "Shop::Dashboard");
-		model.addAttribute("pageUrl", "shop/home-page");
+		model.addAttribute("title", "Shop::Transaction");
+		model.addAttribute("pageUrl", "shop/transaction-page");
 		return "BASE_PAGE";
 	}
 	

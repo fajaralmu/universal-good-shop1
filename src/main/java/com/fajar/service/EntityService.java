@@ -1,5 +1,6 @@
 package com.fajar.service;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,8 +68,10 @@ public class EntityService {
 	private CategoryRepository categoryRepository;
 	@Autowired
 	private TransactionRepository transactionRepository;
+	@Autowired
+	private FileService fileService;
 
-	public ShopApiResponse addEntity(ShopApiRequest request, boolean newRecord) {
+	public ShopApiResponse addEntity(ShopApiRequest request, HttpServletRequest servletRequest, boolean newRecord) {
 
 		switch (request.getEntity().toLowerCase()) {
 		case "unit":
@@ -128,6 +132,17 @@ public class EntityService {
 	private ShopApiResponse saveProduct(Product product, boolean newRecord) {
 
 		product = (Product) copyNewElement(product, newRecord);
+		String base64Image = product.getImageUrl();
+		if(base64Image!=null && base64Image.equals("")==false) {
+			try {
+				String imageName = fileService.writeImage(base64Image);
+				product.setImageUrl(imageName);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				product.setImageUrl(null);
+				e.printStackTrace();
+			}
+		}
 		Product newProduct = productRepository.save(product);
 		return ShopApiResponse.builder().entity(newProduct).build();
 	}
