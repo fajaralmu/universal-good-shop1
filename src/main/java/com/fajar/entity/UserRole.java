@@ -18,7 +18,7 @@ public class UserRole extends BaseEntity  implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -725487831020131248L;
-	@Column
+	@Column(unique = true)
 	private String name;
 	@Column
 	private String access;

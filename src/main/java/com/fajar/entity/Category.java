@@ -25,7 +25,7 @@ public class Category extends BaseEntity implements Serializable{/**
 	 */
 	private static final long serialVersionUID = -1168912843978053906L; 
 	@FormField 
-	@Column
+	@Column(unique = true)
 	private String name;
 	@FormField ( type="textarea") 
 	@Column

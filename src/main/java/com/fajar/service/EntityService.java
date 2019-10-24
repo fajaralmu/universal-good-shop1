@@ -109,19 +109,19 @@ public class EntityService {
 	private ShopApiResponse saveMenu(Menu menu, boolean newRecord) {
 		menu = (Menu) copyNewElement(menu, newRecord);
 		String base64Image = menu.getIconUrl();
-		if (base64Image != null && !base64Image.equals("")  ) {
+		if (base64Image != null && !base64Image.equals("")) {
 			try {
-				String imageName = fileService.writeImage("MN",base64Image);
+				String imageName = fileService.writeImage("MN", base64Image);
 				menu.setIconUrl(imageName);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				menu.setIconUrl(null);
 				e.printStackTrace();
 			}
-		}else {
-			if(!newRecord) {
+		} else {
+			if (!newRecord) {
 				Optional<Menu> dbMenu = menuRepository.findById(menu.getId());
-				if(dbMenu.isPresent()) {
+				if (dbMenu.isPresent()) {
 					menu.setIconUrl(dbMenu.get().getIconUrl());
 				}
 			}
@@ -151,21 +151,54 @@ public class EntityService {
 	private ShopApiResponse saveProduct(Product product, boolean newRecord) {
 
 		product = (Product) copyNewElement(product, newRecord);
-		
-		String base64Image = product.getImageUrl();
-		if (base64Image != null && !base64Image.equals("")  ) {
-			try {
-				String imageName = fileService.writeImage("PRD",base64Image);
-				product.setImageUrl(imageName);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				product.setImageUrl(null);
-				e.printStackTrace();
+		String currentImageUrl;
+		if(!newRecord) {
+			Optional<Product> dbProduct = productRepository.findById(product.getId());
+			if (dbProduct.isPresent()) {
+				currentImageUrl=(dbProduct.get().getImageUrl());
 			}
-		}else {
-			if(!newRecord) {
+		}
+		String imageData = product.getImageUrl();
+		if (imageData != null && !imageData.equals("")) {
+			String[] base64Images = imageData.split("~");
+			if (base64Images != null && base64Images.length > 0) {
+				String[] imageUrls = new String[base64Images.length];
+				for (int i=0;i<  base64Images.length;i++) {
+					String base64Image  =base64Images[i];
+					if (base64Image == null || base64Image.equals(""))
+						continue;
+					try {
+						boolean updated = true;
+						String imageName=null;
+						if(base64Image.startsWith("{ORIGINAL>>")) {
+							String[] raw = base64Image.split("}");
+							if(raw.length > 1) {
+								base64Image = raw[1];
+							}
+							else {
+								imageName = raw[0].replace("{ORIGINAL>>", "");
+								updated = false;
+							}
+						}
+						if(updated) {
+							imageName = fileService.writeImage("PRD", base64Image);
+						} 
+						imageUrls[i]=(imageName);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						product.setImageUrl(null);
+						e.printStackTrace();
+					}
+				}
+				String imageUrl  = String.join("~", imageUrls);
+				product.setImageUrl(imageUrl);
+
+			}
+			
+		} else {
+			if (!newRecord) {
 				Optional<Product> dbProduct = productRepository.findById(product.getId());
-				if(dbProduct.isPresent()) {
+				if (dbProduct.isPresent()) {
 					product.setImageUrl(dbProduct.get().getImageUrl());
 				}
 			}
@@ -242,9 +275,9 @@ public class EntityService {
 		if (countResult != null) {
 			count = ((BigInteger) countResult).intValue();
 		}
-		return ShopApiResponse.builder().entities(EntityUtil.validateDefaultValue(entities)).totalData(count).filter(filter).build();
+		return ShopApiResponse.builder().entities(EntityUtil.validateDefaultValue(entities)).totalData(count)
+				.filter(filter).build();
 	}
-
 
 	private static Field getFieldByName(String name, List<Field> fields) {
 		for (Field field : fields) {
@@ -374,7 +407,11 @@ public class EntityService {
 		if (orderByField == null) {
 			return null;
 		}
-		String columnName = "id";
+		Field idField = EntityUtil.getIdField(entityClass);
+		if (idField == null) {
+			return null;
+		}
+		String columnName = idField.getName();
 		String tableName = getTableName(entityClass);
 		if (orderByField.getAnnotation(JoinColumn.class) != null) {
 			Class fieldClass = orderByField.getType();

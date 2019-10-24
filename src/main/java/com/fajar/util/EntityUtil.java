@@ -62,6 +62,7 @@ public class EntityUtil {
 				entityElement.setLableName(lableName.toUpperCase());
 				entityElement.setRequired(formField.required());
 				entityElement.setType(isId ? "hidden" : fieldType);
+				entityElement.setMultiple(formField.multiple());
 				entityElement.setClassName(field.getType().getCanonicalName());
 				if (!formField.entityReferenceName().equals("") && fieldType.equals("fixedlist")
 						&& listObject != null) {

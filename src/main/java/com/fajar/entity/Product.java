@@ -30,7 +30,7 @@ public class Product extends BaseEntity implements Serializable {
 	* 
 	*/
 	private static final long serialVersionUID = 3494963248002164943L;
-	@Column
+	@Column(unique = true)
 	@FormField 
 	private String name;
 	@Column
@@ -42,8 +42,8 @@ public class Product extends BaseEntity implements Serializable {
 	@Column
 	@FormField 
 	private String type;
-	@Column(name="image_url")
-	@FormField (type="img", required = false, defaultValue="Default.BMP")
+	@Column(name="image_url", unique = true)
+	@FormField (type="img", required = false,multiple = true, defaultValue="Default.BMP")
 	private String imageUrl;
 	@JoinColumn(name = "unit_id")
 	@ManyToOne

@@ -10,6 +10,8 @@ import java.lang.annotation.Target;
 public @interface FormField {
 
 	public String type() default "text";
+	
+	public boolean multiple() default false;
 
 	public boolean required() default true;
 

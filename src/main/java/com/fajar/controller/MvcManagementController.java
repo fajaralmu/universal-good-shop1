@@ -159,7 +159,7 @@ public class MvcManagementController {
 		model.addAttribute("contextPath",request.getContextPath());
 		String host = MVCUtil.getHost(request);
 		model.addAttribute("host", host);
-		model.addAttribute("imagePath","WebAsset/Shop1/Images");
+		model.addAttribute("imagePath",webAppConfiguration.getUploadedImagePath());
 		model.addAttribute("title", "Management::"+title);
 		model.addAttribute("editable",true);
 		

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.fajar.parameter.Routing;
 import com.fajar.service.ComponentService;
 import com.fajar.service.TransactionService;
 import com.fajar.service.UserSessionService;
@@ -39,7 +38,7 @@ public class MvcAdminController {
 	@Autowired
 	private WebAppConfiguration webAppConfiguration;
 	
-	private static String basePage;
+	private String basePage;
 	
 	public MvcAdminController() {
 		log.info("-----------------MvcAdminController------------------");
@@ -58,7 +57,7 @@ public class MvcAdminController {
 		}
 		model.addAttribute("menus", componentService.getDashboardMenus(request));
 		model.addAttribute("host", MVCUtil.getHost(request));
-		model.addAttribute("imagePath","WebAsset/Shop1/Images");
+		model.addAttribute("imagePath",webAppConfiguration.getUploadedImagePath());
 		model.addAttribute("contextPath",request.getContextPath());
 		model.addAttribute("title", "Shop::Dashboard");
 		model.addAttribute("pageUrl", "shop/home-page");
@@ -73,7 +72,7 @@ public class MvcAdminController {
 		}
 		model.addAttribute("menus", componentService.getManagementMenus(request));
 		model.addAttribute("host", MVCUtil.getHost(request));
-		model.addAttribute("imagePath","WebAsset/Shop1/Images");
+		model.addAttribute("imagePath",webAppConfiguration.getUploadedImagePath());
 		model.addAttribute("contextPath",request.getContextPath());
 		model.addAttribute("title", "Shop::Management");
 		model.addAttribute("pageUrl", "shop/management-page");
@@ -88,7 +87,7 @@ public class MvcAdminController {
 		}
 		model.addAttribute("menus", componentService.getTransactionMenus(request));
 		model.addAttribute("host", MVCUtil.getHost(request));
-		model.addAttribute("imagePath","WebAsset/Shop1/Images");
+		model.addAttribute("imagePath",webAppConfiguration.getUploadedImagePath());
 		model.addAttribute("contextPath",request.getContextPath());
 		model.addAttribute("title", "Shop::Transaction");
 		model.addAttribute("pageUrl", "shop/transaction-page");

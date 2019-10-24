@@ -1,20 +1,10 @@
 package com.fajar.dto;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.fajar.annotation.Dto;
-import com.fajar.dto.ShopApiRequest.ShopApiRequestBuilder;
-import com.fajar.entity.Customer;
-import com.fajar.entity.Product;
-import com.fajar.entity.Supplier;
-import com.fajar.entity.Unit;
-import com.fajar.entity.User;
-import com.fajar.parameter.EntityParameter;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -78,3 +78,32 @@ function toBase64(file, callback){
     	alert("Error Loading File");
     }
 }
+
+function createDiv(id, className){
+	let div = createElement("div", id, className); 
+	return div;
+}
+
+function createInput(id, className, type){
+	let div = createElement("input", id, className); 
+	div.type = type; 
+	return div;
+}
+
+function createElement(tag, id, className){
+	let div = document.createElement(tag);
+	if(className!=null)
+		div.className = className;
+	div.id  = id;
+	return div;
+}
+
+function createImgTag(id, className, w, h, src){
+	let img = createElement("img", id, className);
+	img.width = w;
+	img.height = h;
+	
+	img.src = src;
+	
+	return img;
+}

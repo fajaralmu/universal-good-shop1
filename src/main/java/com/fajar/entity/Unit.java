@@ -26,7 +26,7 @@ public class Unit extends BaseEntity implements Serializable{/**
 	private static final long serialVersionUID = -7685706013251246214L;
 
 	@FormField 
-	@Column
+	@Column(unique = true)
 	private String name;
 	@FormField ( type="textarea") 
 	@Column

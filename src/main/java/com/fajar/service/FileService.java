@@ -18,6 +18,8 @@ public class FileService {
 	
 	@Autowired
 	ServletContext servletContext;
+	@Autowired
+	private WebAppConfiguration webAppConfiguration;
 	
 	public static void main(String[] args) {
 		File file = new File("D:/Development/Files");
@@ -45,7 +47,8 @@ public class FileService {
 			String imageType = imageIdentity.replace("data:image/", "").replace(";base64", "");
 			String imageName = UUID.randomUUID().toString();
 			//String path = servletContext.getRealPath("/resources/img/upload");
-			String path  ="D:/Development/Files/Web/Shop1/Images";
+			//String path  ="D:/Development/Files/Web/Shop1/Images";
+			String path = webAppConfiguration.getUploadedImageRealPath();
 			
 			String imageFileName = code+"_"+imageName + "." + imageType;
 			File outputfile = new File(path +"/"+imageFileName);

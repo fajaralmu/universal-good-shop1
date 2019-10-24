@@ -28,7 +28,7 @@ public class Supplier extends BaseEntity implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 4095664637854922384L;
-	@Column
+	@Column(unique = true)
 	@FormField 
 	private String name;
 	@Column

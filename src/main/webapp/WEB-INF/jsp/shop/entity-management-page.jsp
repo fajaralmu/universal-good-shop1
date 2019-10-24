@@ -78,7 +78,7 @@
 									identity="${element.identity }">
 								</textarea>
 							</c:when>
-							<c:when test="${ element.type=='img'}">
+							<c:when test="${ element.type=='img' && element.multiple == false}">
 								<input class="input-field"  
 									id="${element.id }" type="file"  ${element.required?'required':'' }
 									identity="${element.identity }" />
@@ -87,6 +87,22 @@
 								<div>
 									<img id="${element.id }-display" width="50" height="50" />
 								</div>
+							</c:when>
+							<c:when test="${ element.type=='img' && element.multiple == true}">
+							<div id="${element.id }" name="input-list" class="input-field" >
+								<div id="${element.id }-0-input-item" class="${element.id }-input-item">
+									<input  class="input-file"
+										id="${element.id }-0" type="file"  ${element.required?'required':'' }
+										identity="${element.identity }" />
+										<button id="${element.id }-0-file-ok-btn" onclick="addImagesData('${element.id}-0')" >ok</button>
+										<button id="${element.id }-0-file-cancel-btn" onclick="cancelImagesData('${element.id}-0')" >cancel</button>
+										<button id="${element.id }-0-remove-list" onclick="removeImageList('${element.id }-0')">Remove</button>
+									<div>
+										<img id="${element.id }-0-display" width="50" height="50" />
+									</div>
+								</div>
+							</div>
+							<button id="${element.id }-add-list" onclick="addImageList('${element.id }')">Add</button>
 							</c:when>
 							<c:when test="${ element.identity}">
 								<input class="input-field" disabled="disabled"
@@ -500,9 +516,21 @@
 			}
 			if(isImageField){
 				let displayElement = document.getElementById(fieldNames[j]+"-display");
-				let resourceUrl = "${host}/${contextPath}/${imagePath}/"+ entityValue;
-				displayElement.src = resourceUrl;
-				displayElement.setAttribute("originaldata",resourceUrl);
+				let url = "${host}/${contextPath}/${imagePath}/";
+				if(displayElement == null && entityValue != null){
+					document.getElementById(fieldNames[j]).innerHTML = "";
+					let entityValues = entityValue.split("~");
+					console.log(fieldNames[j],"values",entityValues);
+					for (let i = 0; i < entityValues.length; i++) {
+						let array_element = entityValues[i];
+						doAddImageList(fieldNames[j], url+ array_element,array_element);
+					}
+				}else{
+					let resourceUrl = url+ entityValue;
+					displayElement.src = resourceUrl;
+					displayElement.setAttribute("originaldata",resourceUrl);
+					displayElement.setAttribute("originalvalue",entityValue);
+				}
 			}else			
 			if (!isMultipleSelect)
 				elementField.value = entityValue;
@@ -527,6 +555,61 @@
 		imagesData = [];
 	}
 
+	function addImageList(id){
+		doAddImageList(id, null,null);
+	}
+	
+	function doAddImageList(id, src,originalvalue){
+		let listParent = document.getElementById(id);//+"-input-list");
+		let itemList = document.getElementsByClassName(id+"-input-item");
+		let length = 0;
+		if(itemList != null)
+			length = itemList.length;
+		
+		let index = length;
+		if(index<0){
+			index = 0;
+		}
+		let idIdx = id+"-"+index;
+		let itemDiv  = createDiv(idIdx+"-input-item",id+"-input-item");
+		let input = createInput(idIdx, "input-file", "file");
+		let imgTag = createImgTag(idIdx+"-display",null, "50", "50", src);
+		if(src != null){
+			imgTag.setAttribute("originaldata",src);
+			imgTag.setAttribute("originalvalue",originalvalue);
+		}
+		let btnAddData = createButton(idIdx+"-file-ok-btn", "ok");
+		btnAddData.onclick = function(){
+			addImagesData(idIdx);
+		}
+		let btnCancelData = createButton(idIdx+"-file-cancel-btn", "cancel");
+		btnCancelData.onclick = function(){
+			cancelImagesData(idIdx);
+		}
+		let btnRemoveList = createButton(idIdx+"-remove-list", "remove");
+		btnRemoveList.onclick  = function(){
+			removeImageList(idIdx);
+		}
+		itemDiv.append(input);
+		itemDiv.append(btnAddData);
+		itemDiv.append(btnCancelData);
+		itemDiv.append(btnRemoveList);
+		let wrapperDiv  = createDiv(idIdx+"-wrapper-img", "wrapper");
+		wrapperDiv.append(imgTag);
+		itemDiv.append(wrapperDiv);
+		
+		listParent.append(itemDiv);
+	
+	}
+	
+	
+	function removeImageList(id){
+		if(!confirm("Are you sure want to remove this item?"))
+			return;
+		let element = document.getElementById(id);
+		element.parentNode.remove(element);
+	}
+	
 	createTableHeader();
 	loadEntity(page);
 	hide("entity-input-form");
@@ -560,7 +643,33 @@
 				entity[fieldId] = {};
 				entity[fieldId][idField] = field.value;
 			} else if(isImage(fieldId)){
-				entity[fieldId] = imagesData[fieldId];
+				if(field.getAttribute("name") == "input-list"){
+					let itemList = document.getElementsByClassName(fieldId+"-input-item");
+					console.log(fieldId, "item list length", itemList.length);
+					if(itemList == null || itemList.length == 0){
+						continue;
+					}
+					let length =itemList.length;
+					entity[fieldId] = "";  					
+					for (var j = 0;j <length; j++) {
+						let idIdx = fieldId+"-"+j;
+						let imgTag  = document.getElementById(idIdx+"-display");
+						let originalValue =imgTag.getAttribute("originalvalue");
+						if(originalValue!=null){
+							entity[fieldId] += "{ORIGINAL>>"+originalValue+"}";
+						}
+						
+						if(imagesData[fieldId+"-"+j] == null || imagesData[fieldId+"-"+j].trim() == "")
+						{
+							entity[fieldId] += "~";
+						}else{
+							entity[fieldId] += imagesData[idIdx] +"~";
+						}
+					}
+					
+				}else{
+					entity[fieldId] = imagesData[fieldId];
+				}
 			}  else {
 				entity[fieldId] = field.value;
 			}
