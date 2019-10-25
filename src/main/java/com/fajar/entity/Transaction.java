@@ -70,7 +70,7 @@ public class Transaction extends BaseEntity implements Serializable {
 	@Builder.Default
 	@Transient
 	@FormField(showDetail = true, lableName = "Product Flow", optionItemName = "code", detailFields = {
-			"transaction.code", "id", "expiryDate","product.name","count", "price",
+			"transaction.code", "id", "expiryDate","product.name","count", "price","totalPrice",
 	})
 	private Object productFlow = "See Detail";
 }

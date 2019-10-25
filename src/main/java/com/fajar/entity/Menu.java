@@ -33,6 +33,9 @@ public class Menu extends BaseEntity implements Serializable {
 	@FormField
 	@Column
 	private String name;
+	@FormField(type = "textarea")
+	@Column
+	private String description;
 	@FormField
 	@Column
 	private String url;

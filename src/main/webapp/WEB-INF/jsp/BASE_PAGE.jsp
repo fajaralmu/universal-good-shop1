@@ -14,12 +14,14 @@
 	type="image/x-icon">
 
 <link rel="stylesheet" type="text/css"
-	href=<c:url value="/res/css/shop.css?version=1"></c:url> />
-<link rel="stylesheet" type="text/css"
-	href=<c:url value="/res/css/bootstrap.css?version=1"></c:url> />
-<script src="<c:url value="/res/js/jquery-3.3.1.slim.min.js"></c:url >"></script>
-<script src="<c:url value="/res/js/bootstrap.bundle.js"></c:url >"></script>
-<script src="<c:url value="/res/js/bootstrap.js"></c:url >"></script>
+	href="<c:url value="/res/css/shop.css?version=1"></c:url>" />
+
+<link rel="stylesheet" href="<c:url value="/res/css/bootstrap.min.css" />" />
+<script src="<c:url value="/res/js/jquery-3.3.1.slim.min.js" />" ></script>
+<script src="<c:url value="/res/js/popper.min.js" />" ></script>
+<script src="<c:url value="/res/js/bootstrap.min.js"  />"></script>
+
+
 <script src="<c:url value="/res/js/ajax.js?v=1"></c:url >"></script>
 <script src="<c:url value="/res/js/util.js?v=1"></c:url >"></script>
 

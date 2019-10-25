@@ -66,7 +66,7 @@
 				</tr>
 			</table>
 			<div>
-				<button class="btn btn-submit"  id="btn-send" onclick="send()">Submit Transaction</button>
+				<button class="btn btn-primary"  id="btn-send" onclick="send()">Submit Transaction</button>
 			</div>
 			<table class="table">
 				<thead>
@@ -245,9 +245,9 @@
 			currentProduct = entity.product;
 			priceField.value = entity.product.price;
 			inputQuantityField.value = entity.count;
-			let expDate=new Date(entity.expiryDate);
+			//let expDate=new Date(entity.expiryDate);
 			
-			expiryDateField.value = toDateInput(expDate);
+			expiryDateField.value =entity.expiryDate; //toDateInput(expDate);
 			stockIdField.value = entity.id;
 
 			//get remaining

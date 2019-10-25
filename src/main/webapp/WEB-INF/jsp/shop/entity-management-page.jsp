@@ -11,151 +11,220 @@
 	var page = 0;
 	var limit = 5;
 	var totalData = 0;
-	var imgElements = ${ entityProperty.imageElementsJson };
-	var dateElements = ${ entityProperty.dateElementsJson };
-	var fieldNames = ${ entityProperty.fieldNames };
+	var imgElements = ${
+		entityProperty.imageElementsJson
+	};
+	var dateElements = ${
+		entityProperty.dateElementsJson
+	};
+	var fieldNames = ${
+		entityProperty.fieldNames
+	};
 	var imagesData = {};
 	var idField = "${entityProperty.idField}";
-</script> 
-	<div id="wrapper-table-detail"  class="box-shadow"
-		style=" display:none; background-color:white; padding:10px; position:fixed; height: 60%; width: 90%">
-		<button class="btn btn-ok" style="float: right;" id="btn-close-detail" onclick="hide('wrapper-table-detail'); show('entity-input-form')">[x]</button>
-		<h3 align="center" style="width:100%">Detail</h3>
-		<div style="width:90%; height:85%; margin:auto; overflow: scroll;">
-			<table class="table" id="table-detail" style="layout:fixed"> 
-			</table>
-		</div>
-		<p></p>
-		<p></p>
-	</div>
-	<div id="entity-input-form" class="form box-shadow">
-		<button style="float: right;" id="btn-close-form" onclick="hide('entity-input-form')"
-							class="btn btn-ok">[x]</button>
-		<h3 align="center" style="width:100%">${title }Form</h3>
-		<div style="overflow:scroll; margin:auto; width:90%; height: 80%;">
-		<table style="layout: fixed">
-				<tr>
-					<td colspan="2">
-						
-					</td>
-				</tr>
-				<c:forEach var="element" items="${entityProperty.elements}">
-					<tr valign="top">
-						<td><label>${element.lableName }</label></td>
-						<td><c:choose>
-								<c:when test="${  element.type == 'fixedlist'}">
-									<select class="input-field" id="${element.id }"
-										required="${element.required }" identity="${element.identity }"
-										itemValueField="${element.optionValueName}"
-										itemNameField="${element.optionItemName}">
-	
-									</select>
-									<script>
-										window["valueField_${element.id}"] = "${element.optionValueName}";
-										window["itemField_${element.id}"] = "${element.optionItemName}";
-										let options = ${element.jsonList	};
-										for (let i = 0; i < options.length; i++) {
-											let option = document
-													.createElement("option");
-											let optionItem = options[i];
-											option.value = optionItem["${element.optionValueName}"];
-											option.innerHTML = optionItem["${element.optionItemName}"];
-											document.getElementById(
-													"${element.id }")
-													.append(option);
-										}
-									</script>
-								</c:when>
-								<c:when test="${  element.type == 'dynamiclist'}">
-									<input onkeyup="loadList(this)" name="${element.id }"
-										id="input-${element.id }" type="text" />
-									<br />
-									<select style="width: 200px" class="input-field"
-										id="${element.id }" required="${element.required }"
-										multiple="multiple" identity="${element.identity }"
-										itemValueField="${element.optionValueName}"
-										itemNameField="${element.optionItemName}"
-										name=${element.entityReferenceClass}
+</script>
+
+<!-- DETAIL ELEMENT -->
+<div class="modal fade" id="modal-entity-detail" tabindex="-1"
+	role="dialog" aria-labelledby="Entity Detail Modal"
+	aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="title-detail-modal">Detail</h5>
+				<button type="button" class="close" data-dismiss="modal" onclick="$('#modal-entity-form').modal('show')"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" style="width: 90%; height: 400px; margin: auto; overflow: scroll;">
+				<table class="table" id="table-detail" style="layout: fixed">
+				</table>
+			</div>		
+		 <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="$('#modal-entity-form').modal('show')" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INPUT FORM -->
+<div class="modal fade" id="modal-entity-form" tabindex="-1"
+	role="dialog" aria-labelledby="Entity Form Modal"
+	aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalCenterTitle">${title }</h5>
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" style="height: 400px; overflow: scroll;">
+				
+				<div>
+					<table style="layout: fixed">
+						<tr>
+							<td colspan="2"></td>
+						</tr>
+						<c:forEach var="element" items="${entityProperty.elements}">
+							<tr valign="top">
+								<td><label>${element.lableName }</label></td>
+								<td><c:choose>
+										<c:when test="${  element.type == 'fixedlist'}">
+											<select class="input-field form-control" id="${element.id }"
+												required="${element.required }"
+												identity="${element.identity }"
+												itemValueField="${element.optionValueName}"
+												itemNameField="${element.optionItemName}">
+
+											</select>
+											<script>
+												window["valueField_${element.id}"] = "${element.optionValueName}";
+												window["itemField_${element.id}"] = "${element.optionItemName}";
+												let options = ${
+													element.jsonList
+												};
+												for (let i = 0; i < options.length; i++) {
+													let option = document
+															.createElement("option");
+													let optionItem = options[i];
+													option.value = optionItem["${element.optionValueName}"];
+													option.innerHTML = optionItem["${element.optionItemName}"];
+													document.getElementById(
+															"${element.id }")
+															.append(option);
+												}
+											</script>
+										</c:when>
+										<c:when test="${  element.type == 'dynamiclist'}">
+											<input onkeyup="loadList(this)" name="${element.id }"
+												id="input-${element.id }" class="form-control" type="text" />
+											<br />
+											<select style="width: 200px" class="input-field form-control"
+												id="${element.id }" required="${element.required }"
+												multiple="multiple" identity="${element.identity }"
+												itemValueField="${element.optionValueName}"
+												itemNameField="${element.optionItemName}"
+												name=${element.entityReferenceClass}
 											>
-	
-									</select>
-									<script>
-										window["valueField_${element.id}"] = "${element.optionValueName}";
-										window["itemField_${element.id}"] = "${element.optionItemName}";
-									</script>
-								</c:when>
-								<c:when test="${  element.type == 'textarea'}">
-									<textarea class="input-field" id="${element.id }"
-										type="${element.type }" ${element.required?'required':'' }
-										identity="${element.identity }">
+
+											</select>
+											<script>
+												window["valueField_${element.id}"] = "${element.optionValueName}";
+												window["itemField_${element.id}"] = "${element.optionItemName}";
+											</script>
+										</c:when>
+										<c:when test="${  element.type == 'textarea'}">
+											<textarea class="input-field form-control"
+												id="${element.id }" type="${element.type }"
+												${element.required?'required':'' }
+												identity="${element.identity }">
 									</textarea>
-								</c:when>
-								<c:when test="${  element.showDetail}">
-									<input detailfields="${element.detailFields}" showdetail = "true" class="input-field" id="${element.id }"
-										type="hidden" name="${element.optionItemName}"  disabled="disabled" />
-									<button id="btn-detail-${element.id }" onclick="showDetail('${element.id }','${element.optionItemName}' )">Detail</button>
-								</c:when>
-								<c:when test="${ element.type=='img' && element.multiple == false}">
-									<input class="input-field"  
-										id="${element.id }" type="file"  ${element.required?'required':'' }
-										identity="${element.identity }" />
-										<button id="${element.id }-file-ok-btn" onclick="addImagesData('${element.id}')" >ok</button>
-										<button id="${element.id }-file-cancel-btn" onclick="cancelImagesData('${element.id}')" >cancel</button>
-									<div>
-										<img id="${element.id }-display" width="50" height="50" />
-									</div>
-								</c:when>
-								<c:when test="${ element.type=='img' && element.multiple == true}">
-								<div id="${element.id }" name="input-list" class="input-field" >
-									<div id="${element.id }-0-input-item" class="${element.id }-input-item">
-										<input  class="input-file"
-											id="${element.id }-0" type="file"  ${element.required?'required':'' }
-											identity="${element.identity }" />
-											<button id="${element.id }-0-file-ok-btn" onclick="addImagesData('${element.id}-0')" >ok</button>
-											<button id="${element.id }-0-file-cancel-btn" onclick="cancelImagesData('${element.id}-0')" >cancel</button>
-											<button id="${element.id }-0-remove-list" onclick="removeImageList('${element.id }-0')">Remove</button>
-										<div>
-											<img id="${element.id }-0-display" width="50" height="50" />
-										</div>
-									</div>
-								</div>
-								<button id="${element.id }-add-list" onclick="addImageList('${element.id }')">Add</button>
-								</c:when>
-								<c:when test="${ element.identity}">
-									<input class="input-field" disabled="disabled"
-										id="${element.id }" type="text"  ${element.required?'required':'' }
-										identity="${element.identity }" />
-								</c:when>
-								<c:otherwise>
-									<input class="input-field" id="${element.id }"
-										type="${element.type }"  ${element.required?'required':'' }
-										identity="${element.identity }" />
-								</c:otherwise>
-							</c:choose></td>
-					</tr>
-				</c:forEach>
-				<tr>
-					<td><c:if test="${entityProperty.editable == true }">
-							<button id="btn-submit" onclick="submit()" class="btn btn-ok">Submit</button>
-						</c:if>
-					</td>
-					<td><c:if test="${entityProperty.editable == true }">
-							<button id="btn-clear" onclick="clear()" class="btn btn-ok">Clear</button>
-						</c:if>
-					</td>
-				</tr>
-			</table>
+										</c:when>
+										<c:when test="${  element.showDetail}">
+											<input detailfields="${element.detailFields}"
+												showdetail="true" class="input-field" id="${element.id }"
+												type="hidden" name="${element.optionItemName}"
+												disabled="disabled" />
+											<button id="btn-detail-${element.id }" class="btn btn-info"
+												onclick="showDetail('${element.id }','${element.optionItemName}' )">Detail</button>
+										</c:when>
+										<c:when
+											test="${ element.type=='img' && element.multiple == false}">
+											<input class="input-field form-control" id="${element.id }"
+												type="file" ${element.required?'required':'' }
+												identity="${element.identity }" />
+											<button id="${element.id }-file-ok-btn"
+												class="btn btn-primary btn-sm"
+												onclick="addImagesData('${element.id}')">ok</button>
+											<button id="${element.id }-file-cancel-btn"
+												class="btn btn-warning btn-sm"
+												onclick="cancelImagesData('${element.id}')">cancel</button>
+											<div>
+												<img id="${element.id }-display" width="50" height="50" />
+											</div>
+										</c:when>
+										<c:when
+											test="${ element.type=='img' && element.multiple == true}">
+											<div id="${element.id }" name="input-list"
+												class="input-field">
+												<div id="${element.id }-0-input-item"
+													class="${element.id }-input-item">
+													<input class="input-file" id="${element.id }-0" type="file"
+														${element.required?'required':'' }
+														identity="${element.identity }" />
+													<button id="${element.id }-0-file-ok-btn "
+														class="btn btn-primary btn-sm"
+														onclick="addImagesData('${element.id}-0')">ok</button>
+													<button id="${element.id }-0-file-cancel-btn"
+														class="btn btn-warning btn-sm"
+														onclick="cancelImagesData('${element.id}-0')">cancel</button>
+													<button id="${element.id }-0-remove-list"
+														class="btn btn-danger btn-sm"
+														onclick="removeImageList('${element.id }-0')">Remove</button>
+													<div>
+														<img id="${element.id }-0-display" width="50" height="50" />
+													</div>
+												</div>
+											</div>
+											<button id="${element.id }-add-list"
+												onclick="addImageList('${element.id }')">Add</button>
+										</c:when>
+										<c:when test="${ element.identity}">
+											<input class="input-field form-control" disabled="disabled"
+												id="${element.id }" type="text"
+												${element.required?'required':'' }
+												identity="${element.identity }" />
+										</c:when>
+										<c:otherwise>
+											<input class="input-field form-control" id="${element.id }"
+												type="${element.type }" ${element.required?'required':'' }
+												identity="${element.identity }" />
+										</c:otherwise>
+									</c:choose></td>
+							</tr>
+						</c:forEach>
+						 
+					</table>
+				</div>
+
+				<!-- </div> -->
+			</div>
+			<div class="modal-footer">
+				<c:if test="${entityProperty.editable == true }">
+					<button id="btn-submit" onclick="submit()"
+						class="btn btn-primary">Save Changes</button>
+					<button id="btn-clear" onclick="clear()"
+						class="btn btn-secondary">Clear</button>
+				</c:if>
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				
+			</div>
 		</div>
-		 
-	</div> 
+	</div>
+</div>
+
+<!-- CONTENT -->
 <div class="content">
 	<h2>${entityProperty.entityName}-Management</h2>
 	<p></p>
 	<c:if test="${entityProperty.editable == true }">
-		<button id="btn-show-form" onclick="show('entity-input-form')">Show
+		<button type="btn-show-form" class="btn btn-primary"
+			data-toggle="modal" data-target="#modal-entity-form">Show
 			Form</button>
+		<!-- <button id="btn-show-form" class="btn btn-info" onclick="show('modal-entity-form')">Show
+			Form</button> -->
 	</c:if>
-	<ul class="pagination" id="navigation-panel"></ul>
+	<p></p>
+	
+	<!-- PAGINATION -->
+	<nav>
+		<ul class="pagination" id="navigation-panel"></ul>
+	</nav>
+
+	<!-- DATA TABLE -->
 	<div style="overflow: scroll; width: 100%; border: solid 1px">
 		<table class="table" id="list-table" style="layout: fixed">
 			<thead id="entity-th">
@@ -179,23 +248,29 @@
 	var navigationPanel = document.getElementById("navigation-panel");
 	var orderBy = null;
 	var orderType = null;
-	
-	function addImagesData(id){
-		let imageTag = document.getElementById(id+"-display");
-		toBase64(document.getElementById(id), function(result){
-			let imageData={
+
+	/*
+		add single image
+	*/
+	function addImagesData(id) {
+		let imageTag = document.getElementById(id + "-display");
+		toBase64(document.getElementById(id), function(result) {
+			let imageData = {
 				id : result
 			};
 			imageTag.src = result;
 			imagesData[id] = result;
-			console.log("Images Data",imagesData);
+			console.log("Images Data", imagesData);
 		});
 	}
-	
-	function cancelImagesData(id){
+
+	/*
+		cancel single image
+	*/
+	function cancelImagesData(id) {
 		document.getElementById(id).value = null;
-		let imageTag = document.getElementById(id+"-display"); 
-		imageTag.src =imageTag.getAttribute("originaldata");
+		let imageTag = document.getElementById(id + "-display");
+		imageTag.src = imageTag.getAttribute("originaldata");
 	}
 
 	function clearFilter() {
@@ -347,10 +422,12 @@
 			if (!included && i != 0 && i != (buttonCount - 1)) {
 				continue;
 			}
-			if (i == page) {
-				buttonValue = "<u>" + buttonValue + "</u>";
-			}
+
 			let button = createNavigationButton(i, buttonValue);
+			if (i == page) {
+				button.className = button.className.replace("active", "");
+				button.className = button.className + " active ";
+			}
 			navigationPanel.append(button);
 		}
 
@@ -360,8 +437,10 @@
 		navigationPanel.append(createNavigationButton(buttonCount - 1, ">|"));
 	}
 
-	function isImage(id){
-		
+	
+	//is image field
+	function isImage(id) {
+
 		for (var i = 0; i < imgElements.length; i++) {
 			var array_element = imgElements[i];
 			if (id == array_element) {
@@ -371,7 +450,8 @@
 		}
 		return false;
 	}
-	
+
+	//is date field
 	function isDate(id) {
 		for (var i = 0; i < dateElements.length; i++) {
 			var array_element = dateElements[i];
@@ -383,6 +463,7 @@
 		return false;
 	}
 
+	//populate data table
 	function populateTable(entities) {
 		entityTBody.innerHTML = "";
 
@@ -400,16 +481,30 @@
 					console.log("TYPE ", typeof (entityValue), fieldNames[j]);
 					let objectFieldName = window["itemField_" + fieldNames[j]];
 					entityValue = entityValue[objectFieldName];
+				} else if (!isDate(fieldNames[j]) && !isImage(fieldNames[j])
+						&& typeof (entityValue) == "string"
+						&& entityValue != null) {
+					if (entityValue.length > 35) {
+						entityValue = entityValue.substring(0, 35) + "...";
+					}
 				}
+				
 				if (isDate(fieldNames[j])) {
 					entityValue = new Date(entityValue);
-				}else if (isImage(fieldNames[j])) {
-					entityValue = "<img width=\"30\" height=\"30\" src=\"${host}/${contextPath}/${imagePath}/"+ (entityValue) + "\" />";
+				} else if (isImage(fieldNames[j])) {
+					if (entityValue.split("~") != null) {
+						entityValue = entityValue.split("~")[0];
+					}
+					entityValue = "<img width=\"30\" height=\"30\" src=\"${host}/${contextPath}/${imagePath}/"
+							+ (entityValue) + "\" />";
 				}
 				row.append(createCell(entityValue));
 			}
 			let optionCell = createCell("");
+			
+			//button edit
 			let buttonEdit = createButton("edit_" + i, "Edit");
+			buttonEdit.className = "btn btn-warning"
 			buttonEdit.onclick = function() {
 				alert("will Edit: " + entity[idField]);
 				getById(entity[idField], function(entity) {
@@ -422,7 +517,10 @@
 					populateForm(entity);
 				});
 			}
+			
+			//button delete
 			let buttonDelete = createButton("delete_" + i, "Delete");
+			buttonDelete.className = "btn btn-danger";
 			buttonDelete.onclick = function() {
 				if (!confirm("will Delete: " + entity[idField])) {
 					return;
@@ -478,8 +576,12 @@
 			if (!isDateField)
 				cell.append(input);
 			cell.append(createBr());
+			
+			//sorting button
 			let ascButton = createButton("sort-asc-" + fieldName, "asc");
 			let descButton = createButton("sort-desc-" + fieldName, "desc");
+			ascButton.className = "btn btn-default btn-sm";
+			descButton.className = "btn btn-default btn-sm";
 			descButton.onclick = function() {
 				orderType = "desc";
 				orderBy = fieldName;
@@ -509,20 +611,19 @@
 			let entityValueAsObject = entityValue;
 			//element
 			let elementField = document.getElementById(fieldNames[j]);
-			
+
 			let enableDetail = elementField.getAttribute("showdetail") == "true";
-			let isMultipleSelect = false;
-			let isImageField  = isImage(fieldNames[j]);
+			let isMultipleSelect = elementField.nodeName == "SELECT"
+				&& elementField.getAttribute("multiple") == "multiple"
+			let isImageField = isImage(fieldNames[j]);
 			let isDateField = isDate(fieldNames[j]);
-			
+
 			if (typeof (entityValue) == "object" && entityValue != null) {
-				isMultipleSelect = elementField.nodeName == "SELECT"
-						&& elementField.getAttribute("multiple") == "multiple";
-				console.log("TYPE ", typeof (entityValue), fieldNames[j],
-						"multiple: ", isMultipleSelect);
+
+
 				let objectValueName = window["valueField_" + fieldNames[j]]
 				entityValue = entityValueAsObject[objectValueName];
-
+				
 				if (isMultipleSelect) {
 					let option = document.createElement("option");
 					objectValueName = elementField
@@ -536,38 +637,44 @@
 					let inputField = document.getElementById("input-"
 							+ fieldNames[j]);
 					inputField.value = entityValueAsObject[objectItemName];
+				}else{
+					elementField.value = entityValue;
 				}
-			}else	if(isImageField){
-				let displayElement = document.getElementById(fieldNames[j]+"-display");
+			} else if (isImageField) {
+				let displayElement = document.getElementById(fieldNames[j]
+						+ "-display");
 				let url = "${host}/${contextPath}/${imagePath}/";
-				if(displayElement == null && entityValue != null){
+				if (displayElement == null && entityValue != null) {
 					document.getElementById(fieldNames[j]).innerHTML = "";
 					let entityValues = entityValue.split("~");
-					console.log(fieldNames[j],"values",entityValues);
+					console.log(fieldNames[j], "values", entityValues);
 					for (let i = 0; i < entityValues.length; i++) {
 						let array_element = entityValues[i];
-						doAddImageList(fieldNames[j], url+ array_element,array_element);
+						doAddImageList(fieldNames[j], url + array_element,
+								array_element);
 					}
-				}else{
-					let resourceUrl = url+ entityValue;
+				} else {
+					let resourceUrl = url + entityValue;
 					displayElement.src = resourceUrl;
-					displayElement.setAttribute("originaldata",resourceUrl);
-					displayElement.setAttribute("originalvalue",entityValue);
+					displayElement.setAttribute("originaldata", resourceUrl);
+					displayElement.setAttribute("originalvalue", entityValue);
 				}
-			}else if (!isMultipleSelect){
-				if(isDateField){
-					let date=new Date(entityValue);
+			} else if (!isMultipleSelect) {
+				if (isDateField) {
+					let date = new Date(entityValue);
 					entityValue = toDateInput(date);
-				}else if(enableDetail){
+				} else if (enableDetail) {
 					entityValue = entity[elementField.getAttribute("name")];
-					elementField.setAttribute(elementField.getAttribute("name"), entityValue);
+					elementField.setAttribute(
+							elementField.getAttribute("name"), entityValue);
 				}
 				elementField.value = entityValue;
-				
+
 			}
-			
+
 		}
-		show("entity-input-form");
+		//show("modal-entity-form");
+		$('#modal-entity-form').modal('show');
 	}
 
 	function clear() {
@@ -587,204 +694,219 @@
 		imagesData = [];
 	}
 
-	function addImageList(id){
-		doAddImageList(id, null,null);
+	function addImageList(id) {
+		doAddImageList(id, null, null);
 	}
-	
-	function doAddImageList(id, src,originalvalue){
+
+	//add image to image list
+	function doAddImageList(id, src, originalvalue) {
 		let listParent = document.getElementById(id);//+"-input-list");
-		let itemList = document.getElementsByClassName(id+"-input-item");
+		let itemLists = document.getElementsByClassName(id + "-input-item");
 		let length = 0;
-		if(itemList != null)
-			length = itemList.length;
-		
+		if (itemLists != null)
+			length = itemLists.length;
+
 		let index = length;
-		if(index<0){
+		if (index < 0) {
 			index = 0;
 		}
-		let idIdx = id+"-"+index;
-		let itemDiv  = createDiv(idIdx+"-input-item",id+"-input-item");
+		let idIdx = id + "-" + index;
+		let itemDiv = createDiv(idIdx + "-input-item", id + "-input-item");
 		let input = createInput(idIdx, "input-file", "file");
-		let imgTag = createImgTag(idIdx+"-display",null, "50", "50", src);
-		if(src != null){
-			imgTag.setAttribute("originaldata",src);
-			imgTag.setAttribute("originalvalue",originalvalue);
+		let imgTag = createImgTag(idIdx + "-display", null, "50", "50", src);
+		if (src != null) {
+			//with full path
+			imgTag.setAttribute("originaldata", src);
+			//only value
+			imgTag.setAttribute("originalvalue", originalvalue);
 		}
-		let btnAddData = createButton(idIdx+"-file-ok-btn", "ok");
-		btnAddData.onclick = function(){
+		let btnAddData = createButton(idIdx + "-file-ok-btn", "ok");
+		btnAddData.className = "btn btn-primary btn-sm";
+		btnAddData.onclick = function() {
 			addImagesData(idIdx);
 		}
-		let btnCancelData = createButton(idIdx+"-file-cancel-btn", "cancel");
-		btnCancelData.onclick = function(){
+		let btnCancelData = createButton(idIdx + "-file-cancel-btn", "cancel");
+		btnCancelData.className = "btn btn-warning btn-sm";
+		btnCancelData.onclick = function() {
 			cancelImagesData(idIdx);
 		}
-		let btnRemoveList = createButton(idIdx+"-remove-list", "remove");
-		btnRemoveList.onclick  = function(){
+
+		let btnRemoveList = createButton(idIdx + "-remove-list", "remove");
+		btnRemoveList.className = "btn btn-danger btn-sm";
+		btnRemoveList.onclick = function() {
 			removeImageList(idIdx);
 		}
 		itemDiv.append(input);
 		itemDiv.append(btnAddData);
 		itemDiv.append(btnCancelData);
 		itemDiv.append(btnRemoveList);
-		let wrapperDiv  = createDiv(idIdx+"-wrapper-img", "wrapper");
+		let wrapperDiv = createDiv(idIdx + "-wrapper-img", "wrapper");
 		wrapperDiv.append(imgTag);
 		itemDiv.append(wrapperDiv);
-		
+
 		listParent.append(itemDiv);
-	
+
 	}
-	
-	
-	function removeImageList(id){
-		if(!confirm("Are you sure want to remove this item?"))
+
+	function removeImageList(id) {
+		if (!confirm("Are you sure want to remove this item?"))
 			return;
 		let element = document.getElementById(id);
 		element.parentNode.remove(element);
 	}
-	function showDetail(id, field){
-		var requestObject ={
-			    'entity': id,
-			    'filter': {
-			        'limit': 0,
-			        'orderBy': null,
-			        'contains': false,
-			        'exacts': true,
-			        'orderType': null,
-			        "fieldsFilter": { }
-			    }
-			};
-		requestObject.filter.fieldsFilter[entityName] = document.getElementById(id).getAttribute(field);
-		let detailFields = 	document.getElementById(id).getAttribute("detailfields").split("~");
-		console.log("request",requestObject);
+	function showDetail(id, field) {
+		var requestObject = {
+			'entity' : id,
+			'filter' : {
+				'limit' : 0,
+				'orderBy' : null,
+				'contains' : false,
+				'exacts' : true,
+				'orderType' : null,
+				"fieldsFilter" : {}
+			}
+		};
+		requestObject.filter.fieldsFilter[entityName] = document
+				.getElementById(id).getAttribute(field);
+		let detailFields = document.getElementById(id).getAttribute(
+				"detailfields").split("~");
+		console.log("request", requestObject);
 		detailTable.innerHTML = "";
-		
-		postReq("<spring:url value="/api/entity/get" />", requestObject,
+
+		postReq(
+				"<spring:url value="/api/entity/get" />",
+				requestObject,
 				function(xhr) {
 					var response = (xhr.data);
 					var entities = response.entities;
 					if (entities != null && entities[0] != null) {
 						let tableHeader = createTableHeaderByColumns(detailFields);
-						console.log("header",tableHeader);
+						console.log("header", tableHeader);
 						let bodyRows = createTableBody(detailFields, entities);
 						detailTable.append(tableHeader);
 						for (var i = 0; i < bodyRows.length; i++) {
 							var row = bodyRows[i];
 							detailTable.append(row);
 						}
-						hide("entity-input-form");
-						show('wrapper-table-detail');
+						$("#modal-entity-form").modal('hide');
+						$('#modal-entity-detail').modal('show');
 					} else {
 						alert("data not found");
 					}
 				});
 	}
-	
+
 	createTableHeader();
 	loadEntity(page);
-	hide("entity-input-form");
+	hide("modal-entity-form");
 </script>
 <c:if test="${entityProperty.editable == true }">
-<script type="text/javascript">
-	
-	function submit() {
-		if (!confirm("Are You Sure ?")) {
-			return;
-		}
-		var requestObject = {};
-		var entity = {};
-		var endPoint = "add";
-		var isNew = true;
-		for (var i = 0; i < fields.length; i++) {
-			var field = fields[i];
-			let fieldId = field.id;
-			console.log("FIELD ", field);
-			if (field.required && (field.value == "" || field.value == null)
-					&& field.getAttribute("identity") != "true") {
-				alert("Field " + field.id + " must be filled! ");
+	<script type="text/javascript">
+		function submit() {
+			if (!confirm("Are You Sure ?")) {
 				return;
 			}
-			if (field.getAttribute("identity") == "true" && field.value != ""
-					&& field.value != null) {
-				isNew = false;
-			}
-			if (field.nodeName == "SELECT") {
-				let idField = field.getAttribute("itemValueField");
-				entity[fieldId] = {};
-				entity[fieldId][idField] = field.value;
-			} else if(isImage(fieldId)){
-				if(field.getAttribute("name") == "input-list"){
-					let itemList = document.getElementsByClassName(fieldId+"-input-item");
-					console.log(fieldId, "item list length", itemList.length);
-					if(itemList == null || itemList.length == 0){
-						continue;
-					}
-					let length =itemList.length;
-					entity[fieldId] = "";  					
-					for (var j = 0;j <length; j++) {
-						let idIdx = fieldId+"-"+j;
-						let imgTag  = document.getElementById(idIdx+"-display");
-						let originalValue =imgTag.getAttribute("originalvalue");
-						if(originalValue!=null){
-							entity[fieldId] += "{ORIGINAL>>"+originalValue+"}";
-						}
-						
-						if(imagesData[fieldId+"-"+j] == null || imagesData[fieldId+"-"+j].trim() == "")
-						{
-							entity[fieldId] += "~";
-						}else{
-							entity[fieldId] += imagesData[idIdx] +"~";
-						}
-					}
-					
-				}else{
-					entity[fieldId] = imagesData[fieldId];
+			var requestObject = {};
+			var entity = {};
+			var endPoint = "add";
+			var isNew = true;
+			for (var i = 0; i < fields.length; i++) {
+				var field = fields[i];
+				let fieldId = field.id;
+				console.log("FIELD ", field);
+				if (field.required
+						&& (field.value == "" || field.value == null)
+						&& field.getAttribute("identity") != "true") {
+					alert("Field " + field.id + " must be filled! ");
+					return;
 				}
-			}  else {
-				entity[fieldId] = field.value;
-			}
-		}
-		if (!isNew) {
-			endPoint = "update";
-		}
-		requestObject[entityName] = entity;
-		requestObject.entity = entityName;
-		console.log("request object", requestObject);
-		postReq("<spring:url value="/api/entity/" />" + endPoint,
-				requestObject, function(xhr) {
-					var response = (xhr.data);
-					if (response != null && response.code == "00") {
-						alert("SUCCESS");
-						hide("entity-input-form");
-						loadEntity(page);
+				if (field.getAttribute("identity") == "true"
+						&& field.value != "" && field.value != null) {
+					isNew = false;
+				}
+				if (field.nodeName == "SELECT") {
+					let idField = field.getAttribute("itemValueField");
+					entity[fieldId] = {};
+					entity[fieldId][idField] = field.value;
+				} else if (isImage(fieldId)) {
+					if (field.getAttribute("name") == "input-list") {
+						let itemLists = document.getElementsByClassName(fieldId
+								+ "-input-item");
+						console.log(fieldId, "item list length",
+								itemLists.length);
+						if (itemLists == null || itemLists.length == 0) {
+							continue;
+						}
+						let length = itemLists.length;
+						entity[fieldId] = "";
+						for (var j = 0; j < length; j++) {
+							let idIdx = fieldId + "-" + j;
+							let imgTag = document.getElementById(idIdx
+									+ "-display");
+							let originalValue = imgTag
+									.getAttribute("originalvalue");
+							if (originalValue != null) {
+								entity[fieldId] += "{ORIGINAL>>"
+										+ originalValue + "}";
+							}
+
+							if (imagesData[fieldId + "-" + j] == null
+									|| imagesData[fieldId + "-" + j].trim() == "") {
+								entity[fieldId] += "~";
+							} else {
+								entity[fieldId] += imagesData[idIdx] + "~";
+							}
+						}
+
 					} else {
-						alert("FAILS");
+						entity[fieldId] = imagesData[fieldId];
 					}
-					clear();
-				});
-	};
-
-	function deleteEntity(entityId) {
-		console.log("Delete: ", entityId);
-		var requestObject = {
-			"entity" : entityName,
-			"filter" : {
-
+				} else {
+					entity[fieldId] = field.value;
+				}
 			}
+			if (!isNew) {
+				endPoint = "update";
+			}
+			requestObject[entityName] = entity;
+			requestObject.entity = entityName;
+			console.log("request object", requestObject);
+			postReq("<spring:url value="/api/entity/" />" + endPoint,
+					requestObject, function(xhr) {
+						var response = (xhr.data);
+						if (response != null && response.code == "00") {
+							alert("SUCCESS");
+							$("#modal-entity-form").modal('hide');
+							loadEntity(page);
+						} else {
+							alert("FAILS");
+						}
+						clear();
+					});
 		};
-		requestObject.filter.fieldsFilter = {};
-		requestObject.filter.fieldsFilter[idField] = entityId;
 
-		postReq("<spring:url value="/api/entity/delete" />", requestObject,
-				function(xhr) {
-					var response = (xhr.data);
-					var code = response.code;
-					if (code == "00") {
-						alert("success deleted");
-						loadEntity(page);
-					} else {
-						alert("error deleting");
-					}
-				});
-	}
-</script> 
+		function deleteEntity(entityId) {
+			console.log("Delete: ", entityId);
+			var requestObject = {
+				"entity" : entityName,
+				"filter" : {
+
+				}
+			};
+			requestObject.filter.fieldsFilter = {};
+			requestObject.filter.fieldsFilter[idField] = entityId;
+
+			postReq("<spring:url value="/api/entity/delete" />", requestObject,
+					function(xhr) {
+						var response = (xhr.data);
+						var code = response.code;
+						if (code == "00") {
+							alert("success deleted");
+							loadEntity(page);
+						} else {
+							alert("error deleting");
+						}
+					});
+		}
+	</script>
 </c:if>

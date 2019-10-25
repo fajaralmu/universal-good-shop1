@@ -26,6 +26,7 @@ public class MvcCommonController {
 		model.addAttribute("contextPath",request.getContextPath());
 		model.addAttribute("title", "Shop Application");
 		model.addAttribute("pageUrl", "index");
+		model.addAttribute("page", "main");
 		return "BASE_PAGE";
 
 	}

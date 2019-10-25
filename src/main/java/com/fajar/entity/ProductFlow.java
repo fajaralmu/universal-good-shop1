@@ -12,7 +12,9 @@ import javax.persistence.Transient;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+//@NoArgsConstructor
 public class ProductFlow extends BaseEntity implements Serializable{
 
 	 
@@ -39,6 +41,7 @@ public class ProductFlow extends BaseEntity implements Serializable{
 	private Transaction transaction;
 	@Column(name="expiry_date")
 	@FormField (type="date")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date expiryDate;
 	@Column
 	@FormField 
@@ -57,9 +60,13 @@ public class ProductFlow extends BaseEntity implements Serializable{
 	private Long transactionId;
 	@Transient
 	private ProductFlowStock productFlowStock;
+	@FormField(multiply = {"count","price"})
+	@Transient
+	private Long totalPrice;
 	
-	 
 	
-	
+	public ProductFlow() {
+		//System.out.println("---------------CALL THIS:"+this);
+	}
 	
 }

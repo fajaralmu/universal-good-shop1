@@ -23,6 +23,7 @@ function postReq(url, requestObject, callback) {
 }
 
 function loadEntityList(url, requestObject, callback) {
+	
 	postReq(url, requestObject,
 			function(xhr) {
 				var response = (xhr.data);
@@ -33,5 +34,6 @@ function loadEntityList(url, requestObject, callback) {
 				} else {
 					alert("data not found");
 				}
+				
 			});
 }

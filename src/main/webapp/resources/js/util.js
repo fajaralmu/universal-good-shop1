@@ -20,12 +20,13 @@ function createAnchor(id, html, url){
 }
 
 function createNavigationButton(id, html){
-	var btn= createButton(id,html);
-	btn.className = "btn btn-default";
+	var btn= createAnchor(id,html, "#");
+	btn.className = "page-link";
 	btn.onclick = function(){
 		 loadEntity(id);
 	}
 	var li = document.createElement("li");
+	li.className = "page-item";
 	li.append(btn);
 	return li;
 }

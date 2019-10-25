@@ -9,18 +9,20 @@
 
 	<h2>Universal Shop</h2>
 	<div>
-		<ul id="menu-1">
-
-			<li><a href="<spring:url value="/index"/>"
-				class="btn btn-default btn-lg" role="button"> Main Page </a></li>
-			<li><a href="<spring:url value="/admin/home"/>"
-				class="btn btn-default btn-lg" role="button"> Dashboard </a></li>
-			<li><a href="<spring:url value="/admin/management"/>"
-				class="btn btn-default btn-lg" role="button"> Management </a></li>
-			<li><a href="<spring:url value="/admin/transaction"/>"
-				class="btn btn-default btn-lg" role="button"> Transaction </a></li>
+		<ul class="nav nav-tabs">
+			<li class="nav-item"><a
+				class="nav-link ${page == 'main' ? 'active':'' }"
+				href="<spring:url value="/index"/>">Main Page</a></li>
+			<li class="nav-item"><a
+				class="nav-link ${page == 'dashboard' ? 'active':'' }"
+				href="<spring:url value="/admin/home"/>">Dashboard</a></li>
+			<li class="nav-item"><a
+				class="nav-link ${page == 'management' ? 'active':'' }"
+				href="<spring:url value="/admin/management"/>">Management</a></li>
+			<li class="nav-item"><a
+				class="nav-link ${page == 'transaction' ? 'active':'' }"
+				href="<spring:url value="/admin/transaction"/>">Transaction</a></li>
 		</ul>
-
 	</div>
 </div>
 <script type="text/javascript">

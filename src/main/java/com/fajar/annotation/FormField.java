@@ -26,4 +26,6 @@ public @interface FormField {
 	public String defaultValue() default "";
 
 	public String[] detailFields() default {};
+
+	public String[] multiply() default {};
 }

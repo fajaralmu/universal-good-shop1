@@ -27,8 +27,8 @@ body {
 	width: 100%;
 	height: 100px;
 	margin:0;
-	padding:0;
-	border: solid 1px;
+	padding:0;/* 
+	border: solid 1px; */
 }
 
 .footer {
@@ -62,20 +62,21 @@ body {
 
 /**CRUD**/
 #entity-input-form {
-	margin:auto;
+	/* margin:auto;
 	height:70%;
 	width:60%;
 	position:fixed;
 	background-color: white;
 	
 	text-align: left;
-	padding:20px;
+	padding:20px; */
 	 
 }
 
 .box-shadow{
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0
 		rgba(0, 0, 0, 0.19);
+	z-index: 2;
 }
 
 .entity-record:hover{

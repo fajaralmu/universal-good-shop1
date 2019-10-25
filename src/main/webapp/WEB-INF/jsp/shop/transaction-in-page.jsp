@@ -31,7 +31,7 @@
 						<p>Expiry Date</p>
 						<input type="date" class="form-control" id="product-exp-date" />
 						<p></p>
-						<button class="btn btn-submit" id="add-product"
+						<button class="btn btn-primary" id="add-product"
 							onclick="addToChart()">Add</button>
 					</div>
 				</div>

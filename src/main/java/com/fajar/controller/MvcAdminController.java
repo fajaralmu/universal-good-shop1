@@ -61,6 +61,7 @@ public class MvcAdminController {
 		model.addAttribute("contextPath",request.getContextPath());
 		model.addAttribute("title", "Shop::Dashboard");
 		model.addAttribute("pageUrl", "shop/home-page");
+		model.addAttribute("page","dashboard");
 		return basePage;
 	}
 	
@@ -76,11 +77,12 @@ public class MvcAdminController {
 		model.addAttribute("contextPath",request.getContextPath());
 		model.addAttribute("title", "Shop::Management");
 		model.addAttribute("pageUrl", "shop/management-page");
+		model.addAttribute("page","management");
 		return basePage;
 	}
 	
 	@RequestMapping(value = { "/transaction" })
-	public String index(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String transaction(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath()+"/account/login");
@@ -91,6 +93,7 @@ public class MvcAdminController {
 		model.addAttribute("contextPath",request.getContextPath());
 		model.addAttribute("title", "Shop::Transaction");
 		model.addAttribute("pageUrl", "shop/transaction-page");
+		model.addAttribute("page","transaction");
 		return basePage;
 	}
 	
@@ -103,6 +106,7 @@ public class MvcAdminController {
 		model.addAttribute("contextPath",request.getContextPath()); 
 		model.addAttribute("title", "Shop::Supply");
 		model.addAttribute("pageUrl", "shop/transaction-in-page");
+		model.addAttribute("page","transaction");
 		return basePage;
 	}
 	
@@ -116,6 +120,7 @@ public class MvcAdminController {
 		model.addAttribute("contextPath",request.getContextPath());
 		model.addAttribute("title", "Shop::Purchase");
 		model.addAttribute("pageUrl", "shop/transaction-out-page");
+		model.addAttribute("page","transaction");
 		return basePage;
 	}
 	

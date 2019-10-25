@@ -61,7 +61,7 @@ public class MvcManagementController {
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Unit", null);
 		model.addAttribute("entityProperty", entityProperty);
-		model  =constructCommonModel(request, model, "Unit");
+		model  =constructCommonModel(request, model, "Unit", "management");
 		return basePage;
 	}
 
@@ -73,7 +73,7 @@ public class MvcManagementController {
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Supplier", null);
 		model.addAttribute("entityProperty", entityProperty);
-		model  =constructCommonModel(request, model, "Supplier");
+		model  =constructCommonModel(request, model, "Supplier", "management");
 		return basePage;
 	}
 	
@@ -85,7 +85,7 @@ public class MvcManagementController {
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Customer", null);
 		model.addAttribute("entityProperty", entityProperty);
-		model  =constructCommonModel(request, model, "Customer");
+		model  =constructCommonModel(request, model, "Customer", "management");
 		return basePage;
 	}
 	
@@ -97,7 +97,7 @@ public class MvcManagementController {
 		}
 		 EntityProperty entityProperty = EntityUtil.createEntityProperty("Product", null);
 		model.addAttribute("entityProperty", entityProperty);
-		model  =constructCommonModel(request, model, "Product");
+		model  =constructCommonModel(request, model, "Product", "management");
 		return basePage;
 	}
 	
@@ -109,7 +109,7 @@ public class MvcManagementController {
 		}
 		 EntityProperty entityProperty = EntityUtil.createEntityProperty("ProductFlow", null);
 		model.addAttribute("entityProperty", entityProperty);
-		model  =constructCommonModel(request, model, "productFlow");
+		model  =constructCommonModel(request, model, "productFlow", "management");
 		return basePage;
 	}
 	
@@ -121,7 +121,7 @@ public class MvcManagementController {
 		}
 		 EntityProperty entityProperty = EntityUtil.createEntityProperty("Category", null);
 		model.addAttribute("entityProperty", entityProperty);
-		model  =constructCommonModel(request, model, "Category");
+		model  =constructCommonModel(request, model, "Category", "management");
 		return basePage;
 	}
 	
@@ -135,7 +135,7 @@ public class MvcManagementController {
 		 entityProperty.setEditable(false);
 		 entityProperty.setWithDetail(true);
 		model.addAttribute("entityProperty", entityProperty);
-		model  =constructCommonModel(request, model, "Transaction"); 
+		model  =constructCommonModel(request, model, "Transaction", "transaction"); 
 		return basePage;
 	}
 	
@@ -151,7 +151,7 @@ public class MvcManagementController {
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("User", listObject);
 		model.addAttribute("entityProperty", entityProperty);
 		log.info("============ENTITY PROPERTY: "+entityProperty);
-		model  =constructCommonModel(request, model, "User");
+		model  =constructCommonModel(request, model, "User", "management");
 		return basePage;
 	}
 	
@@ -164,17 +164,18 @@ public class MvcManagementController {
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Menu", null);
 		model.addAttribute("entityProperty", entityProperty);
 		log.info("============ENTITY PROPERTY: "+entityProperty);
-		model  =constructCommonModel(request, model, "Menu");
+		model  =constructCommonModel(request, model, "Menu", "management");
 		return basePage;
 	}
 	
-	private Model constructCommonModel(HttpServletRequest request, Model model, String title) {
+	private Model constructCommonModel(HttpServletRequest request, Model model, String title, String page) {
 		model.addAttribute("contextPath",request.getContextPath());
 		String host = MVCUtil.getHost(request);
 		model.addAttribute("host", host);
 		model.addAttribute("imagePath",webAppConfiguration.getUploadedImagePath());
 		model.addAttribute("title", "Management::"+title);
 	  	model.addAttribute("pageUrl", "shop/entity-management-page");
+	  	model.addAttribute("page",page);
 		return model;
 	}
 

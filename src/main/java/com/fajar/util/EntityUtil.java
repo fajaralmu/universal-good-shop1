@@ -15,6 +15,8 @@ import com.fajar.annotation.FormField;
 import com.fajar.config.EntityElement;
 import com.fajar.config.EntityProperty;
 import com.fajar.entity.BaseEntity;
+import com.fajar.entity.ProductFlow;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,7 +40,7 @@ public class EntityUtil {
 				if (formField == null) {
 					continue;
 				}
-				
+
 				EntityElement entityElement = new EntityElement();
 				boolean isId = field.getAnnotation(Id.class) != null;
 				if (isId) {
@@ -66,16 +68,16 @@ public class EntityUtil {
 				entityElement.setMultiple(formField.multiple());
 				entityElement.setClassName(field.getType().getCanonicalName());
 				entityElement.setShowDetail(formField.showDetail());
-				if(formField.detailFields().length > 0) {
+				if (formField.detailFields().length > 0) {
 					entityElement.setDetailFields(String.join("~", formField.detailFields()));
 				}
-				if(formField.showDetail()) {
+				if (formField.showDetail()) {
 					entityElement.setOptionItemName(formField.optionItemName());
 				}
-				if(formField.showDetail()) {
+				if (formField.showDetail()) {
 					fieldToShowDetail = field.getName();
 				}
-				
+
 				if (!formField.entityReferenceName().equals("") && fieldType.equals("fixedlist")
 						&& listObject != null) {
 
@@ -99,7 +101,7 @@ public class EntityUtil {
 					entityElement.setEntityReferenceClass(referenceEntityClass.getSimpleName());
 				}
 
-				if (field.getType().equals(Date.class)) {
+				if (field.getType().equals(Date.class) && field.getAnnotation(JsonFormat.class) == null) {
 					entityProperty.getDateElements().add(entityElement.getId());
 				}
 				entityElements.add(entityElement);
@@ -219,25 +221,65 @@ public class EntityUtil {
 		return targetObject;
 	}
 
-	public static List<BaseEntity> validateDefaultValue(List<BaseEntity> entities) {
-		for (BaseEntity baseEntity : entities) {
-			List<Field> fields = EntityUtil.getDeclaredFields(baseEntity.getClass());
+	public static void main(String[] dd) {
+		ProductFlow pf = ProductFlow.builder().count(111).price(102L).build();
+		System.out.println(validateDefaultValue(pf));
+	}
+	
+	public static BaseEntity validateDefaultValue(BaseEntity baseEntity) {
+		List<Field> fields = EntityUtil.getDeclaredFields(baseEntity.getClass());
+		try {
 			for (Field field : fields) {
+				field.setAccessible(true);
 				FormField formField = field.getAnnotation(FormField.class);
 				if (field.getType().equals(String.class) && formField != null
 						&& formField.defaultValue().equals("") == false) {
-					field.setAccessible(true);
-					try {
-						Object value = field.get(baseEntity);
-						if (value == null || value.toString().equals("")) {
-							field.set(baseEntity, formField.defaultValue());
-						}
-					} catch (IllegalArgumentException | IllegalAccessException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					
+					Object value = field.get(baseEntity);
+					if (value == null || value.toString().equals("")) {
+						field.set(baseEntity, formField.defaultValue());
 					}
+
 				}
+				
+				if (formField != null && formField.multiply().length > 1) {
+					Object objectValue = field.get(baseEntity);
+					 if(objectValue !=null)
+						continue;
+					Object newValue = "1";
+					String[] multiplyFields = formField.multiply();
+					for (String multiplyFieldName : multiplyFields) {
+						Field multiplyField = getDeclaredField(baseEntity.getClass(), multiplyFieldName);
+						multiplyField.setAccessible(true);
+						Object multiplyFieldValue = multiplyField.get(baseEntity);
+						String strVal = "0";
+						if(multiplyFieldValue !=null) {
+							strVal = multiplyFieldValue.toString();
+						}
+						if(field.getType().equals(Long.class)) {
+							newValue= Long.parseLong(newValue.toString()) *Long.parseLong( strVal);
+						}else if(field.getType().equals(Integer.class)) {
+							newValue= Integer.parseInt(newValue.toString()) *Integer.parseInt( strVal);
+						}else if(field.getType().equals(Double.class)) {
+							newValue= Double.parseDouble(newValue.toString()) *Double.parseDouble( strVal);
+						}
+						
+						
+					}
+					field.set(baseEntity, newValue);
+				}
+
 			}
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return baseEntity;
+	}
+
+	public static List<BaseEntity> validateDefaultValue(List<BaseEntity> entities) {
+		for (BaseEntity baseEntity : entities) {
+			baseEntity = validateDefaultValue(baseEntity);
 		}
 		return entities;
 	}
