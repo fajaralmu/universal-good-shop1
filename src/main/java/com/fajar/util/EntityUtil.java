@@ -31,13 +31,14 @@ public class EntityUtil {
 			List<Field> fieldList = getDeclaredFields(clazz);
 			List<EntityElement> entityElements = new ArrayList<>();
 			List<String> fieldNames = new ArrayList<>();
+			String fieldToShowDetail = "";
 			for (Field field : fieldList) {
 
 				FormField formField = field.getAnnotation(FormField.class);
 				if (formField == null) {
 					continue;
 				}
-
+				
 				EntityElement entityElement = new EntityElement();
 				boolean isId = field.getAnnotation(Id.class) != null;
 				if (isId) {
@@ -64,6 +65,17 @@ public class EntityUtil {
 				entityElement.setType(isId ? "hidden" : fieldType);
 				entityElement.setMultiple(formField.multiple());
 				entityElement.setClassName(field.getType().getCanonicalName());
+				entityElement.setShowDetail(formField.showDetail());
+				if(formField.detailFields().length > 0) {
+					entityElement.setDetailFields(String.join("~", formField.detailFields()));
+				}
+				if(formField.showDetail()) {
+					entityElement.setOptionItemName(formField.optionItemName());
+				}
+				if(formField.showDetail()) {
+					fieldToShowDetail = field.getName();
+				}
+				
 				if (!formField.entityReferenceName().equals("") && fieldType.equals("fixedlist")
 						&& listObject != null) {
 
@@ -95,7 +107,7 @@ public class EntityUtil {
 			entityProperty.setDateElementsJson(JSONUtil.listToJson(entityProperty.getDateElements()));
 			entityProperty.setImageElementsJson(JSONUtil.listToJson(entityProperty.getImageElements()));
 			entityProperty.setElements(entityElements);
-
+			entityProperty.setDetailFieldName(fieldToShowDetail);
 			entityProperty.setFieldNames(JSONUtil.listToJson(fieldNames));
 			log.info("============ENTITY PROPERTY: {} ", entityProperty);
 			return entityProperty;

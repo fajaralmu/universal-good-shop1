@@ -11,6 +11,8 @@ public @interface FormField {
 
 	public String type() default "text";
 	
+	public boolean showDetail() default false;
+	
 	public boolean multiple() default false;
 
 	public boolean required() default true;
@@ -22,4 +24,6 @@ public @interface FormField {
 	public String entityReferenceName() default "";
 
 	public String defaultValue() default "";
+
+	public String[] detailFields() default {};
 }

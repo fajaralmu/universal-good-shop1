@@ -26,6 +26,7 @@ import com.fajar.entity.Category;
 import com.fajar.entity.Customer;
 import com.fajar.entity.Menu;
 import com.fajar.entity.Product;
+import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Supplier;
 import com.fajar.entity.Transaction;
 import com.fajar.entity.Unit;
@@ -151,13 +152,7 @@ public class EntityService {
 	private ShopApiResponse saveProduct(Product product, boolean newRecord) {
 
 		product = (Product) copyNewElement(product, newRecord);
-		String currentImageUrl;
-		if(!newRecord) {
-			Optional<Product> dbProduct = productRepository.findById(product.getId());
-			if (dbProduct.isPresent()) {
-				currentImageUrl=(dbProduct.get().getImageUrl());
-			}
-		}
+		
 		String imageData = product.getImageUrl();
 		if (imageData != null && !imageData.equals("")) {
 			String[] base64Images = imageData.split("~");
@@ -246,6 +241,10 @@ public class EntityService {
 			break;
 		case "transaction":
 			entityClass = Transaction.class;
+			break;
+		case "productflow":
+		case "productFlow":
+			entityClass = ProductFlow.class;
 			break;
 		}
 

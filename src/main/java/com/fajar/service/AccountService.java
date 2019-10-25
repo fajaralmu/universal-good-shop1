@@ -44,7 +44,8 @@ public class AccountService {
 	}
 
 	public ShopApiResponse login(ShopApiRequest request, HttpServletRequest httpRequest) {
-		 User dbUser = userRepository.findByUsernameAndPassword(request.getUser().getUsername(), request.getUser().getPassword());
+		User dbUser = userRepository.findByUsernameAndPassword(request.getUser().getUsername(), request.getUser().getPassword());
+		 
 		if(dbUser == null) {
 			return new ShopApiResponse("01","invalid credential");
 		}

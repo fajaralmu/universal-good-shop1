@@ -26,6 +26,7 @@ import com.fajar.repository.ProductRepository;
 import com.fajar.repository.RepositoryCustom;
 import com.fajar.repository.SupplierRepository;
 import com.fajar.repository.TransactionRepository;
+import com.fajar.util.StringUtil;
 
 @Service
 public class TransactionService {
@@ -76,7 +77,7 @@ public class TransactionService {
 			}
 		}
 		// transaction.set
-
+		transaction.setCode(StringUtil.generateRandomNumber(10));
 		transaction.setUser(user);
 		transaction.setType("IN");
 		transaction.setSupplier(supplier.get());
@@ -210,6 +211,7 @@ public class TransactionService {
 
 		}
 		Transaction transaction = new Transaction();
+		transaction.setCode(StringUtil.generateRandomNumber(10));
 		transaction.setUser(user);
 		transaction.setType("OUT");
 		transaction.setCustomer(dbCustomer.get());

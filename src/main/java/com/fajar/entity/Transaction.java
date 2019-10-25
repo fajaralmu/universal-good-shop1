@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
@@ -48,6 +49,9 @@ public class Transaction extends BaseEntity implements Serializable {
 	@ManyToOne
 	@FormField (entityReferenceName="supplier",optionItemName="name",type="dynamiclist")
 	private Supplier supplier;
+	@Column(unique = true)
+	@FormField
+	private String code;
 	@Column
 	@FormField
 	private String type;
@@ -63,4 +67,10 @@ public class Transaction extends BaseEntity implements Serializable {
 	@JsonIgnore
 	private List<ProductFlow> productFlows = new ArrayList<>();
 
+	@Builder.Default
+	@Transient
+	@FormField(showDetail = true, lableName = "Product Flow", optionItemName = "code", detailFields = {
+			"transaction.code", "id", "expiryDate","product.name","count", "price",
+	})
+	private Object productFlow = "See Detail";
 }

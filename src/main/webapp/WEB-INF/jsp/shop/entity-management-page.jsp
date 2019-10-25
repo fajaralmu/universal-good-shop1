@@ -17,123 +17,141 @@
 	var imagesData = {};
 	var idField = "${entityProperty.idField}";
 </script> 
-	<div id="entity-input-form" class="form">
+	<div id="wrapper-table-detail"  class="box-shadow"
+		style=" display:none; background-color:white; padding:10px; position:fixed; height: 60%; width: 90%">
+		<button class="btn btn-ok" style="float: right;" id="btn-close-detail" onclick="hide('wrapper-table-detail'); show('entity-input-form')">[x]</button>
+		<h3 align="center" style="width:100%">Detail</h3>
+		<div style="width:90%; height:85%; margin:auto; overflow: scroll;">
+			<table class="table" id="table-detail" style="layout:fixed"> 
+			</table>
+		</div>
+		<p></p>
+		<p></p>
+	</div>
+	<div id="entity-input-form" class="form box-shadow">
+		<button style="float: right;" id="btn-close-form" onclick="hide('entity-input-form')"
+							class="btn btn-ok">[x]</button>
+		<h3 align="center" style="width:100%">${title }Form</h3>
+		<div style="overflow:scroll; margin:auto; width:90%; height: 80%;">
 		<table style="layout: fixed">
-			<tr>
-				<td colspan="2">
-					<h3>${title }Form</h3>
-				</td>
-			</tr>
-			<c:forEach var="element" items="${entityProperty.elements}">
-				<tr valign="top">
-					<td><label>${element.lableName }</label></td>
-					<td><c:choose>
-							<c:when test="${  element.type == 'fixedlist'}">
-								<select class="input-field" id="${element.id }"
-									required="${element.required }" identity="${element.identity }"
-									itemValueField="${element.optionValueName}"
-									itemNameField="${element.optionItemName}">
-
-								</select>
-								<script>
-									window["valueField_${element.id}"] = "${element.optionValueName}";
-									window["itemField_${element.id}"] = "${element.optionItemName}";
-									let options = $
-									{
-										element.jsonList
-									};
-									for (let i = 0; i < options.length; i++) {
-										let option = document
-												.createElement("option");
-										let optionItem = options[i];
-										option.value = optionItem["${element.optionValueName}"];
-										option.innerHTML = optionItem["${element.optionItemName}"];
-										document.getElementById(
-												"${element.id }")
-												.append(option);
-									}
-								</script>
-							</c:when>
-							<c:when test="${  element.type == 'dynamiclist'}">
-								<input onkeyup="loadList(this)" name="${element.id }"
-									id="input-${element.id }" type="text" />
-								<br />
-								<select style="width: 200px" class="input-field"
-									id="${element.id }" required="${element.required }"
-									multiple="multiple" identity="${element.identity }"
-									itemValueField="${element.optionValueName}"
-									itemNameField="${element.optionItemName}"
-									name=${element.entityReferenceClass}
-										>
-
-								</select>
-								<script>
-									window["valueField_${element.id}"] = "${element.optionValueName}";
-									window["itemField_${element.id}"] = "${element.optionItemName}";
-								</script>
-							</c:when>
-							<c:when test="${  element.type == 'textarea'}">
-								<textarea class="input-field" id="${element.id }"
-									type="${element.type }" ${element.required?'required':'' }
-									identity="${element.identity }">
-								</textarea>
-							</c:when>
-							<c:when test="${ element.type=='img' && element.multiple == false}">
-								<input class="input-field"  
-									id="${element.id }" type="file"  ${element.required?'required':'' }
-									identity="${element.identity }" />
-									<button id="${element.id }-file-ok-btn" onclick="addImagesData('${element.id}')" >ok</button>
-									<button id="${element.id }-file-cancel-btn" onclick="cancelImagesData('${element.id}')" >cancel</button>
-								<div>
-									<img id="${element.id }-display" width="50" height="50" />
-								</div>
-							</c:when>
-							<c:when test="${ element.type=='img' && element.multiple == true}">
-							<div id="${element.id }" name="input-list" class="input-field" >
-								<div id="${element.id }-0-input-item" class="${element.id }-input-item">
-									<input  class="input-file"
-										id="${element.id }-0" type="file"  ${element.required?'required':'' }
+				<tr>
+					<td colspan="2">
+						
+					</td>
+				</tr>
+				<c:forEach var="element" items="${entityProperty.elements}">
+					<tr valign="top">
+						<td><label>${element.lableName }</label></td>
+						<td><c:choose>
+								<c:when test="${  element.type == 'fixedlist'}">
+									<select class="input-field" id="${element.id }"
+										required="${element.required }" identity="${element.identity }"
+										itemValueField="${element.optionValueName}"
+										itemNameField="${element.optionItemName}">
+	
+									</select>
+									<script>
+										window["valueField_${element.id}"] = "${element.optionValueName}";
+										window["itemField_${element.id}"] = "${element.optionItemName}";
+										let options = ${element.jsonList	};
+										for (let i = 0; i < options.length; i++) {
+											let option = document
+													.createElement("option");
+											let optionItem = options[i];
+											option.value = optionItem["${element.optionValueName}"];
+											option.innerHTML = optionItem["${element.optionItemName}"];
+											document.getElementById(
+													"${element.id }")
+													.append(option);
+										}
+									</script>
+								</c:when>
+								<c:when test="${  element.type == 'dynamiclist'}">
+									<input onkeyup="loadList(this)" name="${element.id }"
+										id="input-${element.id }" type="text" />
+									<br />
+									<select style="width: 200px" class="input-field"
+										id="${element.id }" required="${element.required }"
+										multiple="multiple" identity="${element.identity }"
+										itemValueField="${element.optionValueName}"
+										itemNameField="${element.optionItemName}"
+										name=${element.entityReferenceClass}
+											>
+	
+									</select>
+									<script>
+										window["valueField_${element.id}"] = "${element.optionValueName}";
+										window["itemField_${element.id}"] = "${element.optionItemName}";
+									</script>
+								</c:when>
+								<c:when test="${  element.type == 'textarea'}">
+									<textarea class="input-field" id="${element.id }"
+										type="${element.type }" ${element.required?'required':'' }
+										identity="${element.identity }">
+									</textarea>
+								</c:when>
+								<c:when test="${  element.showDetail}">
+									<input detailfields="${element.detailFields}" showdetail = "true" class="input-field" id="${element.id }"
+										type="hidden" name="${element.optionItemName}"  disabled="disabled" />
+									<button id="btn-detail-${element.id }" onclick="showDetail('${element.id }','${element.optionItemName}' )">Detail</button>
+								</c:when>
+								<c:when test="${ element.type=='img' && element.multiple == false}">
+									<input class="input-field"  
+										id="${element.id }" type="file"  ${element.required?'required':'' }
 										identity="${element.identity }" />
-										<button id="${element.id }-0-file-ok-btn" onclick="addImagesData('${element.id}-0')" >ok</button>
-										<button id="${element.id }-0-file-cancel-btn" onclick="cancelImagesData('${element.id}-0')" >cancel</button>
-										<button id="${element.id }-0-remove-list" onclick="removeImageList('${element.id }-0')">Remove</button>
+										<button id="${element.id }-file-ok-btn" onclick="addImagesData('${element.id}')" >ok</button>
+										<button id="${element.id }-file-cancel-btn" onclick="cancelImagesData('${element.id}')" >cancel</button>
 									<div>
-										<img id="${element.id }-0-display" width="50" height="50" />
+										<img id="${element.id }-display" width="50" height="50" />
+									</div>
+								</c:when>
+								<c:when test="${ element.type=='img' && element.multiple == true}">
+								<div id="${element.id }" name="input-list" class="input-field" >
+									<div id="${element.id }-0-input-item" class="${element.id }-input-item">
+										<input  class="input-file"
+											id="${element.id }-0" type="file"  ${element.required?'required':'' }
+											identity="${element.identity }" />
+											<button id="${element.id }-0-file-ok-btn" onclick="addImagesData('${element.id}-0')" >ok</button>
+											<button id="${element.id }-0-file-cancel-btn" onclick="cancelImagesData('${element.id}-0')" >cancel</button>
+											<button id="${element.id }-0-remove-list" onclick="removeImageList('${element.id }-0')">Remove</button>
+										<div>
+											<img id="${element.id }-0-display" width="50" height="50" />
+										</div>
 									</div>
 								</div>
-							</div>
-							<button id="${element.id }-add-list" onclick="addImageList('${element.id }')">Add</button>
-							</c:when>
-							<c:when test="${ element.identity}">
-								<input class="input-field" disabled="disabled"
-									id="${element.id }" type="text"  ${element.required?'required':'' }
-									identity="${element.identity }" />
-							</c:when>
-							<c:otherwise>
-								<input class="input-field" id="${element.id }"
-									type="${element.type }"  ${element.required?'required':'' }
-									identity="${element.identity }" />
-							</c:otherwise>
-						</c:choose></td>
+								<button id="${element.id }-add-list" onclick="addImageList('${element.id }')">Add</button>
+								</c:when>
+								<c:when test="${ element.identity}">
+									<input class="input-field" disabled="disabled"
+										id="${element.id }" type="text"  ${element.required?'required':'' }
+										identity="${element.identity }" />
+								</c:when>
+								<c:otherwise>
+									<input class="input-field" id="${element.id }"
+										type="${element.type }"  ${element.required?'required':'' }
+										identity="${element.identity }" />
+								</c:otherwise>
+							</c:choose></td>
+					</tr>
+				</c:forEach>
+				<tr>
+					<td><c:if test="${entityProperty.editable == true }">
+							<button id="btn-submit" onclick="submit()" class="btn btn-ok">Submit</button>
+						</c:if>
+					</td>
+					<td><c:if test="${entityProperty.editable == true }">
+							<button id="btn-clear" onclick="clear()" class="btn btn-ok">Clear</button>
+						</c:if>
+					</td>
 				</tr>
-			</c:forEach>
-			<tr>
-				<td>
-					<button id="btn-submit" onclick="submit()" class="btn btn-ok">Submit</button>
-				</td>
-				<td>
-					<button id="btn-clear" onclick="clear()" class="btn btn-ok">Clear</button>
-					<button id="btn-close-form" onclick="hide('entity-input-form')"
-						class="btn btn-ok">Close</button>
-				</td>
-			</tr>
-		</table>
-
+			</table>
+		</div>
+		 
 	</div> 
 <div class="content">
 	<h2>${entityProperty.entityName}-Management</h2>
 	<p></p>
-	<c:if test="${editable == true }">
+	<c:if test="${entityProperty.editable == true }">
 		<button id="btn-show-form" onclick="show('entity-input-form')">Show
 			Form</button>
 	</c:if>
@@ -155,6 +173,7 @@
 	var entityTBody = document.getElementById("entity-tb");
 	var entityTHead = document.getElementById("entity-th");
 	var entitiesTable = document.getElementById("list-table");
+	var detailTable = document.getElementById("table-detail");
 	var filterField = document.getElementById("filter-field");
 	var filterValue = document.getElementById("filter-value");
 	var navigationPanel = document.getElementById("navigation-panel");
@@ -488,9 +507,14 @@
 		for (let j = 0; j < fieldNames.length; j++) {
 			let entityValue = entity[fieldNames[j]];
 			let entityValueAsObject = entityValue;
+			//element
 			let elementField = document.getElementById(fieldNames[j]);
+			
+			let enableDetail = elementField.getAttribute("showdetail") == "true";
 			let isMultipleSelect = false;
 			let isImageField  = isImage(fieldNames[j]);
+			let isDateField = isDate(fieldNames[j]);
+			
 			if (typeof (entityValue) == "object" && entityValue != null) {
 				isMultipleSelect = elementField.nodeName == "SELECT"
 						&& elementField.getAttribute("multiple") == "multiple";
@@ -513,8 +537,7 @@
 							+ fieldNames[j]);
 					inputField.value = entityValueAsObject[objectItemName];
 				}
-			}
-			if(isImageField){
+			}else	if(isImageField){
 				let displayElement = document.getElementById(fieldNames[j]+"-display");
 				let url = "${host}/${contextPath}/${imagePath}/";
 				if(displayElement == null && entityValue != null){
@@ -531,9 +554,18 @@
 					displayElement.setAttribute("originaldata",resourceUrl);
 					displayElement.setAttribute("originalvalue",entityValue);
 				}
-			}else			
-			if (!isMultipleSelect)
+			}else if (!isMultipleSelect){
+				if(isDateField){
+					let date=new Date(entityValue);
+					entityValue = toDateInput(date);
+				}else if(enableDetail){
+					entityValue = entity[elementField.getAttribute("name")];
+					elementField.setAttribute(elementField.getAttribute("name"), entityValue);
+				}
 				elementField.value = entityValue;
+				
+			}
+			
 		}
 		show("entity-input-form");
 	}
@@ -609,12 +641,49 @@
 		let element = document.getElementById(id);
 		element.parentNode.remove(element);
 	}
+	function showDetail(id, field){
+		var requestObject ={
+			    'entity': id,
+			    'filter': {
+			        'limit': 0,
+			        'orderBy': null,
+			        'contains': false,
+			        'exacts': true,
+			        'orderType': null,
+			        "fieldsFilter": { }
+			    }
+			};
+		requestObject.filter.fieldsFilter[entityName] = document.getElementById(id).getAttribute(field);
+		let detailFields = 	document.getElementById(id).getAttribute("detailfields").split("~");
+		console.log("request",requestObject);
+		detailTable.innerHTML = "";
+		
+		postReq("<spring:url value="/api/entity/get" />", requestObject,
+				function(xhr) {
+					var response = (xhr.data);
+					var entities = response.entities;
+					if (entities != null && entities[0] != null) {
+						let tableHeader = createTableHeaderByColumns(detailFields);
+						console.log("header",tableHeader);
+						let bodyRows = createTableBody(detailFields, entities);
+						detailTable.append(tableHeader);
+						for (var i = 0; i < bodyRows.length; i++) {
+							var row = bodyRows[i];
+							detailTable.append(row);
+						}
+						hide("entity-input-form");
+						show('wrapper-table-detail');
+					} else {
+						alert("data not found");
+					}
+				});
+	}
 	
 	createTableHeader();
 	loadEntity(page);
 	hide("entity-input-form");
 </script>
-<c:if test="${editable == true }">
+<c:if test="${entityProperty.editable == true }">
 <script type="text/javascript">
 	
 	function submit() {
@@ -717,5 +786,5 @@
 					}
 				});
 	}
-</script>
+</script> 
 </c:if>

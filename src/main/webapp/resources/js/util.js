@@ -10,7 +10,7 @@ function infoDone() {
 	document.getElementById("loading-div").innerHTML = "";
 }
 
-/*****************COMPONENT****************/
+/** ***************COMPONENT*************** */
 function createAnchor(id, html, url){
 	var a = document.createElement("a");
 	a.id = id;
@@ -106,4 +106,51 @@ function createImgTag(id, className, w, h, src){
 	img.src = src;
 	
 	return img;
+}
+
+function createTableHeaderByColumns(columns){
+	console.log("Headers", columns);
+	
+	let row = createElement("tr","th-header-detail",null);
+	 
+	row.append(createCell("No"));
+	for (var i = 0; i < columns.length; i++) {
+		var column = columns[i];
+		column = column.toUpperCase();
+		column = column.replace("."," ");
+		row.append(createCell("<b>"+column+"</b>"));
+	}
+	
+	return row;
+}
+
+function createTableBody(columns, entities){
+	//let tbody = createElement("tbody", "tbody-detail", "tbody-detail");
+	let rows = [];
+	for (let j = 0; j < entities.length; j++) {
+		let entity = entities[j];
+		
+		let row = createElement("tr","tr-body-detail-"+j,null);
+		 
+		row.append(createCell(j+1));
+		for (let i = 0; i < columns.length; i++) {
+			let column = columns[i];
+			let refField = column.split(".");
+			let entityValue = entity[column];
+			
+			let cell = createCell("");
+			cell.setAttribute("name",column); 
+			
+			if(refField.length>1 && entity[refField[0]] !=null){
+			 	entityValue = entity[refField[0]][refField[1]];
+				cell.setAttribute("name", refField[1]);
+				 
+			}
+			
+			cell.innerHTML = entityValue;
+			row.append(cell);
+		}
+		rows.push(row);
+	}
+	return rows;
 }

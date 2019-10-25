@@ -26,6 +26,11 @@ public class EntityProperty implements Serializable{/**
 	private String fieldNames;
 	private String idField;
 	@Builder.Default
+	private boolean editable = true;
+	@Builder.Default
+	private boolean withDetail = false;
+	private String detailFieldName;
+	@Builder.Default
 	private List<String> dateElements = new ArrayList<String>();
 	private String dateElementsJson;
 	@Builder.Default

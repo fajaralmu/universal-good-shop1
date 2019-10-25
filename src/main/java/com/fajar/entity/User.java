@@ -10,6 +10,7 @@ import javax.persistence.Table;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Dto
 @Entity
@@ -28,6 +29,7 @@ public class User extends BaseEntity implements Serializable{
 	private String displayName;
 	@Column
 	@FormField
+//	@JsonIgnore
 	private String password;
 	@JoinColumn(name="role_id")
 	@ManyToOne

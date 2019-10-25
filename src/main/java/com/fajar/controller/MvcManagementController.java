@@ -101,6 +101,18 @@ public class MvcManagementController {
 		return basePage;
 	}
 	
+	@RequestMapping(value = { "/productFlow" })
+	public String productflow(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(request.getContextPath() + "/account/login");
+		}
+		 EntityProperty entityProperty = EntityUtil.createEntityProperty("ProductFlow", null);
+		model.addAttribute("entityProperty", entityProperty);
+		model  =constructCommonModel(request, model, "productFlow");
+		return basePage;
+	}
+	
 	@RequestMapping(value = { "/category" })
 	public String category(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -120,9 +132,10 @@ public class MvcManagementController {
 			response.sendRedirect(request.getContextPath() + "/account/login");
 		}
 		 EntityProperty entityProperty = EntityUtil.createEntityProperty("Transaction", null);
+		 entityProperty.setEditable(false);
+		 entityProperty.setWithDetail(true);
 		model.addAttribute("entityProperty", entityProperty);
-		model  =constructCommonModel(request, model, "Transaction");
-		model.addAttribute("editable",false);
+		model  =constructCommonModel(request, model, "Transaction"); 
 		return basePage;
 	}
 	
@@ -161,9 +174,7 @@ public class MvcManagementController {
 		model.addAttribute("host", host);
 		model.addAttribute("imagePath",webAppConfiguration.getUploadedImagePath());
 		model.addAttribute("title", "Management::"+title);
-		model.addAttribute("editable",true);
-		
-		model.addAttribute("pageUrl", "shop/entity-management-page");
+	  	model.addAttribute("pageUrl", "shop/entity-management-page");
 		return model;
 	}
 

@@ -154,4 +154,24 @@ public class JSONUtil {
 		json += "]";
 		return json;
 	}
+	
+	public static String listToJson(Object[] list) {
+		String json = "[";
+
+		for (int i = 0; i < list.length; i++) {
+			Object array_element = list[i];
+			String value = null;
+			if (array_element != null) {
+				value = objectToJson(array_element);
+			}
+			json += value;
+			if (i < list.length - 1) {
+				json += ",";
+			}
+
+		}
+
+		json += "]";
+		return json;
+	}
 }
