@@ -38,7 +38,7 @@ public class RestTransactionController {
 	@PostMapping(value = "/supply", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse addSupply(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("register {}", request);
+		log.info("supply {}", request);
 		ShopApiResponse response = transactionService.submitNew(request, httpRequest);
 		return response;
 	}
@@ -46,14 +46,14 @@ public class RestTransactionController {
 	@PostMapping(value = "/purchase", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse purchase(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("register {}", request);
+		log.info("purchase {}", request);
 		ShopApiResponse response = transactionService.addPurchaseTransaction(request, httpRequest);
 		return response;
 	}
 	@PostMapping(value = "/stocks", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse stockinfo(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("register {}", request);
+		log.info("stocks {}", request);
 		ShopApiResponse response = transactionService.getStocks(request, false);
 		return response;
 	}
@@ -61,8 +61,16 @@ public class RestTransactionController {
 	@PostMapping(value = "/stockinfo", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse stockInfo(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("register {}", request);
+		log.info("stockinfo {}", request);
 		ShopApiResponse response = transactionService.stockInfo(request);
+		return response;
+	}
+	
+	@PostMapping(value = "/cashflowinfo", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ShopApiResponse cashflowinfo(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+		log.info("cashflowinfo {}", request);
+		ShopApiResponse response = transactionService.getCashFlow(request);
 		return response;
 	}
 	

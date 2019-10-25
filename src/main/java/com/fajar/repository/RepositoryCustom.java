@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import com.fajar.entity.custom.CashFlowEntity;
+
  
 
 public interface RepositoryCustom<T> {
@@ -15,4 +17,6 @@ public interface RepositoryCustom<T> {
 	Object getSingleResult(String q); 
 	
 	Query createNativeQuery(String sql);
+
+	public Object getObjectFromNativeQuery(String sql, Class<?> objectClass);
 }

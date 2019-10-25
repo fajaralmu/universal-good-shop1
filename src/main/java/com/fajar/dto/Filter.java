@@ -34,6 +34,12 @@ public class Filter implements Serializable {
 	@Builder.Default
 	private boolean exacts = false;
 	@Builder.Default
+	private Integer year = 0;
+	@Builder.Default
+	private Integer month = 0;
+	@Builder.Default
+	private String module = "IN";
+	@Builder.Default
 	private Map<String, Object> fieldsFilter = new HashMap<>();
 
 }

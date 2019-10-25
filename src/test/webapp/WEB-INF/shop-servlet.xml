@@ -12,9 +12,9 @@
 	<context:annotation-config></context:annotation-config>
 	<mvc:annotation-driven
 		enable-matrix-variables="true" />
-	<mvc:resources location="/resources/" mapping="/res/**"></mvc:resources>
-	<jpa:repositories base-package="com.fajar.repo" />
-
+	
+	
+	<jpa:repositories base-package="com.fajar.repository" />
 
 	<context:component-scan base-package="com.fajar" />
 
@@ -27,7 +27,7 @@
 	<!-- Configuration for Redis Client -->
 	<bean id="jedisPoolConfig"
 		class="redis.clients.jedis.JedisPoolConfig">
-		
+
 	</bean>
 
 	<bean id="jedisConnectionFactory"
@@ -42,6 +42,18 @@
 		p:connection-factory-ref="jedisConnectionFactory">
 	</bean>
 
+	<!-- web app custom config -->
+	<bean id="webAppConfig"
+		class="com.fajar.service.WebAppConfiguration">
+		<property name="basePage" value="BASE_PAGE"></property>
+		<property name="uploadedImageRealPath" value="D:/Development/Files/Web/Shop1/Images"></property>
+		<property name="uploadedImagePath" value="WebAsset/Shop1/Images"></property>
+	</bean>
+	
+	
+	
+	<!-- persistance -->
+
 	<bean id="transactionManager"
 		class="org.springframework.orm.jpa.JpaTransactionManager" />
 
@@ -50,20 +62,11 @@
 		<property name="driverClassName"
 			value="com.mysql.jdbc.Driver" />
 		<property name="url"
-			value="jdbc:mysql://localhost:3306/puskesmasv2" />
-		<property name="username" value="fajar" />
-		<property name="password" value="root" />
+			value="jdbc:mysql://localhost:3306/goodshop" />
+		<property name="username" value="root" />
+		<property name="password" value="" />
 	</bean>
-	
-	<bean id="dataSourceOLD"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName"
-			value="com.mysql.jdbc.Driver" />
-		<property name="url"
-			value="jdbc:mysql://remotemysql.com:3306/3Pr3bnWyEg" />
-		<property name="username" value="3Pr3bnWyEg" />
-		<property name="password" value="3XgqyBpX53" />
-	</bean>
+
 
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -72,7 +75,7 @@
 		<property name="jpaProperties">
 			<props>
 				<prop key="hibernate.show_sql">false</prop>
-				<!-- <prop key="hibernate.hbm2ddl.auto">create</prop> -->
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
 			</props>
 		</property>

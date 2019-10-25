@@ -1,6 +1,7 @@
 package com.fajar.controller;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -55,6 +56,7 @@ public class MvcAdminController {
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath()+"/account/login");
 		}
+		Calendar cal = Calendar.getInstance();
 		model.addAttribute("menus", componentService.getDashboardMenus(request));
 		model.addAttribute("host", MVCUtil.getHost(request));
 		model.addAttribute("imagePath",webAppConfiguration.getUploadedImagePath());
@@ -62,6 +64,8 @@ public class MvcAdminController {
 		model.addAttribute("title", "Shop::Dashboard");
 		model.addAttribute("pageUrl", "shop/home-page");
 		model.addAttribute("page","dashboard");
+		model.addAttribute("currentMonth",cal.get(Calendar.MONTH)+1);
+		model.addAttribute("currentYear",cal.get(Calendar.YEAR));
 		return basePage;
 	}
 	

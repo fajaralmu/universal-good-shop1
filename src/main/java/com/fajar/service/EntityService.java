@@ -247,9 +247,23 @@ public class EntityService {
 			entityClass = ProductFlow.class;
 			break;
 		}
-
 		Filter filter = request.getFilter();
-		String entityName = request.getEntity();
+		String[] sqlListAndCount = generateSqlByFilter(filter, entityClass);
+		String sql = sqlListAndCount[0];
+		String sqlCount = sqlListAndCount[1];
+		List<BaseEntity> entities =getEntitiesBySql(sql, entityClass);
+		Integer count = 0;
+		Object countResult = repositoryCustom.getSingleResult(sqlCount);
+		if (countResult != null) {
+			count = ((BigInteger) countResult).intValue();
+		}
+		return ShopApiResponse.builder().entities(entities).totalData(count)
+				.filter(filter).build();
+	}
+	
+	private String[] generateSqlByFilter(Filter filter, Class entityClass) {
+		
+//		String entityName = request.getEntity();
 		Integer offset = filter.getPage() * filter.getLimit();
 		boolean withLimit = filter.getLimit() > 0;
 		boolean withOrder = filter.getOrderBy() != null && filter.getOrderType() != null
@@ -268,14 +282,14 @@ public class EntityService {
 		String sql = "select  `" + tableName + "`.* from `" + tableName + "` " + joinSql + " " + filterSQL + orderSQL
 				+ limitOffsetSQL;
 		String sqlCount = "select COUNT(*) from `" + tableName + "` " + joinSql + " " + filterSQL;
+		return new String[] {
+				sql, sqlCount
+		};
+	}
+
+	public List<BaseEntity> getEntitiesBySql(String sql, Class entityClass){
 		List<BaseEntity> entities = repositoryCustom.filterAndSort(sql, entityClass);
-		Integer count = 0;
-		Object countResult = repositoryCustom.getSingleResult(sqlCount);
-		if (countResult != null) {
-			count = ((BigInteger) countResult).intValue();
-		}
-		return ShopApiResponse.builder().entities(EntityUtil.validateDefaultValue(entities)).totalData(count)
-				.filter(filter).build();
+		return EntityUtil.validateDefaultValue(entities);
 	}
 
 	private static Field getFieldByName(String name, List<Field> fields) {

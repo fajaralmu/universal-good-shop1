@@ -1,15 +1,19 @@
 package com.fajar.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
@@ -20,6 +24,7 @@ import com.fajar.entity.ProductFlowStock;
 import com.fajar.entity.Supplier;
 import com.fajar.entity.Transaction;
 import com.fajar.entity.User;
+import com.fajar.entity.custom.CashFlowEntity;
 import com.fajar.repository.CustomerRepository;
 import com.fajar.repository.ProductFlowRepository;
 import com.fajar.repository.ProductRepository;
@@ -45,9 +50,23 @@ public class TransactionService {
 	private CustomerRepository customerRepository;
 	@Autowired
 	private RepositoryCustom<ProductFlow> productFlowRepositoryCustom;
+	@Autowired
+	private EntityService entityService;
+	
+	@PostConstruct
+	public void editPrice() {
+//		List<ProductFlow> flows = productFlowRepository.findByPriceIsNull();
+//		for (ProductFlow productFlow : flows) {
+//			System.out.print("*");
+//			productFlow.setPrice(productFlow.getProduct().getPrice());
+//			productFlowRepository.save(productFlow);
+//		}
+//		System.out.println("done");
+	}
 
 	/**
 	 * add stock from supplier
+	 * 
 	 * @param request
 	 * @param httpRequest
 	 * @return
@@ -97,6 +116,7 @@ public class TransactionService {
 
 	/**
 	 * check remaining stock of a product flow
+	 * 
 	 * @param productFlow
 	 * @return
 	 */
@@ -131,14 +151,13 @@ public class TransactionService {
 		productFlowStock.setTotalStock(total);
 		return productFlowStock;
 	}
-	
+
 	public ShopApiResponse stockInfo(ShopApiRequest request) {
 		ProductFlowStock productFlowStock = checkStock(request.getProductFlow());
-		
+
 		return ShopApiResponse.builder().productFlowStock(productFlowStock).build();
 	}
-	
-	
+
 	public ShopApiResponse getStocks(ShopApiRequest request, boolean withCount) {
 		try {
 			String productName = request.getProduct().getName();
@@ -146,20 +165,21 @@ public class TransactionService {
 //					+ "left join product on product_id = product.id "
 //					+ "where transaction.`type` = 'IN' and product.name like '%" + productName + "%' limit 20";
 
-			String sql = "select product_flow.id as flowId, product_flow.count as flowCount, " + 
-					"(select sum(count) as total_count from product_flow where flow_ref_id=flowId and deleted!=1) as used,  " + 
-					" product_flow.* from product_flow  " + 
-					"left join `transaction` on product_flow.transaction_id = transaction.id " + 
-					"left join product on product_flow.product_id = product.id " + 
-					"where transaction.`type` = 'IN' and product.name like '%"+productName+"%' having(used is null or flowCount-used>0) limit 20";
-			
+			String sql = "select product_flow.id as flowId, product_flow.count as flowCount, "
+					+ "(select sum(count) as total_count from product_flow where flow_ref_id=flowId and deleted!=1) as used,  "
+					+ " product_flow.* from product_flow  "
+					+ "left join `transaction` on product_flow.transaction_id = transaction.id "
+					+ "left join product on product_flow.product_id = product.id "
+					+ "where transaction.`type` = 'IN' and product.name like '%" + productName
+					+ "%' having(used is null or flowCount-used>0) limit 20";
+
 			List<ProductFlow> productFlows = productFlowRepositoryCustom.filterAndSort(sql, ProductFlow.class);
 			List<BaseEntity> entities = new ArrayList<>();
 			for (ProductFlow productFlow : productFlows) {
 				if (withCount) {
 					ProductFlowStock productFlowStock = checkStock(productFlow);
 					productFlowStock.setProductFlow(null);
-					if(productFlowStock.getRemainingStock()<=0) {
+					if (productFlowStock.getRemainingStock() <= 0) {
 						continue;
 					}
 					productFlow.setProductFlowStock(productFlowStock);
@@ -177,6 +197,7 @@ public class TransactionService {
 
 	/**
 	 * add purchase transaction
+	 * 
 	 * @param request
 	 * @param httpRequest
 	 * @return
@@ -220,7 +241,7 @@ public class TransactionService {
 			for (ProductFlow productFlow : productFlows) {
 				productFlow.setTransaction(newTransaction);
 				productFlow.setPrice(productFlow.getProduct().getPrice());
-				productFlow=	productFlowRepository.save(productFlow);
+				productFlow = productFlowRepository.save(productFlow);
 			}
 			newTransaction.setProductFlows(productFlows);
 			return ShopApiResponse.builder().transaction(newTransaction).build();
@@ -228,5 +249,27 @@ public class TransactionService {
 			ex.printStackTrace();
 			return ShopApiResponse.builder().code("-1").message(ex.getMessage()).build();
 		}
+	}
+
+//	
+	public ShopApiResponse getCashFlow(ShopApiRequest request) {
+		ShopApiResponse response = new ShopApiResponse();
+		// getTransaction
+		String sql =" select sum(`product_flow`.count) as count, sum(`product_flow`.count * `product_flow`.price) as price,`transaction`.`type` as module from `product_flow`  " + 
+				" LEFT JOIN `transaction` ON  `transaction`.`id` = `product_flow`.`transaction_id`  " + 
+				" WHERE  `transaction`.`type` = '$MODULE' and month(`transaction`.transaction_date) =$MM " + 
+				" and year(`transaction`.transaction_date) = $YYYY and `transaction`.deleted = false and `product_flow`.deleted = false";
+		
+		sql = sql.replace("$YYYY", request.getFilter().getYear().toString())
+				.replace("$MODULE", request.getFilter().getModule())
+				.replace("$MM", request.getFilter().getMonth().toString());
+		
+		
+		Object cashflow = productFlowRepositoryCustom.getObjectFromNativeQuery(sql, CashFlowEntity.class);
+		if(cashflow !=null) {
+			response.setEntity((CashFlowEntity) cashflow);
+		}
+		
+		return response;
 	}
 }

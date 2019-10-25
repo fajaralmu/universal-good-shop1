@@ -91,11 +91,19 @@ function createInput(id, className, type){
 	return div;
 }
 
+function createOption(value, html){
+	let option = createElement("option", null, null);
+	option.value = value;
+	option.innerHTML = html;
+	return option;
+}
+
 function createElement(tag, id, className){
 	let div = document.createElement(tag);
 	if(className!=null)
 		div.className = className;
-	div.id  = id;
+	if(id != null)
+		div.id  = id;
 	return div;
 }
 
