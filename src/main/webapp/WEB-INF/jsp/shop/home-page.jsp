@@ -21,7 +21,7 @@
 
 		<div class="col-sm-3">
 			<div class="card" style="width: 100%;">
-				<img class="card-img-top" width="100" height="150" src="xxxxx"
+				<img class="card-img-top" width="100" height="150" src="<spring:url value="/res/img/income.jpg" />"
 					alt="Card image cap">
 				<div class="card-body">
 					<h5 class="card-title">Income</h5>
@@ -43,7 +43,7 @@
 		</div>
 		<div class="col-sm-3">
 			<div class="card" style="width: 100%;">
-				<img class="card-img-top" width="100" height="150" src="xxxxx"
+				<img class="card-img-top" width="100" height="150" src="<spring:url value="/res/img/wallet1.png" />"
 					alt="Card image cap">
 				<div class="card-body">
 					<h5 class="card-title">Spent</h5>
