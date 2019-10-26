@@ -134,6 +134,24 @@ public class EntityService {
 	private ShopApiResponse saveSupplier(Supplier supplier, boolean newRecord) {
 
 		supplier = (Supplier) copyNewElement(supplier, newRecord);
+		String base64Image = supplier.getIconUrl();
+		if (base64Image != null && !base64Image.equals("")) {
+			try {
+				String imageName = fileService.writeImage("SPLY", base64Image);
+				supplier.setIconUrl(imageName);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				supplier.setIconUrl(null);
+				e.printStackTrace();
+			}
+		} else {
+			if (!newRecord) {
+				Optional<Supplier> dbSupplier = supplierRepository.findById(supplier.getId());
+				if (dbSupplier.isPresent()) {
+					supplier.setIconUrl(dbSupplier.get().getIconUrl());
+				}
+			}
+		}
 		Supplier newSupplier = supplierRepository.save(supplier);
 		return ShopApiResponse.builder().entity(newSupplier).build();
 	}
