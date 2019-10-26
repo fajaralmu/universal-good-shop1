@@ -92,19 +92,7 @@ function doGetDetail(url,requestObject,detailFields, callback){
 			});
 }
 
-function doLoadDropDownItems(url, requestObject, callback){
-	postReq(url, requestObject,
-			function(xhr) {
-				var response = (xhr.data);
-				var entities = response.entities;
-				if (entities != null && entities[0] != null) {
-					callback(entities);
 
-				} else {
-					alert("data not found");
-				}
-			});
-}
 
 function doGetById(url, requestObject, callback){
 	postReq(url, requestObject,
@@ -113,6 +101,20 @@ function doGetById(url, requestObject, callback){
 				var entities = response.entities;
 				if (entities != null && entities[0] != null) {
 					callback(entities[0]);
+				} else {
+					alert("data not found");
+				}
+			});
+}
+
+function doLoadDropDownItems(url, requestObject, callback){
+	postReq(url, requestObject,
+			function(xhr) {
+				var response = (xhr.data);
+				var entities = response.entities;
+				if (entities != null && entities[0] != null) {
+					callback(entities);
+
 				} else {
 					alert("data not found");
 				}

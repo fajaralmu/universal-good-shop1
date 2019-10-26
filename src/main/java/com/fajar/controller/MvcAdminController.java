@@ -66,6 +66,10 @@ public class MvcAdminController {
 		model.addAttribute("page","dashboard");
 		model.addAttribute("currentMonth",cal.get(Calendar.MONTH)+1);
 		model.addAttribute("currentYear",cal.get(Calendar.YEAR));
+		Integer[] transactionYears = transactionService.getMinAndMaxTransactionYear();
+		System.out.println("========TRX YEARS: "+transactionYears);
+		model.addAttribute("minYear",transactionYears[0]);
+		model.addAttribute("maxYear",transactionYears[1]);
 		return basePage;
 	}
 	

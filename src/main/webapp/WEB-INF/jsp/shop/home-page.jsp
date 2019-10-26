@@ -11,9 +11,7 @@
 				class="form-control" id="select-month"></select> <span
 				class="input-group-text">Year</span> <select class="form-control"
 				id="select-year">
-				<option value="2019">2019</option>
-				<option value="2018">2018</option>
-				<option value="2017">2017</option>
+				 
 			</select>
 		</div>
 		<div class="input-group-append">
@@ -94,6 +92,10 @@
 			selectMonth.append(createOption(i,i));
 		}
 		selectMonth.value = ${currentMonth};
+		for(var y=${minYear};y<=${maxYear};y++){
+			selectYear.append(createOption(y,y));
+		}
+		selectYear.value = ${currentYear};
 	}
 
 	function fetchCashflow(month, year, module) {

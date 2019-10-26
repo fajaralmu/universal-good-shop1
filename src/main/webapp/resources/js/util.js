@@ -100,6 +100,12 @@ function createOption(value, html){
 	return option;
 }
 
+function createHeading(tag ,id, className, html){
+	let option = createElement(tag,id, className);
+	option.innerHTML = html;
+	return option;
+}
+
 function createElement(tag, id, className){
 	let div = document.createElement(tag);
 	if(className!=null)

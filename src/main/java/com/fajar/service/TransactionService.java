@@ -1,6 +1,9 @@
 package com.fajar.service;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -137,7 +140,7 @@ public class TransactionService {
 		Query query = productFlowRepositoryCustom.createNativeQuery(sql);
 		Object result = query.getSingleResult();
 
-		System.out.println("RESULT: " + result.getClass());
+	
 
 		Object[] objectList = (Object[]) result;
 		Integer total = objectList[0] == null ?0 : Integer.parseInt(objectList[0].toString());
@@ -148,6 +151,7 @@ public class TransactionService {
 		productFlowStock.setProductFlow(productFlow);
 		productFlowStock.setRemainingStock(remaining);
 		productFlowStock.setTotalStock(total);
+	//	System.out.println("RESULT getSingleStock: " + result );
 		return productFlowStock;
 	}
 
@@ -159,11 +163,12 @@ public class TransactionService {
 	
 	public List<Product> populateProductWithStocks(List<Product> products, boolean withCount) {
 		for (Product product : products) {
-			List<BaseEntity> productFlows = getProductFlowsByProduct("id",product.getId(),withCount, 20, EXACTS);
+			List<BaseEntity> productFlows = getProductFlowsByProduct("id",product.getId(),withCount, 0, EXACTS);
 			Integer count=0;
 			for (BaseEntity flow : productFlows) {
 				ProductFlow productFlow = (ProductFlow) flow;
-				count+=productFlow.getCount();
+				if(null!=productFlow.getProductFlowStock())
+				count+=productFlow.getProductFlowStock().getRemainingStock();
 			}
 			product.setCount(count);
 		}
@@ -193,7 +198,7 @@ public class TransactionService {
 					+ "where transaction.`type` = 'IN' "
 					+ " and product."+key + " $CONDITION "
 					
-					+ "having(used is null or flowCount-used>0) limit "+limit;
+					+ "having(used is null or flowCount-used>0) " +(limit >0 ? " limit "+limit:"");
 
 			String condition = " like '%" + value + "%' ";
 			if(exacts) {
@@ -299,5 +304,29 @@ public class TransactionService {
 		}
 		
 		return response;
+	}
+	
+	public Integer[] getMinAndMaxTransactionYear() {
+		Integer minYear = getTransactionYear("asc");
+		Integer maxYear = getTransactionYear("desc");
+		
+		return new Integer[] {
+			minYear, maxYear	
+		};
+	}
+	
+	private Integer getTransactionYear(String orderType) {
+		if(orderType == null || !orderType.toLowerCase().equals("asc") || !orderType.toLowerCase().equals("desc")) {
+			orderType = "asc";
+		}
+		
+		String sql = "select year( `transaction`.transaction_date) from `transaction` where `transaction`.transaction_date is not null "
+				+ "order by transaction_date "+orderType+" limit 1";
+		Object result = productFlowRepositoryCustom.getSingleResult(sql);
+		if(result == null || result.getClass().equals(BigInteger.class))
+			return Calendar.getInstance().get(Calendar.YEAR);
+		
+		return ((BigInteger) result).intValue();
+		
 	}
 }

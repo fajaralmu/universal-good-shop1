@@ -71,15 +71,13 @@ public class BaseEntity {
 		this.id = id;
 	}
 
-	public String toString() {
-		return JSONUtil.objectToJson(this);
-	}
 
 	@PrePersist
 	private void prePersist() {
 		if(this.createdDate == null) {
 			this.createdDate = new Date();
 		}
+		this.modifiedDate = new Date();
 	}
 	
 }

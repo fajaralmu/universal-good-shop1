@@ -48,4 +48,14 @@ public class ComponentService {
 		return EntityUtil.validateDefaultValue(entities);
 	}
 
+	public Object getPublicMenus(HttpServletRequest request) {
+		List<Menu> menus =  menuRepository.findByPage("PUBLIC");
+		List<BaseEntity> entities = new ArrayList<BaseEntity>();
+		for (Menu menu : menus) {
+			menu.setUrl(request.getContextPath()+menu.getUrl());
+			entities.add(menu);
+		}
+		return EntityUtil.validateDefaultValue(entities);
+	}
+
 }

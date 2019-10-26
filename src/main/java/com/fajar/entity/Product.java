@@ -32,6 +32,9 @@ public class Product extends BaseEntity implements Serializable {
 	private static final long serialVersionUID = 3494963248002164943L;
 	@Column(unique = true)
 	@FormField 
+	private String code;
+	@Column(unique = true)
+	@FormField 
 	private String name;
 	@Column
 	@FormField 
