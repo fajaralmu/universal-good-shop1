@@ -9,45 +9,53 @@
 }
 </style>
 <div class="content">
-	<h2>Product Catalog</h2>
-	<p></p>
-	<div id="detail-content" style="display:none">
-		<h3 id="product-title"></h3>
-		<div id="carousel-wrapper" style="width: 60%; margin:auto">
-			<div id="carouselExampleIndicators" class="carousel slide"
-				data-ride="carousel">
-				<ol id="carousel-indicators" class="carousel-indicators"> </ol>
-				<div id="carousel-inner" class="carousel-inner"> </div>
-				<a class="carousel-control-prev" href="#carouselExampleIndicators"
-					role="button" data-slide="prev"> <span
-					class="carousel-control-prev-icon" aria-hidden="true"></span> <span
-					class="sr-only">Previous</span>
-				</a> <a class="carousel-control-next" href="#carouselExampleIndicators"
-					role="button" data-slide="next"> <span
-					class="carousel-control-next-icon" aria-hidden="true"></span> <span
-					class="sr-only">Next</span>
-				</a>
+
+	<div id="detail-content" class="row" style="display: none">
+		<div class="col-sm-12">
+			<h2 id="product-title"></h2>
+			<button class="btn btn-secondary btn-sm" id="close-detail"
+				onclick="closeDetail()">Back</button>
+			<div id="carousel-wrapper" style="width: 60%; margin: auto">
+				<div id="carouselExampleIndicators" class="carousel slide"
+					data-ride="carousel">
+					<ol id="carousel-indicators" class="carousel-indicators">
+					</ol>
+					<div id="carousel-inner" class="carousel-inner"></div>
+					<a class="carousel-control-prev" href="#carouselExampleIndicators"
+						role="button" data-slide="prev"> <span
+						class="carousel-control-prev-icon" aria-hidden="true"></span> <span
+						class="sr-only">Previous</span>
+					</a> <a class="carousel-control-next" href="#carouselExampleIndicators"
+						role="button" data-slide="next"> <span
+						class="carousel-control-next-icon" aria-hidden="true"></span> <span
+						class="sr-only">Next</span>
+					</a>
+				</div>
 			</div>
+
+			<!-- END CAROUSEL -->
+			<ul class="list-group">
+				<li
+					class="list-group-item d-flex justify-content-between align-items-center">
+					Stock <span class="badge badge-primary badge-pill"
+					id="product-stock">0</span>
+				</li>
+				<li
+					class="list-group-item d-flex justify-content-between align-items-center">
+					Price<br> <span id="product-price">0</span>
+				</li>
+
+			</ul>
+			<button class="btn btn-secondary btn-sm" id="close-detail"
+				onclick="closeDetail()">Close</button>
+			<p></p>
 		</div>
-
-		<!-- END CAROUSEL -->
-		<ul class="list-group">
-			<li
-				class="list-group-item d-flex justify-content-between align-items-center">
-				Stock <span class="badge badge-primary badge-pill"
-				id="product-stock">0</span>
-			</li>
-			<li
-				class="list-group-item d-flex justify-content-between align-items-center">
-				Price<br> <span id="product-price">0</span>
-			</li>
-
-		</ul>
-		<button class="btn btn-secondary" id="close-detail" onclick="closeDetail()">Close</button>
-		<p></p>
 	</div>
 	<div id="catalog-content">
+		<h2>Product Catalog</h2>
+		<p></p>
 		<!-- FILTER -->
+
 		<div class="input-group mb-3">
 			<div class="input-group-prepend">
 				<span class="input-group-text">Name</span>
@@ -80,7 +88,7 @@
 	var totalData = 0;
 	var orderBy = null;
 	var orderType = null;
-	var defaultOption "${defaultOption}";
+	var defaultOption = "${defaultOption}";
 
 	//elements
 	var navigationPanel = document.getElementById("navigation-panel");
@@ -92,14 +100,15 @@
 	var productTitle = document.getElementById("product-title");
 	var carouselInner = document.getElementById("carousel-inner");
 	var carouselIndicator = document.getElementById("carousel-indicators");
-	var defaultLocation =window.location.href;
-	
-	function closeDetail(){
+	var defaultLocation = window.location.href;
+
+	function closeDetail() {
 		hide("detail-content");
 		show("catalog-content");
-		window.history.pushState('catalog-page', 'Product Catalog', defaultLocation);
+		window.history.pushState('catalog-page', 'Product Catalog',
+				defaultLocation);
 	}
-	
+
 	function populateDetail(entity) {
 		console.log("entity", entity);
 		hide("catalog-content");
@@ -138,16 +147,20 @@
 			innerDiv.append(iconImage);
 			carouselInner.append(innerDiv);
 		}
-		window.history.pushState('detail-page', entity.name, window.location.href+"/"+entity.code);
+		if(defaultOption=="")
+			window.history.pushState('detail-page', entity.name,
+				window.location.href + "/" + entity.code);
+		defaultOption= "";
 		show("detail-content");
 
 	}
 
 	function loadDetail(code) {
+		infoLoading();
 		var requestObject = {
 			"entity" : "product",
 			"filter" : {
-				"limit" : 1,  
+				"limit" : 1,
 				"exacts" : true,
 				"contains" : false,
 				"fieldsFilter" : {
@@ -163,6 +176,7 @@
 						populateDetail(entities[0]);
 					else
 						alert("Data Not Found");
+					infoDone();
 				});
 	}
 
@@ -275,10 +289,10 @@
 				this.totalData, this.limit, this.loadEntity);
 	}
 
-	if(defaultOption != "null"){
+	if (defaultOption != "") {
 		loadDetail(defaultOption);
 		defaultLocation = defaultLocation.replace(defaultOption, "");
 	}
-	
+
 	loadEntity(page);
 </script>

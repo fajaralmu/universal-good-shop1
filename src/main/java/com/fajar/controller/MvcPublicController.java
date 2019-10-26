@@ -61,7 +61,7 @@ public class MvcPublicController {
 		model.addAttribute("title", "Product Catalog");
 		model.addAttribute("pageUrl", "shop/catalog-page");
 		model.addAttribute("page", "main");
-		model.addAttribute("defaultOption", option == null || option.equals("")? "null":option);
+		model.addAttribute("defaultOption", option == null || option.equals("")? null:option);
 		return basePage;
 
 	}
