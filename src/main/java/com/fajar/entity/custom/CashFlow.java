@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @CustomEntity(propOrder = {"count", "amount", "module"})
-public class CashFlowEntity extends BaseEntity implements Serializable{
+public class CashFlow extends BaseEntity implements Serializable{
 
 	 
 	/**

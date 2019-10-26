@@ -311,10 +311,10 @@ public class EntityService {
 
 	public static void main(String[] sqqq) {
 		Map<String, Object> filter = new HashMap<String, Object>();
-		filter.put("unit", "B");
+		filter.put("unit,description", "B");
 		filter.put("name", "BX");
-//		String sql = createFilterSQL(Product.class, filter, true, false);
-		String sql = orderSQL(Product.class, "ASC", "category");
+		String sql = createFilterSQL(Product.class, filter, true, false);
+//		String sql = orderSQL(Product.class, "ASC", "category");
 		System.out.println("==SQL: " + sql);
 	}
 
@@ -338,6 +338,8 @@ public class EntityService {
 		}
 		return sql;
 	}
+	
+	
 
 	private static String createFilterSQL(Class entityClass, Map<String, Object> filter, boolean contains,
 			boolean exacts) {
@@ -348,6 +350,12 @@ public class EntityService {
 		for (String key : filter.keySet()) {
 			if (filter.get(key) == null)
 				continue;
+			String[] multiKey = key.split(",");
+			boolean isMultiKey = multiKey.length >1;
+			if(isMultiKey) {
+				key = multiKey[0];
+			}
+			
 			String columnName = key;
 			// check if date
 			boolean dayFilter = key.endsWith("-day");
@@ -386,12 +394,16 @@ public class EntityService {
 				columnName = getColumnName(field);
 
 			String sqlItem = " `" + tableName + "`.`" + columnName + "` ";
-			if (field.getAnnotation(JoinColumn.class) != null) {
+			if (field.getAnnotation(JoinColumn.class) != null || isMultiKey) {
 				Class fieldClass = field.getType();
 				String joinTableName = getTableName(fieldClass);
 				FormField formField = field.getAnnotation(FormField.class);
 				try {
-					Field fieldField = fieldClass.getDeclaredField(formField.optionItemName());
+					String referenceFieldName = formField.optionItemName();
+					if(isMultiKey) {
+						referenceFieldName = multiKey[1];
+					}
+					Field fieldField = fieldClass.getDeclaredField(referenceFieldName );
 					String fieldColumnName = getColumnName(fieldField);
 					if (fieldColumnName == null || fieldColumnName.equals("")) {
 						fieldColumnName = key;
@@ -403,7 +415,10 @@ public class EntityService {
 				}
 
 			}
-
+			//rollback key to original key
+			if(isMultiKey) {
+				key = String.join(",", multiKey);
+			}
 			if (contains) {
 				sqlItem += " LIKE '%" + filter.get(key) + "%' ";
 			} else if (exacts) {

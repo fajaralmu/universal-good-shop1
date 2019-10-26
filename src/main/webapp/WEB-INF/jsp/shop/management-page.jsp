@@ -15,7 +15,7 @@
 						<h5 class="card-title">
 							 ${menu.name } 
 						</h5>
-						<a role="button" class="btn btn-secondary"
+						<a class="badge badge-primary"
 							data-toggle="tooltip" data-placement="bottom"
 							title="${menu.description }" href="${menu.url }">Detail</a>
 					</div>

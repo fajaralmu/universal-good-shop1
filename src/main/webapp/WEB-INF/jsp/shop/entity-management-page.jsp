@@ -20,8 +20,12 @@
 	var fieldNames = ${
 		entityProperty.fieldNames
 	};
+	var optionElements = ${
+		options
+	};
 	var imagesData = {};
 	var idField = "${entityProperty.idField}";
+	
 </script>
 
 <!-- DETAIL ELEMENT -->
@@ -527,8 +531,10 @@
 				}
 				deleteEntity(entity[idField]);
 			}
-			optionCell.append(buttonEdit);
-			optionCell.append(buttonDelete);
+			let btnOptionGroup = createDiv("btn-group-option-"+ i,"btn-group btn-group-sm");
+			btnOptionGroup.append(buttonEdit);
+			btnOptionGroup.append(buttonDelete);
+			optionCell.append(btnOptionGroup);
 			row.append(optionCell);
 			entityTBody.append(row);
 		}
@@ -541,47 +547,47 @@
 		row.append(createCell("No"));
 		for (let i = 0; i < fieldNames.length; i++) {
 			let fieldName = fieldNames[i];
+			let inputGroup = createDiv("input-group-"+fieldName,"input-group input-group-sm mb-3");
 			let cell = createCell(fieldName);
-			let input = createInputText("filter-" + fieldName, "filter-field");
-			input.setAttribute("field", fieldName);
-
+			let input = createInputText("filter-" + fieldName, "filter-field form-control");
+			input.setAttribute("field", fieldName); 
 			input.onkeyup = function() {
 				loadEntity();
-			}
-			cell.append(createBr());
+			} 
 			let isDateField = false
 			if (isDate(fieldName)) {
 				input.id = "filter-" + fieldName + "-day";
 				input.setAttribute("field", fieldName + "-day");
 				input.style.width = "30%";
 				let inputMonth = createInputText("filter-" + fieldName
-						+ "-month", "filter-field");
+						+ "-month", "filter-field form-control");
 				inputMonth.setAttribute("field", fieldName + "-month");
-				inputMonth.style.width = "30%";
+				inputMonth.style.width = "30%"; 
 				inputMonth.onkeyup = function() {
 					loadEntity();
 				}
 				let inputYear = createInputText(
-						"filter-" + fieldName + "-year", "filter-field");
-				inputYear.setAttribute("field", fieldName + "-year");
+						"filter-" + fieldName + "-year", "filter-field form-control");
+				inputYear.setAttribute("field", fieldName + "-year"); 
 				inputYear.style.width = "30%";
 				inputYear.onkeyup = function() {
 					loadEntity();
 				}
-				cell.append(input);
-				cell.append(inputMonth);
-				cell.append(inputYear);
+				inputGroup.append(input);
+				inputGroup.append(inputMonth);
+				inputGroup.append(inputYear);
 				isDateField = true;
 			}
 			if (!isDateField)
-				cell.append(input);
-			cell.append(createBr());
+				inputGroup.append(input);
+			cell.append(inputGroup); 
 			
 			//sorting button
+			let btnSortGroup = createDiv("btn-group-sort-"+fieldName,"btn-group btn-group-sm");
 			let ascButton = createButton("sort-asc-" + fieldName, "asc");
 			let descButton = createButton("sort-desc-" + fieldName, "desc");
-			ascButton.className = "btn btn-default btn-sm";
-			descButton.className = "btn btn-default btn-sm";
+			ascButton.className = "btn btn-outline-secondary btn-sm";
+			descButton.className = "btn btn-outline-secondary btn-sm";
 			descButton.onclick = function() {
 				orderType = "desc";
 				orderBy = fieldName;
@@ -592,8 +598,9 @@
 				orderBy = fieldName;
 				loadEntity(page);
 			}
-			cell.append(ascButton);
-			cell.append(descButton);
+			btnSortGroup.append(ascButton);
+			btnSortGroup.append(descButton);
+			cell.append(btnSortGroup);
 			row.append(cell);
 		}
 		row.append(createCell("Option"));
@@ -795,11 +802,22 @@
 					}
 				});
 	}
-
+	
+	function setDefaultOption(){
+		if(optionElements == null){
+			return;
+		}
+		for (let optionElement in optionElements) {
+			document.getElementById("filter-"+optionElement).value = optionElements[optionElement];
+		} 
+		
+	}
+	
 	createTableHeader();
+	setDefaultOption();
 	loadEntity(page);
-	hide("modal-entity-form");
-</script>
+	
+</script> 
 <c:if test="${entityProperty.editable == true }">
 	<script type="text/javascript">
 		function submit() {

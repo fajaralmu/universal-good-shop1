@@ -67,7 +67,7 @@
 				<span style="font-size: 2em;">Please Login</span> <br> <label
 					for="useraname"> Username </label> <br> <input id="useraname"
 					class="form-control" type="text" /> <br /> <label for="password">
-					Kata sandi </label> <br>
+					Password </label> <br>
 				<input id="password" type="password" class="form-control" /> <br />
 				<button class="btn btn-primary" onclick="login(); return false;">Login</button>
 				<button class="btn btn-success"

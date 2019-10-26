@@ -5,23 +5,28 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
 <div class="content">
 	<h2>Dashboard</h2>
-	<div>
-		<p>Month</p>
-		<select class="form-control" id="select-month"></select>
-		<p>Year</p>
-		<select class="form-control" id="select-year">
-			<option value="2019">2019</option>
-			<option value="2018">2018</option>
-			<option value="2017">2017</option>
-		</select>
-		<button class="btn btn-primary" onclick="getCashflow()">OK</button>
+	<div class="input-group mb-3">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Month</span> <select
+				class="form-control" id="select-month"></select> <span
+				class="input-group-text">Year</span> <select class="form-control"
+				id="select-year">
+				<option value="2019">2019</option>
+				<option value="2018">2018</option>
+				<option value="2017">2017</option>
+			</select>
+		</div>
+		<div class="input-group-append">
+			<button class="btn btn-outline-secondary" onclick="getCashflow()">OK</button>
+		</div>
 	</div>
 	<p></p>
 	<div class="row">
 
 		<div class="col-sm-3">
 			<div class="card" style="width: 100%;">
-				<img class="card-img-top" width="100" height="150" src="<spring:url value="/res/img/income.jpg" />"
+				<img class="card-img-top" width="100" height="150"
+					src="<spring:url value="/res/img/income.jpg" />"
 					alt="Card image cap">
 				<div class="card-body">
 					<h5 class="card-title">Income</h5>
@@ -33,17 +38,20 @@
 						</li>
 						<li
 							class="list-group-item d-flex justify-content-between align-items-center">
-							Income <span class="badge badge-primary badge-pill"
-							id="amount-OUT">0</span>
+							Income<br> <span id="amount-OUT">0</span>
 						</li>
 
 					</ul>
+					<a role="button" id="btn-detail-OUT" class="badge badge-success"
+						link="${contextPath}/management/transaction/type=OUT"
+						href="${contextPath}/management/transaction/type=OUT">Detail</a>
 				</div>
 			</div>
 		</div>
 		<div class="col-sm-3">
 			<div class="card" style="width: 100%;">
-				<img class="card-img-top" width="100" height="150" src="<spring:url value="/res/img/wallet1.png" />"
+				<img class="card-img-top" width="100" height="150"
+					src="<spring:url value="/res/img/wallet1.png" />"
 					alt="Card image cap">
 				<div class="card-body">
 					<h5 class="card-title">Spent</h5>
@@ -55,11 +63,13 @@
 						</li>
 						<li
 							class="list-group-item d-flex justify-content-between align-items-center">
-							Invest <span class="badge badge-primary badge-pill"
-							id="amount-IN">0</span>
+							Spent<br> <span id="amount-IN">0</span>
 						</li>
 
 					</ul>
+					<a role="button" id="btn-detail-IN" class="badge badge-success"
+						link="${contextPath}/management/transaction/type=IN"
+						href="${contextPath}/management/transaction/type=IN">Detail</a>
 				</div>
 			</div>
 		</div>
@@ -74,6 +84,9 @@
 	var infoTotalSpent = document.getElementById("amount-IN");
 	var selectMonth = document.getElementById("select-month");
 	var selectYear = document.getElementById("select-year");
+	
+	var btnDetailIn = document.getElementById("btn-detail-IN");
+	var btnDetailOut = document.getElementById("btn-detail-OUT");
 
 	function populatePeriodFilter() {
 		selectMonth.innerHTML = "";
@@ -107,6 +120,8 @@
 														
 						document.getElementById("count-"+module).innerHTML = count;
 						document.getElementById("amount-"+module).innerHTML = amount;
+						document.getElementById("btn-detail-"+module).href = document.getElementById("btn-detail-"+module).getAttribute("link")
+							+"&transactionDate-month="+month+"&transactionDate-year="+year;
 					} else {
 						alert("Failed getting cashflow: "+module);
 					} 

@@ -68,7 +68,7 @@
 					id="useraname" class="form-control" type="text" /> <br />  
 				<label for="name"> Display Name </label> <br>  <input
 					id="name" class="form-control" type="text" /> <br />  
-				<label for="password"> Kata sandi </label> <br>   <input
+				<label for="password"> Password </label> <br>   <input
 					id="password" type="password" class="login-field" /> <br /> 
 				<button class="btn btn-success"    onclick="register(); return false;">Submit</button>
 				

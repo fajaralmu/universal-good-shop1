@@ -11,7 +11,7 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Service;
 
 import com.fajar.annotation.CustomEntity;
-import com.fajar.entity.custom.CashFlowEntity;
+import com.fajar.entity.custom.CashFlow;
 
 import lombok.extern.slf4j.Slf4j;
 

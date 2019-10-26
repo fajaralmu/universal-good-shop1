@@ -16,12 +16,9 @@
 						<h5 class="card-title">
 							 ${menu.name } 
 						</h5>
-						<a role="button" class="btn btn-secondary"
+						<a role="button" class="badge badge-primary"
 							data-toggle="tooltip" data-placement="bottom"
 							title="${menu.description }" href="${menu.url }">Detail</a>
-						<%-- <div style="height: 100px; overflow: scroll">
-							<p class="card-text">${menu.description}</p>
-						</div> --%>
 					</div>
 				</div>
 			</div>

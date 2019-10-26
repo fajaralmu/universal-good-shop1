@@ -40,5 +40,8 @@ public class Supplier extends BaseEntity implements Serializable{
 	@Column
 	@FormField
 	private String website;
+	@FormField(type = "img", required = false, defaultValue = "DefaultIcon.BMP")
+	@Column(name = "icon_url")
+	private String iconUrl;
 	
 }
