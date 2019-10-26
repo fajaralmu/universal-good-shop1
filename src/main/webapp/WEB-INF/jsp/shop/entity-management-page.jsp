@@ -25,6 +25,7 @@
 	};
 	var imagesData = {};
 	var idField = "${entityProperty.idField}";
+	var  editable = ${entityProperty.editable};
 	
 </script>
 
@@ -275,6 +276,8 @@
 		document.getElementById(id).value = null;
 		let imageTag = document.getElementById(id + "-display");
 		imageTag.src = imageTag.getAttribute("originaldata");
+		//remove from imagesData object
+		imagesData[id] = null;
 	}
 
 	function clearFilter() {
@@ -283,11 +286,14 @@
 		orderType = null;
 	}
 
+	//load dropdown list for multiple select
 	function loadList(inputElement) {
 
 		let element = document.getElementById(inputElement.name);
 		element.innerHTML = "";
+		//converter field
 		let itemField = element.getAttribute("itemNameField");
+		//foreign key field
 		let valueField = element.getAttribute("itemValueField");
 		let filterValue = inputElement.value;
 		var requestObject = {
@@ -300,26 +306,19 @@
 		requestObject.filter.fieldsFilter = {};
 		requestObject.filter.fieldsFilter[itemField] = filterValue;
 
-		postReq("<spring:url value="/api/entity/get" />", requestObject,
-				function(xhr) {
-					var response = (xhr.data);
-					var entities = response.entities;
-					if (entities != null && entities[0] != null) {
-						for (let i = 0; i < entities.length; i++) {
-							let entity = entities[i];
-							let option = document.createElement("option");
-							option.value = entity[valueField];
-							option.innerHTML = entity[itemField];
-							option.onclick = function() {
-								inputElement.value = option.innerHTML;
-							}
-							element.append(option);
-						}
-
-					} else {
-						alert("data not found");
-					}
-				});
+		doLoadDropDownItems("<spring:url value="/api/entity/get" />", requestObject, function(entities){
+			for (let i = 0; i < entities.length; i++) {
+				let entity = entities[i];
+				let option = document.createElement("option");
+				option.value = entity[valueField];
+				option.innerHTML = entity[itemField];
+				option.onclick = function() {
+					inputElement.value = option.innerHTML;
+				}
+				element.append(option);
+			}
+		});
+		
 	}
 
 	function getById(entityId, callback) {
@@ -336,16 +335,8 @@
 		requestObject.filter.fieldsFilter = {};
 		requestObject.filter.fieldsFilter[idField] = entityId;
 
-		postReq("<spring:url value="/api/entity/get" />", requestObject,
-				function(xhr) {
-					var response = (xhr.data);
-					var entities = response.entities;
-					if (entities != null && entities[0] != null) {
-						callback(entities[0]);
-					} else {
-						alert("data not found");
-					}
-				});
+		doGetById("<spring:url value="/api/entity/get" />", requestObject,callback);
+		
 	}
 
 	function loadEntity(page) {
@@ -370,75 +361,18 @@
 				requestObject.filter.fieldsFilter[fieldName] = filterField.value;
 			}
 		}
-		postReq("<spring:url value="/api/entity/get" />", requestObject,
-				function(xhr) {
-					var response = (xhr.data);
-					var entities = response.entities;
-					totalData = response.totalData;
-					this.page = response.filter.page;
-					populateTable(entities);
-					createNavigationButtons();
-				});
+		doLoadEntities("<spring:url value="/api/entity/get" />", requestObject, function(response){
+			var entities = response.entities;
+			totalData = response.totalData;
+			this.page = response.filter.page;
+			populateTable(entities);
+			updateNavigationButtons();
+		});
+		
 	}
 
-	function createNavigationButtons() {
-		navigationPanel.innerHTML = "";
-		var buttonCount = Math.ceil(totalData / limit);
-		let prevPage = this.page == 0 ? 0 : this.page - 1;
-		//prev and first button
-		navigationPanel.append(createNavigationButton(0, "|<"));
-		navigationPanel.append(createNavigationButton(prevPage, "<"));
-
-		/* DISPLAYED BUTTONS */
-		let displayed_buttons = new Array();
-		let min = this.page - 2;
-		let max = this.page + 2;
-		for (let i = min; i <= max; i++) {
-			displayed_buttons.push(i);
-		}
-		let firstSeparated = false;
-		let lastSeparated = false;
-
-		for (let i = 0; i < buttonCount; i++) {
-			let buttonValue = i * 1 + 1;
-			let included = false;
-			for (let j = 0; j < displayed_buttons.length; j++) {
-				if (displayed_buttons[j] == i && !included) {
-					included = true;
-				}
-			}
-			if (!lastSeparated && this.page < i - 2
-					&& (i * 1 + 1) == (buttonCount - 1)) {
-				//console.log("btn id",btn.id,"MAX",max,"LAST",(jumlahTombol-1));
-				lastSeparated = true;
-				var lastSeparator = document.createElement("span");
-				lastSeparator.innerHTML = "...";
-				navigationPanel.appendChild(lastSeparator);
-
-			}
-			if (!included && i != 0 && !firstSeparated) {
-				firstSeparated = true;
-				var firstSeparator = document.createElement("span");
-				firstSeparator.innerHTML = "...";
-				navigationPanel.appendChild(firstSeparator);
-
-			}
-			if (!included && i != 0 && i != (buttonCount - 1)) {
-				continue;
-			}
-
-			let button = createNavigationButton(i, buttonValue);
-			if (i == page) {
-				button.className = button.className.replace("active", "");
-				button.className = button.className + " active ";
-			}
-			navigationPanel.append(button);
-		}
-
-		let nextPage = this.page == buttonCount - 1 ? this.page : this.page + 1;
-		//next & last button
-		navigationPanel.append(createNavigationButton(nextPage, ">"));
-		navigationPanel.append(createNavigationButton(buttonCount - 1, ">|"));
+	function updateNavigationButtons() {
+		createNavigationButtons(this.navigationPanel,this.page,this.totalData,this.limit,this.loadEntity);
 	}
 
 	
@@ -481,21 +415,26 @@
 			row.append(createCell(number));
 			for (let j = 0; j < fieldNames.length; j++) {
 				let entityValue = entity[fieldNames[j]];
+				//handle object type value
 				if (typeof (entityValue) == "object" && entityValue != null) {
 					console.log("TYPE ", typeof (entityValue), fieldNames[j]);
 					let objectFieldName = window["itemField_" + fieldNames[j]];
 					entityValue = entityValue[objectFieldName];
-				} else if (!isDate(fieldNames[j]) && !isImage(fieldNames[j])
-						&& typeof (entityValue) == "string"
-						&& entityValue != null) {
-					if (entityValue.length > 35) {
+				}
+				//regular value
+				else if (!isDate(fieldNames[j]) && !isImage(fieldNames[j]) && entityValue != null) {
+					
+					//limit string characters count 
+					if ( typeof (entityValue) == "string" && entityValue.length > 35) {
 						entityValue = entityValue.substring(0, 35) + "...";
 					}
 				}
-				
-				if (isDate(fieldNames[j])) {
+				//handle date type value
+				else if (isDate(fieldNames[j])) {
 					entityValue = new Date(entityValue);
-				} else if (isImage(fieldNames[j])) {
+				}
+				//handle image type value
+				else if (isImage(fieldNames[j])) {
 					if (entityValue.split("~") != null) {
 						entityValue = entityValue.split("~")[0];
 					}
@@ -507,7 +446,7 @@
 			let optionCell = createCell("");
 			
 			//button edit
-			let buttonEdit = createButton("edit_" + i, "Edit");
+			let buttonEdit = createButton("btn-edit-" + i, editable?"Edit":"Detail");
 			buttonEdit.className = "btn btn-warning"
 			buttonEdit.onclick = function() {
 				alert("will Edit: " + entity[idField]);
@@ -515,25 +454,29 @@
 					populateForm(entity);
 				});
 			}
-			row.onclick = function() {
+			/* row.onclick = function() {
 				alert("will Edit: " + entity[idField]);
 				getById(entity[idField], function(entity) {
 					populateForm(entity);
 				});
-			}
-			
-			//button delete
-			let buttonDelete = createButton("delete_" + i, "Delete");
-			buttonDelete.className = "btn btn-danger";
-			buttonDelete.onclick = function() {
-				if (!confirm("will Delete: " + entity[idField])) {
-					return;
-				}
-				deleteEntity(entity[idField]);
-			}
+			} */
 			let btnOptionGroup = createDiv("btn-group-option-"+ i,"btn-group btn-group-sm");
 			btnOptionGroup.append(buttonEdit);
-			btnOptionGroup.append(buttonDelete);
+			
+			//button delete
+			if(editable){
+				let buttonDelete = createButton("delete_" + i, "Delete");
+				buttonDelete.className = "btn btn-danger";
+				buttonDelete.onclick = function() {
+					if (!confirm("will Delete: " + entity[idField])) {
+						return;
+					}
+					deleteEntity(entity[idField]);
+				}
+				btnOptionGroup.append(buttonDelete);
+			}
+			
+			
 			optionCell.append(btnOptionGroup);
 			row.append(optionCell);
 			entityTBody.append(row);
@@ -542,7 +485,7 @@
 
 	function createTableHeader() {
 		//HEADER
-		entityTHead.innerHTML = "";
+		this.entityTHead.innerHTML = "";
 		let row = document.createElement("tr");
 		row.append(createCell("No"));
 		for (let i = 0; i < fieldNames.length; i++) {
@@ -556,26 +499,7 @@
 			} 
 			let isDateField = false
 			if (isDate(fieldName)) {
-				input.id = "filter-" + fieldName + "-day";
-				input.setAttribute("field", fieldName + "-day");
-				input.style.width = "30%";
-				let inputMonth = createInputText("filter-" + fieldName
-						+ "-month", "filter-field form-control");
-				inputMonth.setAttribute("field", fieldName + "-month");
-				inputMonth.style.width = "30%"; 
-				inputMonth.onkeyup = function() {
-					loadEntity();
-				}
-				let inputYear = createInputText(
-						"filter-" + fieldName + "-year", "filter-field form-control");
-				inputYear.setAttribute("field", fieldName + "-year"); 
-				inputYear.style.width = "30%";
-				inputYear.onkeyup = function() {
-					loadEntity();
-				}
-				inputGroup.append(input);
-				inputGroup.append(inputMonth);
-				inputGroup.append(inputYear);
+				inputGroup = createFilterInputDate(inputGroup, fieldName, loadEntity);
 				isDateField = true;
 			}
 			if (!isDateField)
@@ -589,14 +513,14 @@
 			ascButton.className = "btn btn-outline-secondary btn-sm";
 			descButton.className = "btn btn-outline-secondary btn-sm";
 			descButton.onclick = function() {
-				orderType = "desc";
-				orderBy = fieldName;
-				loadEntity(page);
+				this.orderType = "desc";
+				this.orderBy = fieldName;
+				loadEntity(this.page);
 			}
 			ascButton.onclick = function() {
-				orderType = "asc";
-				orderBy = fieldName;
-				loadEntity(page);
+				this.orderType = "asc";
+				this.orderBy = fieldName;
+				loadEntity(this.page);
 			}
 			btnSortGroup.append(ascButton);
 			btnSortGroup.append(descButton);
@@ -625,29 +549,37 @@
 			let isImageField = isImage(fieldNames[j]);
 			let isDateField = isDate(fieldNames[j]);
 
+			//handle object type value
 			if (typeof (entityValue) == "object" && entityValue != null) {
 
 
 				let objectValueName = window["valueField_" + fieldNames[j]]
 				entityValue = entityValueAsObject[objectValueName];
-				
+				//handle multiple select
 				if (isMultipleSelect) {
 					let option = document.createElement("option");
+					//foreign key field name
 					objectValueName = elementField
 							.getAttribute("itemvaluefield");
 					option.value = entityValueAsObject[objectValueName];
+					//converter field name
 					let objectItemName = elementField
 							.getAttribute("itemnamefield");
 					option.innerHTML = entityValueAsObject[objectItemName];
 					option.selected = true;
 					elementField.append(option);
+					//set input value same as converter field name
 					let inputField = document.getElementById("input-"
 							+ fieldNames[j]);
 					inputField.value = entityValueAsObject[objectItemName];
-				}else{
+				}
+				//handle regular select
+				else{
 					elementField.value = entityValue;
 				}
-			} else if (isImageField) {
+			} 
+			//handle image type value
+			else if (isImageField) {
 				let displayElement = document.getElementById(fieldNames[j]
 						+ "-display");
 				let url = "${host}/${contextPath}/${imagePath}/";
@@ -666,11 +598,16 @@
 					displayElement.setAttribute("originaldata", resourceUrl);
 					displayElement.setAttribute("originalvalue", entityValue);
 				}
-			} else if (!isMultipleSelect) {
+			}
+			//handle regular value
+			else if (!isMultipleSelect) {
+				//datefield
 				if (isDateField) {
 					let date = new Date(entityValue);
 					entityValue = toDateInput(date);
-				} else if (enableDetail) {
+				} 
+				//has detail values
+				else if (enableDetail) {
 					entityValue = entity[elementField.getAttribute("name")];
 					elementField.setAttribute(
 							elementField.getAttribute("name"), entityValue);
@@ -708,6 +645,7 @@
 	//add image to image list
 	function doAddImageList(id, src, originalvalue) {
 		let listParent = document.getElementById(id);//+"-input-list");
+		//current item list elements
 		let itemLists = document.getElementsByClassName(id + "-input-item");
 		let length = 0;
 		if (itemLists != null)
@@ -717,41 +655,55 @@
 		if (index < 0) {
 			index = 0;
 		}
-		let idIdx = id + "-" + index;
-		let itemDiv = createDiv(idIdx + "-input-item", id + "-input-item");
-		let input = createInput(idIdx, "input-file", "file");
-		let imgTag = createImgTag(idIdx + "-display", null, "50", "50", src);
+		
+		//begin create new list item element
+		let elmentIdAndIndex = id + "-" + index;
+		//create list item
+		let listItem = createDiv(elmentIdAndIndex + "-input-item", id + "-input-item");
+		
+		//create file input for choosing image
+		let input = createInput(elmentIdAndIndex, "input-file", "file");
+		//create image tag for displaying image
+		let imgTag = createImgTag(elmentIdAndIndex + "-display", null, "50", "50", src);
 		if (src != null) {
 			//with full path
 			imgTag.setAttribute("originaldata", src);
 			//only value
 			imgTag.setAttribute("originalvalue", originalvalue);
 		}
-		let btnAddData = createButton(idIdx + "-file-ok-btn", "ok");
+		//button SET selected image
+		let btnAddData = createButton(elmentIdAndIndex + "-file-ok-btn", "ok");
 		btnAddData.className = "btn btn-primary btn-sm";
 		btnAddData.onclick = function() {
-			addImagesData(idIdx);
+			addImagesData(elmentIdAndIndex);
 		}
-		let btnCancelData = createButton(idIdx + "-file-cancel-btn", "cancel");
+		//button CANCEL selectedImage
+		let btnCancelData = createButton(elmentIdAndIndex + "-file-cancel-btn", "cancel");
 		btnCancelData.className = "btn btn-warning btn-sm";
 		btnCancelData.onclick = function() {
-			cancelImagesData(idIdx);
+			cancelImagesData(elmentIdAndIndex);
 		}
 
-		let btnRemoveList = createButton(idIdx + "-remove-list", "remove");
-		btnRemoveList.className = "btn btn-danger btn-sm";
-		btnRemoveList.onclick = function() {
-			removeImageList(idIdx);
+		//button REMOVE list item
+		let btnRemoveListItem = createButton(elmentIdAndIndex + "-remove-list", "remove");
+		btnRemoveListItem.className = "btn btn-danger btn-sm";
+		btnRemoveListItem.onclick = function() {
+			removeImageList(elmentIdAndIndex);
 		}
-		itemDiv.append(input);
-		itemDiv.append(btnAddData);
-		itemDiv.append(btnCancelData);
-		itemDiv.append(btnRemoveList);
-		let wrapperDiv = createDiv(idIdx + "-wrapper-img", "wrapper");
+		//append file input
+		listItem.append(input);
+		
+		//append buttons
+		listItem.append(btnAddData);
+		listItem.append(btnCancelData);
+		listItem.append(btnRemoveListItem);
+		
+		//append image display
+		let wrapperDiv = createDiv(elmentIdAndIndex + "-wrapper-img", "wrapper");
 		wrapperDiv.append(imgTag);
-		itemDiv.append(wrapperDiv);
+		listItem.append(wrapperDiv);
 
-		listParent.append(itemDiv);
+		listParent.append(listItem);
 
 	}
 
@@ -761,9 +713,9 @@
 		let element = document.getElementById(id);
 		element.parentNode.remove(element);
 	}
-	function showDetail(id, field) {
+	function showDetail(elementId, field) {
 		var requestObject = {
-			'entity' : id,
+			'entity' : elementId,
 			'filter' : {
 				'limit' : 0,
 				'orderBy' : null,
@@ -774,33 +726,28 @@
 			}
 		};
 		requestObject.filter.fieldsFilter[entityName] = document
-				.getElementById(id).getAttribute(field);
-		let detailFields = document.getElementById(id).getAttribute(
+				.getElementById(elementId).getAttribute(field);
+		let detailFields = document.getElementById(elementId).getAttribute(
 				"detailfields").split("~");
 		console.log("request", requestObject);
 		detailTable.innerHTML = "";
 
-		postReq(
-				"<spring:url value="/api/entity/get" />",
-				requestObject,
-				function(xhr) {
-					var response = (xhr.data);
-					var entities = response.entities;
-					if (entities != null && entities[0] != null) {
-						let tableHeader = createTableHeaderByColumns(detailFields);
-						console.log("header", tableHeader);
-						let bodyRows = createTableBody(detailFields, entities);
-						detailTable.append(tableHeader);
-						for (var i = 0; i < bodyRows.length; i++) {
-							var row = bodyRows[i];
-							detailTable.append(row);
-						}
-						$("#modal-entity-form").modal('hide');
-						$('#modal-entity-detail').modal('show');
-					} else {
-						alert("data not found");
-					}
-				});
+		doGetDetail("<spring:url value="/api/entity/get" />", requestObject,detailFields, populateDetailModal);
+		
+	}
+	
+	function populateDetailModal(entities,detailFields){
+		//table detail header
+		let tableHeader = createTableHeaderByColumns(detailFields); 
+		//table detail body
+		let bodyRows = createTableBody(detailFields, entities);
+		detailTable.append(tableHeader);
+		for (var i = 0; i < bodyRows.length; i++) {
+			var row = bodyRows[i];
+			detailTable.append(row);
+		}
+		$("#modal-entity-form").modal('hide');
+		$('#modal-entity-detail').modal('show');
 	}
 	
 	function setDefaultOption(){
@@ -808,6 +755,8 @@
 			return;
 		}
 		for (let optionElement in optionElements) {
+			if(document.getElementById("filter-"+optionElement)==null)
+				continue;
 			document.getElementById("filter-"+optionElement).value = optionElements[optionElement];
 		} 
 		
@@ -838,15 +787,18 @@
 					alert("Field " + field.id + " must be filled! ");
 					return;
 				}
+				//check if it is update or create operation
 				if (field.getAttribute("identity") == "true"
 						&& field.value != "" && field.value != null) {
 					isNew = false;
 				}
-				if (field.nodeName == "SELECT") {
+				if (field.nodeName == "SELECT") { //handle select element
 					let idField = field.getAttribute("itemValueField");
 					entity[fieldId] = {};
 					entity[fieldId][idField] = field.value;
-				} else if (isImage(fieldId)) {
+				} else if (isImage(fieldId)) { //handle image element
+					
+					//handle multiple images
 					if (field.getAttribute("name") == "input-list") {
 						let itemLists = document.getElementsByClassName(fieldId
 								+ "-input-item");
@@ -858,9 +810,11 @@
 						let length = itemLists.length;
 						entity[fieldId] = "";
 						for (var j = 0; j < length; j++) {
-							let idIdx = fieldId + "-" + j;
-							let imgTag = document.getElementById(idIdx
+							let elmentIdAndIndex = fieldId + "-" + j;
+							let imgTag = document.getElementById(elmentIdAndIndex
 									+ "-display");
+							
+							//check original image
 							let originalValue = imgTag
 									.getAttribute("originalvalue");
 							if (originalValue != null) {
@@ -868,18 +822,22 @@
 										+ originalValue + "}";
 							}
 
+							//if current value has NOT been updated
 							if (imagesData[fieldId + "-" + j] == null
 									|| imagesData[fieldId + "-" + j].trim() == "") {
 								entity[fieldId] += "~";
 							} else {
-								entity[fieldId] += imagesData[idIdx] + "~";
+							//if current value has been UPDATED
+								entity[fieldId] += imagesData[elmentIdAndIndex] + "~";
 							}
 						}
 
-					} else {
+					} 
+					// single image
+					else { 
 						entity[fieldId] = imagesData[fieldId];
 					}
-				} else {
+				} else {//regular element
 					entity[fieldId] = field.value;
 				}
 			}
@@ -889,42 +847,17 @@
 			requestObject[entityName] = entity;
 			requestObject.entity = entityName;
 			console.log("request object", requestObject);
-			postReq("<spring:url value="/api/entity/" />" + endPoint,
-					requestObject, function(xhr) {
-						var response = (xhr.data);
-						if (response != null && response.code == "00") {
-							alert("SUCCESS");
-							$("#modal-entity-form").modal('hide');
-							loadEntity(page);
-						} else {
-							alert("FAILS");
-						}
-						clear();
-					});
+			doSubmit("<spring:url value="/api/entity/" />" + endPoint, requestObject, function(){
+				$("#modal-entity-form").modal('hide');
+				loadEntity(this.page);
+				clear();
+			})
 		};
 
 		function deleteEntity(entityId) {
-			console.log("Delete: ", entityId);
-			var requestObject = {
-				"entity" : entityName,
-				"filter" : {
-
-				}
-			};
-			requestObject.filter.fieldsFilter = {};
-			requestObject.filter.fieldsFilter[idField] = entityId;
-
-			postReq("<spring:url value="/api/entity/delete" />", requestObject,
-					function(xhr) {
-						var response = (xhr.data);
-						var code = response.code;
-						if (code == "00") {
-							alert("success deleted");
-							loadEntity(page);
-						} else {
-							alert("error deleting");
-						}
-					});
+			doDeleteEntity("<spring:url value="/api/entity/delete" />", entityName, idField, entityId, function(){
+				loadEntity(page);
+			});
 		}
 	</script>
 </c:if>

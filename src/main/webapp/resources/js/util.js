@@ -19,12 +19,13 @@ function createAnchor(id, html, url){
 	return a;
 }
 
-function createNavigationButton(id, html){
+function createNavigationButton(id, html, callback){
 	var btn= createAnchor(id,html, "#");
 	btn.className = "page-link";
-	btn.onclick = function(){
-		 loadEntity(id);
-	}
+	if(callback != null)
+		btn.onclick = function(){
+			callback(id);
+		}
 	var li = document.createElement("li");
 	li.className = "page-item";
 	li.append(btn);
@@ -37,6 +38,7 @@ function createButton(id, html){
 	button.innerHTML = html;
 	return button;
 }
+ 
 
 function createCell(val){
 	let column = document.createElement("td");
@@ -134,7 +136,7 @@ function createTableHeaderByColumns(columns){
 }
 
 function createTableBody(columns, entities){
-	//let tbody = createElement("tbody", "tbody-detail", "tbody-detail");
+	// let tbody = createElement("tbody", "tbody-detail", "tbody-detail");
 	let rows = [];
 	for (let j = 0; j < entities.length; j++) {
 		let entity = entities[j];
@@ -163,3 +165,97 @@ function createTableBody(columns, entities){
 	}
 	return rows;
 }
+
+function createFilterInputDate(inputGroup, fieldName, callback){
+	//input day
+	let inputDay = createInputText(
+			"filter-" + fieldName + "-day", "filter-field form-control"); 
+	inputDay.setAttribute("field", fieldName + "-day");
+	inputDay.style.width = "30%";
+	inputDay.onkeyup = function() {
+		callback();
+	}
+	//input month
+	let inputMonth = createInputText("filter-" + fieldName
+			+ "-month", "filter-field form-control");
+	inputMonth.setAttribute("field", fieldName + "-month");
+	inputMonth.style.width = "30%"; 
+	inputMonth.onkeyup = function() {
+		callback();
+	}
+	//input year
+	let inputYear = createInputText(
+			"filter-" + fieldName + "-year", "filter-field form-control");
+	inputYear.setAttribute("field", fieldName + "-year"); 
+	inputYear.style.width = "30%";
+	inputYear.onkeyup = function() {
+		callback();
+	}
+	inputGroup.append(inputDay);
+	inputGroup.append(inputMonth);
+	inputGroup.append(inputYear);
+	return inputGroup;
+}
+
+/** ******NAVIGATION******loadEntity** */
+function createNavigationButtons(navigationPanel,currentPage,totalData,limit,buttonClickCallback) {
+	navigationPanel.innerHTML = "";
+	var buttonCount = Math.ceil(totalData / limit);
+	let prevPage = currentPage == 0 ? 0 : currentPage - 1;
+	// prev and first button
+	navigationPanel.append(createNavigationButton(0, "|<",buttonClickCallback));
+	navigationPanel.append(createNavigationButton(prevPage, "<",buttonClickCallback));
+
+	/* DISPLAYED BUTTONS */
+	let displayed_buttons = new Array();
+	let min = currentPage - 2;
+	let max = currentPage + 2;
+	for (let i = min; i <= max; i++) {
+		displayed_buttons.push(i);
+	}
+	let firstSeparated = false;
+	let lastSeparated = false;
+
+	for (let i = 0; i < buttonCount; i++) {
+		let buttonValue = i * 1 + 1;
+		let included = false;
+		for (let j = 0; j < displayed_buttons.length; j++) {
+			if (displayed_buttons[j] == i && !included) {
+				included = true;
+			}
+		}
+		if (!lastSeparated && currentPage < i - 2
+				&& (i * 1 + 1) == (buttonCount - 1)) {
+			// console.log("btn id",btn.id,"MAX",max,"LAST",(jumlahTombol-1));
+			lastSeparated = true;
+			var lastSeparator = document.createElement("span");
+			lastSeparator.innerHTML = "...";
+			navigationPanel.appendChild(lastSeparator);
+
+		}
+		if (!included && i != 0 && !firstSeparated) {
+			firstSeparated = true;
+			var firstSeparator = document.createElement("span");
+			firstSeparator.innerHTML = "...";
+			navigationPanel.appendChild(firstSeparator);
+
+		}
+		if (!included && i != 0 && i != (buttonCount - 1)) {
+			continue;
+		}
+
+		let button = createNavigationButton(i, buttonValue,buttonClickCallback);
+		if (i == page) {
+			button.className = button.className.replace("active", "");
+			button.className = button.className + " active ";
+		}
+		navigationPanel.append(button);
+	}
+
+	let nextPage = currentPage == buttonCount - 1 ? currentPage : currentPage + 1;
+	// next & last button
+	navigationPanel.append(createNavigationButton(nextPage, ">",buttonClickCallback));
+	navigationPanel.append(createNavigationButton(buttonCount - 1, ">|",buttonClickCallback));
+	return navigationPanel;
+}
+

@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
@@ -52,5 +53,8 @@ public class Product extends BaseEntity implements Serializable {
 	@ManyToOne
 	@FormField (entityReferenceName="category",optionItemName="name",type="dynamiclist")
 	private Category category;
+	
+	@Transient
+	private Integer count;
 
 }

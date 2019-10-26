@@ -170,44 +170,43 @@ public class EntityService {
 	private ShopApiResponse saveProduct(Product product, boolean newRecord) {
 
 		product = (Product) copyNewElement(product, newRecord);
-		
+
 		String imageData = product.getImageUrl();
 		if (imageData != null && !imageData.equals("")) {
 			String[] base64Images = imageData.split("~");
 			if (base64Images != null && base64Images.length > 0) {
 				String[] imageUrls = new String[base64Images.length];
-				for (int i=0;i<  base64Images.length;i++) {
-					String base64Image  =base64Images[i];
+				for (int i = 0; i < base64Images.length; i++) {
+					String base64Image = base64Images[i];
 					if (base64Image == null || base64Image.equals(""))
 						continue;
 					try {
 						boolean updated = true;
-						String imageName=null;
-						if(base64Image.startsWith("{ORIGINAL>>")) {
+						String imageName = null;
+						if (base64Image.startsWith("{ORIGINAL>>")) {
 							String[] raw = base64Image.split("}");
-							if(raw.length > 1) {
+							if (raw.length > 1) {
 								base64Image = raw[1];
-							}
-							else {
+							} else {
 								imageName = raw[0].replace("{ORIGINAL>>", "");
 								updated = false;
 							}
 						}
-						if(updated) {
+						if (updated) {
 							imageName = fileService.writeImage("PRD", base64Image);
-						} 
-						imageUrls[i]=(imageName);
+						}
+						imageUrls[i] = (imageName);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						product.setImageUrl(null);
 						e.printStackTrace();
 					}
 				}
-				String imageUrl  = String.join("~", imageUrls);
+				String imageUrl = String.join("~", imageUrls);
 				product.setImageUrl(imageUrl);
 
 			}
-			
+
 		} else {
 			if (!newRecord) {
 				Optional<Product> dbProduct = productRepository.findById(product.getId());
@@ -269,18 +268,17 @@ public class EntityService {
 		String[] sqlListAndCount = generateSqlByFilter(filter, entityClass);
 		String sql = sqlListAndCount[0];
 		String sqlCount = sqlListAndCount[1];
-		List<BaseEntity> entities =getEntitiesBySql(sql, entityClass);
+		List<BaseEntity> entities = getEntitiesBySql(sql, entityClass);
 		Integer count = 0;
 		Object countResult = repositoryCustom.getSingleResult(sqlCount);
 		if (countResult != null) {
 			count = ((BigInteger) countResult).intValue();
 		}
-		return ShopApiResponse.builder().entities(entities).totalData(count)
-				.filter(filter).build();
+		return ShopApiResponse.builder().entities(entities).totalData(count).filter(filter).build();
 	}
-	
+
 	private String[] generateSqlByFilter(Filter filter, Class entityClass) {
-		
+
 //		String entityName = request.getEntity();
 		Integer offset = filter.getPage() * filter.getLimit();
 		boolean withLimit = filter.getLimit() > 0;
@@ -300,12 +298,10 @@ public class EntityService {
 		String sql = "select  `" + tableName + "`.* from `" + tableName + "` " + joinSql + " " + filterSQL + orderSQL
 				+ limitOffsetSQL;
 		String sqlCount = "select COUNT(*) from `" + tableName + "` " + joinSql + " " + filterSQL;
-		return new String[] {
-				sql, sqlCount
-		};
+		return new String[] { sql, sqlCount };
 	}
 
-	public List<BaseEntity> getEntitiesBySql(String sql, Class entityClass){
+	public List<BaseEntity> getEntitiesBySql(String sql, Class entityClass) {
 		List<BaseEntity> entities = repositoryCustom.filterAndSort(sql, entityClass);
 		return EntityUtil.validateDefaultValue(entities);
 	}
@@ -356,8 +352,6 @@ public class EntityService {
 		}
 		return sql;
 	}
-	
-	
 
 	private static String createFilterSQL(Class entityClass, Map<String, Object> filter, boolean contains,
 			boolean exacts) {
@@ -369,11 +363,11 @@ public class EntityService {
 			if (filter.get(key) == null)
 				continue;
 			String[] multiKey = key.split(",");
-			boolean isMultiKey = multiKey.length >1;
-			if(isMultiKey) {
+			boolean isMultiKey = multiKey.length > 1;
+			if (isMultiKey) {
 				key = multiKey[0];
 			}
-			
+
 			String columnName = key;
 			// check if date
 			boolean dayFilter = key.endsWith("-day");
@@ -418,10 +412,10 @@ public class EntityService {
 				FormField formField = field.getAnnotation(FormField.class);
 				try {
 					String referenceFieldName = formField.optionItemName();
-					if(isMultiKey) {
+					if (isMultiKey) {
 						referenceFieldName = multiKey[1];
 					}
-					Field fieldField = fieldClass.getDeclaredField(referenceFieldName );
+					Field fieldField = fieldClass.getDeclaredField(referenceFieldName);
 					String fieldColumnName = getColumnName(fieldField);
 					if (fieldColumnName == null || fieldColumnName.equals("")) {
 						fieldColumnName = key;
@@ -433,8 +427,8 @@ public class EntityService {
 				}
 
 			}
-			//rollback key to original key
-			if(isMultiKey) {
+			// rollback key to original key
+			if (isMultiKey) {
 				key = String.join(",", multiKey);
 			}
 			if (contains) {
@@ -496,18 +490,25 @@ public class EntityService {
 			switch (request.getEntity()) {
 			case "unit":
 				unitRepository.deleteById(id);
+				break; 
 			case "product":
 				productRepository.deleteById(id);
+				break;
 			case "customer":
 				customerRepository.deleteById(id);
+				break;
 			case "supplier":
 				supplierRepository.deleteById(id);
+				break;
 			case "user":
 				userRepository.deleteById(id);
+				break;
 			case "menu":
 				menuRepository.deleteById(id);
+				break;
 			case "category":
 				categoryRepository.deleteById(id);
+				break;
 			}
 			return ShopApiResponse.builder().build();
 		} catch (Exception ex) {

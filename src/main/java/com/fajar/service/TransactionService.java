@@ -33,6 +33,8 @@ import com.fajar.util.StringUtil;
 @Service
 public class TransactionService {
 
+	private static final boolean NOT_EXACTS = false;
+	private static final boolean EXACTS = true;
 	@Autowired
 	private TransactionRepository transactionRepository;
 	@Autowired	
@@ -117,7 +119,7 @@ public class TransactionService {
 	 * @param productFlow
 	 * @return
 	 */
-	private ProductFlowStock checkStock(ProductFlow productFlow) {
+	private ProductFlowStock getSingleStock(ProductFlow productFlow) {
 
 		// validate product flow
 
@@ -138,7 +140,7 @@ public class TransactionService {
 		System.out.println("RESULT: " + result.getClass());
 
 		Object[] objectList = (Object[]) result;
-		Integer total = Integer.parseInt(objectList[0].toString());
+		Integer total = objectList[0] == null ?0 : Integer.parseInt(objectList[0].toString());
 		Integer used = objectList[1] == null ? 0 : Integer.parseInt(objectList[1].toString());
 		Integer remaining = total - used;
 
@@ -150,14 +152,35 @@ public class TransactionService {
 	}
 
 	public ShopApiResponse stockInfo(ShopApiRequest request) {
-		ProductFlowStock productFlowStock = checkStock(request.getProductFlow());
+		ProductFlowStock productFlowStock = getSingleStock(request.getProductFlow());
 
 		return ShopApiResponse.builder().productFlowStock(productFlowStock).build();
 	}
+	
+	public List<Product> populateProductWithStocks(List<Product> products, boolean withCount) {
+		for (Product product : products) {
+			List<BaseEntity> productFlows = getProductFlowsByProduct("id",product.getId(),withCount, 20, EXACTS);
+			Integer count=0;
+			for (BaseEntity flow : productFlows) {
+				ProductFlow productFlow = (ProductFlow) flow;
+				count+=productFlow.getCount();
+			}
+			product.setCount(count);
+		}
+		return products;
+	}
 
-	public ShopApiResponse getStocks(ShopApiRequest request, boolean withCount) {
+	public ShopApiResponse getStocksByProductName(ShopApiRequest request, boolean withCount) {
+		
+		List<BaseEntity> productFlows = getProductFlowsByProduct("name",request.getProduct().getName(),withCount, 20, NOT_EXACTS);
+		if(productFlows == null) {
+			return ShopApiResponse.builder().code("01").message("Fetching error").build();
+		}
+		return ShopApiResponse.builder().entities(productFlows).build();
+	}
+
+	private List<BaseEntity> getProductFlowsByProduct(String key, Object value, boolean withCount, int limit, boolean exacts) {
 		try {
-			String productName = request.getProduct().getName();
 //			String sql = "select * from product_flow left join `transaction` on transaction_id = transaction.id "
 //					+ "left join product on product_id = product.id "
 //					+ "where transaction.`type` = 'IN' and product.name like '%" + productName + "%' limit 20";
@@ -167,14 +190,22 @@ public class TransactionService {
 					+ " product_flow.* from product_flow  "
 					+ "left join `transaction` on product_flow.transaction_id = transaction.id "
 					+ "left join product on product_flow.product_id = product.id "
-					+ "where transaction.`type` = 'IN' and product.name like '%" + productName
-					+ "%' having(used is null or flowCount-used>0) limit 20";
+					+ "where transaction.`type` = 'IN' "
+					+ " and product."+key + " $CONDITION "
+					
+					+ "having(used is null or flowCount-used>0) limit "+limit;
 
+			String condition = " like '%" + value + "%' ";
+			if(exacts) {
+				condition = " = '"+value+"'";
+			}
+			sql = sql.replace("$CONDITION", condition);
+			
 			List<ProductFlow> productFlows = productFlowRepositoryCustom.filterAndSort(sql, ProductFlow.class);
 			List<BaseEntity> entities = new ArrayList<>();
 			for (ProductFlow productFlow : productFlows) {
 				if (withCount) {
-					ProductFlowStock productFlowStock = checkStock(productFlow);
+					ProductFlowStock productFlowStock = getSingleStock(productFlow);
 					productFlowStock.setProductFlow(null);
 					if (productFlowStock.getRemainingStock() <= 0) {
 						continue;
@@ -185,10 +216,10 @@ public class TransactionService {
 				entities.add(productFlow);
 			}
 
-			return ShopApiResponse.builder().entities(entities).build();
+			return  (entities) ;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ShopApiResponse.builder().code("01").message("server error").build();
+			return null;
 		}
 	}
 
@@ -220,7 +251,7 @@ public class TransactionService {
 			}
 			ProductFlow refFlow = dbFlow.get();
 
-			ProductFlowStock flowStock = checkStock(refFlow);
+			ProductFlowStock flowStock = getSingleStock(refFlow);
 			Integer remainingStock = flowStock.getRemainingStock();
 			if (productFlow.getCount() > remainingStock) {
 				continue;

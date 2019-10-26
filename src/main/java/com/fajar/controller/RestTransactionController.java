@@ -54,7 +54,7 @@ public class RestTransactionController {
 	public ShopApiResponse stockinfo(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("stocks {}", request);
-		ShopApiResponse response = transactionService.getStocks(request, false);
+		ShopApiResponse response = transactionService.getStocksByProductName(request, false);
 		return response;
 	}
 	
