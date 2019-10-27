@@ -11,45 +11,72 @@
 <div class="content">
 
 	<div id="detail-content" class="row" style="display: none">
-		<div class="col-sm-12">
-			<h2 id="product-title"></h2>
-			<button class="btn btn-secondary btn-sm" id="close-detail"
-				onclick="closeDetail()">Back</button>
-			<div id="carousel-wrapper" style="width: 60%; margin: auto">
-				<div id="carouselExampleIndicators" class="carousel slide"
-					data-ride="carousel">
-					<ol id="carousel-indicators" class="carousel-indicators">
-					</ol>
-					<div id="carousel-inner" class="carousel-inner"></div>
-					<a class="carousel-control-prev" href="#carouselExampleIndicators"
-						role="button" data-slide="prev"> <span
-						class="carousel-control-prev-icon" aria-hidden="true"></span> <span
-						class="sr-only">Previous</span>
-					</a> <a class="carousel-control-next" href="#carouselExampleIndicators"
-						role="button" data-slide="next"> <span
-						class="carousel-control-next-icon" aria-hidden="true"></span> <span
-						class="sr-only">Next</span>
-					</a>
-				</div>
-			</div>
+		<table class="table" style="layout:fixed">
+			<tr>
+				<td style="width:60%">
+					<button class="btn btn-primary btn-sm" id="close-detail"
+							onclick="closeDetail()">Back</button>
+				</td>
+				<td style="width:40%">
+					<h2 id="product-title"></h2>
+						
+				</td>
+			</tr>
+			<tr valign="top">
+				<td style="width:60%">
+					
+					<div id="carousel-wrapper" style="width: 100%; margin: auto">
+						<div id="carouselExampleIndicators" class="carousel slide"
+							data-ride="carousel">
+							<ol id="carousel-indicators" class="carousel-indicators">
+							</ol>
+							<div id="carousel-inner" class="carousel-inner"></div>
+							<a class="carousel-control-prev"
+								href="#carouselExampleIndicators" role="button"
+								data-slide="prev"> <span class="carousel-control-prev-icon"
+								aria-hidden="true"></span> <span class="sr-only">Previous</span>
+							</a> <a class="carousel-control-next"
+								href="#carouselExampleIndicators" role="button"
+								data-slide="next"> <span class="carousel-control-next-icon"
+								aria-hidden="true"></span> <span class="sr-only">Next</span>
+							</a>
+						</div>
+					</div>
+				</td>
+				<!--  -->
+				<td style="width:40%">
+					<!-- END CAROUSEL -->
+					
+					<ul class="list-group">
+						<li
+							class="list-group-item d-flex justify-content-between align-items-center">
+							Stock <span class="badge badge-primary badge-pill"
+							id="product-stock">0</span>
+						</li>
+						<li
+							class="list-group-item d-flex justify-content-between align-items-center">
+							Price<br> <span id="product-price">0</span>
+						</li>
+						<li
+							class="list-group-item d-flex justify-content-between align-items-center">
+							Unit<br> <span id="product-unit">0</span>
+						</li>
+						<li
+							class="list-group-item d-flex justify-content-between align-items-center">
+							Category<br> <span id="product-category">0</span>
+						</li>
+						
 
-			<!-- END CAROUSEL -->
-			<ul class="list-group">
-				<li
-					class="list-group-item d-flex justify-content-between align-items-center">
-					Stock <span class="badge badge-primary badge-pill"
-					id="product-stock">0</span>
-				</li>
-				<li
-					class="list-group-item d-flex justify-content-between align-items-center">
-					Price<br> <span id="product-price">0</span>
-				</li>
-
-			</ul>
-			<button class="btn btn-secondary btn-sm" id="close-detail"
-				onclick="closeDetail()">Close</button>
-			<p></p>
-		</div>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					 <p>Description</p>
+		 				<p id="product-description">0</p>
+				</td>
+			</tr>
+		</table> 
 	</div>
 	<div id="catalog-content">
 		<h2>Product Catalog</h2>
@@ -98,6 +125,9 @@
 
 	//detail
 	var productTitle = document.getElementById("product-title");
+	var productUnit = document.getElementById("product-unit");
+	var productCategory = document.getElementById("product-category");
+	var productDescription = document.getElementById("product-description");
 	var carouselInner = document.getElementById("carousel-inner");
 	var carouselIndicator = document.getElementById("carousel-indicators");
 	var defaultLocation = window.location.href;
@@ -119,6 +149,9 @@
 		productTitle.innerHTML = entity.name;
 		document.getElementById("product-stock").innerHTML = entity.count;
 		document.getElementById("product-price").innerHTML = entity.price;
+		productUnit.innerHTML = entity.unit.name;
+		productCategory.innerHTML = entity.category.name;
+		productDescription.innerHTML = entity.description;
 		//image
 		carouselInner.innerHTML = "";
 		carouselIndicator.innerHTML = "";
@@ -141,16 +174,19 @@
 			let innerDiv = createDiv("item-" + i, "carousel-item " + className);
 			let src = "${host}/${contextPath}/${imagePath}/" + imageUrl;
 			let iconImage = createImgTag("icon-" + entity.id + "-" + i,
-					"d-block w-100", "300", "400", src);
+					"d-block w-100  ", "300", "300", src);
 			iconImage.setAttribute("alt", entity.name + "-" + i);
 
 			innerDiv.append(iconImage);
 			carouselInner.append(innerDiv);
 		}
-		if(defaultOption=="")
+		var slash = "";
+		if(!window.location.href.endsWith("/"))
+			slash ="/";
+		if (defaultOption == "")
 			window.history.pushState('detail-page', entity.name,
-				window.location.href + "/" + entity.code);
-		defaultOption= "";
+					window.location.href + slash + entity.code);
+		defaultOption = "";
 		show("detail-content");
 
 	}
@@ -292,6 +328,7 @@
 	if (defaultOption != "") {
 		loadDetail(defaultOption);
 		defaultLocation = defaultLocation.replace(defaultOption, "");
+		defaultLocation = defaultLocation.replace("/"+defaultOption, "");
 	}
 
 	loadEntity(page);
