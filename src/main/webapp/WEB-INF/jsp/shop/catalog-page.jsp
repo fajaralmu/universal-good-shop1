@@ -95,7 +95,7 @@
 		<div class="input-group mb-3">
 			<div class="input-group-prepend">
 				<div class="input-group-text">
-					<input type="checkbox" id="get-stock"
+					<input checked="checked" type="checkbox" id="get-stock"
 						aria-label="Checkbox for following text input">
 				</div>
 			</div>

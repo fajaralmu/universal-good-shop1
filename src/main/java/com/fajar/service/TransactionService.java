@@ -40,7 +40,7 @@ public class TransactionService {
 	private static final boolean EXACTS = true;
 	@Autowired
 	private TransactionRepository transactionRepository;
-	@Autowired	
+	@Autowired
 	private ProductRepository productRepository;
 	@Autowired
 	private ProductFlowRepository productFlowRepository;
@@ -54,7 +54,7 @@ public class TransactionService {
 	private RepositoryCustom<ProductFlow> productFlowRepositoryCustom;
 	@Autowired
 	private EntityService entityService;
-	
+
 	@PostConstruct
 	public void editPrice() {
 //		List<ProductFlow> flows = productFlowRepository.findByPriceIsNull();
@@ -140,18 +140,18 @@ public class TransactionService {
 		Query query = productFlowRepositoryCustom.createNativeQuery(sql);
 		Object result = query.getSingleResult();
 
-	
-
 		Object[] objectList = (Object[]) result;
-		Integer total = objectList[0] == null ?0 : Integer.parseInt(objectList[0].toString());
+		Integer total = objectList[0] == null ? 0 : Integer.parseInt(objectList[0].toString());
 		Integer used = objectList[1] == null ? 0 : Integer.parseInt(objectList[1].toString());
 		Integer remaining = total - used;
 
+		System.out.println(productFlow.getId() + " TOTAL: " + total + ", used: " + used + ". sql: " + sql);
 		ProductFlowStock productFlowStock = new ProductFlowStock();
 		productFlowStock.setProductFlow(productFlow);
+		productFlowStock.setUsedStock(used);
 		productFlowStock.setRemainingStock(remaining);
 		productFlowStock.setTotalStock(total);
-	//	System.out.println("RESULT getSingleStock: " + result );
+		// System.out.println("RESULT getSingleStock: " + result );
 		return productFlowStock;
 	}
 
@@ -160,31 +160,63 @@ public class TransactionService {
 
 		return ShopApiResponse.builder().productFlowStock(productFlowStock).build();
 	}
-	
+
 	public List<Product> populateProductWithStocks(List<Product> products, boolean withCount) {
+
 		for (Product product : products) {
-			List<BaseEntity> productFlows = getProductFlowsByProduct("id",product.getId(),withCount, 0, EXACTS);
-			Integer count=0;
-			for (BaseEntity flow : productFlows) {
-				ProductFlow productFlow = (ProductFlow) flow;
-				if(null!=productFlow.getProductFlowStock())
-				count+=productFlow.getProductFlowStock().getRemainingStock();
+			int totalCount = 0;
+			int used = 0;
+			final String sqlGetUsedCount = " select sum(product_flow.count) as used from product_flow "
+					+ " left join product on product_flow.product_id = product.id "
+					+ " left join `transaction` on transaction.id = product_flow.transaction_id "
+					+ " where transaction.`type` = 'OUT' and product.id = '$PRODUCT_ID'";
+			Object resultUsedProduct = productFlowRepositoryCustom.getSingleResult(sqlGetUsedCount.replace("$PRODUCT_ID", product.getId().toString()));
+			
+			final String sqlGetTotalCount = "select sum(product_flow.count) as flowCount from product_flow   "
+					+ "left join `transaction` on product_flow.transaction_id = transaction.id "
+					+ "left join product on product_flow.product_id = product.id  "
+					+ "where   transaction.`type` = 'IN' and product.id = '$PRODUCT_ID'";
+			Object resultTotalProduct = productFlowRepositoryCustom.getSingleResult(sqlGetTotalCount.replace("$PRODUCT_ID", product.getId().toString()));
+
+			Integer remainingCount = 0;
+			try {
+				used = ((BigDecimal) resultUsedProduct).intValue();
+			} catch (Exception ex) {
+				used = 0;
+				ex.printStackTrace();
+				System.out.println("==============ERROR PARSING USED COUNT:" + ex.getMessage());
 			}
-			product.setCount(count);
+			try {
+				totalCount = ((BigDecimal) resultTotalProduct).intValue();
+			} catch (Exception ex) {
+				totalCount = 0;
+				ex.printStackTrace();
+				System.out.println("==============ERROR PARSING TOTAL COUNT:" + ex.getMessage());
+			}
+			if(totalCount - used > 0) {
+				remainingCount = totalCount - used;
+			}
+			
+			product.setCount(remainingCount);
+			System.out.println(product.getCode() + "====================TOTAL: " + totalCount);
+			System.out.println("====================USED:" + used);
 		}
+
 		return products;
 	}
 
 	public ShopApiResponse getStocksByProductName(ShopApiRequest request, boolean withCount) {
-		
-		List<BaseEntity> productFlows = getProductFlowsByProduct("name",request.getProduct().getName(),withCount, 20, NOT_EXACTS);
-		if(productFlows == null) {
+
+		List<BaseEntity> productFlows = getProductFlowsByProduct("name", request.getProduct().getName(), withCount, 20,
+				NOT_EXACTS);
+		if (productFlows == null) {
 			return ShopApiResponse.builder().code("01").message("Fetching error").build();
 		}
 		return ShopApiResponse.builder().entities(productFlows).build();
 	}
 
-	private List<BaseEntity> getProductFlowsByProduct(String key, Object value, boolean withCount, int limit, boolean exacts) {
+	private List<BaseEntity> getProductFlowsByProduct(String key, Object value, boolean withCount, int limit,
+			boolean exacts) {
 		try {
 //			String sql = "select * from product_flow left join `transaction` on transaction_id = transaction.id "
 //					+ "left join product on product_id = product.id "
@@ -194,34 +226,31 @@ public class TransactionService {
 					+ "(select sum(count) as total_count from product_flow where flow_ref_id=flowId and deleted!=1) as used,  "
 					+ " product_flow.* from product_flow  "
 					+ "left join `transaction` on product_flow.transaction_id = transaction.id "
-					+ "left join product on product_flow.product_id = product.id "
-					+ "where transaction.`type` = 'IN' "
-					+ " and product."+key + " $CONDITION "
-					
-					+ "having(used is null or flowCount-used>0) " +(limit >0 ? " limit "+limit:"");
+					+ "left join product on product_flow.product_id = product.id " + "where transaction.`type` = 'IN' "
+					+ " and product." + key + " $CONDITION "
+
+					+ "having(used is null or flowCount-used>0) " + (limit > 0 ? " limit " + limit : "");
 
 			String condition = " like '%" + value + "%' ";
-			if(exacts) {
-				condition = " = '"+value+"'";
+			if (exacts) {
+				condition = " = '" + value + "'";
 			}
 			sql = sql.replace("$CONDITION", condition);
-			
+
 			List<ProductFlow> productFlows = productFlowRepositoryCustom.filterAndSort(sql, ProductFlow.class);
 			List<BaseEntity> entities = new ArrayList<>();
 			for (ProductFlow productFlow : productFlows) {
-				if (withCount) {
-					ProductFlowStock productFlowStock = getSingleStock(productFlow);
-					productFlowStock.setProductFlow(null);
-					if (productFlowStock.getRemainingStock() <= 0) {
-						continue;
-					}
-					productFlow.setProductFlowStock(productFlowStock);
-				}
-				productFlow.setTransactionId(productFlow.getTransaction().getId());
+				/*
+				 * if (withCount) { ProductFlowStock productFlowStock =
+				 * getSingleStock(productFlow); productFlowStock.setProductFlow(null); if
+				 * (productFlowStock.getRemainingStock() <= 0) { continue; }
+				 * productFlow.setProductFlowStock(productFlowStock); }
+				 * productFlow.setTransactionId(productFlow.getTransaction().getId());
+				 */
 				entities.add(productFlow);
 			}
 
-			return  (entities) ;
+			return (entities);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -288,45 +317,42 @@ public class TransactionService {
 	public ShopApiResponse getCashFlow(ShopApiRequest request) {
 		ShopApiResponse response = new ShopApiResponse();
 		// getTransaction
-		String sql =" select sum(`product_flow`.count) as count, sum(`product_flow`.count * `product_flow`.price) as price,`transaction`.`type` as module from `product_flow`  " + 
-				" LEFT JOIN `transaction` ON  `transaction`.`id` = `product_flow`.`transaction_id`  " + 
-				" WHERE  `transaction`.`type` = '$MODULE' and month(`transaction`.transaction_date) =$MM " + 
-				" and year(`transaction`.transaction_date) = $YYYY and `transaction`.deleted = false and `product_flow`.deleted = false";
-		
+		String sql = " select sum(`product_flow`.count) as count, sum(`product_flow`.count * `product_flow`.price) as price,`transaction`.`type` as module from `product_flow`  "
+				+ " LEFT JOIN `transaction` ON  `transaction`.`id` = `product_flow`.`transaction_id`  "
+				+ " WHERE  `transaction`.`type` = '$MODULE' and month(`transaction`.transaction_date) =$MM "
+				+ " and year(`transaction`.transaction_date) = $YYYY and `transaction`.deleted = false and `product_flow`.deleted = false";
+
 		sql = sql.replace("$YYYY", request.getFilter().getYear().toString())
 				.replace("$MODULE", request.getFilter().getModule())
 				.replace("$MM", request.getFilter().getMonth().toString());
-		
-		
+
 		Object cashflow = productFlowRepositoryCustom.getObjectFromNativeQuery(sql, CashFlow.class);
-		if(cashflow !=null) {
+		if (cashflow != null) {
 			response.setEntity((CashFlow) cashflow);
 		}
-		
+
 		return response;
 	}
-	
+
 	public Integer[] getMinAndMaxTransactionYear() {
 		Integer minYear = getTransactionYear("asc");
 		Integer maxYear = getTransactionYear("desc");
-		
-		return new Integer[] {
-			minYear, maxYear	
-		};
+
+		return new Integer[] { minYear, maxYear };
 	}
-	
+
 	private Integer getTransactionYear(String orderType) {
-		if(orderType == null || !orderType.toLowerCase().equals("asc") || !orderType.toLowerCase().equals("desc")) {
+		if (orderType == null || !orderType.toLowerCase().equals("asc") || !orderType.toLowerCase().equals("desc")) {
 			orderType = "asc";
 		}
-		
+
 		String sql = "select year( `transaction`.transaction_date) from `transaction` where `transaction`.transaction_date is not null "
-				+ "order by transaction_date "+orderType+" limit 1";
+				+ "order by transaction_date " + orderType + " limit 1";
 		Object result = productFlowRepositoryCustom.getSingleResult(sql);
-		if(result == null || result.getClass().equals(BigInteger.class))
+		if (result == null || result.getClass().equals(BigInteger.class))
 			return Calendar.getInstance().get(Calendar.YEAR);
-		
+
 		return ((BigInteger) result).intValue();
-		
+
 	}
 }

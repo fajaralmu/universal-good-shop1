@@ -21,6 +21,7 @@ public class ProductFlowStock implements Serializable{
 	private static final long serialVersionUID = -8491089980746895811L;
 	private Integer totalStock;
 	private Integer remainingStock;
+	private Integer usedStock;
 	private ProductFlow productFlow;
 	
 }
