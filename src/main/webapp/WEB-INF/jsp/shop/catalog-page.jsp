@@ -9,7 +9,7 @@
 }
 </style>
 <div class="content">
-
+	<p></p>
 	<div id="detail-content" class="row" style="width:95%; margin:auto; display: none">
 		<table class="table" style="layout: fixed; ">
 			<tr>
@@ -246,7 +246,7 @@
 			/* <div class="card-body"> */
 			//card  title
 			let cardTitle = createHeading("h5", "title-" + entity.id,
-					"card-title", entity.name + " <small>"
+					"card-title", entity.name + " <small class=\"text-muted\">"
 							+ entity.category.name + "</small>");
 			cardTitle.onclick = function() {
 				loadDetail(entity.code);
@@ -268,7 +268,7 @@
 			let listItemPrice = createElement("li", "list-item-price-"
 					+ entity.id,
 					"list-group-item d-flex justify-content-between align-items-center");
-			listItemPrice.innerHTML = "Price<br> <span id=\"product-price-"+entity.id+"\">"
+			listItemPrice.innerHTML = "Price<br> <span class=\"text-warning\" id=\"product-price-"+entity.id+"\">"
 					+ beautifyNominal(entity.price) + "</span>";
 			listGroup.append(listItemCount);
 			listGroup.append(listItemPrice);
