@@ -1,7 +1,6 @@
 package com.fajar.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 
 import com.fajar.annotation.Dto;
 import com.fajar.entity.ShopProfile;

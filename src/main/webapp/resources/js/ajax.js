@@ -4,6 +4,7 @@ function postReq(url, requestObject, callback) {
 	var param = JSON.stringify(requestObject);
 	request.open("POST", url, true);
 	request.setRequestHeader("Content-type", "application/json");
+	request.setRequestHeader("requestToken", document.getElementById("token-value").value);
 	request.onreadystatechange = function() {
 		
 		if (this.readyState == this.DONE) {

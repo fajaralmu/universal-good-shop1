@@ -1,5 +1,9 @@
 package com.fajar.service;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +20,14 @@ public class UserSessionService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+	private Map<String, Object> userTokens = new HashMap<String, Object>();
+
 	public User getUser(HttpServletRequest request) {
-		return (User) request.getSession(false).getAttribute("user");
+		try {
+			return (User) request.getSession(false).getAttribute("user");
+		} catch (Exception ex) {
+			return null;
+		}
 	}
 
 	public boolean hasSession(HttpServletRequest request) {
@@ -40,11 +49,27 @@ public class UserSessionService {
 
 	public void addUserSession(User dbUser, HttpServletRequest httpRequest) {
 		httpRequest.getSession(true).setAttribute("user", dbUser);
-		
+		setToken(dbUser);
 	}
 
 	public void logout(HttpServletRequest request) {
-		 request.getSession(false).removeAttribute("user");
+		User user = getUser(request);
+		userTokens.remove(user.getId().toString());
+		request.getSession(false).removeAttribute("user");
+	}
+
+	private void setToken(User dbUser) {
+		userTokens.put(dbUser.getId().toString(), UUID.randomUUID().toString());
+
+	}
+
+	public String getToken(User user) {
+		try {
+			return (String) userTokens.get(user.getId().toString());
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return null;
+		}
 	}
 
 }

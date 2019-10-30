@@ -21,9 +21,9 @@ public class AccountService {
 	private UserRoleRepository userRoleRepository;
 	@Autowired
 	private UserSessionService userSessionService;
-
-	public ShopApiResponse registerUser(ShopApiRequest request) {
-		// TODO Auto-generated method stub
+	
+	
+	public ShopApiResponse registerUser(ShopApiRequest request) { 
 		ShopApiResponse response  = new ShopApiResponse();
 		UserRole regularRole = userRoleRepository.findById(2L).get();
 		User user = new User();
@@ -49,8 +49,38 @@ public class AccountService {
 		if(dbUser == null) {
 			return new ShopApiResponse("01","invalid credential");
 		}
+		 
 		userSessionService.addUserSession(dbUser,httpRequest);
 		return new ShopApiResponse("00","success");
 	}
+	
+	public boolean logout(HttpServletRequest httpRequest) {
+		User user = userSessionService.getUser(httpRequest);
+		if(user == null)
+			return false;
+		 
+		userSessionService.logout(httpRequest);
+		return true;
+	}
+	
+	public String getToken(HttpServletRequest httpRequest) {
+		User user = userSessionService.getUser(httpRequest);
+		if(user == null)
+			return null;
+		return (String) userSessionService.getToken(user);
+	}
+
+	public boolean validateToken(HttpServletRequest httpRequest) {
+		// TODO Auto-generated method stub
+		String requestToken = httpRequest.getHeader("requestToken");
+		if(requestToken == null) {
+			System.out.println("NULL TOKEN");
+			return false;
+		}
+		String existingToken = getToken(httpRequest);
+		System.out.println("_______REQ_TOKEN: "+requestToken+" vs EXISTING:"+existingToken);
+		return requestToken.equals(existingToken);
+	}
+ 
 
 }

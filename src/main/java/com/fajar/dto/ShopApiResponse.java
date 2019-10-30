@@ -46,4 +46,8 @@ public class ShopApiResponse implements Serializable {
 		this.code = code;
 		this.message = message;
 	}
+	
+	public static ShopApiResponse failedResponse() {
+		return new ShopApiResponse("01","INVALID REQUEST");
+	}
 }

@@ -14,7 +14,6 @@ import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Product;
 import com.fajar.repository.ProductRepository;
-import com.fajar.util.StringUtil;
 
 @Service
 public class ProductService {

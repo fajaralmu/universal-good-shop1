@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.service.AccountService;
+import com.fajar.service.UserSessionService;
 
 @CrossOrigin
 @RestController
@@ -26,6 +27,8 @@ public class RestAccountController {
 	Logger log = LoggerFactory.getLogger(RestAccountController.class);
 	@Autowired
 	private AccountService accountService;
+	@Autowired
+	private UserSessionService userSessionService;
  
 	
 	public RestAccountController() {
@@ -43,9 +46,19 @@ public class RestAccountController {
 	@PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse login(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("register {}", request);
+		log.info("login {}", request);
 		ShopApiResponse response = accountService.login(request, httpRequest);
 		return response;
+	}
+	@PostMapping(value = "/logout", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ShopApiResponse logout(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+		log.info("logout {}", request);
+		if (userSessionService.hasSession(httpRequest)) {
+			accountService.logout(httpRequest);
+		}
+		 
+		return new ShopApiResponse();
 	}
 
 }

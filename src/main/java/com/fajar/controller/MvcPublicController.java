@@ -43,9 +43,6 @@ public class MvcPublicController extends BaseController{
 	public String index(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		model.addAttribute("menus", componentService.getPublicMenus(request));
-		model.addAttribute("host", MVCUtil.getHost(request));
-		model.addAttribute("imagePath",webAppConfiguration.getUploadedImagePath());
-		model.addAttribute("contextPath",request.getContextPath());
 		model.addAttribute("title", "Shop Application");
 		model.addAttribute("pageUrl", "index");
 		model.addAttribute("page", "main"); 
@@ -57,9 +54,7 @@ public class MvcPublicController extends BaseController{
 	@RequestMapping(value = { "/public/catalog","/public/catalog/", "/public/catalog/{option}" })
 	public String catalog(@PathVariable(required = false)String option, Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-		model.addAttribute("host", MVCUtil.getHost(request));
-		model.addAttribute("imagePath",webAppConfiguration.getUploadedImagePath());
-		model.addAttribute("contextPath",request.getContextPath()); 
+	 
 		model.addAttribute("title", "Product Catalog");
 		model.addAttribute("pageUrl", "shop/catalog-page");
 		model.addAttribute("page", "main");
@@ -72,9 +67,7 @@ public class MvcPublicController extends BaseController{
 	@RequestMapping(value = { "/public/about" })
 	public String about(  Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-		model.addAttribute("host", MVCUtil.getHost(request));
-		model.addAttribute("imagePath",webAppConfiguration.getUploadedImagePath());
-		model.addAttribute("contextPath",request.getContextPath()); 
+		 
 		model.addAttribute("title", "About Us");
 		model.addAttribute("pageUrl", "shop/about-page");
 		model.addAttribute("page", "about"); 

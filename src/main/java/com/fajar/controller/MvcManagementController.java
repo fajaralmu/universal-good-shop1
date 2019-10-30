@@ -33,7 +33,7 @@ import com.fajar.util.MVCUtil;
  */
 @Controller
 @RequestMapping("management")
-public class MvcManagementController extends BaseController{
+public class MvcManagementController extends BaseController {
 
 	Logger log = LoggerFactory.getLogger(MvcManagementController.class);
 	@Autowired
@@ -65,7 +65,7 @@ public class MvcManagementController extends BaseController{
 		model = constructCommonModel(request, model, "Unit", "management");
 		return basePage;
 	}
-	
+
 	@RequestMapping(value = { "/profile" })
 	public String profile(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -151,8 +151,8 @@ public class MvcManagementController extends BaseController{
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Transaction", null);
 		entityProperty.setEditable(false);
 		entityProperty.setWithDetail(true);
-		model.addAttribute("entityProperty", entityProperty); 
-		model = constructCommonModel(request, model, "Transaction", "transaction",option);
+		model.addAttribute("entityProperty", entityProperty);
+		model = constructCommonModel(request, model, "Transaction", "transaction", option);
 		return basePage;
 	}
 
@@ -186,42 +186,37 @@ public class MvcManagementController extends BaseController{
 	}
 
 	private Model constructCommonModel(HttpServletRequest request, Model model, String string, String string2) {
-		// TODO Auto-generated method stub
 		return constructCommonModel(request, model, string, string2, null);
 	}
 
 	private Model constructCommonModel(HttpServletRequest request, Model model, String title, String page,
-			String option) {
-		model.addAttribute("contextPath", request.getContextPath());
-		String host = MVCUtil.getHost(request);
-		model.addAttribute("host", host);
-		model.addAttribute("imagePath", webAppConfiguration.getUploadedImagePath());
+			String option) { 
 		model.addAttribute("title", "Management::" + title);
 		model.addAttribute("pageUrl", "shop/entity-management-page");
 		model.addAttribute("page", page);
-		boolean withOption  = false;
+		boolean withOption = false;
 		String optionJson = "null";
-		
+
 		if (null != option) {
-			System.out.println("=========REQUEST_OPTION: "+option);
+			System.out.println("=========REQUEST_OPTION: " + option);
 			String[] options = option.split("&");
-			Map<String, Object> optionMap = new HashMap<String,Object>();
+			Map<String, Object> optionMap = new HashMap<String, Object>();
 			for (String optionItem : options) {
 				String[] optionKeyValue = optionItem.split("=");
-				if(optionKeyValue == null || optionKeyValue.length !=2) {
+				if (optionKeyValue == null || optionKeyValue.length != 2) {
 					continue;
 				}
 				optionMap.put(optionKeyValue[0], optionKeyValue[1]);
 			}
-			if(optionMap.isEmpty()==false) {
+			if (optionMap.isEmpty() == false) {
 				withOption = true;
 				optionJson = JSONUtil.mapToJson(optionMap);
-				System.out.println("=========GENERATED_OPTION: "+optionMap);
-				System.out.println("=========OPTION_JSON: "+optionJson);
+				System.out.println("=========GENERATED_OPTION: " + optionMap);
+				System.out.println("=========OPTION_JSON: " + optionJson);
 			}
 		}
 		model.addAttribute("withOption", withOption);
-		model.addAttribute("options", optionJson); 
+		model.addAttribute("options", optionJson);
 		return model;
 	}
 

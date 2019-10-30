@@ -27,7 +27,7 @@ import com.fajar.util.MVCUtil;
  */
 @Controller
 @RequestMapping("admin")
-public class MvcAdminController extends BaseController{
+public class MvcAdminController extends BaseController {
 
 	Logger log = LoggerFactory.getLogger(MvcAdminController.class);
 	@Autowired
@@ -58,10 +58,8 @@ public class MvcAdminController extends BaseController{
 			response.sendRedirect(request.getContextPath() + "/account/login");
 		}
 		Calendar cal = Calendar.getInstance();
-		model.addAttribute("menus", componentService.getDashboardMenus(request));
-		model.addAttribute("host", MVCUtil.getHost(request));
+		model.addAttribute("menus", componentService.getDashboardMenus(request)); 
 		model.addAttribute("imagePath", webAppConfiguration.getUploadedImagePath());
-		model.addAttribute("contextPath", request.getContextPath());
 		model.addAttribute("title", "Shop::Dashboard");
 		model.addAttribute("pageUrl", "shop/home-page");
 		model.addAttribute("page", "dashboard");
@@ -70,7 +68,7 @@ public class MvcAdminController extends BaseController{
 		Integer[] transactionYears = transactionService.getMinAndMaxTransactionYear();
 		System.out.println("========TRX YEARS: " + transactionYears);
 		model.addAttribute("minYear", transactionYears[0]);
-		model.addAttribute("maxYear", transactionYears[1]); 
+		model.addAttribute("maxYear", transactionYears[1]);
 		return basePage;
 	}
 
@@ -81,13 +79,11 @@ public class MvcAdminController extends BaseController{
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
 		}
-		model.addAttribute("menus", componentService.getManagementMenus(request));
-		model.addAttribute("host", MVCUtil.getHost(request));
-		model.addAttribute("imagePath", webAppConfiguration.getUploadedImagePath());
+		model.addAttribute("menus", componentService.getManagementMenus(request)); 
 		model.addAttribute("contextPath", request.getContextPath());
 		model.addAttribute("title", "Shop::Management");
 		model.addAttribute("pageUrl", "shop/management-page");
-		model.addAttribute("page", "management"); 
+		model.addAttribute("page", "management");
 		return basePage;
 	}
 
@@ -98,13 +94,11 @@ public class MvcAdminController extends BaseController{
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
 		}
-		model.addAttribute("menus", componentService.getTransactionMenus(request));
-		model.addAttribute("host", MVCUtil.getHost(request));
+		model.addAttribute("menus", componentService.getTransactionMenus(request)); 
 		model.addAttribute("imagePath", webAppConfiguration.getUploadedImagePath());
-		model.addAttribute("contextPath", request.getContextPath());
 		model.addAttribute("title", "Shop::Transaction");
 		model.addAttribute("pageUrl", "shop/transaction-page");
-		model.addAttribute("page", "transaction"); 
+		model.addAttribute("page", "transaction");
 		return basePage;
 	}
 
@@ -115,10 +109,9 @@ public class MvcAdminController extends BaseController{
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
 		}
-		model.addAttribute("contextPath", request.getContextPath());
 		model.addAttribute("title", "Shop::Supply");
 		model.addAttribute("pageUrl", "shop/transaction-in-page");
-		model.addAttribute("page", "transaction"); 
+		model.addAttribute("page", "transaction");
 		return basePage;
 	}
 
@@ -130,10 +123,9 @@ public class MvcAdminController extends BaseController{
 			response.sendRedirect(request.getContextPath() + "/account/login");
 		}
 
-		model.addAttribute("contextPath", request.getContextPath());
 		model.addAttribute("title", "Shop::Purchase");
 		model.addAttribute("pageUrl", "shop/transaction-out-page");
-		model.addAttribute("page", "transaction"); 
+		model.addAttribute("page", "transaction");
 		return basePage;
 	}
 

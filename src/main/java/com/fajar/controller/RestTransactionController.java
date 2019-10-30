@@ -19,7 +19,6 @@ import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.service.AccountService;
 import com.fajar.service.TransactionService;
-import com.fajar.service.UserSessionService;
 
 @CrossOrigin
 @RestController
@@ -27,7 +26,7 @@ import com.fajar.service.UserSessionService;
 public class RestTransactionController {
 	Logger log = LoggerFactory.getLogger(RestTransactionController.class);
 	@Autowired
-	private UserSessionService userSessionService;
+	private AccountService accountService;
 	@Autowired
 	private TransactionService transactionService;
 
@@ -39,6 +38,9 @@ public class RestTransactionController {
 	public ShopApiResponse addSupply(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("supply {}", request);
+		if(!accountService.validateToken(httpRequest)) {
+			return ShopApiResponse.failedResponse();
+		}
 		ShopApiResponse response = transactionService.submitNew(request, httpRequest);
 		return response;
 	}
@@ -47,6 +49,9 @@ public class RestTransactionController {
 	public ShopApiResponse purchase(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("purchase {}", request);
+		if(!accountService.validateToken(httpRequest)) {
+			return ShopApiResponse.failedResponse();
+		}
 		ShopApiResponse response = transactionService.addPurchaseTransaction(request, httpRequest);
 		return response;
 	}
@@ -54,6 +59,9 @@ public class RestTransactionController {
 	public ShopApiResponse stockinfo(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("stocks {}", request);
+		if(!accountService.validateToken(httpRequest)) {
+			return ShopApiResponse.failedResponse();
+		}
 		ShopApiResponse response = transactionService.getStocksByProductName(request, false);
 		return response;
 	}
@@ -62,6 +70,9 @@ public class RestTransactionController {
 	public ShopApiResponse stockInfo(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("stockinfo {}", request);
+		if(!accountService.validateToken(httpRequest)) {
+			return ShopApiResponse.failedResponse();
+		}
 		ShopApiResponse response = transactionService.stockInfo(request);
 		return response;
 	}
@@ -70,6 +81,9 @@ public class RestTransactionController {
 	public ShopApiResponse cashflowinfo(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("cashflowinfo {}", request);
+		if(!accountService.validateToken(httpRequest)) {
+			return ShopApiResponse.failedResponse();
+		}
 		ShopApiResponse response = transactionService.getCashFlow(request);
 		return response;
 	}

@@ -30,11 +30,13 @@
 
 </head>
 <body>
+	<input id="token-value" value="${pageToken }" type="hidden" />
 	<div id="loading-div"></div>
 	<div class="container">
 		<jsp:include page="include/head.jsp"></jsp:include>
 		<jsp:include page="${pageUrl }.jsp"></jsp:include>
 		<jsp:include page="include/foot.jsp"></jsp:include>
+		
 	</div>
 </body>
 </html>

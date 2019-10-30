@@ -19,6 +19,7 @@ import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.service.AccountService;
 import com.fajar.service.EntityService;
+import com.fajar.service.UserSessionService;
 
 @CrossOrigin
 @RestController
@@ -29,6 +30,7 @@ public class RestEntityController {
 	private AccountService accountService;
 	@Autowired
 	private EntityService entityService;
+	 
 
 	public RestEntityController() {
 		log.info("------------------RestEntityController-----------------");
@@ -37,7 +39,10 @@ public class RestEntityController {
 	@PostMapping(value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse add(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("register {}", request);
+		log.info("add entity {}", request);
+		if(!accountService.validateToken(httpRequest)) {
+			return ShopApiResponse.failedResponse();
+		}
 		ShopApiResponse response = entityService.addEntity(request,httpRequest, true);
 		return response;
 	}
@@ -45,7 +50,10 @@ public class RestEntityController {
 	@PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse update(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("register {}", request);
+		log.info("register update {}", request);
+		if(!accountService.validateToken(httpRequest)) {
+			return ShopApiResponse.failedResponse();
+		}
 		ShopApiResponse response = entityService.addEntity(request,httpRequest, false);
 		return response;
 	}
@@ -53,7 +61,10 @@ public class RestEntityController {
 	@PostMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse get(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("register {}", request);
+		log.info("get entity {}", request);
+		if(!accountService.validateToken(httpRequest)) {
+			return ShopApiResponse.failedResponse();
+		}
 		ShopApiResponse response = entityService.filter(request );
 		return response;
 	}
@@ -61,7 +72,10 @@ public class RestEntityController {
 	@PostMapping(value = "/delete", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse delete(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("register {}", request);
+		log.info("delete entity {}", request);
+		if(!accountService.validateToken(httpRequest)) {
+			return ShopApiResponse.failedResponse();
+		}
 		ShopApiResponse response = entityService.delete(request );
 		return response;
 	}
