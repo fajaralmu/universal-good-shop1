@@ -358,11 +358,23 @@
 			let filterField = filterFields[i];
 			if (filterField.value != "") {
 				let fieldName = filterField.getAttribute("field");
-				requestObject.filter.fieldsFilter[fieldName] = filterField.value;
+				let filterValue = filterField.value;
+				let checkBoxExact = document.getElementById("checkbox-exact-"+fieldName);
+				console.log("EXACT",checkBoxExact != null && checkBoxExact.checked);
+				console.log("CHECKBOX",checkBoxExact);
+				if(checkBoxExact != null && checkBoxExact.checked){
+					fieldName = fieldName+"[EXACTS]";
+				}
+				requestObject.filter.fieldsFilter[fieldName] = filterValue;
 			}
 		}
 		doLoadEntities("<spring:url value="/api/entity/get" />", requestObject, function(response){
+			
 			var entities = response.entities;
+			if(entities == null){
+				alert("Server Error!");
+				return;
+			}
 			totalData = response.totalData;
 			this.page = response.filter.page;
 			populateTable(entities);
@@ -525,6 +537,24 @@
 			btnSortGroup.append(ascButton);
 			btnSortGroup.append(descButton);
 			cell.append(btnSortGroup);
+			
+			//checkbox is exacts
+			//let inputGroupExact = createDiv("input-group-exact-"+fieldName,"input-group-text");
+			let checkBoxExact = createElement("input", "checkbox-exact-"+fieldName, "none");
+			checkBoxExact.type="checkbox";
+			checkBoxInfo = createElement("span","cb-info-"+fieldName,"none");
+			checkBoxInfo.innerHTML = "Exact Search";
+			//inputGroupExact.append(checkBoxExact);
+			//let divPrependCheckBox = createDiv("input-group-prepend-"+fieldName, "input-group-prepend");
+			//divPrependCheckBox.append(inputGroupExact);
+			
+			//let inputGroupCheckBox = createDiv("input-group mb-3"+fieldName, "input-group mb-3");
+			cell.append(document.createElement("br"));
+			cell.append(checkBoxExact);
+			checkBoxInfo.setAttribute("style","font-size:0.7em");
+			cell.append(checkBoxInfo);
+			//cell.append(inputGroupCheckBox);
+			
 			row.append(cell);
 		}
 		row.append(createCell("Option"));

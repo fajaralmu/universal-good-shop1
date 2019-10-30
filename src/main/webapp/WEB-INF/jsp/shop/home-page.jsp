@@ -121,7 +121,7 @@
 						}
 														
 						document.getElementById("count-"+module).innerHTML = count;
-						document.getElementById("amount-"+module).innerHTML = amount;
+						document.getElementById("amount-"+module).innerHTML = beautifyNominal(amount);
 						document.getElementById("btn-detail-"+module).href = document.getElementById("btn-detail-"+module).getAttribute("link")
 							+"&transactionDate-month="+month+"&transactionDate-year="+year;
 					} else {

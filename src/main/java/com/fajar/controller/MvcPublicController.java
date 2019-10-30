@@ -15,17 +15,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.service.ComponentService;
+import com.fajar.service.UserSessionService;
 import com.fajar.service.WebAppConfiguration;
 import com.fajar.util.MVCUtil;
 
 @Controller
-public class MvcPublicController {
+public class MvcPublicController extends BaseController{
 	Logger log = LoggerFactory.getLogger(MvcPublicController.class);
 	@Autowired
 	private WebAppConfiguration webAppConfiguration;
 	private String basePage;
 	@Autowired
 	private ComponentService componentService;
+	@Autowired
+	private UserSessionService userSessionService;
 	
 	public MvcPublicController() {
 		log.info("---------------------------MvcCommonController------------------------------");
@@ -45,7 +48,7 @@ public class MvcPublicController {
 		model.addAttribute("contextPath",request.getContextPath());
 		model.addAttribute("title", "Shop Application");
 		model.addAttribute("pageUrl", "index");
-		model.addAttribute("page", "main");
+		model.addAttribute("page", "main"); 
 		return basePage;
 
 	}
@@ -56,12 +59,25 @@ public class MvcPublicController {
 
 		model.addAttribute("host", MVCUtil.getHost(request));
 		model.addAttribute("imagePath",webAppConfiguration.getUploadedImagePath());
-		model.addAttribute("contextPath",request.getContextPath());
-		model.addAttribute("contextPath",request.getContextPath());
+		model.addAttribute("contextPath",request.getContextPath()); 
 		model.addAttribute("title", "Product Catalog");
 		model.addAttribute("pageUrl", "shop/catalog-page");
 		model.addAttribute("page", "main");
-		model.addAttribute("defaultOption", option == null || option.equals("")? null:option);
+		model.addAttribute("categories", componentService.getAllCategories());
+		model.addAttribute("defaultOption", option == null || option.equals("")? null:option); 
+		return basePage;
+
+	}
+	
+	@RequestMapping(value = { "/public/about" })
+	public String about(  Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		model.addAttribute("host", MVCUtil.getHost(request));
+		model.addAttribute("imagePath",webAppConfiguration.getUploadedImagePath());
+		model.addAttribute("contextPath",request.getContextPath()); 
+		model.addAttribute("title", "About Us");
+		model.addAttribute("pageUrl", "shop/about-page");
+		model.addAttribute("page", "about"); 
 		return basePage;
 
 	}

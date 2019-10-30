@@ -13,6 +13,7 @@ public @interface FormField {
 	
 	public boolean showDetail() default false;
 	
+	//multiple image
 	public boolean multiple() default false;
 
 	public boolean required() default true;
@@ -27,5 +28,6 @@ public @interface FormField {
 
 	public String[] detailFields() default {};
 
+	//the value is result of array of fields multiplication
 	public String[] multiply() default {};
 }

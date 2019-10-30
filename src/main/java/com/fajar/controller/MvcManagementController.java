@@ -33,7 +33,7 @@ import com.fajar.util.MVCUtil;
  */
 @Controller
 @RequestMapping("management")
-public class MvcManagementController {
+public class MvcManagementController extends BaseController{
 
 	Logger log = LoggerFactory.getLogger(MvcManagementController.class);
 	@Autowired
@@ -63,6 +63,18 @@ public class MvcManagementController {
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Unit", null);
 		model.addAttribute("entityProperty", entityProperty);
 		model = constructCommonModel(request, model, "Unit", "management");
+		return basePage;
+	}
+	
+	@RequestMapping(value = { "/profile" })
+	public String profile(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(request.getContextPath() + "/account/login");
+		}
+		EntityProperty entityProperty = EntityUtil.createEntityProperty("ShopProfile", null);
+		model.addAttribute("entityProperty", entityProperty);
+		model = constructCommonModel(request, model, "shopProfile", "management");
 		return basePage;
 	}
 
@@ -209,7 +221,7 @@ public class MvcManagementController {
 			}
 		}
 		model.addAttribute("withOption", withOption);
-		model.addAttribute("options", optionJson);
+		model.addAttribute("options", optionJson); 
 		return model;
 	}
 

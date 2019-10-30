@@ -26,7 +26,7 @@
 						<input type="number" class="form-control" id="product-quantity"
 							required="required" />
 						<p>Price @Unit</p>
-						<input type="number" class="form-control" id="product-price"
+						<input  class="form-control" id="product-price"
 							required="required" />
 						<p>Expiry Date</p>
 						<input type="date" class="form-control" id="product-exp-date" />
@@ -252,7 +252,7 @@
 			row.append(createCell(productFlow.product.name));
 			row.append(createCell(productFlow.expiryDate));
 			row.append(createCell(productFlow.count));
-			row.append(createCell(productFlow.price));
+			row.append(createCell(beautifyNominal(productFlow.price)));
 
 			let optionCell = createCell("");
 			let btnEdit = createButton("edit-" + productFlow.id, "edit");
@@ -276,13 +276,13 @@
 			totalPrice = totalPrice * 1
 					+ (productFlow.price * productFlow.count);
 		}
-		totalPriceLabel.innerHTML = totalPrice;
+		totalPriceLabel.innerHTML = beautifyNominal(totalPrice);
 	}
 
 	function setCurrentProductFlow(entity) {
 		currentProductFlow = entity;
 		setCurrentProduct(entity.product);
-		priceField.value = entity.price;
+		priceField.value = beautifyNominal(entity.price);
 		quantityField.value = entity.count;
 		expiryDateField.value = entity.expiryDate;
 	}

@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fajar.entity.BaseEntity;
+import com.fajar.entity.Category;
 import com.fajar.entity.Menu;
+import com.fajar.repository.CategoryRepository;
 import com.fajar.repository.MenuRepository;
 import com.fajar.util.EntityUtil;
 
@@ -17,6 +19,8 @@ import com.fajar.util.EntityUtil;
 public class ComponentService {
 	@Autowired
 	private MenuRepository menuRepository; 
+	@Autowired
+	private CategoryRepository categoryRepository;
 	
 	public Object getDashboardMenus(HttpServletRequest request){
 		List<Menu> menus =  menuRepository.findByPage("HOME");
@@ -56,6 +60,10 @@ public class ComponentService {
 			entities.add(menu);
 		}
 		return EntityUtil.validateDefaultValue(entities);
+	}
+	
+	public List<Category> getAllCategories(){
+		return categoryRepository.findByDeletedFalse();
 	}
 
 }

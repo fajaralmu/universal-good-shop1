@@ -10,21 +10,21 @@
 </style>
 <div class="content">
 
-	<div id="detail-content" class="row" style="display: none">
-		<table class="table" style="layout:fixed">
+	<div id="detail-content" class="row" style="width:95%; margin:auto; display: none">
+		<table class="table" style="layout: fixed; ">
 			<tr>
-				<td style="width:60%">
+				<td style="width: 60%">
 					<button class="btn btn-primary btn-sm" id="close-detail"
-							onclick="closeDetail()">Back</button>
+						onclick="closeDetail()">Back</button>
 				</td>
-				<td style="width:40%">
+				<td style="width: 40%">
 					<h2 id="product-title"></h2>
-						
+
 				</td>
 			</tr>
 			<tr valign="top">
-				<td style="width:60%">
-					
+				<td style="width: 60%">
+
 					<div id="carousel-wrapper" style="width: 100%; margin: auto">
 						<div id="carouselExampleIndicators" class="carousel slide"
 							data-ride="carousel">
@@ -44,9 +44,9 @@
 					</div>
 				</td>
 				<!--  -->
-				<td style="width:40%">
+				<td style="width: 40%">
 					<!-- END CAROUSEL -->
-					
+
 					<ul class="list-group">
 						<li
 							class="list-group-item d-flex justify-content-between align-items-center">
@@ -65,48 +65,53 @@
 							class="list-group-item d-flex justify-content-between align-items-center">
 							Category<br> <span id="product-category">0</span>
 						</li>
-						
+
 
 					</ul>
 				</td>
 			</tr>
 			<tr>
 				<td colspan="2">
-					 <p>Description</p>
-		 				<p id="product-description">0</p>
+					<p>Description</p>
+					<p id="product-description">0</p>
 				</td>
 			</tr>
-		</table> 
+		</table>
 	</div>
 	<div id="catalog-content">
 		<h2>Product Catalog</h2>
 		<p></p>
-		<!-- FILTER -->
-
-		<div class="input-group mb-3">
-			<div class="input-group-prepend">
-				<span class="input-group-text">Name</span>
-			</div>
-			<input id="search-name" class="form control" />
-			<div class="input-group-append">
-				<button class="btn btn-outline-secondary" onclick="loadEntity()">OK</button>
-			</div>
-		</div>
-		<div class="input-group mb-3">
-			<div class="input-group-prepend">
-				<div class="input-group-text">
-					<input checked="checked" type="checkbox" id="get-stock"
-						aria-label="Checkbox for following text input">
-				</div>
-			</div>
-			<span class="input-group-text">Include Stock</span>
-		</div>
-
-		<!-- PAGINATION -->
-		<nav>
-			<ul class="pagination" id="navigation-panel"></ul>
-		</nav>
-		<div id="catalog-panel" class="row"></div>
+		
+		<table style="layout: fixed;border-collapse: separate; border-spacing: 5px; ">
+			<tr valign="top">
+				<td>
+				<!-- FILTER -->
+					<div>
+						<p>Name</p>
+						<input id="search-name" class="form control" />
+						<p>Category</p>
+						<select class="form control" id="select-category">
+							<option value="00">All</option>
+							<c:forEach var="category" items="${categories }">
+								<option value="${category.id }">${category.name }</option>
+							</c:forEach>
+						</select>
+						<p>
+							<input class="form control" checked="checked" type="checkbox" id="get-stock"
+								aria-label="Checkbox for following text input"> <span >Include Stock</span>
+						</p>
+					</div>
+					<button class="btn btn-outline-primary" onclick="loadEntity()">Search</button>
+				</td>
+				<td>
+					<!-- PAGINATION -->
+					<nav>
+						<ul class="pagination" id="navigation-panel"></ul>
+					</nav>
+					<div id="catalog-panel" class="row"></div>
+				</td>
+			</tr>
+		</table>
 	</div>
 </div>
 <script type="text/javascript">
@@ -122,6 +127,7 @@
 	var catalogPanel = document.getElementById("catalog-panel");
 	var nameFilter = document.getElementById("search-name");
 	var chkBoxGetStock = document.getElementById("get-stock");
+	var categoryFilter = document.getElementById("select-category");
 
 	//detail
 	var productTitle = document.getElementById("product-title");
@@ -148,7 +154,7 @@
 		//title, count, price
 		productTitle.innerHTML = entity.name;
 		document.getElementById("product-stock").innerHTML = entity.count;
-		document.getElementById("product-price").innerHTML = entity.price;
+		document.getElementById("product-price").innerHTML = beautifyNominal(entity.price);
 		productUnit.innerHTML = entity.unit.name;
 		productCategory.innerHTML = entity.category.name;
 		productDescription.innerHTML = entity.description;
@@ -181,8 +187,8 @@
 			carouselInner.append(innerDiv);
 		}
 		var slash = "";
-		if(!window.location.href.endsWith("/"))
-			slash ="/";
+		if (!window.location.href.endsWith("/"))
+			slash = "/";
 		if (defaultOption == "")
 			window.history.pushState('detail-page', entity.name,
 					window.location.href + slash + entity.code);
@@ -240,15 +246,16 @@
 			/* <div class="card-body"> */
 			//card  title
 			let cardTitle = createHeading("h5", "title-" + entity.id,
-					"card-title", entity.name);
+					"card-title", entity.name + " <small>"
+							+ entity.category.name + "</small>");
 			cardTitle.onclick = function() {
 				loadDetail(entity.code);
 			}
-			/* 	<h5 class="card-title">Product Name</h5> */
+
 			//list group
 			let listGroup = createElement("ul", "list-group-" + entity.id,
 					"list-group");
-			/* <ul class="list-group"> */
+
 			//item list #1
 			let listItemCount = createElement("li", "list-item-count-"
 					+ entity.id,
@@ -256,17 +263,13 @@
 			listItemCount.innerHTML = "Stock<br> <span class=\"badge badge-primary badge-pill\" "+
 			" id=\"product-count-"+entity.id+"\">"
 					+ entity.count + "</span>";
-			/* <li
-							class="list-group-item d-flex justify-content-between align-items-center">
-					Stock<span class="badge badge-primary badge-pill"
-							id="product-count">0</span>
-				</li> */
+
 			//item list #2
 			let listItemPrice = createElement("li", "list-item-price-"
 					+ entity.id,
 					"list-group-item d-flex justify-content-between align-items-center");
 			listItemPrice.innerHTML = "Price<br> <span id=\"product-price-"+entity.id+"\">"
-					+ entity.price + "</span>";
+					+ beautifyNominal(entity.price) + "</span>";
 			listGroup.append(listItemCount);
 			listGroup.append(listItemPrice);
 
@@ -301,6 +304,9 @@
 				}
 			}
 		};
+		if (categoryFilter.value != "00") {
+			requestObject["filter"]["fieldsFilter"]["category,id[EXACTS]"] = categoryFilter.value;
+		}
 
 		/* for (let i = 0; i < filterFields.length; i++) {
 			let filterField = filterFields[i];
@@ -328,7 +334,7 @@
 	if (defaultOption != "") {
 		loadDetail(defaultOption);
 		defaultLocation = defaultLocation.replace(defaultOption, "");
-		defaultLocation = defaultLocation.replace("/"+defaultOption, "");
+		defaultLocation = defaultLocation.replace("/" + defaultOption, "");
 	}
 
 	loadEntity(page);

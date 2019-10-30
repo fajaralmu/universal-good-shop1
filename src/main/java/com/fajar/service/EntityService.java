@@ -27,6 +27,7 @@ import com.fajar.entity.Customer;
 import com.fajar.entity.Menu;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
+import com.fajar.entity.ShopProfile;
 import com.fajar.entity.Supplier;
 import com.fajar.entity.Transaction;
 import com.fajar.entity.Unit;
@@ -37,6 +38,7 @@ import com.fajar.repository.CustomerRepository;
 import com.fajar.repository.MenuRepository;
 import com.fajar.repository.ProductRepository;
 import com.fajar.repository.RepositoryCustomImpl;
+import com.fajar.repository.ShopProfileRepository;
 import com.fajar.repository.SupplierRepository;
 import com.fajar.repository.TransactionRepository;
 import com.fajar.repository.UnitRepository;
@@ -65,6 +67,8 @@ public class EntityService {
 	@Autowired
 	private MenuRepository menuRepository;
 	@Autowired
+	private ShopProfileRepository shopProfileRepository;
+	@Autowired
 	private UserRepository userRepository;
 	@Autowired
 	private CategoryRepository categoryRepository;
@@ -84,6 +88,8 @@ public class EntityService {
 			return saveCustomer(request.getCustomer(), newRecord);
 		case "supplier":
 			return saveSupplier(request.getSupplier(), newRecord);
+		case "shopprofile":
+			return saveProfile(request.getShopprofile(), newRecord);
 		case "user":
 			return saveUser(request.getUser(), newRecord);
 		case "menu":
@@ -154,6 +160,31 @@ public class EntityService {
 		}
 		Supplier newSupplier = supplierRepository.save(supplier);
 		return ShopApiResponse.builder().entity(newSupplier).build();
+	}
+	
+	private ShopApiResponse saveProfile(ShopProfile shopProfile, boolean newRecord) {
+
+		shopProfile = (ShopProfile) copyNewElement(shopProfile, newRecord);
+		String base64Image = shopProfile.getIconUrl();
+		if (base64Image != null && !base64Image.equals("")) {
+			try {
+				String imageName = fileService.writeImage("PROFILE", base64Image);
+				shopProfile.setIconUrl(imageName);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				shopProfile.setIconUrl(null);
+				e.printStackTrace();
+			}
+		} else {
+			if (!newRecord) {
+				Optional<Supplier> dbSupplier = supplierRepository.findById(shopProfile.getId());
+				if (dbSupplier.isPresent()) {
+					shopProfile.setIconUrl(dbSupplier.get().getIconUrl());
+				}
+			}
+		}
+		ShopProfile newShopProfile = shopProfileRepository.save(shopProfile);
+		return ShopApiResponse.builder().entity(newShopProfile).build();
 	}
 
 	private ShopApiResponse saveCustomer(Customer customer, boolean newRecord) {
@@ -263,6 +294,10 @@ public class EntityService {
 		case "productFlow":
 			entityClass = ProductFlow.class;
 			break;
+		case "shopprofile":
+		case "shopProfile":
+			entityClass = ShopProfile.class;
+			break;
 		}
 		Filter filter = request.getFilter();
 		String[] sqlListAndCount = generateSqlByFilter(filter, entityClass);
@@ -323,14 +358,7 @@ public class EntityService {
 		return columnName;
 	}
 
-	public static void main(String[] sqqq) {
-		Map<String, Object> filter = new HashMap<String, Object>();
-		filter.put("unit,description", "B");
-		filter.put("name", "BX");
-		String sql = createFilterSQL(Product.class, filter, true, false);
-//		String sql = orderSQL(Product.class, "ASC", "category");
-		System.out.println("==SQL: " + sql);
-	}
+	
 
 	private static String createLeftJoinSQL(Class entityClass) {
 		String tableName = getTableName(entityClass);
@@ -352,6 +380,12 @@ public class EntityService {
 		}
 		return sql;
 	}
+	
+	public static void main(String[] sdfdf) {
+		String ss = "FAJAR [EXACTS]";
+		System.out.println(ss.split("\\[EXACTS\\]")[0]);
+		
+	}
 
 	private static String createFilterSQL(Class entityClass, Map<String, Object> filter, boolean contains,
 			boolean exacts) {
@@ -359,9 +393,21 @@ public class EntityService {
 		List<String> filters = new ArrayList<String>();
 		List<Field> fields = EntityUtil.getDeclaredFields(entityClass);
 		log.info("=======FILTER: {}", filter);
-		for (String key : filter.keySet()) {
-			if (filter.get(key) == null)
+		for (final String rawKey : filter.keySet()) {
+			System.out.println("................."+rawKey+":"+filter.get(rawKey));
+			String key = rawKey;
+			if (filter.get(rawKey) == null)
 				continue;
+			
+			boolean itemExacts = exacts;
+			boolean itemContains = contains;
+
+			if (rawKey.endsWith("[EXACTS]")) {
+				itemExacts = true;
+				itemContains = false;
+				key = rawKey.split("\\[EXACTS\\]")[0];
+			}
+			System.out.println("-------KEY:"+key);
 			String[] multiKey = key.split(",");
 			boolean isMultiKey = multiKey.length > 1;
 			if (isMultiKey) {
@@ -389,8 +435,10 @@ public class EntityService {
 					mode = "YEAR";
 				}
 				Field field = getFieldByName(fieldName, fields);
-				if (field == null)
+				if (field == null) {
+					System.out.println("!!!!!!!!!!! FIELD NOT FOUND: "+fieldName);
 					continue;
+				}
 				columnName = getColumnName(field);
 				sqlItem = sqlItem.replace("$TABLE_NAME", tableName).replace("$MODE", mode)
 						.replace("$COLUMN_NAME", columnName).replace("$VALUE", filter.get(key).toString());
@@ -400,8 +448,10 @@ public class EntityService {
 
 			Field field = getFieldByName(key, fields);
 
-			if (field == null)
+			if (field == null) {
+				System.out.println("!!!!!!!Field Not Found :"+key);
 				continue;
+			}
 			if (field.getAnnotation(Column.class) != null)
 				columnName = getColumnName(field);
 
@@ -415,27 +465,30 @@ public class EntityService {
 					if (isMultiKey) {
 						referenceFieldName = multiKey[1];
 					}
-					Field fieldField = fieldClass.getDeclaredField(referenceFieldName);
+					Field fieldField = EntityUtil.getDeclaredField(  fieldClass, referenceFieldName);
 					String fieldColumnName = getColumnName(fieldField);
 					if (fieldColumnName == null || fieldColumnName.equals("")) {
 						fieldColumnName = key;
 					}
 					sqlItem = " `" + joinTableName + "`.`" + fieldColumnName + "` ";
-				} catch (NoSuchFieldException | SecurityException e) {
+				} catch ( SecurityException e) {
 					e.printStackTrace();
+					System.out.println("!!!!!"+e.getClass()+" "+e.getMessage()+" "+fieldClass);
 					continue;
 				}
 
 			}
 			// rollback key to original key
-			if (isMultiKey) {
-				key = String.join(",", multiKey);
+			/*
+			 * if (isMultiKey) { key = String.join(",", multiKey); if
+			 * (rawKey.endsWith("[EXACTS]")) { key+="[EXACTS]"; } }
+			 */
+			if (itemContains) {
+				sqlItem += " LIKE '%" + filter.get(rawKey) + "%' ";
+			} else if (itemExacts) {
+				sqlItem += " = '" + filter.get(rawKey) + "' ";
 			}
-			if (contains) {
-				sqlItem += " LIKE '%" + filter.get(key) + "%' ";
-			} else if (exacts) {
-				sqlItem += " = '" + filter.get(key) + "' ";
-			}
+			System.out.println("SQL ITEM: "+sqlItem);
 			filters.add(sqlItem);
 		}
 		return " WHERE " + String.join(" AND ", filters);
@@ -490,7 +543,7 @@ public class EntityService {
 			switch (request.getEntity()) {
 			case "unit":
 				unitRepository.deleteById(id);
-				break; 
+				break;
 			case "product":
 				productRepository.deleteById(id);
 				break;
@@ -508,6 +561,10 @@ public class EntityService {
 				break;
 			case "category":
 				categoryRepository.deleteById(id);
+				break;
+			case "shopprofile":
+			case "shopProfile":
+				shopProfileRepository.deleteById(id);
 				break;
 			}
 			return ShopApiResponse.builder().build();

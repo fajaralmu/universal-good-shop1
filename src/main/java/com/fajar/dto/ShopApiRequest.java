@@ -10,6 +10,7 @@ import com.fajar.entity.Customer;
 import com.fajar.entity.Menu;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
+import com.fajar.entity.ShopProfile;
 import com.fajar.entity.Supplier;
 import com.fajar.entity.Transaction;
 import com.fajar.entity.Unit;
@@ -37,6 +38,7 @@ public class ShopApiRequest implements Serializable {
 	private String entity;
 	private Supplier supplier;
 	private Customer customer;
+	private ShopProfile shopprofile;
 	private Menu menu;
 	private Unit unit;
 	private Product product;

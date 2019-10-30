@@ -125,6 +125,8 @@ function createImgTag(id, className, w, h, src){
 	return img;
 }
 
+
+/** BEGIN ENTITY DETAIL**/
 function createTableHeaderByColumns(columns){
 	console.log("Headers", columns);
 	
@@ -172,6 +174,8 @@ function createTableBody(columns, entities){
 	return rows;
 }
 
+/**END ENTITY DETAIL**/
+
 function createFilterInputDate(inputGroup, fieldName, callback){
 	//input day
 	let inputDay = createInputText(
@@ -201,6 +205,27 @@ function createFilterInputDate(inputGroup, fieldName, callback){
 	inputGroup.append(inputMonth);
 	inputGroup.append(inputYear);
 	return inputGroup;
+}
+
+function beautifyNominal(val) {
+	let nominal = ""+val;
+	let result = "";
+	if (nominal.length > 3) {
+		let zero = 0;
+		for (let i = nominal.length - 1; i > 0; i--) {
+			zero++;
+			result = nominal[i] + result;
+			if (zero == 3) {
+				result = "." + result;
+				zero = 0;
+			}
+
+		}
+		result = nominal[0] + result;
+	} else {
+		result = val;
+	}
+	return result;
 }
 
 /** ******NAVIGATION******loadEntity** */

@@ -34,7 +34,7 @@
 								<input type="number" class="form-control" id="product-quantity"
 									required="required" />
 								<p>Price @Unit</p>
-								<input disabled="disabled" type="number" class="form-control"
+								<input disabled="disabled"  class="form-control"
 									id="product-price" required="required" />
 								<p>Expiry Date</p>
 								<input disabled="disabled" type="date" class="form-control"
@@ -213,7 +213,7 @@
 			let productFlow = {
 				"id" : ID,
 				"product" : currentProduct,
-				"price" : priceField.value,
+				"price" : currentProduct.price,
 				"count" : inputQuantityField.value,
 				"expiryDate" : expiryDateField.value,
 				"flowReferenceId":stockIdField.value
@@ -243,7 +243,7 @@
 			inputProductField.value = entity.product.name;
 			document.getElementById("unit-name").innerHTML = entity.product.unit.name;
 			currentProduct = entity.product;
-			priceField.value = entity.product.price;
+			priceField.value = beautifyNominal(entity.product.price);
 			inputQuantityField.value = entity.count;
 			//let expDate=new Date(entity.expiryDate);
 			
@@ -307,7 +307,7 @@
 				row.append(createCell(productFlow.product.name));
 				row.append(createCell(productFlow.expiryDate));
 				row.append(createCell(productFlow.count));
-				row.append(createCell(productFlow.price));
+				row.append(createCell(beautifyNominal(productFlow.price)));
 				row.append(createCell(productFlow.flowReferenceId));
 				
 				let optionCell = createCell("");
@@ -331,11 +331,10 @@
 				productFlowTable.append(row);
 
 				totalPrice = totalPrice*1+(productFlow.price * productFlow.count);
-				
-				
+
 			}
 
-			totalPriceLabel.innerHTML = totalPrice;
+			totalPriceLabel.innerHTML = beautifyNominal(totalPrice);
 		}
 
 		function setCurrentProductFlow(entity) {
