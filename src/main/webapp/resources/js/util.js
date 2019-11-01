@@ -132,7 +132,7 @@ function createTableHeaderByColumns(columns){
 	
 	let row = createElement("tr","th-header-detail",null);
 	 
-	row.append(createCell("No"));
+	row.append(createCell("<br>No</b>"));
 	for (var i = 0; i < columns.length; i++) {
 		var column = columns[i];
 		column = column.toUpperCase();
@@ -143,6 +143,7 @@ function createTableHeaderByColumns(columns){
 	return row;
 }
 
+//return array of TR !!!!
 function createTableBody(columns, entities){
 	// let tbody = createElement("tbody", "tbody-detail", "tbody-detail");
 	let rows = [];
@@ -151,7 +152,7 @@ function createTableBody(columns, entities){
 		
 		let row = createElement("tr","tr-body-detail-"+j,null);
 		 
-		row.append(createCell(j+1));
+		row.append(createCell(j+1)); 
 		for (let i = 0; i < columns.length; i++) {
 			let column = columns[i];
 			let refField = column.split(".");
@@ -162,10 +163,13 @@ function createTableBody(columns, entities){
 			
 			if(refField.length>1 && entity[refField[0]] !=null){
 			 	entityValue = entity[refField[0]][refField[1]];
+			 	
 				cell.setAttribute("name", refField[1]);
 				 
 			}
-			
+			if(entityValue!=null && typeof(entityValue) == "number"){
+		 		entityValue = beautifyNominal(entityValue);
+		 	}
 			cell.innerHTML = entityValue;
 			row.append(cell);
 		}
@@ -205,6 +209,26 @@ function createFilterInputDate(inputGroup, fieldName, callback){
 	inputGroup.append(inputMonth);
 	inputGroup.append(inputYear);
 	return inputGroup;
+}
+
+function createTBodyWithGivenValue(rowList){
+	let tbody = createElement("tbody","id",null);
+	for (var i = 0; i < rowList.length; i++) {
+		var columns = rowList[i];
+		let row = document.createElement("tr");
+		for (var j = 0; j < columns.length; j++) {
+			var cell = columns[j];
+			let column = document.createElement("td");
+			if(cell!=null && typeof(cell) == "number"){
+				cell = beautifyNominal(cell);
+			}
+			column.innerHTML = cell;
+			row.append(column);
+		}
+		tbody.append(row);
+	}
+	return tbody;
+	
 }
 
 function beautifyNominal(val) {

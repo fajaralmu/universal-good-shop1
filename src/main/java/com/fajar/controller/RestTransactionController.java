@@ -41,7 +41,7 @@ public class RestTransactionController {
 		if(!accountService.validateToken(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
-		ShopApiResponse response = transactionService.submitNew(request, httpRequest);
+		ShopApiResponse response = transactionService.supplyProduct(request, httpRequest);
 		return response;
 	}
 	

@@ -47,6 +47,10 @@ public class ShopApiRequest implements Serializable {
 	private ProductFlow productFlow;
 	private Transaction transaction;
 	private Category category;
+	
+	private String key;
+	private String value;
+	
 	@Builder.Default
 	private List<ProductFlow> productFlows = new ArrayList<ProductFlow>();
 

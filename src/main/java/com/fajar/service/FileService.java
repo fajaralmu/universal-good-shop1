@@ -18,7 +18,7 @@ public class FileService {
 //	@Autowired
 //	ServletContext servletContext;
 	@Autowired
-	private WebAppConfiguration webAppConfiguration;
+	private WebConfigService webAppConfiguration;
 	
 	public static void main(String[] args) {
 		File file = new File("D:/Development/Files");

@@ -5,88 +5,100 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
 
 <div class="content">
-	<h2>Add New Stock</h2>
-
-	<table style="layout: fixed" class="table">
-		<tr>
-			<td>
-				<div class="form">
-					<p>ProductName</p>
-					<input id="input-product" type="text" onkeyup="loadPrductList()"
-						class="form-control" /> <br /> <select style="width: 200px"
-						id="product-dropdown" class="form-control" multiple="multiple">
-					</select>
-					<hr>
-					<p>Product Detail</p>
-					<div class="panel">
-						<p>
-							Unit :<span id="unit-name"></span>
-						</p>
-						<p>Qty</p>
-						<input type="number" class="form-control" id="product-quantity"
-							required="required" />
-						<p>Price @Unit</p>
-						<input  class="form-control" id="product-price"
-							required="required" />
-						<p>Expiry Date</p>
-						<input type="date" class="form-control" id="product-exp-date" />
-						<p></p>
-						<button class="btn btn-primary" id="add-product"
-							onclick="addToChart()">Add</button>
-					</div>
-				</div>
-			</td>
-			<td>
-				<div class="form">
-					<p>Supplier Name</p>
-					<input id="input-supplier" type="text" onkeyup="loadSupplierList()"
-						class="form-control" /> <br /> <select style="width: 200px"
-						id="supplier-dropdown" class="form-control" multiple="multiple">
-					</select>
-					<hr>
-					<p>Supplier Detail</p>
-					<div class="panel">
-						<h3 id="supplier-name"></h3>
-						<p id="supplier-address"></p>
-						<p id="supplier-contact"></p>
-					</div>
-				</div>
-			</td>
-		</tr>
-		<tr>
-		</tr>
-	</table>
-	<div>
-		<button class="btn btn-submit" id="btn-send" onclick="send()">Submit
-			Transaction</button>
+	
+	<div id="content-receipt" style="display: none">
+		<h2>Receipt</h2>
+		
+		<table id="table-receipt" style="layout: fixed" class="table">
+			
+		</table>	
+		<button id="btn-close-receipt" class="btn btn-secondary" onclick="hide('content-receipt'); show('content-form')"
+		 >Ok</button>
+		 <button id="btn-print-receipt" class="btn btn-secondary" >Print</button>
 	</div>
-	<table class="table">
-		<thead>
+	
+	<div id="content-form">
+		<h2>Add New Stock</h2>
+		<table style="layout: fixed" class="table">
 			<tr>
-				<th>No</th>
-				<th>Flow ID</th>
-				<th>Product Name</th>
-				<th>Expiry Date</th>
-				<th>Quantity</th>
-				<th>Price @Item</th>
-				<th>Option</th>
+				<td>
+					<div class="form">
+						<p>ProductName</p>
+						<input id="input-product" type="text" onkeyup="loadPrductList()"
+							class="form-control" /> <br /> <select style="width: 200px"
+							id="product-dropdown" class="form-control" multiple="multiple">
+						</select>
+						<hr>
+						<p>Product Detail</p>
+						<div class="panel">
+							<p>
+								Unit :<span id="unit-name"></span>
+							</p>
+							<p>Qty</p>
+							<input type="number" class="form-control" id="product-quantity"
+								required="required" />
+							<p>Price @Unit</p>
+							<input  class="form-control" id="product-price"
+								required="required" />
+							<p>Expiry Date</p>
+							<input type="date" class="form-control" id="product-exp-date" />
+							<p></p>
+							<button class="btn btn-default" id="add-product"
+								onclick="addToChart()">Add</button>
+						</div>
+					</div>
+				</td>
+				<td>
+					<div class="form">
+						<p>Supplier Name</p>
+						<input id="input-supplier" type="text" onkeyup="loadSupplierList()"
+							class="form-control" /> <br /> <select style="width: 200px"
+							id="supplier-dropdown" class="form-control" multiple="multiple">
+						</select>
+						<hr>
+						<p>Supplier Detail</p>
+						<div class="panel">
+							<h3 id="supplier-name"></h3>
+							<p id="supplier-address"></p>
+							<p id="supplier-contact"></p>
+						</div>
+					</div>
+				</td>
 			</tr>
 			<tr>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th>Total:<span id="total-price"></span>
-				</th>
-				<th></th>
-				<th></th>
 			</tr>
-		</thead>
-		<tbody id="product-flows">
-
-		</tbody>
-	</table>
+		</table>
+		<div>
+			<button class="btn btn-primary" id="btn-send" onclick="send()">Submit-Transaction</button>
+		</div>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>No</th>
+					<th>Flow ID</th>
+					<th>Product Name</th>
+					<th>Expiry Date</th>
+					<th>Quantity</th>
+					<th>Price @Item</th>
+					<th>Option</th>
+				</tr>
+				<tr>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th>Total:<span id="total-price"></span>
+					</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody id="product-flows">
+	
+			</tbody>
+		</table>
+	</div>
 </div>
 <script type="text/javascript">
 	var productFlows = new Array();
@@ -97,6 +109,7 @@
 	var totalPriceLabel = document.getElementById("total-price");
 	var productListDropDown = document.getElementById("product-dropdown");
 	var productFlowTable = document.getElementById("product-flows");
+	var tableReceipt = document.getElementById("table-receipt");
 
 	var inputSupplierField = document.getElementById("input-supplier");
 	var supplierListDropDown = document.getElementById("supplier-dropdown");
@@ -116,12 +129,67 @@
 						alert("transaction success")
 						productFlows = [];
 						populateProductFlow(productFlows);
+						showReceipt(response.transaction);
 					} else {
 						alert("transaction failed");
 					}
 				});
 	}
 
+	function showReceipt(transaction){
+		let tableColumns = [
+			["Code", transaction.code,""],
+			["Date", new Date(transaction.transactionDate),""],
+			["Type", transaction.type,""],
+			["Supplier", transaction.supplier.name,""]
+		];
+		
+		let tbody  = createTBodyWithGivenValue(tableColumns);
+		tableReceipt.innerHTML = "";
+		tableReceipt.innerHTML = tbody.innerHTML;
+		
+		var requestDetailFlows = {
+			    "entity": "productFlow",
+			    "filter": {
+			        "limit": 0, 
+			        "contains": false,
+			        "exacts": true, 
+			        "fieldsFilter": {
+			            "transaction":transaction.code
+			        }
+			    }
+			};
+		var detailFields = ["NO","Product","ID","Expiry Date","Qty","Unit","Price","Total Price"];
+		
+		doGetDetail("<spring:url value="/api/entity/get" />",requestDetailFlows,detailFields, populateProductFlowDetail);
+		
+		show("content-receipt");
+		hide("content-form");
+	}
+	
+	function populateProductFlowDetail(entities,detailFields){
+		var tableColumns = [];
+		tableColumns.push(detailFields);
+		var summaryPrice = 0;
+		for (let i = 0; i < entities.length; i++) {
+			let productFlow = entities[i];
+			let totalPrice = productFlow.count*1 * productFlow.price*1;
+			let columns = [
+				i+1,
+				productFlow.product.name, productFlow.id, productFlow.expiryDate, productFlow.count,
+				productFlow.product.unit.name, productFlow.price, totalPrice
+				];
+			summaryPrice += totalPrice;
+			tableColumns.push(columns);
+		}
+		let tbody  = createTBodyWithGivenValue(tableColumns);
+		tableReceipt.innerHTML+="<tr><td>Transaction Amount</td><td style=\"text-align:left\" colspan=\"2\"><u>"+beautifyNominal(summaryPrice)+"</u></td></tr>";
+		tableReceipt.innerHTML+="<tr><td style=\"text-align:center\" colspan=\"7\"><h3>Products</h3></td></tr>";
+		tableReceipt.innerHTML+=tbody.innerHTML;
+		tableReceipt.innerHTML+="<tr><td style=\"text-align:right\" colspan=\"7\">Total : "+beautifyNominal(summaryPrice)+"</td></tr>";
+		
+	}
+	
 	function loadSupplierList() {
 		supplierListDropDown.innerHTML = "";
 		var requestObject = {
@@ -287,3 +355,26 @@
 		expiryDateField.value = entity.expiryDate;
 	}
 </script>
+<c:if test="${requestCode != null }">
+	<script type="text/javascript">
+		var requestTransactionCode = "${requestCode}";
+		var requestObject = {
+			    "entity": "transaction",
+			    "filter": {
+			        "limit": 1,
+			        "orderBy": null,
+			        "orderType": null,
+			        "exacts":true,
+			        "contains":false,
+			        "fieldsFilter": {
+			            "code": requestTransactionCode,
+			            "type":"OUT"
+			        }
+			    }
+			};
+		doGetById("<spring:url value="/api/entity/get" />", requestObject, function(entity){
+			showReceipt(entity);
+		});	
+		
+	</script>
+</c:if>

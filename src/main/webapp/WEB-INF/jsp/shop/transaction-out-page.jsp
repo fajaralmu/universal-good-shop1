@@ -3,10 +3,19 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
-
-		<div class="content">
+<div class="content">
+	<div id="content-receipt" style="display: none">
+		<h2>Receipt</h2>
+		
+		<table id="table-receipt" style="layout: fixed" class="table">
+			
+		</table>	
+		<button id="btn-close-receipt" class="btn btn-secondary" onclick="hide('content-receipt'); show('content-form')"
+		 >Ok</button>
+		 <button id="btn-print-receipt" class="btn btn-secondary" >Print</button>
+	</div>
+	<div id="content-form">	
 			<h2>Purchasing</h2>
-
 			<table style="layout: fixed" class="table">
 				<tr>
 					<td>
@@ -95,7 +104,8 @@
 
 				</tbody>
 			</table>
-		</div>
+	</div>
+</div>
 
 	<script type="text/javascript">
 		var productFlows = new Array();
@@ -107,7 +117,8 @@
 		var totalPriceLabel = document.getElementById("total-price");
 		var productListDropDown = document.getElementById("product-dropdown");
 		var productFlowTable = document.getElementById("product-flows");
-
+		var tableReceipt = document.getElementById("table-receipt");
+		
 		var inputCustomerField = document.getElementById("input-customer");
 		var customerListDropDown = document.getElementById("customer-dropdown");
 		function send() {
@@ -125,11 +136,67 @@
 							alert("transaction success")
 							productFlows = [];
 							populateProductFlow(productFlows);
+							showReceipt(response.transaction)
 						} else {
 							alert("transaction failed");
 						}
 					});
 		}
+		
+		function showReceipt(transaction){
+			let tableColumns = [
+				["Code", transaction.code,""],
+				["Date", new Date(transaction.transactionDate),""],
+				["Type", transaction.type,""],
+				["Customer", transaction.customer.name,""]
+			];
+			
+			let tbody  = createTBodyWithGivenValue(tableColumns);
+			tableReceipt.innerHTML = "";
+			tableReceipt.innerHTML = tbody.innerHTML;
+			
+			var requestDetailFlows = {
+				    "entity": "productFlow",
+				    "filter": {
+				        "limit": 0, 
+				        "contains": false,
+				        "exacts": true, 
+				        "fieldsFilter": {
+				            "transaction":transaction.code
+				        }
+				    }
+				};
+			var detailFields = ["NO","Product","ID","Expiry Date","Qty","Unit","Price","Total Price"];
+			
+			doGetDetail("<spring:url value="/api/entity/get" />",requestDetailFlows,detailFields, populateProductFlowDetail);
+			
+			show("content-receipt");
+			hide("content-form");
+		}
+		
+		function populateProductFlowDetail(entities,detailFields){
+			var tableColumns = [];
+			tableColumns.push(detailFields);
+			var summaryPrice = 0;
+			for (let i = 0; i < entities.length; i++) {
+				let productFlow = entities[i];
+				let totalPrice = productFlow.count*1 * productFlow.price*1;
+				let columns = [
+					i+1,
+					productFlow.product.name, productFlow.id, productFlow.expiryDate, productFlow.count,
+					productFlow.product.unit.name, productFlow.price, totalPrice
+					];
+				summaryPrice += totalPrice;
+				tableColumns.push(columns);
+			}
+			let tbody  = createTBodyWithGivenValue(tableColumns);
+			tableReceipt.innerHTML+="<tr><td>Transaction Amount</td><td style=\"text-align:left\" colspan=\"2\"><u>"+beautifyNominal(summaryPrice)+"</u></td></tr>";
+			tableReceipt.innerHTML+="<tr><td style=\"text-align:center\" colspan=\"7\"><h3>Products</h3></td></tr>";
+			tableReceipt.innerHTML+=tbody.innerHTML;
+			tableReceipt.innerHTML+="<tr><td style=\"text-align:right\" colspan=\"7\">Total : "+beautifyNominal(summaryPrice)+"</td></tr>";
+			
+		}
+		
 
 		function loadCustomerList() {
 			customerListDropDown.innerHTML = "";
@@ -346,5 +413,26 @@
 			setCurrentProduct(entity, true);
 		}
 	</script>
-</body>
-</html>
+<c:if test="${requestCode != null }">
+	<script type="text/javascript">
+		var requestTransactionCode = "${requestCode}";
+		var requestObject = {
+			    "entity": "transaction",
+			    "filter": {
+			        "limit": 1,
+			        "orderBy": null,
+			        "orderType": null,
+			        "exacts":true,
+			        "contains":false,
+			        "fieldsFilter": {
+			            "code": requestTransactionCode,
+			            "type":"OUT"
+			        }
+			    }
+			};
+		doGetById("<spring:url value="/api/entity/get" />", requestObject, function(entity){
+			showReceipt(entity);
+		});	
+		
+	</script>
+</c:if>

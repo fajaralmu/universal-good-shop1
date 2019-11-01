@@ -44,7 +44,7 @@ public class ProductFlow extends BaseEntity implements Serializable{
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date expiryDate;
 	@Column
-	@FormField 
+	@FormField (type="currency")
 	private Long price;
 	@Column
 	@FormField 

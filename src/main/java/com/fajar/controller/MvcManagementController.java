@@ -21,7 +21,7 @@ import com.fajar.config.EntityProperty;
 import com.fajar.entity.UserRole;
 import com.fajar.service.EntityService;
 import com.fajar.service.UserSessionService;
-import com.fajar.service.WebAppConfiguration;
+import com.fajar.service.WebConfigService;
 import com.fajar.util.EntityUtil;
 import com.fajar.util.JSONUtil;
 import com.fajar.util.MVCUtil;
@@ -41,7 +41,7 @@ public class MvcManagementController extends BaseController {
 	@Autowired
 	private EntityService entityService;
 	@Autowired
-	private WebAppConfiguration webAppConfiguration;
+	private WebConfigService webAppConfiguration;
 
 	private static String basePage;
 

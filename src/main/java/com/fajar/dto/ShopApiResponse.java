@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.fajar.annotation.Dto;
 import com.fajar.entity.BaseEntity;
@@ -41,6 +42,7 @@ public class ShopApiResponse implements Serializable {
 	private Integer totalData;
 	private Transaction transaction;
 	private ProductFlowStock productFlowStock;
+	private Map<String, Object> storage;
 
 	public ShopApiResponse(String code, String message) {
 		this.code = code;

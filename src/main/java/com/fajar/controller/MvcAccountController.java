@@ -14,7 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.service.UserSessionService;
-import com.fajar.service.WebAppConfiguration;
+import com.fajar.service.WebConfigService;
 
 @Controller
 @RequestMapping("account")
@@ -23,7 +23,7 @@ public class MvcAccountController extends BaseController {
 	@Autowired
 	private UserSessionService userSessionService;
 	@Autowired
-	private WebAppConfiguration webAppConfiguration;
+	private WebConfigService webAppConfiguration;
 
 	private String basePage;
 

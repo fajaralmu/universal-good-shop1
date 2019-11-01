@@ -13,6 +13,7 @@ import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Product;
+import com.fajar.entity.Supplier;
 import com.fajar.repository.ProductRepository;
 
 @Service
@@ -36,12 +37,17 @@ public class ProductService {
 //		}
 	}
 	
+	
 	public ShopApiResponse getProductsCatalog(ShopApiRequest request) {
 		 
 		boolean withStock = false;
+		boolean withSupplier = false;
 		Map<String, Object> filter = request.getFilter().getFieldsFilter();
 		if(filter.get("withStock")!=null && (Boolean)filter.get("withStock") == true) {
 			withStock = true;
+		}
+		if(filter.get("withSupplier")!=null && (Boolean)filter.get("withSupplier") == true) {
+			withSupplier = true;
 		}
 		request.getFilter().getFieldsFilter().remove("withStock");
 		ShopApiResponse filteredProducts = entityService.filter(request);
@@ -58,6 +64,12 @@ public class ProductService {
 		if(withStock)
 			products = transactionService.populateProductWithStocks(products, true);
 		 
+		if(withSupplier) {
+			for (Product product : products) {
+				List<Supplier> suppliers = transactionService.getProductSupplier(product.getId());
+				product.setSuppliers(suppliers);
+			}
+		}
 		filteredProducts.setEntities(convertList(products));
 		return filteredProducts;
 	}

@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.fajar.annotation.Dto;
 import com.fajar.entity.BaseEntity;
+import com.fajar.util.JSONUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,6 +37,16 @@ public class EntityProperty implements Serializable{/**
 	@Builder.Default
 	private List<String> imageElements = new ArrayList<String>();
 	private String imageElementsJson;
+	@Builder.Default
+	private List<String> currencyElements = new ArrayList<String>();
+	private String currencyElementsJson;
+	
+	public void setElementJsonList() { 
+		
+		this.dateElementsJson = JSONUtil.listToJson(dateElements);
+		this.imageElementsJson = JSONUtil.listToJson(imageElements);
+		this.currencyElementsJson = JSONUtil.listToJson(currencyElements);
+	}
  	
 
 }

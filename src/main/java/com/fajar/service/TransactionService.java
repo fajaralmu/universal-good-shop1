@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +54,8 @@ public class TransactionService {
 	@Autowired
 	private RepositoryCustom<ProductFlow> productFlowRepositoryCustom;
 	@Autowired
+	private RepositoryCustom<Transaction> transactionCustomRespositoryCustom;
+	@Autowired
 	private EntityService entityService;
 
 	@PostConstruct
@@ -73,7 +76,7 @@ public class TransactionService {
 	 * @param httpRequest
 	 * @return
 	 */
-	public ShopApiResponse submitNew(ShopApiRequest request, HttpServletRequest httpRequest) {
+	public ShopApiResponse supplyProduct(ShopApiRequest request, HttpServletRequest httpRequest) {
 		User user = userSessionService.getUser(httpRequest);
 		if (null == user) {
 			return ShopApiResponse.builder().code("01").message("invalid user").build();
@@ -101,6 +104,7 @@ public class TransactionService {
 		transaction.setCode(StringUtil.generateRandomNumber(10));
 		transaction.setUser(user);
 		transaction.setType("IN");
+		transaction.setTransactionDate(new Date());
 		transaction.setSupplier(supplier.get());
 
 		try {
@@ -296,6 +300,7 @@ public class TransactionService {
 		Transaction transaction = new Transaction();
 		transaction.setCode(StringUtil.generateRandomNumber(10));
 		transaction.setUser(user);
+		transaction.setTransactionDate(new Date());
 		transaction.setType("OUT");
 		transaction.setCustomer(dbCustomer.get());
 		try {
@@ -354,5 +359,19 @@ public class TransactionService {
 
 		return ((BigInteger) result).intValue();
 
+	}
+
+	public List<Supplier> getProductSupplier(Long id) {
+		String sqlSelectTransaction ="select * from `transaction` " + 
+				"left join product_flow on product_flow.transaction_id = transaction.id " + 
+				"where product_flow.product_id = "+id+" and `transaction`.`type` = 'IN' " + 
+				"group by supplier_id";
+		List<Transaction> transactions = transactionCustomRespositoryCustom.filterAndSort(sqlSelectTransaction, Transaction.class);
+		List<Supplier> suppliers = new ArrayList<>();
+		
+		for (Transaction transaction : transactions) {
+			suppliers.add(transaction.getSupplier());
+		}
+		return suppliers;
 	}
 }

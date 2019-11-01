@@ -45,7 +45,7 @@
 
 	<!-- web app custom config -->
 	<bean id="webAppConfig"
-		class="com.fajar.service.WebAppConfiguration">
+		class="com.fajar.service.WebConfigService">
 		<property name="basePage" value="BASE_PAGE"></property>
 		<property name="martCode" value="SHOP996"></property>
 		<property name="uploadedImageRealPath" value="D:/Development/Files/Web/Shop1/Images"></property>

@@ -10,13 +10,13 @@ import com.fajar.entity.ShopProfile;
 import com.fajar.entity.User;
 import com.fajar.service.AccountService;
 import com.fajar.service.UserSessionService;
-import com.fajar.service.WebAppConfiguration;
+import com.fajar.service.WebConfigService;
 import com.fajar.util.MVCUtil;
 @Controller
 public class BaseController {
 	
 	@Autowired
-	private WebAppConfiguration webAppConfiguration;
+	private WebConfigService webAppConfiguration;
 	@Autowired
 	private UserSessionService userSessionService;
 	@Autowired

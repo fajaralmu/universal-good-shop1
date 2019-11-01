@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.service.ComponentService;
 import com.fajar.service.UserSessionService;
-import com.fajar.service.WebAppConfiguration;
+import com.fajar.service.WebConfigService;
 import com.fajar.util.MVCUtil;
 
 @Controller
 public class MvcPublicController extends BaseController{
 	Logger log = LoggerFactory.getLogger(MvcPublicController.class);
 	@Autowired
-	private WebAppConfiguration webAppConfiguration;
+	private WebConfigService webAppConfiguration;
 	private String basePage;
 	@Autowired
 	private ComponentService componentService;

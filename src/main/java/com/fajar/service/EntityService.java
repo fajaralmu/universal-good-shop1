@@ -487,7 +487,7 @@ public class EntityService {
 			} else if (itemExacts) {
 				sqlItem += " = '" + filter.get(rawKey) + "' ";
 			}
-			System.out.println("SQL ITEM: "+sqlItem);
+			System.out.println("SQL ITEM: "+sqlItem+" contains :"+itemContains+", exacts:"+itemExacts);
 			filters.add(sqlItem);
 		}
 		return " WHERE " + String.join(" AND ", filters);

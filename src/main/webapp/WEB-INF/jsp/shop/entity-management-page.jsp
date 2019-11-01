@@ -14,6 +14,9 @@
 	var imgElements = ${
 		entityProperty.imageElementsJson
 	};
+	var currencyElements = ${
+		entityProperty.currencyElementsJson
+	};
 	var dateElements = ${
 		entityProperty.dateElementsJson
 	};
@@ -33,7 +36,7 @@
 <div class="modal fade" id="modal-entity-detail" tabindex="-1"
 	role="dialog" aria-labelledby="Entity Detail Modal"
 	aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="title-detail-modal">Detail</h5>
@@ -278,13 +281,7 @@
 		imageTag.src = imageTag.getAttribute("originaldata");
 		//remove from imagesData object
 		imagesData[id] = null;
-	}
-
-	function clearFilter() {
-		filterValue.innerHTML = "";
-		orderBy = null;
-		orderType = null;
-	}
+	} 
 
 	//load dropdown list for multiple select
 	function loadList(inputElement) {
@@ -348,8 +345,8 @@
 			"filter" : {
 				"limit" : limit,
 				"page" : page,
-				"orderBy" : orderBy,
-				"orderType" : orderType
+				"orderBy" : this.orderBy,
+				"orderType" : this.orderType
 
 			}
 		};
@@ -390,13 +387,22 @@
 	
 	//is image field
 	function isImage(id) {
-
 		for (var i = 0; i < imgElements.length; i++) {
 			var array_element = imgElements[i];
 			if (id == array_element) {
 				return true;
 			}
-
+		}
+		return false;
+	}
+	
+	//is currency field
+	function isCurrency(id) {
+		for (var i = 0; i < currencyElements.length; i++) {
+			var array_element = currencyElements[i];
+			if (id == array_element) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -408,7 +414,6 @@
 			if (id == array_element) {
 				return true;
 			}
-
 		}
 		return false;
 	}
@@ -433,17 +438,15 @@
 					let objectFieldName = window["itemField_" + fieldNames[j]];
 					entityValue = entityValue[objectFieldName];
 				}
-				//regular value
-				else if (!isDate(fieldNames[j]) && !isImage(fieldNames[j]) && entityValue != null) {
-					
-					//limit string characters count 
-					if ( typeof (entityValue) == "string" && entityValue.length > 35) {
-						entityValue = entityValue.substring(0, 35) + "...";
-					}
-				}
+				
 				//handle date type value
 				else if (isDate(fieldNames[j])) {
 					entityValue = new Date(entityValue);
+				}
+				//handle if currency value
+				//else if (isCurrency(fieldNames[j])) {
+				else if(typeof (entityValue) == "number" && entityValue != null){
+					entityValue = "<span style=\"font-family:consolas\">"+ beautifyNominal(entityValue) +"</span>";
 				}
 				//handle image type value
 				else if (isImage(fieldNames[j])) {
@@ -452,6 +455,13 @@
 					}
 					entityValue = "<img width=\"30\" height=\"30\" src=\"${host}/${contextPath}/${imagePath}/"
 							+ (entityValue) + "\" />";
+				}//regular value
+				else if (  entityValue != null) {
+					
+					//limit string characters count 
+					if ( typeof (entityValue) == "string" && entityValue.length > 35) {
+						entityValue = entityValue.substring(0, 35) + "...";
+					}
 				}
 				row.append(createCell(entityValue));
 			}
@@ -509,7 +519,7 @@
 			input.onkeyup = function() {
 				loadEntity();
 			} 
-			let isDateField = false
+			let isDateField = false;
 			if (isDate(fieldName)) {
 				inputGroup = createFilterInputDate(inputGroup, fieldName, loadEntity);
 				isDateField = true;
@@ -525,14 +535,16 @@
 			ascButton.className = "btn btn-outline-secondary btn-sm";
 			descButton.className = "btn btn-outline-secondary btn-sm";
 			descButton.onclick = function() {
-				this.orderType = "desc";
-				this.orderBy = fieldName;
-				loadEntity(this.page);
+				 
+				orderType = "desc";
+				orderBy = fieldName;
+				loadEntity(page);
 			}
 			ascButton.onclick = function() {
-				this.orderType = "asc";
-				this.orderBy = fieldName;
-				loadEntity(this.page);
+			 
+				orderType = "asc";
+				orderBy = fieldName;
+				loadEntity(page);
 			}
 			btnSortGroup.append(ascButton);
 			btnSortGroup.append(descButton);

@@ -1,6 +1,7 @@
 package com.fajar.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,7 +41,7 @@ public class Product extends BaseEntity implements Serializable {
 	@FormField 
 	private String description;
 	@Column
-	@FormField 
+	@FormField(type="currency")
 	private Long price;
 	@Column
 	@FormField 
@@ -59,5 +60,7 @@ public class Product extends BaseEntity implements Serializable {
 	
 	@Transient
 	private Integer count;
+	@Transient
+	private List<Supplier> suppliers;
 
 }

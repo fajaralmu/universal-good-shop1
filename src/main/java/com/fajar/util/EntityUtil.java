@@ -58,6 +58,9 @@ public class EntityUtil {
 					}
 				} else if (fieldType.equals("img")) {
 					entityProperty.getImageElements().add(entityElement.getId());
+				}else if (fieldType.equals("currency")) {
+					entityProperty.getCurrencyElements().add(entityElement.getId());
+					fieldType = "number";
 				}
 
 				fieldNames.add(field.getName());
@@ -106,8 +109,7 @@ public class EntityUtil {
 				}
 				entityElements.add(entityElement);
 			}
-			entityProperty.setDateElementsJson(JSONUtil.listToJson(entityProperty.getDateElements()));
-			entityProperty.setImageElementsJson(JSONUtil.listToJson(entityProperty.getImageElements()));
+			entityProperty.setElementJsonList();
 			entityProperty.setElements(entityElements);
 			entityProperty.setDetailFieldName(fieldToShowDetail);
 			entityProperty.setFieldNames(JSONUtil.listToJson(fieldNames));

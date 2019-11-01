@@ -12,12 +12,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.service.ComponentService;
 import com.fajar.service.TransactionService;
 import com.fajar.service.UserSessionService;
-import com.fajar.service.WebAppConfiguration;
+import com.fajar.service.WebConfigService;
 import com.fajar.util.MVCUtil;
 
 /**
@@ -37,7 +38,7 @@ public class MvcAdminController extends BaseController {
 	@Autowired
 	private ComponentService componentService;
 	@Autowired
-	private WebAppConfiguration webAppConfiguration;
+	private WebConfigService webAppConfiguration;
 
 	private String basePage;
 
@@ -102,12 +103,15 @@ public class MvcAdminController extends BaseController {
 		return basePage;
 	}
 
-	@RequestMapping(value = { "/transaction/in" })
-	public String incomingTransaction(Model model, HttpServletRequest request, HttpServletResponse response)
+	@RequestMapping(value = { "/transaction/in","/transaction/in/","/transaction/in/{transactionCode}" })
+	public String incomingTransaction(@PathVariable(required = false) String transactionCode, Model model, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
+		}
+		if(null!=transactionCode) {
+			model.addAttribute("requestCode", transactionCode);
 		}
 		model.addAttribute("title", "Shop::Supply");
 		model.addAttribute("pageUrl", "shop/transaction-in-page");
@@ -115,14 +119,16 @@ public class MvcAdminController extends BaseController {
 		return basePage;
 	}
 
-	@RequestMapping(value = { "/transaction/out" })
-	public String outTransaction(Model model, HttpServletRequest request, HttpServletResponse response)
+	@RequestMapping(value = { "/transaction/out","/transaction/out/","/transaction/out/{transactionCode}"  })
+	public String outTransaction(@PathVariable(required = false) String transactionCode, Model model, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
 		}
-
+		if(null!=transactionCode) {
+			model.addAttribute("requestCode", transactionCode);
+		}
 		model.addAttribute("title", "Shop::Purchase");
 		model.addAttribute("pageUrl", "shop/transaction-out-page");
 		model.addAttribute("page", "transaction");

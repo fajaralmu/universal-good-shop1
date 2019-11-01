@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.dto.UserTempRequest;
 import com.fajar.entity.User;
 import com.fajar.repository.UserRepository;
 
@@ -20,6 +21,7 @@ public class UserSessionService {
 
 	@Autowired
 	private UserRepository userRepository;
+
 	private Map<String, Object> userTokens = new HashMap<String, Object>();
 
 	public User getUser(HttpServletRequest request) {
@@ -41,15 +43,21 @@ public class UserSessionService {
 			return false;
 		}
 		User sessionUser = (User) request.getSession().getAttribute("user");
-		User loggedUser = userRepository.findByUsernameAndPassword(sessionUser.getUsername(),
-				sessionUser.getPassword());
+		try {
+			User loggedUser = userRepository.findByUsernameAndPassword(sessionUser.getUsername(),
+					sessionUser.getPassword());
 
-		return loggedUser != null;
+			return loggedUser != null;
+		} catch (Exception ex) {
+			return false;
+		}
 	}
 
 	public void addUserSession(User dbUser, HttpServletRequest httpRequest) {
 		httpRequest.getSession(true).setAttribute("user", dbUser);
 		setToken(dbUser);
+		WebConfigService.putUserTempData(dbUser.getId().toString(), UserTempRequest.builder().user(dbUser)
+				.requestURI(httpRequest.getRequestURI()).userId(dbUser.getId()).build());
 	}
 
 	public void logout(HttpServletRequest request) {

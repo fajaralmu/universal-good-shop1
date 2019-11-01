@@ -10,6 +10,30 @@
 </style>
 <div class="content">
 	<p></p>
+	<!-- DETAIL ELEMENT -->
+	<div class="modal fade" id="modal-product-suppliers" tabindex="-1"
+		role="dialog" aria-labelledby="Product Suppliers"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="title-detail-modal">Supplier</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" style="width: 90%; height: 400px; margin: auto; overflow: scroll;">
+					<table class="table" id="table-supplier-list" style="layout: fixed">
+					</table>
+				</div>		
+			 <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	
 	<div id="detail-content" class="row" style="width:95%; margin:auto; display: none">
 		<table class="table" style="layout: fixed; ">
 			<tr>
@@ -65,6 +89,10 @@
 							class="list-group-item d-flex justify-content-between align-items-center">
 							Category<br> <span id="product-category">0</span>
 						</li>
+						<li
+							class="list-group-item d-flex justify-content-between align-items-center">
+							<button class="btn btn-primary" onclick="showproductsuppliers()" >Supplier List</button>
+						</li>
 
 
 					</ul>
@@ -83,8 +111,8 @@
 		<p></p>
 		
 		<table style="layout: fixed;border-collapse: separate; border-spacing: 5px; ">
-			<tr valign="top">
-				<td>
+			<tr valign="top" style="width: 100%">
+				<td style="width:20%">
 				<!-- FILTER -->
 					<div>
 						<p>Name</p>
@@ -103,7 +131,7 @@
 					</div>
 					<button class="btn btn-outline-primary" onclick="loadEntity()">Search</button>
 				</td>
-				<td>
+				<td style="width:80%">
 					<!-- PAGINATION -->
 					<nav>
 						<ul class="pagination" id="navigation-panel"></ul>
@@ -128,6 +156,7 @@
 	var nameFilter = document.getElementById("search-name");
 	var chkBoxGetStock = document.getElementById("get-stock");
 	var categoryFilter = document.getElementById("select-category");
+	var tableSupplierList = document.getElementById("table-supplier-list");
 
 	//detail
 	var productTitle = document.getElementById("product-title");
@@ -137,6 +166,10 @@
 	var carouselInner = document.getElementById("carousel-inner");
 	var carouselIndicator = document.getElementById("carousel-indicators");
 	var defaultLocation = window.location.href;
+	
+	function showproductsuppliers(){
+		$('#modal-product-suppliers').modal('show');
+	}
 
 	function closeDetail() {
 		hide("detail-content");
@@ -186,6 +219,21 @@
 			innerDiv.append(iconImage);
 			carouselInner.append(innerDiv);
 		}
+		
+		//suppliers
+		let suppliers = entity.suppliers;
+		
+		tableSupplierList.innerHTML = "";
+		let tableHeader = createTableHeaderByColumns(["name","website","address"]);
+		let bodyRows = createTableBody(["name","website","address"], suppliers);
+		tableSupplierList.append(tableHeader);
+		for ( var i=0;i<bodyRows.length;i++) {
+			let row = bodyRows[i];
+			tableSupplierList.append(row);
+		}
+		
+		
+		
 		var slash = "";
 		if (!window.location.href.endsWith("/"))
 			slash = "/";
@@ -207,7 +255,8 @@
 				"contains" : false,
 				"fieldsFilter" : {
 					"code" : code,
-					"withStock" : true
+					"withStock" : true,
+					"withSupplier" : true
 				}
 			}
 		};
@@ -307,14 +356,7 @@
 		if (categoryFilter.value != "00") {
 			requestObject["filter"]["fieldsFilter"]["category,id[EXACTS]"] = categoryFilter.value;
 		}
-
-		/* for (let i = 0; i < filterFields.length; i++) {
-			let filterField = filterFields[i];
-			if (filterField.value != "") {
-				let fieldName = filterField.getAttribute("field");
-				
-			}
-		} */
+ 
 		doLoadEntities("<spring:url value="/api/public/get" />", requestObject,
 				function(response) {
 					var entities = response.entities;

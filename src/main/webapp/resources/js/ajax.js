@@ -93,8 +93,7 @@ function doGetDetail(url,requestObject,detailFields, callback){
 			});
 }
 
-
-
+//GET ONE
 function doGetById(url, requestObject, callback){
 	postReq(url, requestObject,
 			function(xhr) {
