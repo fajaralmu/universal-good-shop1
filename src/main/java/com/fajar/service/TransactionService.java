@@ -368,11 +368,12 @@ public class TransactionService {
 
 	}
 
-	public List<Supplier> getProductSupplier(Long id) {
+	public List<Supplier> getProductSupplier(Long id, int limit, int offset) {
+		 
 		String sqlSelectTransaction = "select * from `transaction` "
 				+ "left join product_flow on product_flow.transaction_id = transaction.id "
 				+ "where product_flow.product_id = " + id + " and `transaction`.`type` = 'IN' "
-				+ "group by supplier_id";
+				+ "group by supplier_id limit "+limit+" offset "+offset;
 		List<Transaction> transactions = transactionCustomRespositoryCustom.filterAndSort(sqlSelectTransaction,
 				Transaction.class);
 		List<Supplier> suppliers = new ArrayList<>();

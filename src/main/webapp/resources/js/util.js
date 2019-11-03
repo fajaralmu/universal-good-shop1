@@ -132,7 +132,7 @@ function createTableHeaderByColumns(columns){
 	
 	let row = createElement("tr","th-header-detail",null);
 	 
-	row.append(createCell("<br>No</b>"));
+	row.append(createCell("<b>No</b>"));
 	for (var i = 0; i < columns.length; i++) {
 		var column = columns[i];
 		column = column.toUpperCase();
@@ -145,6 +145,13 @@ function createTableHeaderByColumns(columns){
 
 //return array of TR !!!!
 function createTableBody(columns, entities){
+	 createTableBody(columns, entities, 0);
+}
+
+function createTableBody(columns, entities, beginNumber){
+	if(beginNumber == null){
+		beginNumber = 0;
+	}
 	// let tbody = createElement("tbody", "tbody-detail", "tbody-detail");
 	let rows = [];
 	for (let j = 0; j < entities.length; j++) {
@@ -152,7 +159,8 @@ function createTableBody(columns, entities){
 		
 		let row = createElement("tr","tr-body-detail-"+j,null);
 		 
-		row.append(createCell(j+1)); 
+		row.append(createCell(beginNumber+1)); 
+		beginNumber++;
 		for (let i = 0; i < columns.length; i++) {
 			let column = columns[i];
 			let refField = column.split(".");

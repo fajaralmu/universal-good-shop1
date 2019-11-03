@@ -48,6 +48,9 @@
 			<div class="modal-body" style="width: 90%; height: 400px; margin: auto; overflow: scroll;">
 				<table class="table" id="table-detail" style="layout: fixed">
 				</table>
+				<div style="text-align: center">
+						<button class="btn btn-outline-success" onclick="loadMoreDetail()">More</button>
+					</div>
 			</div>		
 		 <div class="modal-footer">
         <button type="button" class="btn btn-secondary" onclick="$('#modal-entity-form').modal('show')" data-dismiss="modal">Close</button>
@@ -765,11 +768,50 @@
 		let element = document.getElementById(id);
 		element.parentNode.remove(element);
 	}
+	var currentDetailEntityName = "";
+	var currentDetailFieldName = "";
+	var currentDetailOffset = 0;
+	
+	function loadMoreDetail(){
+		this.currentDetailOffset++;
+		var requestObject = {
+				'entity' : this.currentDetailEntityName,
+				'filter' : {
+					'limit' : 5,
+					'page' : currentDetailOffset,
+					'orderBy' : null,
+					'contains' : false,
+					'exacts' : true,
+					'orderType' : null,
+					"fieldsFilter" : {}
+				}
+			};
+			requestObject.filter.fieldsFilter[entityName] = document
+					.getElementById(this.currentDetailEntityName).getAttribute(this.currentDetailFieldName);
+			let detailFields = document.getElementById(this.currentDetailEntityName).getAttribute(
+					"detailfields").split("~");
+			console.log("request more detail", requestObject);
+		 
+			doGetDetail("<spring:url value="/api/entity/get" />", requestObject,detailFields, function(entities,detailFields){
+				let bodyRows = createTableBody(detailFields, entities, this.currentDetailOffset*5);
+				 
+				for (var i = 0; i < bodyRows.length; i++) {
+					var row = bodyRows[i];
+					detailTable.append(row);
+				}
+			});
+			
+	}
+	
 	function showDetail(elementId, field) {
+		this.currentDetailEntityName = elementId;
+		this.currentDetailFieldName = field;
+		currentDetailOffset = 0;
 		var requestObject = {
 			'entity' : elementId,
 			'filter' : {
-				'limit' : 0,
+				'limit' : 5,
+				'page' : 0,
 				'orderBy' : null,
 				'contains' : false,
 				'exacts' : true,

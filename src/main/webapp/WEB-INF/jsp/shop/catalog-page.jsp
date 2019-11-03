@@ -12,30 +12,37 @@
 	<p></p>
 	<!-- DETAIL ELEMENT -->
 	<div class="modal fade" id="modal-product-suppliers" tabindex="-1"
-		role="dialog" aria-labelledby="Product Suppliers"
-		aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+		role="dialog" aria-labelledby="Product Suppliers" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-lg"
+			role="document">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title" id="title-detail-modal">Supplier</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
-				<div class="modal-body" style="width: 90%; height: 400px; margin: auto; overflow: scroll;">
+				<div class="modal-body"
+					style="width: 90%; height: 400px; margin: auto; overflow: scroll;">
 					<table class="table" id="table-supplier-list" style="layout: fixed">
 					</table>
-				</div>		
-			 <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
-	      </div>
-	    </div>
-	  </div>
+					<div style="text-align: center">
+						<button class="btn btn-outline-success" onclick="loadMoreSupplier()">More</button>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
 	</div>
-	
-	
-	<div id="detail-content" class="row" style="width:95%; margin:auto; display: none">
-		<table class="table" style="layout: fixed; ">
+
+
+	<div id="detail-content" class="row"
+		style="width: 95%; margin: auto; display: none">
+		<table class="table" style="layout: fixed;">
 			<tr>
 				<td style="width: 60%">
 					<button class="btn btn-primary btn-sm" id="close-detail"
@@ -91,7 +98,8 @@
 						</li>
 						<li
 							class="list-group-item d-flex justify-content-between align-items-center">
-							<button class="btn btn-primary" onclick="showproductsuppliers()" >Supplier List</button>
+							<button class="btn btn-primary" onclick="showproductsuppliers()">Supplier
+								List</button>
 						</li>
 
 
@@ -109,11 +117,12 @@
 	<div id="catalog-content">
 		<h2>Product Catalog</h2>
 		<p></p>
-		
-		<table style="layout: fixed;border-collapse: separate; border-spacing: 5px; ">
+
+		<table
+			style="layout: fixed; border-collapse: separate; border-spacing: 5px;">
 			<tr valign="top" style="width: 100%">
-				<td style="width:20%">
-				<!-- FILTER -->
+				<td style="width: 20%">
+					<!-- FILTER -->
 					<div>
 						<p>Name</p>
 						<input id="search-name" class="form control" />
@@ -125,13 +134,14 @@
 							</c:forEach>
 						</select>
 						<p>
-							<input class="form control" checked="checked" type="checkbox" id="get-stock"
-								aria-label="Checkbox for following text input"> <span >Include Stock</span>
+							<input class="form control" checked="checked" type="checkbox"
+								id="get-stock" aria-label="Checkbox for following text input">
+							<span>Include Stock</span>
 						</p>
 					</div>
 					<button class="btn btn-outline-primary" onclick="loadEntity()">Search</button>
 				</td>
-				<td style="width:80%">
+				<td style="width: 80%">
 					<!-- PAGINATION -->
 					<nav>
 						<ul class="pagination" id="navigation-panel"></ul>
@@ -143,6 +153,8 @@
 	</div>
 </div>
 <script type="text/javascript">
+
+
 	var page = 0;
 	var limit = 8;
 	var totalData = 0;
@@ -166,8 +178,10 @@
 	var carouselInner = document.getElementById("carousel-inner");
 	var carouselIndicator = document.getElementById("carousel-indicators");
 	var defaultLocation = window.location.href;
-	
-	function showproductsuppliers(){
+	var supplierOffset = 0;
+	var selectedProductId = 0;
+
+	function showproductsuppliers() {
 		$('#modal-product-suppliers').modal('show');
 	}
 
@@ -176,9 +190,44 @@
 		show("catalog-content");
 		window.history.pushState('catalog-page', 'Product Catalog',
 				defaultLocation);
+		this.supplierOffset = 0;
+		this.selectedProductId = 0;
+	}
+
+	
+
+	function loadMoreSupplier() {
+		supplierOffset++;
+		doLoadMoreSupplier(supplierOffset, selectedProductId);
+	}
+
+	function doLoadMoreSupplier(offset, productId) {
+		doLoadEntities("<spring:url value="/api/public/moresupplier" />", {
+			"filter" : {
+				"page" : offset,
+				"fieldsFilter" : {
+					"productId" : productId
+				}
+			}
+		}, function(response) {
+			var entities = response.entities;
+			if (entities != null && entities.length > 0) {
+				let bodyRows = createTableBody(
+						[ "name", "website", "address" ], entities,
+						(offset * 5));
+
+				for (var i = 0; i < bodyRows.length; i++) {
+					let row = bodyRows[i];
+					tableSupplierList.append(row);
+				}
+			} else
+				alert("Data Not Found");
+			infoDone();
+		});
 	}
 
 	function populateDetail(entity) {
+		selectedProductId = entity.id;
 		console.log("entity", entity);
 		hide("catalog-content");
 
@@ -219,21 +268,21 @@
 			innerDiv.append(iconImage);
 			carouselInner.append(innerDiv);
 		}
-		
+
 		//suppliers
 		let suppliers = entity.suppliers;
-		
+
 		tableSupplierList.innerHTML = "";
-		let tableHeader = createTableHeaderByColumns(["name","website","address"]);
-		let bodyRows = createTableBody(["name","website","address"], suppliers);
+		let tableHeader = createTableHeaderByColumns([ "name", "website",
+				"address" ]);
+		let bodyRows = createTableBody([ "name", "website", "address" ],
+				suppliers);
 		tableSupplierList.append(tableHeader);
-		for ( var i=0;i<bodyRows.length;i++) {
+		for (var i = 0; i < bodyRows.length; i++) {
 			let row = bodyRows[i];
 			tableSupplierList.append(row);
 		}
-		
-		
-		
+
 		var slash = "";
 		if (!window.location.href.endsWith("/"))
 			slash = "/";
@@ -356,7 +405,7 @@
 		if (categoryFilter.value != "00") {
 			requestObject["filter"]["fieldsFilter"]["category,id[EXACTS]"] = categoryFilter.value;
 		}
- 
+
 		doLoadEntities("<spring:url value="/api/public/get" />", requestObject,
 				function(response) {
 					var entities = response.entities;

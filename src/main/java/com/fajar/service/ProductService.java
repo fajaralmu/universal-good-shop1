@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
@@ -26,7 +27,7 @@ public class ProductService {
 
 	@Autowired
 	private ProductRepository productRepository;
-	
+
 	@PostConstruct
 	public void init() {
 //		List<Product> products = productRepository.findAll();
@@ -36,17 +37,16 @@ public class ProductService {
 //			productRepository.save(product);
 //		}
 	}
-	
-	
+
 	public ShopApiResponse getProductsCatalog(ShopApiRequest request) {
-		 
+
 		boolean withStock = false;
 		boolean withSupplier = false;
 		Map<String, Object> filter = request.getFilter().getFieldsFilter();
-		if(filter.get("withStock")!=null && (Boolean)filter.get("withStock") == true) {
+		if (filter.get("withStock") != null && (Boolean) filter.get("withStock") == true) {
 			withStock = true;
 		}
-		if(filter.get("withSupplier")!=null && (Boolean)filter.get("withSupplier") == true) {
+		if (filter.get("withSupplier") != null && (Boolean) filter.get("withSupplier") == true) {
 			withSupplier = true;
 		}
 		request.getFilter().getFieldsFilter().remove("withStock");
@@ -61,19 +61,18 @@ public class ProductService {
 		for (BaseEntity entity : entities) {
 			products.add((Product) entity);
 		}
-		if(withStock)
+		if (withStock)
 			products = transactionService.populateProductWithStocks(products, true);
-		 
-		if(withSupplier) {
+
+		if (withSupplier) {
 			for (Product product : products) {
-				List<Supplier> suppliers = transactionService.getProductSupplier(product.getId());
+				List<Supplier> suppliers = transactionService.getProductSupplier(product.getId(), 5, 0);
 				product.setSuppliers(suppliers);
 			}
 		}
 		filteredProducts.setEntities(convertList(products));
 		return filteredProducts;
 	}
-	 
 
 	public static <T> List<T> convertList(List list) {
 		List<T> newList = new ArrayList<T>();
@@ -81,5 +80,18 @@ public class ProductService {
 			newList.add((T) object);
 		}
 		return newList;
+	}
+
+	public ShopApiResponse getMoreProductSupplier(ShopApiRequest request) {
+		ShopApiResponse response = new ShopApiResponse();
+		Filter filter = request.getFilter();
+		Integer productId = (Integer) filter.getFieldsFilter().get("productId");
+		List<Supplier> suppliers = transactionService.getProductSupplier(productId.longValue(), 5, 5 * filter.getPage());
+		List<BaseEntity> entities = new ArrayList<>();
+		for (Supplier supplier : suppliers) {
+			entities.add(supplier);
+		}
+		response.setEntities(entities);
+		return response;
 	}
 }

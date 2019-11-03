@@ -41,5 +41,13 @@ public class RestPublicController {
 		return response;
 	}
 	
+	@PostMapping(value = "/moresupplier", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ShopApiResponse moresupplier(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+		log.info("register {}", request);
+		ShopApiResponse response = productService.getMoreProductSupplier(request);
+		return response;
+	}
+	
 	 
 }
