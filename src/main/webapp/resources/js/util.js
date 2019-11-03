@@ -219,6 +219,21 @@ function createTBodyWithGivenValue(rowList){
 		for (var j = 0; j < columns.length; j++) {
 			var cell = columns[j];
 			let column = document.createElement("td");
+			if(null!=cell && typeof(cell) == "string" && cell.includes("setting=")){
+				var setting = cell.split("setting=")[1];
+				//colspan
+				if(setting.includes("<colspan>")){
+					var collspan = setting.split("<colspan>")[1];
+					column.setAttribute("colspan",collspan.split("</colspan>")[0]);
+				}
+				//style
+				if(setting.includes("<style>")){
+					var style = setting.split("<style>")[1].split("</style>")[0];
+					column.setAttribute("style",style);
+				}
+				
+				cell = cell.split("setting=")[0];
+			}
 			if(cell!=null && typeof(cell) == "number"){
 				cell = beautifyNominal(cell);
 			}
@@ -285,14 +300,14 @@ function createNavigationButtons(navigationPanel,currentPage,totalData,limit,but
 			lastSeparated = true;
 			var lastSeparator = document.createElement("span");
 			lastSeparator.innerHTML = "...";
-			navigationPanel.appendChild(lastSeparator);
+	//		navigationPanel.appendChild(lastSeparator);
 
 		}
 		if (!included && i != 0 && !firstSeparated) {
 			firstSeparated = true;
 			var firstSeparator = document.createElement("span");
 			firstSeparator.innerHTML = "...";
-			navigationPanel.appendChild(firstSeparator);
+		//	navigationPanel.appendChild(firstSeparator);
 
 		}
 		if (!included && i != 0 && i != (buttonCount - 1)) {

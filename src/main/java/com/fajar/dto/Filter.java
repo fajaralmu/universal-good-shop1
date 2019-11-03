@@ -41,5 +41,8 @@ public class Filter implements Serializable {
 	private String module = "IN";
 	@Builder.Default
 	private Map<String, Object> fieldsFilter = new HashMap<>();
+	
+	private Integer monthTo;
+	private Integer yearTo; 
 
 }

@@ -368,7 +368,7 @@
 			        "contains":false,
 			        "fieldsFilter": {
 			            "code": requestTransactionCode,
-			            "type":"OUT"
+			            "type":"IN"
 			        }
 			    }
 			};

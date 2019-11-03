@@ -28,7 +28,10 @@
 					var response = (xhr.data);
 					if (response != null && response.code == "00") {
 						alert("LOGIN SUCCESS");
-						window.location.href = "<spring:url value="/admin/home" />";
+						if(response.redirectUrl != null){
+							window.location.href = response.redirectUrl;
+						}else
+							window.location.href = "<spring:url value="/admin/home" />";
 					} else {
 						alert("LOGIN FAILS");
 					}

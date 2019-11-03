@@ -31,8 +31,17 @@ public class UserSessionService {
 			return null;
 		}
 	}
-
+	
 	public boolean hasSession(HttpServletRequest request) {
+		return hasSession(request, true);
+	}
+
+	public boolean hasSession(HttpServletRequest request, boolean setRequestURI) {
+		if(setRequestURI) {
+			 
+			request.getSession().setAttribute("requestURI", request.getRequestURI());
+			log.info("---REQUESTED URI: "+request.getSession(false).getAttribute("requestURI"));
+		}
 		if (request.getSession().getAttribute("user") == null) {
 			log.info("session user NULL");
 			return false;

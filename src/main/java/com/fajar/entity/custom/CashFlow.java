@@ -27,5 +27,7 @@ public class CashFlow extends BaseEntity implements Serializable{
 	private Long amount;
 	private Long count;
 	private String module;
+	private int year;
+	private int month;
 	
 }

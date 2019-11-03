@@ -228,6 +228,11 @@
 	<p></p>
 	
 	<!-- PAGINATION -->
+	<div class="input-group mb-3"  style="width:30%">
+		<input class="form-control" value="Page" disabled="disabled">
+		<input class="form-control" type="number" id="input-page" />
+		<button class="btn btn-primary" id="btn-filter-ok" onclick="setPage()">Ok</button>
+	</div>
 	<nav>
 		<ul class="pagination" id="navigation-panel"></ul>
 	</nav>
@@ -335,15 +340,20 @@
 		doGetById("<spring:url value="/api/entity/get" />", requestObject,callback);
 		
 	}
+	
+	function setPage(){
+		this.page = document.getElementById("input-page").value;
+		loadEntity(this.page);
+	}
 
 	function loadEntity(page) {
 		if (page < 0) {
 			page = this.page;
 		}
 		var requestObject = {
-			"entity" : entityName,
+			"entity" : this.entityName,
 			"filter" : {
-				"limit" : limit,
+				"limit" : this.limit,
 				"page" : page,
 				"orderBy" : this.orderBy,
 				"orderType" : this.orderType

@@ -88,5 +88,17 @@ public class RestTransactionController {
 		return response;
 	}
 	
+	@PostMapping(value = "/cashflowdetail", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ShopApiResponse detailcashflow(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+		log.info("cashflowdetail {}", request);
+		if(!accountService.validateToken(httpRequest)) {
+			return ShopApiResponse.failedResponse();
+		}
+		ShopApiResponse response = transactionService.getCashflowDetail(request);
+		return response;
+	}
+	
+	
 
 }

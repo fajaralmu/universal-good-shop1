@@ -37,12 +37,18 @@ public class ShopApiResponse implements Serializable {
 	private String message = "success";
 	@Builder.Default
 	private List<BaseEntity> entities = new ArrayList<>();
+	@Builder.Default
+	private List<BaseEntity> supplies = new ArrayList<>();
+	@Builder.Default
+	private List<BaseEntity> purchases = new ArrayList<>();
 	private BaseEntity entity;
 	private Filter filter;
 	private Integer totalData;
 	private Transaction transaction;
 	private ProductFlowStock productFlowStock;
 	private Map<String, Object> storage;
+	private String redirectUrl;
+	private Long maxValue;
 
 	public ShopApiResponse(String code, String message) {
 		this.code = code;

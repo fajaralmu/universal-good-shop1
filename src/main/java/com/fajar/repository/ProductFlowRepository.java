@@ -15,4 +15,6 @@ public interface ProductFlowRepository extends JpaRepository<ProductFlow, Long> 
 	List<ProductFlow> findByProduct_NameContainingAndTransactionType(String name, String string);
 
 	List<ProductFlow> findByPriceIsNull();
+
+	List<ProductFlow> findByTransaction_TypeAndTransaction_IdGreaterThan(String string, long l);
 }

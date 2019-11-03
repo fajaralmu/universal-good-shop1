@@ -12,7 +12,10 @@ import com.fajar.entity.UserRole;
 import com.fajar.repository.UserRepository;
 import com.fajar.repository.UserRoleRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class AccountService {
 	
 	@Autowired
@@ -51,7 +54,14 @@ public class AccountService {
 		}
 		 
 		userSessionService.addUserSession(dbUser,httpRequest);
-		return new ShopApiResponse("00","success");
+		log.info("--------LOGIN SUCCESS");
+		
+		ShopApiResponse response = new ShopApiResponse("00","success");
+		if(httpRequest.getSession(false).getAttribute("requestURI")!=null) {
+			log.info("WILL REDIRECT TO REQUESTED URI: "+httpRequest.getSession(false).getAttribute("requestURI"));
+			response.setRedirectUrl(httpRequest.getSession(false).getAttribute("requestURI").toString());			
+		}
+		return response;
 	}
 	
 	public boolean logout(HttpServletRequest httpRequest) {

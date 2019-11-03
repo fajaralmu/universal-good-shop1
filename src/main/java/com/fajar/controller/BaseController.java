@@ -24,13 +24,13 @@ public class BaseController {
 
 	@ModelAttribute("shopProfile")
 	public ShopProfile getProfile(HttpServletRequest request) {
-		System.out.println("Has Session: "+userSessionService.hasSession(request));
+//		System.out.println("Has Session: "+userSessionService.hasSession(request, false));
 		return webAppConfiguration.getProfile();
 	}
 	
 	@ModelAttribute("loggedUser")
 	public User getLoggedUser(HttpServletRequest request) {
-		if(userSessionService.hasSession(request)) {
+		if(userSessionService.hasSession(request, false)) {
 			return userSessionService.getUser(request);
 		}
 		else return null;

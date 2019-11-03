@@ -174,13 +174,15 @@ public class TransactionService {
 					+ " left join product on product_flow.product_id = product.id "
 					+ " left join `transaction` on transaction.id = product_flow.transaction_id "
 					+ " where transaction.`type` = 'OUT' and product.id = '$PRODUCT_ID'";
-			Object resultUsedProduct = productFlowRepositoryCustom.getSingleResult(sqlGetUsedCount.replace("$PRODUCT_ID", product.getId().toString()));
-			
+			Object resultUsedProduct = productFlowRepositoryCustom
+					.getSingleResult(sqlGetUsedCount.replace("$PRODUCT_ID", product.getId().toString()));
+
 			final String sqlGetTotalCount = "select sum(product_flow.count) as flowCount from product_flow   "
 					+ "left join `transaction` on product_flow.transaction_id = transaction.id "
 					+ "left join product on product_flow.product_id = product.id  "
 					+ "where   transaction.`type` = 'IN' and product.id = '$PRODUCT_ID'";
-			Object resultTotalProduct = productFlowRepositoryCustom.getSingleResult(sqlGetTotalCount.replace("$PRODUCT_ID", product.getId().toString()));
+			Object resultTotalProduct = productFlowRepositoryCustom
+					.getSingleResult(sqlGetTotalCount.replace("$PRODUCT_ID", product.getId().toString()));
 
 			Integer remainingCount = 0;
 			try {
@@ -197,10 +199,10 @@ public class TransactionService {
 				ex.printStackTrace();
 				System.out.println("==============ERROR PARSING TOTAL COUNT:" + ex.getMessage());
 			}
-			if(totalCount - used > 0) {
+			if (totalCount - used > 0) {
 				remainingCount = totalCount - used;
 			}
-			
+
 			product.setCount(remainingCount);
 			System.out.println(product.getCode() + "====================TOTAL: " + totalCount);
 			System.out.println("====================USED:" + used);
@@ -322,39 +324,44 @@ public class TransactionService {
 	public ShopApiResponse getCashFlow(ShopApiRequest request) {
 		ShopApiResponse response = new ShopApiResponse();
 		// getTransaction
-		String sql = " select sum(`product_flow`.count) as count, sum(`product_flow`.count * `product_flow`.price) as price,`transaction`.`type` as module from `product_flow`  "
-				+ " LEFT JOIN `transaction` ON  `transaction`.`id` = `product_flow`.`transaction_id`  "
-				+ " WHERE  `transaction`.`type` = '$MODULE' and month(`transaction`.transaction_date) =$MM "
-				+ " and year(`transaction`.transaction_date) = $YYYY and `transaction`.deleted = false and `product_flow`.deleted = false";
-
-		sql = sql.replace("$YYYY", request.getFilter().getYear().toString())
-				.replace("$MODULE", request.getFilter().getModule())
-				.replace("$MM", request.getFilter().getMonth().toString());
-
-		Object cashflow = productFlowRepositoryCustom.getObjectFromNativeQuery(sql, CashFlow.class);
+		CashFlow cashflow = getCashflow(request.getFilter().getMonth(), request.getFilter().getYear(),
+				request.getFilter().getModule());
 		if (cashflow != null) {
-			response.setEntity((CashFlow) cashflow);
+			response.setEntity(cashflow);
 		}
 
 		return response;
 	}
 
+	private CashFlow getCashflow(Integer month, Integer year, String module) {
+		String sql = " select sum(`product_flow`.count) as count, sum(`product_flow`.count * `product_flow`.price) as price,`transaction`.`type` as module from `product_flow`  "
+				+ " LEFT JOIN `transaction` ON  `transaction`.`id` = `product_flow`.`transaction_id`  "
+				+ " WHERE  `transaction`.`type` = '$MODULE' and month(`transaction`.transaction_date) =$MM "
+				+ " and year(`transaction`.transaction_date) = $YYYY and `transaction`.deleted = false and `product_flow`.deleted = false";
+
+		sql = sql.replace("$YYYY", year.toString()).replace("$MODULE", module).replace("$MM", month.toString());
+
+		Object cashflow = productFlowRepositoryCustom.getObjectFromNativeQuery(sql, CashFlow.class);
+		return (CashFlow) cashflow;
+	}
+
 	public Integer[] getMinAndMaxTransactionYear() {
 		Integer minYear = getTransactionYear("asc");
 		Integer maxYear = getTransactionYear("desc");
-
+		System.out.println("##MAX YEAR: "+maxYear);
+		System.out.println("##MIN YEAR: "+minYear);
 		return new Integer[] { minYear, maxYear };
 	}
 
 	private Integer getTransactionYear(String orderType) {
-		if (orderType == null || !orderType.toLowerCase().equals("asc") || !orderType.toLowerCase().equals("desc")) {
+		if (orderType == null || (!orderType.toLowerCase().equals("asc") && !orderType.toLowerCase().equals("desc"))) {
 			orderType = "asc";
 		}
 
 		String sql = "select year( `transaction`.transaction_date) from `transaction` where `transaction`.transaction_date is not null "
 				+ "order by transaction_date " + orderType + " limit 1";
 		Object result = productFlowRepositoryCustom.getSingleResult(sql);
-		if (result == null || result.getClass().equals(BigInteger.class))
+		if (result == null ||! result.getClass().equals(BigInteger.class))
 			return Calendar.getInstance().get(Calendar.YEAR);
 
 		return ((BigInteger) result).intValue();
@@ -362,16 +369,114 @@ public class TransactionService {
 	}
 
 	public List<Supplier> getProductSupplier(Long id) {
-		String sqlSelectTransaction ="select * from `transaction` " + 
-				"left join product_flow on product_flow.transaction_id = transaction.id " + 
-				"where product_flow.product_id = "+id+" and `transaction`.`type` = 'IN' " + 
-				"group by supplier_id";
-		List<Transaction> transactions = transactionCustomRespositoryCustom.filterAndSort(sqlSelectTransaction, Transaction.class);
+		String sqlSelectTransaction = "select * from `transaction` "
+				+ "left join product_flow on product_flow.transaction_id = transaction.id "
+				+ "where product_flow.product_id = " + id + " and `transaction`.`type` = 'IN' "
+				+ "group by supplier_id";
+		List<Transaction> transactions = transactionCustomRespositoryCustom.filterAndSort(sqlSelectTransaction,
+				Transaction.class);
 		List<Supplier> suppliers = new ArrayList<>();
-		
+
 		for (Transaction transaction : transactions) {
 			suppliers.add(transaction.getSupplier());
 		}
 		return suppliers;
+	}
+
+	public static List reverse(List arrayList) {
+		ArrayList reversedArrayList = new ArrayList<>();
+		for (int i = arrayList.size() - 1; i >= 0; i--) {
+
+			// Append the elements in reverse order
+			reversedArrayList.add(arrayList.get(i));
+		}
+
+		// Return the reversed arraylist
+		return reversedArrayList;
+	}
+
+	public static int getDiffMonth(int m0, int y0, int m1, int y1) {
+		int diff = 0;
+		for (int i = y0; i <= y1; i++) {
+			int beginMonth = 1;
+			if (i == y0)
+				beginMonth = m0;
+			for (int j = beginMonth; j <= 12; j++) {
+				if (i == y1 && j == m1) {
+					return diff;
+				}
+				diff++;
+			}
+
+		}
+		return diff;
+	}
+
+	public static List<int[]> getMonths(Calendar calendar, int diff) {
+
+		Integer currentMonth = calendar.get(Calendar.MONTH) + 1;
+		Integer currentYear = calendar.get(Calendar.YEAR);
+		List<int[]> periods = new ArrayList<>();
+		String monthString = currentMonth >= 10 ? currentMonth.toString() : "0" + currentMonth;
+		periods.add(new int[] { currentYear, Integer.parseInt(monthString) });
+		for (int i = 1; i <= diff - 1; i++) {
+			currentMonth--;
+			if (currentMonth <= 0) {
+				currentMonth = 12;
+				currentYear--;
+			}
+			monthString = currentMonth >= 10 ? currentMonth.toString() : "0" + currentMonth;
+			periods.add(new int[] { currentYear, Integer.parseInt(monthString) });
+		}
+		return reverse(periods);
+	}
+
+	public static void main(String[] args) {
+		List<int[]> months = getMonths(Calendar.getInstance(), 20);
+		for (int[] string : months) {
+			System.out.println(string[0] + "-" + string[1]);
+		}
+		System.out.println(getDiffMonth(6, 2019, 12, 2020));
+	}
+
+	public ShopApiResponse getCashflowDetail(ShopApiRequest request) {
+
+		int diffMonth = getDiffMonth(request.getFilter().getMonth(), request.getFilter().getYear(),
+				request.getFilter().getMonthTo(), request.getFilter().getYearTo());
+		Calendar cal = Calendar.getInstance();
+		cal.set(request.getFilter().getYearTo(), request.getFilter().getMonthTo(), 1);
+		List<int[]> periods = getMonths(cal, diffMonth);
+		List<BaseEntity> supplies = new ArrayList<>();
+		List<BaseEntity> purchases = new ArrayList<>();
+		Long maxValue = 0L; 
+		for (int[] period : periods) {
+			//supply
+			CashFlow cashflowSupply = getCashflow(period[1], period[0], "IN");
+			
+			cashflowSupply.setMonth(period[1]);
+			cashflowSupply.setYear(period[0]);
+			System.out.println("CASHFLOW SUPPLY: "+cashflowSupply);
+			supplies.add(cashflowSupply);
+			if(cashflowSupply!=null && cashflowSupply.getAmount()!=null && cashflowSupply.getAmount() > maxValue) {
+				maxValue = cashflowSupply.getAmount();
+			}
+			//purchase
+			CashFlow cashflowPurchase = getCashflow(period[1], period[0], "OUT");
+			
+			cashflowPurchase.setMonth(period[1]);
+			cashflowPurchase.setYear(period[0]);
+			System.out.println("CASHFLOW PURCHASE: "+cashflowPurchase);
+			purchases.add(cashflowPurchase);
+			if(cashflowPurchase!=null && cashflowPurchase.getAmount()!=null && cashflowPurchase.getAmount() > maxValue) {
+				maxValue = cashflowPurchase.getAmount();
+			}
+			
+		}
+		ShopApiResponse response = new ShopApiResponse();
+	 
+		response.setMaxValue(maxValue );
+		response.setSupplies(supplies);
+		response.setPurchases(purchases);
+		return response;
 	}
 }
