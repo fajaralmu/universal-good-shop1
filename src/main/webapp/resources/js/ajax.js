@@ -8,6 +8,11 @@ function postReq(url, requestObject, callback) {
 	request.onreadystatechange = function() {
 		
 		if (this.readyState == this.DONE) {
+			if(this.status != 200){
+				alert("Server Error");
+				infoDone();
+				return;
+			}
 			console.log("RESPONSE ", this.status, this);
 			try {
 				this['data'] = JSON.parse(this.responseText);

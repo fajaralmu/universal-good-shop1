@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import com.fajar.entity.custom.CashFlow;
-
  
 
 public interface RepositoryCustom<T> {

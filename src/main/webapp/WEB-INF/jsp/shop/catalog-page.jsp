@@ -39,7 +39,6 @@
 		</div>
 	</div>
 
-
 	<div id="detail-content" class="row"
 		style="width: 95%; margin: auto; display: none">
 		<table class="table" style="layout: fixed;">
@@ -114,6 +113,7 @@
 			</tr>
 		</table>
 	</div>
+	
 	<div id="catalog-content">
 		<h2>Product Catalog</h2>
 		<p></p>
@@ -133,6 +133,14 @@
 								<option value="${category.id }">${category.name }</option>
 							</c:forEach>
 						</select>
+						<p>Order By</p>
+						<select class="form control" id="select-order">
+							<option value="00" selected="selected">NONE</option>
+							<option value="name-asc">Name [A-Z]</option>
+							<option value="name-desc">Name [Z-A]</option>
+							<option value="price-asc">Price [cheap]</option>
+							<option value="price-desc">Price [expensive]</option>
+						</select> 
 						<p>
 							<input class="form control" checked="checked" type="checkbox"
 								id="get-stock" aria-label="Checkbox for following text input">
@@ -161,6 +169,9 @@
 	var orderBy = null;
 	var orderType = null;
 	var defaultOption = "${defaultOption}";
+	
+	//filted
+	var selectOrder = document.getElementById("select-order");
 
 	//elements
 	var navigationPanel = document.getElementById("navigation-panel");
@@ -345,7 +356,7 @@
 			//card  title
 			let cardTitle = createHeading("h5", "title-" + entity.id,
 					"card-title", entity.name + " <small class=\"text-muted\">"
-							+ entity.category.name + "</small>");
+							+ entity.category.name +(entity.newProduct?"(NEW)":"")+ "</small>");
 			cardTitle.onclick = function() {
 				loadDetail(entity.code);
 			}
@@ -389,6 +400,14 @@
 		if (page < 0) {
 			page = this.page;
 		}
+		var selectedOrder = selectOrder.value;
+		if(selectedOrder != null && selectedOrder != "00"){
+			this. orderBy = selectedOrder.split("-")[0];
+			this.orderType = selectedOrder.split("-")[1];
+		}else{
+			this. orderBy  = null;
+			this.orderType = null;
+		}
 		var requestObject = {
 			"entity" : "product",
 			"filter" : {
@@ -408,6 +427,10 @@
 
 		doLoadEntities("<spring:url value="/api/public/get" />", requestObject,
 				function(response) {
+					if(response.code != "00"){
+						alert("Data Not Found");
+						return;
+					}
 					var entities = response.entities;
 					totalData = response.totalData;
 					this.page = response.filter.page;

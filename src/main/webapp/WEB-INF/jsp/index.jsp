@@ -4,7 +4,15 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div class="content">
-	<h2>Welcome to Shop Application</h2>
+	<div id="welcome-header" class="page-header" style="padding:5px;margin-top:10px;margin-bottom:10px;  color:white;text-align: center;background-color:${shopProfile.color }; width:100%; font-size:3 em">
+		<h1>Assalamu'alaikum, Welcome to ${shopProfile.name }</h1>
+		<p></p>
+		<p>${shopProfile.welcomingMessage }</p>
+		<p></p>
+		<p></p>
+	</div>
+	 
+
 	<div class="row">
 		<c:forEach var="menu" items="${menus }">
 			<div class="col-sm-3">
@@ -13,12 +21,10 @@
 						src="${host}/${contextPath}/${imagePath}/${menu.iconUrl }"
 						alt="Card image cap">
 					<div class="card-body">
-						<h5 class="card-title">
-							 ${menu.name } 
-						</h5>
-						<a role="button" class="badge badge-primary"
-							data-toggle="tooltip" data-placement="bottom"
-							title="${menu.description }" href="${menu.url }">Detail</a>
+						<h5 class="card-title">${menu.name }</h5>
+						<a role="button" class="badge badge-primary" data-toggle="tooltip"
+							data-placement="bottom" title="${menu.description }"
+							href="${menu.url }">Detail</a>
 					</div>
 				</div>
 			</div>

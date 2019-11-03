@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.service.AccountService;
+import com.fajar.service.ProductService;
 import com.fajar.service.TransactionService;
 
 @CrossOrigin
@@ -29,6 +30,8 @@ public class RestTransactionController {
 	private AccountService accountService;
 	@Autowired
 	private TransactionService transactionService;
+	@Autowired
+	private ProductService productService;
 
 	public RestTransactionController() {
 		log.info("------------------RestTransactionController-----------------");
@@ -96,6 +99,17 @@ public class RestTransactionController {
 			return ShopApiResponse.failedResponse();
 		}
 		ShopApiResponse response = transactionService.getCashflowDetail(request);
+		return response;
+	}
+	
+	@PostMapping(value = "/productsales", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ShopApiResponse productsales(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+		log.info("productsales {}", request);
+//		if(!accountService.validateToken(httpRequest)) {
+//			return ShopApiResponse.failedResponse();
+//		}
+		ShopApiResponse response = productService.getProductSales(request);
 		return response;
 	}
 	

@@ -54,6 +54,8 @@ public class WebConfigService {
 		profile.setWebsite("http://localhost:8080/universal-good-shop");
 		profile.setIconUrl("DefaultIcon.BMP");
 		profile.setMartCode(martCode);
+		profile.setShortDescription("we provide what u need");
+		profile.setColor("#555");
 		profile.setAbout(
 				"Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae.");
 		return profile;

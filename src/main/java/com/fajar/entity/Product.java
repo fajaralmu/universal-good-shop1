@@ -59,6 +59,8 @@ public class Product extends BaseEntity implements Serializable {
 	private Category category;
 	
 	@Transient
+	private boolean newProduct;	
+	@Transient
 	private Integer count;
 	@Transient
 	private List<Supplier> suppliers;

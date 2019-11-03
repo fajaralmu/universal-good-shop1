@@ -3,9 +3,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
-<div class="content">
-	<div id="content-detail" style="display:none">
-		<button class="btn btn-primary" onclick="hide('content-detail'); show('content-dashboard')">Close</button>
+<div class="content" style="width:100%">
+
+	<div id="filter-detail" class="box-shadow" style="padding:10px; display:none; width:40%; margin-right:0px; position: fixed; background-color: white; height:auto" >
+		<h3>Filter</h3>
 		<p>From</p>
 		Month
 		<select id="select-month-from"></select>
@@ -16,12 +17,26 @@
 		<select id="select-month-to"></select>
 		Year
 		<select id="select-year-to"></select>
-		<p>Type</p>
-		<select id="select-type">
-			<option value="IN">Supply</option>
-			<option value="OUT">Purchase</option>
-		</select>
-		<button class="btn btn-primary" onclick="showDetail()">Ok</button>
+		 
+		<button id="btn-ok-filter-detail" class="btn btn-primary btn-sm"  >Ok</button>
+		<button class="btn btn-secondary  btn-sm" onclick="hide('filter-detail')">Close</button>
+	</div>
+	<div id="content-product-sales" style="display:none">
+		<h3>Product Sales</h3>
+		<button id="sdsds" class="btn btn-info" onclick="show('filter-detail')" >Show Filter</button>
+		<button class="btn btn-secondary" onclick="hide('content-product-sales');hide('filter-detail'); show('content-dashboard')">Close</button>
+		<table id="detail-sales" class="table">
+		
+		</table>
+		<div style="text-align: center">
+			<button class="btn btn-outline-success" onclick="loadMoreProduct()">More</button>
+		</div>
+	</div>
+	<div id="content-detail" style="display:none">
+		<h3>Cashflow History</h3>
+		<button id="sdsjdh" class="btn btn-info" onclick="show('filter-detail')" >Show Filter</button>
+		<button class="btn btn-secondary" onclick="hide('content-detail');hide('filter-detail'); show('content-dashboard')">Close</button>
+		
 		<table id="detail-cashflow" class="table">
 		
 		</table>
@@ -95,7 +110,9 @@
 				</div>
 			</div>
 		</div>
-		<button class="btn btn-primary" onclick="showCashflowHistory()">Detail</button>
+		<p></p>
+		<button class="btn btn-primary" onclick="showCashflowHistory()">Cashflow Detail</button>
+		<button class="btn btn-primary" onclick="showProductSales()">Product Sales Detail</button>
 		<p></p>
 	</div>
 </div>
@@ -120,7 +137,11 @@
 	var btnDetailIn = document.getElementById("btn-detail-IN");
 	var btnDetailOut = document.getElementById("btn-detail-OUT");
 	
+	//detail cashflow
 	var tableDetail = document.getElementById("detail-cashflow");
+	
+	//product sales
+	var tableSales = document.getElementById("detail-sales");
 
 	function populatePeriodFilter() {
 		populateSelectPeriod(selectMonth, selectYear);
@@ -189,8 +210,7 @@
 					"month":selectMonthFrom.value,
 					"year":selectYearFrom.value,
 					"monthTo":selectMonthTo.value,
-					"yearTo":selectYearTo.value,
-					"module":selectType.value
+					"yearTo":selectYearTo.value 
 				}
 		};
 		tableDetail.innerHTML = "";
@@ -232,9 +252,67 @@
 		
 	}
 	
+	var currentOffset = 0;
+	
+	function loadMoreProduct(){
+		currentOffset++;
+		showSales();
+	}
+	
+	function showSales(){
+		
+		var requestObject = {
+				"filter":{
+					"month":selectMonthFrom.value,
+					"year":selectYearFrom.value,
+					"monthTo":selectMonthTo.value,
+					"yearTo":selectYearTo.value,
+					"limit":10,
+					"page": this.currentOffset
+				}
+		};
+		doLoadEntities("<spring:url value="/api/transaction/productsales" />"  ,
+				requestObject, function(response) {
+				if(response.entities == null && response.entities.length == 0){
+					alert("Data Not Found");
+					return;
+				}
+				
+				populateProductSales(response.entities);
+		});
+		
+	}
+	
+	function populateProductSales(productSales){
+		let bodyRows = createTableBody(
+				[ "product.name", "sales", ], productSales,
+				(this.currentOffset * 10));
+
+		for (var i = 0; i < bodyRows.length; i++) {
+			let row = bodyRows[i];
+			tableSales.append(row);
+		}
+	}
+	
 	function showCashflowHistory(){
+		document.getElementById("btn-ok-filter-detail").onclick = function(){
+			
+			showDetail();
+		};
 		show('content-detail'); hide('content-dashboard');
+		show('filter-detail');
 		showDetail();
+	}
+	
+	function showProductSales(){
+		document.getElementById("btn-ok-filter-detail").onclick = function(){
+			tableSales.innerHTML  = "";
+			showSales();
+		};
+		this.currentOffset = 0;
+		show('content-product-sales'); hide('content-dashboard');
+		show('filter-detail');
+		showSales();
 	}
 	
 	populatePeriodFilter();

@@ -383,6 +383,18 @@ public class TransactionService {
 		}
 		return suppliers;
 	}
+	
+	public Transaction getFirstTransaction(Long productId) {
+		String sql = "select  * from `transaction` left join product_flow on `product_flow`.transaction_id=`transaction`.id  " + 
+				"WHERE `product_flow`.product_id ="+productId+"  and `transaction`.`type` = 'IN' " + 
+				"order by `transaction`.transaction_date asc limit 1";
+		List<Transaction> transactions = transactionCustomRespositoryCustom.filterAndSort(sql,
+				Transaction.class);
+		if(transactions != null && transactions.size() >0) {
+			return transactions.get(0);
+		}
+		return null;
+	}
 
 	public static List reverse(List arrayList) {
 		ArrayList reversedArrayList = new ArrayList<>();

@@ -163,6 +163,15 @@ function createTableBody(columns, entities, beginNumber){
 		beginNumber++;
 		for (let i = 0; i < columns.length; i++) {
 			let column = columns[i];
+			let isUrl = false;
+			if(column.includes("setting=")){
+				let setting = column.split("setting=")[1];
+				column = column.split("setting=")[0].trim();
+				
+				if(setting.includes("link")){
+					isUrl = true;	
+				}
+			}
 			let refField = column.split(".");
 			let entityValue = entity[column];
 			
@@ -175,9 +184,15 @@ function createTableBody(columns, entities, beginNumber){
 				cell.setAttribute("name", refField[1]);
 				 
 			}
-			if(entityValue!=null && typeof(entityValue) == "number"){
+			let notNull = entityValue!=null;
+			if(notNull && typeof(entityValue) == "number"){
 		 		entityValue = beautifyNominal(entityValue);
 		 	}
+			isUrl = typeof (entityValue) == "string" && (entityValue.trim().startsWith("http://") || entityValue.trim().startsWith("https://"));
+			
+			if(notNull && isUrl){
+				entityValue  ="<a href=\""+entityValue+"\">"+entityValue+"</a>";
+			}
 			cell.innerHTML = entityValue;
 			row.append(cell);
 		}

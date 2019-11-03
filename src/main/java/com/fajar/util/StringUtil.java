@@ -22,5 +22,9 @@ public class StringUtil {
 			System.out.println("update `transaction` set code= '"+generateRandomNumber(10)+"' where id="+i+";");
 		}
 	}
+	
+	public static String addZeroBefore(Integer number) {
+		return number < 10 ? "0"+number:number.toString();
+	}
 
 }

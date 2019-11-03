@@ -25,7 +25,9 @@
 
 
 <script src="<c:url value="/res/js/ajax.js?v=1"></c:url >"></script>
-<script src="<c:url value="/res/js/util.js?v=1"></c:url >"></script>
+<script src="<c:url value="/res/js/util.js?v=1"></c:url >">
+	 
+</script>
 
 
 </head>

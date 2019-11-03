@@ -253,18 +253,26 @@
 </div>
 
 <script type="text/javascript">
+	//element list
 	var fields = document.getElementsByClassName("input-field");
 	var filterFields = document.getElementsByClassName("filter-field");
+	
 	var entityTBody = document.getElementById("entity-tb");
 	var entityTHead = document.getElementById("entity-th");
 	var entitiesTable = document.getElementById("list-table");
-	var detailTable = document.getElementById("table-detail");
+	
 	var filterField = document.getElementById("filter-field");
 	var filterValue = document.getElementById("filter-value");
+	
 	var navigationPanel = document.getElementById("navigation-panel");
 	var orderBy = null;
 	var orderType = null;
 
+	//detail
+	var currentDetailEntityName = "";
+	var currentDetailFieldName = "";
+	var currentDetailOffset = 0;
+	var detailTable = document.getElementById("table-detail");
 	/*
 		add single image
 	*/
@@ -468,12 +476,21 @@
 					}
 					entityValue = "<img width=\"30\" height=\"30\" src=\"${host}/${contextPath}/${imagePath}/"
 							+ (entityValue) + "\" />";
-				}//regular value
+				}
+				//regular value
 				else if (  entityValue != null) {
 					
+					let isUrl = typeof (entityValue) == "string" && (entityValue.trim().startsWith("http://") || entityValue.trim().startsWith("https://"));
+					let isColor =  typeof (entityValue) == "string" && entityValue.startsWith("#") && entityValue.trim().length == 7;
+					
 					//limit string characters count 
-					if ( typeof (entityValue) == "string" && entityValue.length > 35) {
+					if ( typeof (entityValue) == "string" && entityValue.length > 35 && !isUrl) {
 						entityValue = entityValue.substring(0, 35) + "...";
+					}
+					if(isUrl){
+						entityValue  ="<a href=\""+entityValue+"\">"+entityValue+"</a>";
+					}else if(isColor){
+						entityValue = "<span style=\"color:"+entityValue+"; font-size: 1.3em \"><b>"+entityValue+"</b></span>";
 					}
 				}
 				row.append(createCell(entityValue));
@@ -768,9 +785,7 @@
 		let element = document.getElementById(id);
 		element.parentNode.remove(element);
 	}
-	var currentDetailEntityName = "";
-	var currentDetailFieldName = "";
-	var currentDetailOffset = 0;
+	
 	
 	function loadMoreDetail(){
 		this.currentDetailOffset++;
