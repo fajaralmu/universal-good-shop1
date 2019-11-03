@@ -123,7 +123,7 @@ public class ProductService {
 				productSales.setSales(count.intValue());
 			} catch (Exception ex) {
 				ex.printStackTrace();
-				continue;
+				productSales.setSales(0);
 			}
 			productSalesList.add(productSales);
 		}
