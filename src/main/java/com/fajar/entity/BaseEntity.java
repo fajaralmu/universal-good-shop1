@@ -11,12 +11,10 @@ import javax.persistence.PrePersist;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
-import com.fajar.util.JSONUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Dto
-@MappedSuperclass
- 
+@MappedSuperclass 
 public class BaseEntity {
 	
 	
@@ -36,9 +34,21 @@ public class BaseEntity {
 	@FormField
 	@Column
 	private Long id;
+	@Column(name="general_color")
+	@FormField(type="color", defaultValue = "green")
+	private String color;
 	
 	
 	
+	
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
 	public Date getCreatedDate() {
 		return createdDate;
 	}

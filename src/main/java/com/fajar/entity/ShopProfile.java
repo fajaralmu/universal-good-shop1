@@ -45,8 +45,7 @@ public class ShopProfile extends BaseEntity implements Serializable{
 	@Column
 	@FormField (type="textarea")
 	private String address;
-	@FormField (type="color")
-	private String color;
+	
 	@Column
 	@FormField (type="textarea")
 	private String contact;

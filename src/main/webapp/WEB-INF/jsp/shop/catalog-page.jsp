@@ -1,3 +1,4 @@
+<%@page import="com.fajar.entity.User"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -142,7 +143,7 @@
 							<option value="price-desc">Price [expensive]</option>
 						</select> 
 						<p>
-							<input class="form control" checked="checked" type="checkbox"
+							<input class="form control"   type="checkbox"
 								id="get-stock" aria-label="Checkbox for following text input">
 							<span>Include Stock</span>
 						</p>
@@ -381,6 +382,14 @@
 					+ beautifyNominal(entity.price) + "</span>";
 			listGroup.append(listItemCount);
 			listGroup.append(listItemPrice);
+			
+			<% if(request.getSession().getAttribute("user")  != null && request.getSession().getAttribute("user") instanceof User) {%>
+				let listItemDetailLink = createElement("li", "list-item-detail-link-"
+					+ entity.id,
+					"list-group-item d-flex justify-content-between align-items-center");
+				listItemDetailLink.innerHTML = "<a href=\"<spring:url value="/admin/product/" />"+entity.code+"\">setting</a>";
+				listGroup.append(listItemDetailLink);
+			<%}	%>
 
 			//populate cardbody
 			cardBody.append(cardTitle);

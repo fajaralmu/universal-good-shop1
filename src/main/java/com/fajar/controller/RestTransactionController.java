@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -106,10 +107,21 @@ public class RestTransactionController {
 	public ShopApiResponse productsales(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("productsales {}", request);
-//		if(!accountService.validateToken(httpRequest)) {
-//			return ShopApiResponse.failedResponse();
-//		}
+		if(!accountService.validateToken(httpRequest)) {
+			return ShopApiResponse.failedResponse();
+		}
 		ShopApiResponse response = productService.getProductSales(request);
+		return response;
+	}
+	
+	@PostMapping(value = "/productsalesdetail/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ShopApiResponse productsalesdetail(@PathVariable(required = true, name="id") Long productId,@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+		log.info("productsales {}", request);
+		if(!accountService.validateToken(httpRequest)) {
+			return ShopApiResponse.failedResponse();
+		}
+		ShopApiResponse response = productService.getProductSalesDetail(request,productId);
 		return response;
 	}
 	

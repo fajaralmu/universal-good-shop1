@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class UserSessionService {
 			request.getSession().setAttribute("requestURI", request.getRequestURI());
 			log.info("---REQUESTED URI: "+request.getSession(false).getAttribute("requestURI"));
 		}
-		if (request.getSession().getAttribute("user") == null) {
+		if (/* request.getUserPrincipal() == null || */request.getSession().getAttribute("user") == null) {
 			log.info("session user NULL");
 			return false;
 		}
@@ -63,7 +64,17 @@ public class UserSessionService {
 	}
 
 	public void addUserSession(User dbUser, HttpServletRequest httpRequest) {
-		httpRequest.getSession(true).setAttribute("user", dbUser);
+		
+		try {
+			httpRequest.getSession(true).setAttribute("user", dbUser);
+//			httpRequest.login(dbUser.getUsername(), dbUser.getPassword());
+		 
+			System.out.println(" y y y y SUCCESS LOGIN :"+httpRequest.getAuthType());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println(" y y y y FAILED LOGIN");
+			e.printStackTrace();
+		}
 		setToken(dbUser);
 		WebConfigService.putUserTempData(dbUser.getId().toString(), UserTempRequest.builder().user(dbUser)
 				.requestURI(httpRequest.getRequestURI()).userId(dbUser.getId()).build());
@@ -71,8 +82,17 @@ public class UserSessionService {
 
 	public void logout(HttpServletRequest request) {
 		User user = getUser(request);
-		userTokens.remove(user.getId().toString());
-		request.getSession(false).removeAttribute("user");
+		try {
+			userTokens.remove(user.getId().toString());
+			request.getSession(false).removeAttribute("user");
+//			request.logout();
+			System.out.println(" y y y y SUCCESS LOGOUT");
+		} catch ( Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println(" y y y y FAILED LOGOUT");
+			e.printStackTrace();
+		}
+		
 	}
 
 	private void setToken(User dbUser) {

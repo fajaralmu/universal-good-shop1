@@ -33,8 +33,8 @@ public class RealtimeService {
 	private SimpMessagingTemplate webSocket;
  
 	public RealtimeService() {
-		log.info("-----------------REALTIME SERVICE-------------------");
-		startThread();
+		log.info("=======================REALTIME SERVICE=======================");
+//		startThread();
 		
 	}
 	 

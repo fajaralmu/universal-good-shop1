@@ -12,7 +12,7 @@
 					<img class="card-img-top" width="100" height="150"
 						src="${host}/${contextPath}/${imagePath}/${menu.iconUrl }"
 						alt="Card image cap">
-					<div class="card-body">
+					<div class="card-body" style="background-color:${menu.color }; color:${menu.fontColor }">
 						<h5 class="card-title">
 							 ${menu.name } 
 						</h5>

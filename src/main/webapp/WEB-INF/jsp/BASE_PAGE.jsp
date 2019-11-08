@@ -36,7 +36,7 @@
 	<div id="loading-div"></div>
 	<div class="container">
 		<jsp:include page="include/head.jsp"></jsp:include>
-		<jsp:include page="${pageUrl }.jsp"></jsp:include>
+		<jsp:include page="${pageUrl == null? 'error/notfound': pageUrl}.jsp"></jsp:include>
 		<jsp:include page="include/foot.jsp"></jsp:include>
 		
 	</div>

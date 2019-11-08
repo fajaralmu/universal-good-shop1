@@ -9,6 +9,7 @@ import com.fajar.annotation.Dto;
 import com.fajar.dto.UserTempRequest;
 import com.fajar.entity.ShopProfile;
 import com.fajar.repository.ShopProfileRepository;
+import com.fajar.util.EntityUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,7 +44,7 @@ public class WebConfigService {
 		if (null == dbProfile) {
 			return defaultProfile();
 		}
-		return dbProfile;
+		return (ShopProfile) EntityUtil.validateDefaultValue(dbProfile);
 	}
 
 	private ShopProfile defaultProfile() {
@@ -55,7 +56,7 @@ public class WebConfigService {
 		profile.setIconUrl("DefaultIcon.BMP");
 		profile.setMartCode(martCode);
 		profile.setShortDescription("we provide what u need");
-		profile.setColor("#555");
+		profile.setColor("green");
 		profile.setAbout(
 				"Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae.");
 		return profile;
