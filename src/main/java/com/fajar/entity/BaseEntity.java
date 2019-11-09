@@ -37,10 +37,21 @@ public class BaseEntity {
 	@Column(name="general_color")
 	@FormField(type="color", defaultValue = "green")
 	private String color;
+	@Column(name="font_color")
+	@FormField(type="color", defaultValue = "yellow")
+	private String fontColor;
 	
 	
 	
 	
+	public String getFontColor() {
+		return fontColor;
+	}
+
+	public void setFontColor(String fontColor) {
+		this.fontColor = fontColor;
+	}
+
 	public String getColor() {
 		return color;
 	}

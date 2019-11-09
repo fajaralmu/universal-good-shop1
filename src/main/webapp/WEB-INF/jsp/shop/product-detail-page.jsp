@@ -10,11 +10,11 @@
 </style>
 <div class="content">
 	<div id="detail-content" class="row" style="width: 95%; margin: auto;">
+	<p></p>
 		<table class="table" style="layout: fixed;">
 			<tr>
 				<td style="width: 60%">
-					<button class="btn btn-primary btn-sm" id="close-detail"
-						onclick="hide('detail-content')">Back</button>
+					
 				</td>
 				<td style="width: 40%">
 					<h2 id="product-title">${product.name }</h2>

@@ -75,6 +75,14 @@
 				</tr>
 			</table>
 			<div>
+				<p>Total Price</p>
+				<input type="number" id="total-price-label" disabled="disabled" class="form-control"/>
+				<p>Purchase Price</p>
+				<input type="number" required="required" id="purchase-price" onkeyup="calculateChange()" class="form-control" />
+				<p>Change</p>
+				<input type="number" id="total-change-label" disabled="disabled" class="form-control"/>
+			</div>
+			<div>
 				<button class="btn btn-primary"  id="btn-send" onclick="send()">Submit Transaction</button>
 			</div>
 			<table class="table">
@@ -294,6 +302,12 @@
 			currentProductFlow = null;
 			clearProduct();
 		}
+		
+		function calculateChange(){
+			var totalPrice=document.getElementById("total-price-label").value; 
+			var puchaseValue = document.getElementById("purchase-price").value;
+			document.getElementById("total-change-label").value = puchaseValue - totalPrice;
+		}
 
 		function clearProduct() {
 			inputProductField.value = "";
@@ -304,6 +318,9 @@
 			inputQuantityField.value = "";
 			expiryDateField.value = "";
 			stockIdField.value = "";
+			//document.getElementById("total-price-label").value = "";
+			document.getElementById("total-change-label").value = "";
+			document.getElementById("purchase-price").value = "";
 		}
 
 		function setCurrentProduct(entity, loadNewStock) {
@@ -402,6 +419,7 @@
 			}
 
 			totalPriceLabel.innerHTML = beautifyNominal(totalPrice);
+			document.getElementById("total-price-label").value = totalPrice;
 		}
 
 		function setCurrentProductFlow(entity) {

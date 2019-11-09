@@ -342,6 +342,8 @@
 			//create card
 			let cardDiv = createDiv("card-" + entity.id, "card");
 			cardDiv.style.width = "100%";
+			cardDiv.style.backgroundColor = entity.color;
+			cardDiv.style.color = entity.fontColor;
 			//create icon tag
 			let imageUrl = entity.imageUrl;
 
@@ -356,8 +358,8 @@
 			/* <div class="card-body"> */
 			//card  title
 			let cardTitle = createHeading("h5", "title-" + entity.id,
-					"card-title", entity.name + " <small class=\"text-muted\">"
-							+ entity.category.name +(entity.newProduct?"(NEW)":"")+ "</small>");
+					"card-title", entity.name + " <small style=\"background-color:rgb(224,224,224)\" class=\"text-muted\">"
+							+ (entity.newProduct?"(NEW)":"")+ "</small>");
 			cardTitle.onclick = function() {
 				loadDetail(entity.code);
 			}
@@ -365,7 +367,7 @@
 			//list group
 			let listGroup = createElement("ul", "list-group-" + entity.id,
 					"list-group");
-
+			listGroup.style.color = "#000000";
 			//item list #1
 			let listItemCount = createElement("li", "list-item-count-"
 					+ entity.id,
@@ -394,7 +396,8 @@
 			//populate cardbody
 			cardBody.append(cardTitle);
 			cardBody.append(listGroup);
-
+			let categoryTag = createHeading("h5","category-"+entity.id, "", "<span class=\"badge badge-secondary\">"+entity.category.name+"</span>" );
+			cardBody.append(categoryTag);
 			//populate overall card
 			cardDiv.append(iconImage);
 			cardDiv.append(cardBody);

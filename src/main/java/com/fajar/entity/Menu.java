@@ -45,8 +45,6 @@ public class Menu extends BaseEntity implements Serializable {
 	@FormField(type = "img", required = false, defaultValue = "DefaultIcon.BMP")
 	@Column(name = "icon_url")
 	private String iconUrl;
-	@Column(name="font_color")
-	@FormField(type="color",defaultValue = "yellow")
-	private String fontColor;
+	 
 
 }
