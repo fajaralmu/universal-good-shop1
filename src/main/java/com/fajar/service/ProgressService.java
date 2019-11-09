@@ -13,6 +13,7 @@ public class ProgressService {
 	
 	public void init() {
 		currentProgress = 0.0;
+		realtimeService.sendProgress(1);
 	}
 	
 	public void sendProgress(double progress, double maxProgress, double percent, boolean newProgress) {
