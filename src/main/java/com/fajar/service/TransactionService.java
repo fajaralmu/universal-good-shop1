@@ -167,7 +167,7 @@ public class TransactionService {
 		return ShopApiResponse.builder().productFlowStock(productFlowStock).build();
 	}
 
-	public List<Product> populateProductWithStocks(List<Product> products, boolean withCount) {
+	public List<Product> populateProductWithStocks(List<Product> products, boolean withCount, String requestId) {
 		 
 		for (Product product : products) {
 			int totalCount = 0;
@@ -209,7 +209,8 @@ public class TransactionService {
 			System.out.println(product.getCode() + "====================TOTAL: " + totalCount);
 			System.out.println("====================USED:" + used);
 			
-			progressService.sendProgress(1, products.size(), 30, false); 
+		 
+			progressService.sendProgress(1, products.size(), 30, false ,requestId); 
 			 
 		}
 
@@ -457,8 +458,8 @@ public class TransactionService {
 		System.out.println(getDiffMonth(6, 2019, 12, 2020));
 	}
 
-	public ShopApiResponse getCashflowDetail(ShopApiRequest request) {
-		progressService.init();
+	public ShopApiResponse getCashflowDetail(ShopApiRequest request, String requestId) {
+		progressService.init(requestId);
 		int diffMonth = getDiffMonth(request.getFilter().getMonth(), request.getFilter().getYear(),
 				request.getFilter().getMonthTo(), request.getFilter().getYearTo());
 		Calendar cal = Calendar.getInstance();
@@ -488,7 +489,7 @@ public class TransactionService {
 			if(cashflowPurchase!=null && cashflowPurchase.getAmount()!=null && cashflowPurchase.getAmount() > maxValue) {
 				maxValue = cashflowPurchase.getAmount();
 			}
-			progressService.sendProgress(1, periods.size(), 100, false);
+			progressService.sendProgress(1, periods.size(), 100, false,requestId);
 			
 		}
 		ShopApiResponse response = new ShopApiResponse();

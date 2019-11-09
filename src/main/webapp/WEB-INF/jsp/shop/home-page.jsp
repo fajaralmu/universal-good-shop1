@@ -5,7 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
 <div class="content" style="width:100%">
 
-	<div id="filter-detail" class="box-shadow" style="padding:10px; display:none; width:40%; margin-right:0px; position: fixed; background-color: white; height:auto" >
+	<div id="filter-detail" class="border border-primary box-shadow" style="padding:10px; display:none; width:40%; margin-right:0px; position: fixed; background-color: white; height:auto" >
 		<h3>Filter</h3>
 		<p>From</p>
 		Month

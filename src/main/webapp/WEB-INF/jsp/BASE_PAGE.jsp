@@ -43,6 +43,7 @@
 			</div>
 	</div>
 	<input id="token-value" value="${pageToken }" type="hidden" />
+	<input id="request-id" value="${requestId }" type="hidden" />
 	<div id="loading-div"></div>
 	<div class="container">
 		<jsp:include page="include/head.jsp"></jsp:include>
@@ -53,7 +54,11 @@
 	<script type="text/javascript">
 	function initProgressWebsocket(){
 		hide('progress-bar-wrapper');
+		var requestId = "${requestId}";
 		connectToWebsocket(function(response){
+			if(response.requestId.trim() != requestId.trim()){
+				return;
+			}
 			show('progress-bar-wrapper');
 			document.getElementById('progress-bar').style.width = response.percentage+"%";
 			document.getElementById('progress-bar').setAttribute("aria-valuenow",Math.floor(response.percentage));

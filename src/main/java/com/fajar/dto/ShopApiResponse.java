@@ -50,6 +50,7 @@ public class ShopApiResponse implements Serializable {
 	private String redirectUrl;
 	private Long maxValue;
 	private double percentage;
+	private String requestId;
 
 	public ShopApiResponse(String code, String message) {
 		this.code = code;

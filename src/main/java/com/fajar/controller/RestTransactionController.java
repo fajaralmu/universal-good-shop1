@@ -99,7 +99,7 @@ public class RestTransactionController {
 		if(!accountService.validateToken(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
-		ShopApiResponse response = transactionService.getCashflowDetail(request);
+		ShopApiResponse response = transactionService.getCashflowDetail(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	
@@ -110,7 +110,7 @@ public class RestTransactionController {
 		if(!accountService.validateToken(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
-		ShopApiResponse response = productService.getProductSales(request);
+		ShopApiResponse response = productService.getProductSales(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	
@@ -121,7 +121,7 @@ public class RestTransactionController {
 		if(!accountService.validateToken(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
-		ShopApiResponse response = productService.getProductSalesDetail(request,productId);
+		ShopApiResponse response = productService.getProductSalesDetail(request,productId, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	

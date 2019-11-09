@@ -1,5 +1,7 @@
 package com.fajar.controller;
 
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,5 +56,10 @@ public class BaseController {
 	@ModelAttribute("pageToken")
 	public String pageToken(HttpServletRequest request) {
 		  return accountService.getToken(request);
+	}
+	
+	@ModelAttribute("requestId")
+	public String requestId(HttpServletRequest request) {
+		return UUID.randomUUID().toString();
 	}
 }

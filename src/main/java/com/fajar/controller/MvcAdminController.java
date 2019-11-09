@@ -111,7 +111,7 @@ public class MvcAdminController extends BaseController {
 				.fieldsFilter(fieldsFilter).build();
 		ShopApiRequest requestObject = ShopApiRequest.builder().entity("product")
 				.filter(filter ).build();
-		ShopApiResponse productResponse = productService.getProductsCatalog(requestObject );
+		ShopApiResponse productResponse = productService.getProductsCatalog(requestObject, request.getHeader("requestId") );
 		System.out.println(" c c c c c c Product Response: "+productResponse);
 		
 		Product product = (Product) productResponse.getEntities().get(0);

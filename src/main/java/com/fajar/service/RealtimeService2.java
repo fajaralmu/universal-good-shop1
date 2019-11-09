@@ -87,9 +87,9 @@ public class RealtimeService2 {
 		return null;
 	}
 	
-	public void sendProgress(double progress) {
-		System.out.println(">>>>>>>>>>SEND PROGRESS:"+progress);
-		sendResponse(ShopApiResponse.builder().percentage(progress).build());
+	public void sendProgress(double progress, String requestId) {
+		System.out.println(">>>>>>>>>>SEND PROGRESS:"+progress+" ("+requestId+")");
+		sendResponse(ShopApiResponse.builder().requestId(requestId).percentage(progress).build());
 	}
 	
 	public void sendResponse(ShopApiResponse shopApiResponse) {

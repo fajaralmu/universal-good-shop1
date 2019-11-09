@@ -5,6 +5,7 @@ function postReq(url, requestObject, callback) {
 	request.open("POST", url, true);
 	request.setRequestHeader("Content-type", "application/json");
 	request.setRequestHeader("requestToken", document.getElementById("token-value").value);
+	request.setRequestHeader("requestId", document.getElementById("request-id").value);
 	request.onreadystatechange = function() {
 		
 		if (this.readyState == this.DONE) {

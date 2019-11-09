@@ -52,8 +52,8 @@ public class ProductService {
 //		}
 	}
 
-	public ShopApiResponse getProductsCatalog(ShopApiRequest request) {
-		progressService.init();
+	public ShopApiResponse getProductsCatalog(ShopApiRequest request, String requestId) {
+		progressService.init(requestId);
 		boolean withStock = false;
 		boolean withSupplier = false;
 		boolean withNewInfo = false;
@@ -71,7 +71,7 @@ public class ProductService {
 		
 		request.getFilter().getFieldsFilter().remove("withStock");
 		ShopApiResponse filteredProducts = entityService.filter(request);
-		progressService.sendProgress(1, 1, 20.0, true); 
+		progressService.sendProgress(1, 1, 20.0, true, requestId); 
 		if (filteredProducts == null || filteredProducts.getEntities() == null
 				|| filteredProducts.getEntities().size() == 0) {
 			return new ShopApiResponse("01", "Data Not Found");
@@ -94,21 +94,21 @@ public class ProductService {
 					}
 				}
 			}
-			progressService.sendProgress(1, entities.size(), 30, false); 
+			progressService.sendProgress(1, entities.size(), 30, false, requestId); 
 			products.add(product);
 			 
 		}
 		if (withStock)
-			products = transactionService.populateProductWithStocks(products, true);
+			products = transactionService.populateProductWithStocks(products, true,requestId);
 
 		if (withSupplier) {
 			for (Product product : products) {
 				List<Supplier> suppliers = transactionService.getProductSupplier(product.getId(), 5, 0);
 				product.setSuppliers(suppliers);
-				progressService.sendProgress(1, products.size(), 20, false); 
+				progressService.sendProgress(1, products.size(), 20, false, requestId); 
 			}
 		}
-		progressService.sendComplete();
+		progressService.sendComplete(requestId);
 		filteredProducts.setFilter(request.getFilter());
 		filteredProducts.setEntities(convertList(products));
 		return filteredProducts;
@@ -144,8 +144,8 @@ public class ProductService {
 		}
 	}
 
-	public ShopApiResponse getProductSales(ShopApiRequest request) {
-		progressService.init();
+	public ShopApiResponse getProductSales(ShopApiRequest request, String requestId) {
+		progressService.init(requestId);
 		ShopApiResponse response = new ShopApiResponse();
 		Filter filter = request.getFilter();
 		String periodBefore = DateUtil.getFullFirstDate(filter.getMonth(), filter.getYear());
@@ -163,9 +163,9 @@ public class ProductService {
 
 			productSales.setSales(sales);
 			productSalesList.add(productSales);
-			progressService.sendProgress(1, products.size(), 100, false);
+			progressService.sendProgress(1, products.size(), 100, false, requestId);
 		}
-		progressService.sendComplete();
+		progressService.sendComplete(requestId);
 		response.setEntities(convertList(productSalesList));
 		return response;
 	}
@@ -187,9 +187,9 @@ public class ProductService {
 	}
 	
 	 
-	public ShopApiResponse getProductSalesDetail(ShopApiRequest request, Long productId) {
+	public ShopApiResponse getProductSalesDetail(ShopApiRequest request, Long productId, String requestId) {
 		// TODO Auto-generated method stub
-		progressService.init();
+		progressService.init(requestId);
 		System.out.println("x x x x x x Product ID: "+productId);
 		Optional<Product> productOpt = productRepository.findById(productId);
 		Product product = null;
@@ -234,7 +234,7 @@ public class ProductService {
 					maxValue = productSales;
 				}
 				double percentage = runningPeriod.doubleValue() / totalPeriod.doubleValue();
-				progressService.sendProgress( 1, totalPeriod, 100, false );
+				progressService.sendProgress( 1, totalPeriod, 100, false ,requestId);
 			}
 		}
 		for(ProductSales sales: salesList) {
@@ -248,7 +248,7 @@ public class ProductService {
 		response.setEntity(product);
 		response.setMaxValue(maxValue.longValue());
 		response.setEntities(convertList(salesList));
-		progressService.sendComplete();
+		progressService.sendComplete(requestId);
 		return response;
 	}
 }

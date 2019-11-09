@@ -107,7 +107,7 @@
 			</tr>
 		</table>
 	</div>
-	<div style="width: 80%; margin: auto; padding: 10px" class="box-shadow">
+	<div  style="width: 80%; margin: auto; padding: 10px" class="border border-primary box-shadow">
 		<h3>Sales Detail</h3>
 		<p>From</p>
 		Month <select id="select-month-from"></select> Year <select
