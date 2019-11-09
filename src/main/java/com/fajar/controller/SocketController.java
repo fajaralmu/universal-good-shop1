@@ -25,7 +25,7 @@ import com.fajar.dto.Message;
 import com.fajar.dto.OutputMessage;
 import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
-import com.fajar.service.RealtimeService;
+import com.fajar.service.RealtimeService2;
 
 @CrossOrigin
 @RestController
@@ -34,7 +34,7 @@ public class SocketController {
 	@Autowired
 	private SimpMessagingTemplate webSocket;
 	@Autowired
-	RealtimeService realtimeUserService;
+	RealtimeService2 realtimeUserService;
 	
 	public SocketController() {
 		log.info("------------------SOCKET CONTROLLER #1-----------------");

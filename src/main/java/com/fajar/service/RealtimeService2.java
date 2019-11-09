@@ -18,9 +18,10 @@ import com.fajar.dto.OutputMessage;
 import com.fajar.dto.Physical;
 import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
+import com.fajar.dto.ShopApiResponse;
 @Service
-public class RealtimeService {
-	Logger log = LoggerFactory.getLogger(RealtimeService.class);
+public class RealtimeService2 {
+	Logger log = LoggerFactory.getLogger(RealtimeService2.class);
 	
 	private Integer bonusCount=0;
 	private List<Entity> entities = new ArrayList<>();
@@ -32,8 +33,8 @@ public class RealtimeService {
 	@Autowired
 	private SimpMessagingTemplate webSocket;
  
-	public RealtimeService() {
-		log.info("=======================REALTIME SERVICE=======================");
+	public RealtimeService2() {
+		log.info("=======================REALTIME SERVICE 2=======================");
 //		startThread();
 		
 	}
@@ -84,6 +85,15 @@ public class RealtimeService {
 			}
 		}
 		return null;
+	}
+	
+	public void sendProgress(double progress) {
+		System.out.println(">>>>>>>>>>SEND PROGRESS:"+progress);
+		sendResponse(ShopApiResponse.builder().percentage(progress).build());
+	}
+	
+	public void sendResponse(ShopApiResponse shopApiResponse) {
+		webSocket.convertAndSend("/wsResp/progress", shopApiResponse);
 	}
 
 	

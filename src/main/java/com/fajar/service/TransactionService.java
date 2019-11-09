@@ -57,6 +57,8 @@ public class TransactionService {
 	private RepositoryCustom<Transaction> transactionCustomRespositoryCustom;
 	@Autowired
 	private EntityService entityService;
+	@Autowired
+	private ProgressService progressService;
 
 	@PostConstruct
 	public void editPrice() {
@@ -166,7 +168,7 @@ public class TransactionService {
 	}
 
 	public List<Product> populateProductWithStocks(List<Product> products, boolean withCount) {
-
+		 
 		for (Product product : products) {
 			int totalCount = 0;
 			int used = 0;
@@ -206,6 +208,9 @@ public class TransactionService {
 			product.setCount(remainingCount);
 			System.out.println(product.getCode() + "====================TOTAL: " + totalCount);
 			System.out.println("====================USED:" + used);
+			
+			progressService.sendProgress(1, products.size(), 30, false); 
+			 
 		}
 
 		return products;
@@ -453,7 +458,7 @@ public class TransactionService {
 	}
 
 	public ShopApiResponse getCashflowDetail(ShopApiRequest request) {
-
+		progressService.init();
 		int diffMonth = getDiffMonth(request.getFilter().getMonth(), request.getFilter().getYear(),
 				request.getFilter().getMonthTo(), request.getFilter().getYearTo());
 		Calendar cal = Calendar.getInstance();
@@ -483,6 +488,7 @@ public class TransactionService {
 			if(cashflowPurchase!=null && cashflowPurchase.getAmount()!=null && cashflowPurchase.getAmount() > maxValue) {
 				maxValue = cashflowPurchase.getAmount();
 			}
+			progressService.sendProgress(1, periods.size(), 100, false);
 			
 		}
 		ShopApiResponse response = new ShopApiResponse();

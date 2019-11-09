@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 public class CustomFilter implements javax.servlet.Filter {
  
+	 	
     @Override
     public void doFilter(
       ServletRequest request, 
@@ -29,6 +30,7 @@ public class CustomFilter implements javax.servlet.Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         System.out.println(" ________________________________BEGIN________________________________");
+      
         log.info(
           "Logging Request  {} : {}", req.getMethod(), 
           req.getRequestURI());

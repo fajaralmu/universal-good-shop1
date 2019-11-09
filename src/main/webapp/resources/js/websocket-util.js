@@ -19,20 +19,21 @@ function updateMovement() {
 	}));
 }
 
-function doConnect() {
-	var socket = new SockJS('/websocket1/game-app');
+function connectToWebsocket(callback) {
+	var socket = new SockJS('/universal-good-shop/shop-app');
 	stompClient = Stomp.over(socket);
 	stompClient.connect({}, function(frame) {
-		setConnected(true);
-		console.log('Connected -> ' + frame);
-		console.log('stomp client',stompClient);
-		document.getElementById("ws-info").innerHTML = stompClient.ws._transport.ws.url;
-		stompClient.subscribe('/wsResp/players', function(response) {
+		//setConnected(true);
+		console.log('Connected -> ' + frame, stompClient.ws._transport.ws.url);
+	 
+//		document.getElementById("ws-info").innerHTML = stompClient.ws._transport.ws.url;
+		stompClient.subscribe('/wsResp/progress', function(response) {
+			console.log("Progress Updated...");
 			var respObject = JSON.parse(response.body);
-		 	entities = respObject.entities;
+		 	callback(respObject);
 		 	//document.getElementById("realtime-info").innerHTML = response.body;
 		});
-		updateMovement();
+		 
 	});
 	
 }

@@ -16,7 +16,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
  
 	Logger log = LoggerFactory.getLogger(WebSocketConfig.class);
 	public WebSocketConfig() {
-		log.info("WebSocketConfig");
+		log.info("====================Web Socket Config=====================");
 	}
 	
     @Override
@@ -29,10 +29,10 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
  
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-    	log.info("registerStompEndpoints");
+    	log.info(". . . . . . . . . register Stomp Endpoints . . . . . . . . . . ");
       //   registry.addEndpoint("/chat");
-         registry.addEndpoint("/random").setAllowedOrigins("*").withSockJS();
-         registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
-         registry.addEndpoint("/game-app").setAllowedOrigins("*").withSockJS();
+//         registry.addEndpoint("/random").setAllowedOrigins("*").withSockJS();
+//         registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
+         registry.addEndpoint("/shop-app").setAllowedOrigins("*").withSockJS();
     }
 }

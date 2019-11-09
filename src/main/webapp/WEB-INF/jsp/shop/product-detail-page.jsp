@@ -118,6 +118,7 @@
 
 		<button id="btn-ok-filter-detail" onclick="showSales()"
 			class="btn btn-primary btn-sm">Show Sales History</button>
+		<p></p>
 		<table class="table" id="table-sales-history">
 		</table>
 	</div>
@@ -140,18 +141,19 @@
 		populateSelectPeriod(selectMonthTo, selectYearTo);
 		selectMonthFrom.value = "1";
 		selectMonthTo.value = "12";
-	}
+	} 
+	
 	
 	function populateSelectPeriod(selectMonth, selectYear){
 		selectMonth.innerHTML = "";
 		for (var i = 1; i <= 12; i++) {
 			selectMonth.append(createOption(i,i));
 		}
-		selectMonth.value = ${currentMonth};
-		for(var y=${minYear};y<=${maxYear};y++){
+		selectMonth.value = "${currentMonth}"*1;
+		for(var y="${minYear}"*1;y<="${maxYear}"*1;y++){
 			selectYear.append(createOption(y,y));
 		}
-		selectYear.value = ${currentYear};
+		selectYear.value = "${currentYear}"*1;
 	}
 	
 	function showSales(){
@@ -179,7 +181,7 @@
 		];
 		for (var i = 0; i < salesList.length; i++) {
 			var sales = salesList[i];
-			var bar = "<div style=\"width: "+sales.percentage+"%;color:white; height:25px; background-color: green \"></div>setting=<colspan>5</colspan>";
+			var bar = "<div class=\"rounded-right\" style=\"width: "+sales.percentage+"%;color:white; height:25px; background-color: green \"></div>setting=<colspan>5</colspan>";
 			tableColumns.push(
 					[
 						i+1, sales.month+"-"+sales.year,beautifyNominal(sales.sales)+ "setting= <style>width:100px</style>", bar
@@ -191,4 +193,8 @@
 	}
 	
 	populatePeriodFilter();
+	
 </script>
+
+
+		

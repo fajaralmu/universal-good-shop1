@@ -10,7 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.fajar.service.RealtimeService;
+import com.fajar.service.RealtimeService2;
 
 /**
  * 
@@ -23,7 +23,7 @@ public class MvcUtilController {
 	
 	Logger log = LoggerFactory.getLogger(MvcUtilController.class);
 	@Autowired
-	private RealtimeService realtimeService;
+	private RealtimeService2 realtimeService;
 	
 	public MvcUtilController() {
 		log.info("-----------------MvcUtilController------------------");

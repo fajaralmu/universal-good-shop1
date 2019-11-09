@@ -19,9 +19,14 @@
 <link rel="stylesheet" href="<c:url value="/res/css/bootstrap.min.css" />" />
 <script src="<c:url value="/res/js/jquery-3.3.1.slim.min.js" />" ></script>
 <script src="<c:url value="/res/js/popper.min.js" />" ></script>
-<script src="<c:url value="/res/js/bootstrap.min.js"  />">
-
+<script src="<c:url value="/res/js/bootstrap.min.js"  />"></script>
+<script src="<c:url value="/res/js/sockjs-0.3.2.min.js"></c:url >"></script>
+<script src="<c:url value="/res/js/stomp.js"></c:url >"></script>
+<script src="<c:url value="/res/js/websocket-util.js"></c:url >">
+	 
 </script>
+
+
 
 
 <script src="<c:url value="/res/js/ajax.js?v=1"></c:url >"></script>
@@ -32,6 +37,11 @@
 
 </head>
 <body>
+	<div id="progress-bar-wrapper" class="box-shadow" style="display:none; height: 50px; padding:10px; background-color: white; margin:auto; position: fixed; width:100%">
+			<div class="progress"  >
+	 			<div  id="progress-bar" class="progress-bar progress-bar-striped bg-info" role="progressbar"  aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+			</div>
+	</div>
 	<input id="token-value" value="${pageToken }" type="hidden" />
 	<div id="loading-div"></div>
 	<div class="container">
@@ -40,5 +50,18 @@
 		<jsp:include page="include/foot.jsp"></jsp:include>
 		
 	</div>
-</body>
+	<script type="text/javascript">
+	function initProgressWebsocket(){
+		hide('progress-bar-wrapper');
+		connectToWebsocket(function(response){
+			show('progress-bar-wrapper');
+			document.getElementById('progress-bar').style.width = response.percentage+"%";
+			document.getElementById('progress-bar').setAttribute("aria-valuenow",Math.floor(response.percentage));
+			if(response.percentage>=100){
+			hide('progress-bar-wrapper');
+			}
+		});
+	}
+	initProgressWebsocket();
+	</script></body>
 </html>

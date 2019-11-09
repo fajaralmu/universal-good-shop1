@@ -236,10 +236,10 @@
 							"<p style=\" font-size:0.8em;text-align:right\">"+beautifyNominal(cashflowSupplies.amount) +" ("+beautifyNominal(cashflowSupplies.count)+" unit)</p>"+
 							"<p  style=\" font-size:0.8em;text-align:right\">"+beautifyNominal(cashflowPurchases.amount) +" ("+beautifyNominal(cashflowPurchases.count)+" unit)</p> setting= <style>width:200px</style>",
 							//supply
-							"<div style=\" height: 30px;width:"+percentSupplies+"; font-size:0.7em; background-color:orange\">"+
+							"<div class=\"rounded-right\" style=\" height: 30px;width:"+percentSupplies+"; font-size:0.7em; background-color:orange\">"+
 							"</div>"+
 							//purchase
-							"<div style=\" height: 30px;width:"+percentPurchases+"; font-size:0.7em; background-color:green\">"+
+							"<div class=\"rounded-right\" style=\" height: 30px;width:"+percentPurchases+"; font-size:0.7em; background-color:green\">"+
 							"</div>"
 							+"setting= <colspan>5</colspan>"
 							];  

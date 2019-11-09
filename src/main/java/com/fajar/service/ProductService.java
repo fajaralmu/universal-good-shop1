@@ -38,6 +38,9 @@ public class ProductService {
 	private ProductRepository productRepository;
 	@Autowired
 	private RepositoryCustom repositoryCustom;
+	
+	@Autowired
+	private ProgressService progressService;
 
 	@PostConstruct
 	public void init() {
@@ -50,7 +53,7 @@ public class ProductService {
 	}
 
 	public ShopApiResponse getProductsCatalog(ShopApiRequest request) {
-
+		progressService.init();
 		boolean withStock = false;
 		boolean withSupplier = false;
 		boolean withNewInfo = false;
@@ -64,8 +67,11 @@ public class ProductService {
 		if (filter.get("withSupplier") != null && (Boolean) filter.get("withSupplier") == true) {
 			withSupplier = true;
 		}
+		
+		
 		request.getFilter().getFieldsFilter().remove("withStock");
 		ShopApiResponse filteredProducts = entityService.filter(request);
+		progressService.sendProgress(1, 1, 20.0, true); 
 		if (filteredProducts == null || filteredProducts.getEntities() == null
 				|| filteredProducts.getEntities().size() == 0) {
 			return new ShopApiResponse("01", "Data Not Found");
@@ -73,6 +79,9 @@ public class ProductService {
 		}
 		List<BaseEntity> entities = filteredProducts.getEntities();
 		List<Product> products = new ArrayList<Product>();
+		
+		 
+		
 		for (BaseEntity entity : entities) {
 			Product product = (Product) entity;
 			if (withNewInfo) {
@@ -85,7 +94,9 @@ public class ProductService {
 					}
 				}
 			}
+			progressService.sendProgress(1, entities.size(), 30, false); 
 			products.add(product);
+			 
 		}
 		if (withStock)
 			products = transactionService.populateProductWithStocks(products, true);
@@ -94,8 +105,10 @@ public class ProductService {
 			for (Product product : products) {
 				List<Supplier> suppliers = transactionService.getProductSupplier(product.getId(), 5, 0);
 				product.setSuppliers(suppliers);
+				progressService.sendProgress(1, products.size(), 20, false); 
 			}
 		}
+		progressService.sendComplete();
 		filteredProducts.setFilter(request.getFilter());
 		filteredProducts.setEntities(convertList(products));
 		return filteredProducts;
@@ -132,6 +145,7 @@ public class ProductService {
 	}
 
 	public ShopApiResponse getProductSales(ShopApiRequest request) {
+		progressService.init();
 		ShopApiResponse response = new ShopApiResponse();
 		Filter filter = request.getFilter();
 		String periodBefore = DateUtil.getFullFirstDate(filter.getMonth(), filter.getYear());
@@ -149,6 +163,7 @@ public class ProductService {
 
 			productSales.setSales(sales);
 			productSalesList.add(productSales);
+			progressService.sendProgress(1, products.size(), 100, false);
 		}
 		response.setEntities(convertList(productSalesList));
 		return response;
@@ -173,6 +188,7 @@ public class ProductService {
 	 
 	public ShopApiResponse getProductSalesDetail(ShopApiRequest request, Long productId) {
 		// TODO Auto-generated method stub
+		progressService.init();
 		System.out.println("x x x x x x Product ID: "+productId);
 		Optional<Product> productOpt = productRepository.findById(productId);
 		Product product = null;
@@ -187,11 +203,25 @@ public class ProductService {
 		int month2 = filter.getMonthTo();
 		int year2 = filter.getYearTo();
 		Integer maxValue  = 0;
+		Integer totalPeriod = 0;
+		Integer runningPeriod = 0;
+		
+		//calculate total period
+		for (int year = year1; year <= year2; year++) {
+			int beginningMonth = year == year1 ? month1 : 1;
+			int endOfMonth = year == year2 ? month2 : 12;
+			for (int month = beginningMonth; month <= endOfMonth; month++) {
+				totalPeriod++;
+			}
+			
+		}
+		
 		List<ProductSales> salesList = new ArrayList<>();
 		for (int year = year1; year <= year2; year++) {
 			int beginningMonth = year == year1 ? month1 : 1;
 			int endOfMonth = year == year2 ? month2 : 12;
 			for (int month = beginningMonth; month <= endOfMonth; month++) {
+				runningPeriod++;
 				int productSales = getProductSalesAt(month, year, product.getId());
 				ProductSales sales = new ProductSales();
 				sales.setSales(productSales);
@@ -202,11 +232,13 @@ public class ProductService {
 				if(productSales > maxValue) {
 					maxValue = productSales;
 				}
+				double percentage = runningPeriod.doubleValue() / totalPeriod.doubleValue();
+				progressService.sendProgress( 1, totalPeriod, 100, false );
 			}
 		}
 		for(ProductSales sales: salesList) {
 			double ratio =  (Double.parseDouble(sales.getSales().toString()) / Double.parseDouble(maxValue.toString()));
-			System.out.println("x x x x RATIO: "+ratio);
+		//	System.out.println("x x x x RATIO: "+ratio);
 			double percentage =ratio  * 100;
 			sales.setPercentage(percentage);
 		}
