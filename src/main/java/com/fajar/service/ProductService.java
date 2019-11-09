@@ -165,6 +165,7 @@ public class ProductService {
 			productSalesList.add(productSales);
 			progressService.sendProgress(1, products.size(), 100, false);
 		}
+		progressService.sendComplete();
 		response.setEntities(convertList(productSalesList));
 		return response;
 	}
@@ -247,6 +248,7 @@ public class ProductService {
 		response.setEntity(product);
 		response.setMaxValue(maxValue.longValue());
 		response.setEntities(convertList(salesList));
+		progressService.sendComplete();
 		return response;
 	}
 }
