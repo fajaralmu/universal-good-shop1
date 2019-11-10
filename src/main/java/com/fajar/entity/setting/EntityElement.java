@@ -1,4 +1,4 @@
-package com.fajar.config;
+package com.fajar.entity.setting;
 
 import java.io.Serializable;
 import java.util.List;

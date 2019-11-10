@@ -5,11 +5,15 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div class="content">
 	<div id="welcome-header" class="page-header" style="padding:5px;margin-top:10px;margin-bottom:10px;  color:white;text-align: center;background-color:${shopProfile.color }; width:100%; font-size:3 em">
-		<h1>Assalamu'alaikum, Welcome to ${shopProfile.name }</h1>
+		<h3>Assalamu'alaikum, Good ${timeGreeting} Welcome to</h3>
+		<h1> ${shopProfile.name }</h1>
 		<p></p>
 		<p>${shopProfile.welcomingMessage }</p>
 		<p></p>
 		<p></p>
+		<c:forEach var="imageUrl" items="${imageUrlList }">
+			<img src="${imageUrl }" width="40" height="40" />
+		</c:forEach>
 	</div>
 	 
 

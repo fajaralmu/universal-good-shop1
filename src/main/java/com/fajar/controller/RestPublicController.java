@@ -37,7 +37,7 @@ public class RestPublicController {
 	public ShopApiResponse get(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("register {}", request);
-		ShopApiResponse response = productService.getProductsCatalog(request, httpRequest.getHeader("requestId"));
+		ShopApiResponse response = productService.getPublicEntities(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	

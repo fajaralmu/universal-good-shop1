@@ -1,5 +1,7 @@
 package com.fajar.service;
 
+import java.rmi.Remote;
+import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.dto.UserTempRequest;
 import com.fajar.entity.User;
+import com.fajar.entity.setting.RegistryModel;
 import com.fajar.repository.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +25,9 @@ public class UserSessionService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private Registry registry;
 
 	private Map<String, Object> userTokens = new HashMap<String, Object>();
 
@@ -53,26 +59,31 @@ public class UserSessionService {
 			return false;
 		}
 		User sessionUser = (User) request.getSession().getAttribute("user");
+		
 		try {
+			RegistryModel registryModel = (RegistryModel) registry.lookup(sessionUser.getId().toString());
+			System.out.println("Registry Model: "+registryModel);
 			User loggedUser = userRepository.findByUsernameAndPassword(sessionUser.getUsername(),
 					sessionUser.getPassword());
 
 			return loggedUser != null;
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			return false;
 		}
 	}
 
 	public void addUserSession(User dbUser, HttpServletRequest httpRequest) {
+		RegistryModel registryModel = RegistryModel.builder().user(dbUser).build();
 		
 		try {
+			
+			registry.bind(dbUser.getId().toString(), registryModel);
 			httpRequest.getSession(true).setAttribute("user", dbUser);
-//			httpRequest.login(dbUser.getUsername(), dbUser.getPassword());
 		 
-			System.out.println(" y y y y SUCCESS LOGIN :"+httpRequest.getAuthType());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println(" y y y y FAILED LOGIN");
+			System.out.println(" > > > SUCCESS LOGIN :"+httpRequest.getAuthType());
+		} catch (Exception e) { 
+			System.out.println(" < < < FAILED LOGIN");
 			e.printStackTrace();
 		}
 		setToken(dbUser);
@@ -84,12 +95,14 @@ public class UserSessionService {
 		User user = getUser(request);
 		try {
 			userTokens.remove(user.getId().toString());
+			registry.unbind(user.getId().toString());
 			request.getSession(false).removeAttribute("user");
+			request.getSession(false).invalidate();
 //			request.logout();
-			System.out.println(" y y y y SUCCESS LOGOUT");
+			System.out.println(" > > > > > SUCCESS LOGOUT");
 		} catch ( Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println(" y y y y FAILED LOGOUT");
+			System.out.println(" < < < < < FAILED LOGOUT");
 			e.printStackTrace();
 		}
 		

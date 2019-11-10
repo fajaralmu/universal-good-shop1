@@ -43,6 +43,7 @@
 	</div>
 	<div id="content-dashboard">
 		<h2>Dashboard</h2>
+		<p>Good ${timeGreeting}, ${loggedUser.displayName}. Have a great day!</p>
 		<div class="input-group mb-3">
 			<div class="input-group-prepend">
 				<span class="input-group-text">Month</span> <select

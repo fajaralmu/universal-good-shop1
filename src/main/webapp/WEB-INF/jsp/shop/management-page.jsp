@@ -5,6 +5,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
 <div class="content">
 	<h2>Management Page</h2>
+	<p>Good ${timeGreeting}, ${loggedUser.displayName}. Have a great day!</p>
+	<p>This is the page you manage entities related to the shopping mart system</p>
 	<div class="row">
 		<c:forEach var="menu" items="${menus }">
 			<div class="col-sm-3">

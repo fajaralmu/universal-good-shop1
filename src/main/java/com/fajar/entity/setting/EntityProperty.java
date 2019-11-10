@@ -1,11 +1,10 @@
-package com.fajar.config;
+package com.fajar.entity.setting;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.fajar.annotation.Dto;
-import com.fajar.entity.BaseEntity;
 import com.fajar.util.JSONUtil;
 
 import lombok.AllArgsConstructor;

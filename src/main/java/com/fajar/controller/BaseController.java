@@ -13,6 +13,7 @@ import com.fajar.entity.User;
 import com.fajar.service.AccountService;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
+import com.fajar.util.DateUtil;
 import com.fajar.util.MVCUtil;
 @Controller
 public class BaseController {
@@ -28,6 +29,11 @@ public class BaseController {
 	public ShopProfile getProfile(HttpServletRequest request) {
 //		System.out.println("Has Session: "+userSessionService.hasSession(request, false));
 		return webAppConfiguration.getProfile();
+	}
+	
+	@ModelAttribute("timeGreeting")
+	public String timeGreeting(HttpServletRequest request) {
+		return DateUtil.getTimeGreeting();
 	}
 	
 	@ModelAttribute("loggedUser")
@@ -46,6 +52,11 @@ public class BaseController {
 	@ModelAttribute("contextPath")
 	public String getContextPath(HttpServletRequest request) {
 		return request.getContextPath();
+	}
+	
+	@ModelAttribute("fullImagePath")
+	public String getFullImagePath(HttpServletRequest request) {
+		return getHost(request)+ getContextPath(request)+"/"+getUploadedImagePath(request)+"/";
 	}
 	
 	@ModelAttribute("imagePath")

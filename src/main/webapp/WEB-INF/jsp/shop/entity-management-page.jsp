@@ -29,6 +29,8 @@
 	var imagesData = {};
 	var idField = "${entityProperty.idField}";
 	var  editable = ${entityProperty.editable};
+	var singleRecord = ${singleRecord == null ||singleRecord == false ? false:true}
+	var entityIdValue = "${entityId}";
 	
 </script>
 
@@ -67,10 +69,12 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="exampleModalCenterTitle">${title }</h5>
-				<button type="button" class="close" data-dismiss="modal"
-					aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
+				<c:if test="${singleRecord == false }">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</c:if>
 			</div>
 			<div class="modal-body" style="height: 400px; overflow: scroll;">
 				
@@ -207,11 +211,17 @@
 				<c:if test="${entityProperty.editable == true }">
 					<button id="btn-submit" onclick="submit()"
 						class="btn btn-primary">Save Changes</button>
-					<button id="btn-clear" onclick="clear()"
-						class="btn btn-secondary">Clear</button>
+					<c:if test="${singleRecord == false }">
+						<input  type="reset" id="btn-clear" 
+							value="Clear" />
+					</c:if>
 				</c:if>
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-				
+				<c:if test="${singleRecord == false }">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</c:if>
+				<c:if test="${singleRecord == true }">
+					<a role="button" class="btn btn-secondary" href="<spring:url value="/admin/management" />">Back</a>
+				</c:if>
 			</div>
 		</div>
 	</div>
@@ -221,6 +231,7 @@
 <div class="content">
 	<h2>${entityProperty.entityName}-Management</h2>
 	<p></p>
+	<a role="button" class="btn btn-secondary" href="<spring:url value="/admin/management" />">Back</a>
 	<c:if test="${entityProperty.editable == true }">
 		<button type="btn-show-form" class="btn btn-primary"
 			data-toggle="modal" data-target="#modal-entity-form">Show
@@ -346,7 +357,7 @@
 			}
 		};
 		requestObject.filter.fieldsFilter = {};
-		requestObject.filter.fieldsFilter[idField] = entityId;
+		requestObject.filter.fieldsFilter[this.idField] = entityId;
 
 		doGetById("<spring:url value="/api/entity/get" />", requestObject,callback);
 		
@@ -821,7 +832,7 @@
 	function showDetail(elementId, field) {
 		this.currentDetailEntityName = elementId;
 		this.currentDetailFieldName = field;
-		currentDetailOffset = 0;
+		this.currentDetailOffset = 0;
 		var requestObject = {
 			'entity' : elementId,
 			'filter' : {
@@ -871,10 +882,20 @@
 		
 	}
 	
-	createTableHeader();
-	setDefaultOption();
-	loadEntity(page);
+	function init(){
 	
+		if(singleRecord){
+			getById(this.entityIdValue, function(entity) {
+				populateForm(entity);
+			});
+		}else{
+		
+			createTableHeader();
+			setDefaultOption();
+			loadEntity(page);
+		}
+	}
+	init();
 </script> 
 <c:if test="${entityProperty.editable == true }">
 	<script type="text/javascript">
@@ -957,9 +978,13 @@
 			requestObject.entity = entityName;
 			console.log("request object", requestObject);
 			doSubmit("<spring:url value="/api/entity/" />" + endPoint, requestObject, function(){
-				$("#modal-entity-form").modal('hide');
-				loadEntity(this.page);
-				clear();
+				if(singleRecord){
+					 
+				}else{
+					$("#modal-entity-form").modal('hide');
+					loadEntity(this.page);
+					clear();
+				}
 			})
 		};
 

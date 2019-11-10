@@ -12,10 +12,10 @@ import javax.persistence.Id;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
-import com.fajar.config.EntityElement;
-import com.fajar.config.EntityProperty;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.ProductFlow;
+import com.fajar.entity.setting.EntityElement;
+import com.fajar.entity.setting.EntityProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.extern.slf4j.Slf4j;

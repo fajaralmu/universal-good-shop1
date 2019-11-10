@@ -347,7 +347,7 @@ public class TransactionService {
 
 		sql = sql.replace("$YYYY", year.toString()).replace("$MODULE", module).replace("$MM", month.toString());
 
-		Object cashflow = productFlowRepositoryCustom.getObjectFromNativeQuery(sql, CashFlow.class);
+		Object cashflow = productFlowRepositoryCustom.getCustomedObjectFromNativeQuery(sql, CashFlow.class);
 		return (CashFlow) cashflow;
 	}
 

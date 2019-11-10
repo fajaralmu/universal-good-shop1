@@ -54,7 +54,7 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 		return q;
 	}
 	@Override
-	public Object getObjectFromNativeQuery(String sql, Class<?> objectClass) {
+	public Object getCustomedObjectFromNativeQuery(String sql, Class<?> objectClass) {
 		log.info("SQL for result object: {}", sql);
 		try {
 			Object singleObject = objectClass.getDeclaredConstructor().newInstance();

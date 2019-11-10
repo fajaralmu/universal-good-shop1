@@ -17,8 +17,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.fajar.config.EntityProperty;
 import com.fajar.entity.UserRole;
+import com.fajar.entity.setting.EntityProperty;
 import com.fajar.service.EntityService;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
@@ -73,8 +73,13 @@ public class MvcManagementController extends BaseController {
 			response.sendRedirect(request.getContextPath() + "/account/login");
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("ShopProfile", null);
+	 
 		model.addAttribute("entityProperty", entityProperty);
+		
+		model.addAttribute("entityId", webAppConfiguration.getProfile().getId());
 		model = constructCommonModel(request, model, "shopProfile", "management");
+		//override singleObject
+		model.addAttribute("singleRecord", true);
 		return basePage;
 	}
 
@@ -217,6 +222,7 @@ public class MvcManagementController extends BaseController {
 		}
 		model.addAttribute("withOption", withOption);
 		model.addAttribute("options", optionJson);
+		model.addAttribute("singleRecord", false);
 		return model;
 	}
 

@@ -147,6 +147,13 @@
 								id="get-stock" aria-label="Checkbox for following text input">
 							<span>Include Stock</span>
 						</p>
+						<p>Display per Page</p>
+						<select class="form control" id="select-limit">
+							<option value="10" selected="selected">10</option>
+							<option value="15">15</option>
+							<option value="20">20</option>
+							 
+						</select> 
 					</div>
 					<button class="btn btn-outline-primary" onclick="loadEntity()">Search</button>
 				</td>
@@ -409,6 +416,12 @@
 	}
 
 	function loadEntity(page) {
+		this.limit = document.getElementById("select-limit").value;
+		if(this.limit > 20 || this.limit < 0){
+			alert("Woooww.. our server will be confused with your choice");
+			this.limit = 10;
+			return;
+		}
 		if (page < 0) {
 			page = this.page;
 		}
@@ -420,10 +433,11 @@
 			this. orderBy  = null;
 			this.orderType = null;
 		}
+		
 		var requestObject = {
 			"entity" : "product",
 			"filter" : {
-				"limit" : limit,
+				"limit" : this.limit,
 				"page" : page,
 				"orderBy" : orderBy,
 				"orderType" : orderType,

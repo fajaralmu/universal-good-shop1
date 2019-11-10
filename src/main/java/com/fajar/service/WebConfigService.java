@@ -3,6 +3,8 @@ package com.fajar.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fajar.annotation.Dto;
@@ -38,12 +40,18 @@ public class WebConfigService {
 	private String martCode;
 
 	private static Map<String, UserTempRequest> userTemporaryData;
+	
+	@PostConstruct
+	public void init() {
+		ShopProfile dbProfile = shopProfileRepository.findByMartCode(martCode);
+		if (null == dbProfile) {
+			shopProfileRepository.save(defaultProfile());
+		}
+	}
 
 	public ShopProfile getProfile() {
 		ShopProfile dbProfile = shopProfileRepository.findByMartCode(martCode);
-		if (null == dbProfile) {
-			return defaultProfile();
-		}
+		 
 		return (ShopProfile) EntityUtil.validateDefaultValue(dbProfile);
 	}
 

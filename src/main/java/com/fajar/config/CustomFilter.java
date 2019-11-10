@@ -1,6 +1,8 @@
 package com.fajar.config;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -10,6 +12,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +24,22 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomFilter implements javax.servlet.Filter {
  
 	 	
+	@Bean
+	public Registry registry() throws RemoteException {
+		Registry reg;
+		try {
+			System.out.println("========== REGISTRY CREATING ========= ");
+			reg = java.rmi.registry.LocateRegistry.createRegistry(12345);
+			System.out.println("========== REGISTRY CREATED ========== ");
+			return reg;
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw e;
+		}
+		
+	}
+	
     @Override
     public void doFilter(
       ServletRequest request, 

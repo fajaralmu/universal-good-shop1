@@ -31,7 +31,7 @@ public class ShopProfile extends BaseEntity implements Serializable{
 	@FormField 
 	private String name;
 	@Column(name="mart_code", unique = true)
-	@FormField
+	@FormField(type = "hidden")
 	private String martCode;
 	@Column(name="short_description")
 	@FormField (type="textarea")

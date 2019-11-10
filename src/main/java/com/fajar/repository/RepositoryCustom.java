@@ -16,5 +16,5 @@ public interface RepositoryCustom<T> {
 	
 	Query createNativeQuery(String sql);
 
-	public Object getObjectFromNativeQuery(String sql, Class<?> objectClass);
+	public Object getCustomedObjectFromNativeQuery(String sql, Class<?> objectClass);
 }

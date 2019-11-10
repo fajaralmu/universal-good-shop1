@@ -1,7 +1,9 @@
 package com.fajar.service;
 
+import static com.fajar.util.CollectionUtil.arrayToList;
+import static com.fajar.util.CollectionUtil.convertList;
+
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +26,6 @@ import com.fajar.entity.Supplier;
 import com.fajar.entity.Transaction;
 import com.fajar.repository.ProductRepository;
 import com.fajar.repository.RepositoryCustom;
-import static com.fajar.util.CollectionUtil.*;
 import com.fajar.util.DateUtil;
 
 @Service
@@ -38,7 +40,7 @@ public class ProductService {
 	private ProductRepository productRepository;
 	@Autowired
 	private RepositoryCustom repositoryCustom;
-	
+
 	@Autowired
 	private ProgressService progressService;
 
@@ -67,11 +69,10 @@ public class ProductService {
 		if (filter.get("withSupplier") != null && (Boolean) filter.get("withSupplier") == true) {
 			withSupplier = true;
 		}
-		
-		
+
 		request.getFilter().getFieldsFilter().remove("withStock");
 		ShopApiResponse filteredProducts = entityService.filter(request);
-		progressService.sendProgress(1, 1, 20.0, true, requestId); 
+		progressService.sendProgress(1, 1, 20.0, true, requestId);
 		if (filteredProducts == null || filteredProducts.getEntities() == null
 				|| filteredProducts.getEntities().size() == 0) {
 			return new ShopApiResponse("01", "Data Not Found");
@@ -79,9 +80,7 @@ public class ProductService {
 		}
 		List<BaseEntity> entities = filteredProducts.getEntities();
 		List<Product> products = new ArrayList<Product>();
-		
-		 
-		
+
 		for (BaseEntity entity : entities) {
 			Product product = (Product) entity;
 			if (withNewInfo) {
@@ -94,18 +93,18 @@ public class ProductService {
 					}
 				}
 			}
-			progressService.sendProgress(1, entities.size(), 30, false, requestId); 
+			progressService.sendProgress(1, entities.size(), 30, false, requestId);
 			products.add(product);
-			 
+
 		}
 		if (withStock)
-			products = transactionService.populateProductWithStocks(products, true,requestId);
+			products = transactionService.populateProductWithStocks(products, true, requestId);
 
 		if (withSupplier) {
 			for (Product product : products) {
 				List<Supplier> suppliers = transactionService.getProductSupplier(product.getId(), 5, 0);
 				product.setSuppliers(suppliers);
-				progressService.sendProgress(1, products.size(), 20, false, requestId); 
+				progressService.sendProgress(1, products.size(), 20, false, requestId);
 			}
 		}
 		progressService.sendComplete(requestId);
@@ -170,8 +169,6 @@ public class ProductService {
 		return response;
 	}
 
-	
-
 	public ShopApiResponse getMoreProductSupplier(ShopApiRequest request) {
 		ShopApiResponse response = new ShopApiResponse();
 		Filter filter = request.getFilter();
@@ -185,17 +182,16 @@ public class ProductService {
 		response.setEntities(entities);
 		return response;
 	}
-	
-	 
+
 	public ShopApiResponse getProductSalesDetail(ShopApiRequest request, Long productId, String requestId) {
 		// TODO Auto-generated method stub
 		progressService.init(requestId);
-		System.out.println("x x x x x x Product ID: "+productId);
+		System.out.println("x x x x x x Product ID: " + productId);
 		Optional<Product> productOpt = productRepository.findById(productId);
 		Product product = null;
-		if(productOpt.isPresent()) {
+		if (productOpt.isPresent()) {
 			product = productOpt.get();
-		}else {
+		} else {
 			return ShopApiResponse.failedResponse();
 		}
 		Filter filter = request.getFilter();
@@ -203,20 +199,20 @@ public class ProductService {
 		int year1 = filter.getYear();
 		int month2 = filter.getMonthTo();
 		int year2 = filter.getYearTo();
-		Integer maxValue  = 0;
+		Integer maxValue = 0;
 		Integer totalPeriod = 0;
 		Integer runningPeriod = 0;
-		
-		//calculate total period
+
+		// calculate total period
 		for (int year = year1; year <= year2; year++) {
 			int beginningMonth = year == year1 ? month1 : 1;
 			int endOfMonth = year == year2 ? month2 : 12;
 			for (int month = beginningMonth; month <= endOfMonth; month++) {
 				totalPeriod++;
 			}
-			
+
 		}
-		
+
 		List<ProductSales> salesList = new ArrayList<>();
 		for (int year = year1; year <= year2; year++) {
 			int beginningMonth = year == year1 ? month1 : 1;
@@ -226,21 +222,21 @@ public class ProductService {
 				int productSales = getProductSalesAt(month, year, product.getId());
 				ProductSales sales = new ProductSales();
 				sales.setSales(productSales);
-				//sales.setProduct(product);
+				// sales.setProduct(product);
 				sales.setMonth(month);
 				sales.setYear(year);
 				salesList.add(sales);
-				if(productSales > maxValue) {
+				if (productSales > maxValue) {
 					maxValue = productSales;
 				}
 				double percentage = runningPeriod.doubleValue() / totalPeriod.doubleValue();
-				progressService.sendProgress( 1, totalPeriod, 100, false ,requestId);
+				progressService.sendProgress(1, totalPeriod, 100, false, requestId);
 			}
 		}
-		for(ProductSales sales: salesList) {
-			double ratio =  (Double.parseDouble(sales.getSales().toString()) / Double.parseDouble(maxValue.toString()));
-		//	System.out.println("x x x x RATIO: "+ratio);
-			double percentage =ratio  * 100;
+		for (ProductSales sales : salesList) {
+			double ratio = (Double.parseDouble(sales.getSales().toString()) / Double.parseDouble(maxValue.toString()));
+			// System.out.println("x x x x RATIO: "+ratio);
+			double percentage = ratio * 100;
 			sales.setPercentage(percentage);
 		}
 
@@ -250,5 +246,41 @@ public class ProductService {
 		response.setEntities(convertList(salesList));
 		progressService.sendComplete(requestId);
 		return response;
+	}
+
+	public List<String> getRandomProductImages(String imagebasePath) {
+		// TODO Auto-generated method stub
+		String sqlSelectImage = "select product.image_url from product where product.image_url is not null limit 7";
+		Query query = repositoryCustom.createNativeQuery(sqlSelectImage);
+		List result = query.getResultList();
+		if (result == null || result.size() == 0) {
+			return new ArrayList<>();
+		}
+		List<String> rawImageUrls = new ArrayList<>();
+		List<String> finalImageUrls = new ArrayList<>();
+		for (Object string : result) {
+			rawImageUrls.add((String) string);
+		}
+
+		for (String string : rawImageUrls) {
+			String[] imageUrls = string.split("~");
+			for (int i = 0; i < imageUrls.length; i++) {
+				imageUrls[i] = imagebasePath + imageUrls[i];
+
+			}
+			finalImageUrls.addAll(arrayToList(imageUrls));
+		}
+		return finalImageUrls;
+	}
+
+	public ShopApiResponse getPublicEntities(ShopApiRequest request, String requestId) {
+		
+		
+		if(request.getEntity().equals("product")) {
+			return getProductsCatalog(request, requestId);
+		}else if(request.getEntity().equals("supplier")) {
+			return entityService.filter(request);
+		}
+		return null;
 	}
 }
