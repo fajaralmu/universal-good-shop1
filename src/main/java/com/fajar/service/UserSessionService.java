@@ -77,14 +77,14 @@ public class UserSessionService {
 		RegistryModel registryModel = RegistryModel.builder().user(dbUser).build();
 		
 		try {
-			
-			registry.bind(dbUser.getId().toString(), registryModel);
+			registry.rebind(dbUser.getId().toString(), registryModel);
+			 
 			httpRequest.getSession(true).setAttribute("user", dbUser);
 		 
 			System.out.println(" > > > SUCCESS LOGIN :"+httpRequest.getAuthType());
 		} catch (Exception e) { 
 			System.out.println(" < < < FAILED LOGIN");
-			e.printStackTrace();
+			e.printStackTrace(); 
 		}
 		setToken(dbUser);
 		WebConfigService.putUserTempData(dbUser.getId().toString(), UserTempRequest.builder().user(dbUser)
