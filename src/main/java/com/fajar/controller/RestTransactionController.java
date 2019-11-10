@@ -45,7 +45,7 @@ public class RestTransactionController {
 		if(!accountService.validateToken(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
-		ShopApiResponse response = transactionService.supplyProduct(request, httpRequest);
+		ShopApiResponse response = transactionService.supplyProduct(request, httpRequest,httpRequest.getHeader("requestId"));
 		return response;
 	}
 	
@@ -56,7 +56,7 @@ public class RestTransactionController {
 		if(!accountService.validateToken(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
-		ShopApiResponse response = transactionService.addPurchaseTransaction(request, httpRequest);
+		ShopApiResponse response = transactionService.addPurchaseTransaction(request, httpRequest,httpRequest.getHeader("requestId"));
 		return response;
 	}
 	@PostMapping(value = "/stocks", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -66,7 +66,7 @@ public class RestTransactionController {
 		if(!accountService.validateToken(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
-		ShopApiResponse response = transactionService.getStocksByProductName(request, false);
+		ShopApiResponse response = transactionService.getStocksByProductName(request, false, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	

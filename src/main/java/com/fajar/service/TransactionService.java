@@ -78,7 +78,8 @@ public class TransactionService {
 	 * @param httpRequest
 	 * @return
 	 */
-	public ShopApiResponse supplyProduct(ShopApiRequest request, HttpServletRequest httpRequest) {
+	public ShopApiResponse supplyProduct(ShopApiRequest request, HttpServletRequest httpRequest, String requestId) {
+		progressService.init(requestId);
 		User user = userSessionService.getUser(httpRequest);
 		if (null == user) {
 			return ShopApiResponse.builder().code("01").message("invalid user").build();
@@ -93,9 +94,10 @@ public class TransactionService {
 		if (!supplier.isPresent()) {
 			return ShopApiResponse.builder().code("01").message("supplier is empty").build();
 		}
-
+		progressService.sendProgress(1, 1, 10, false, requestId);
 		for (ProductFlow productFlow : productFlows) {
 			Optional<Product> product = productRepository.findById(productFlow.getProduct().getId());
+			progressService.sendProgress(1, productFlows.size(), 40, false, requestId);
 			if (!product.isPresent()) {
 				productFlow.setProduct(product.get());
 
@@ -111,14 +113,19 @@ public class TransactionService {
 
 		try {
 			Transaction dbTransaction = transactionRepository.save(transaction);
+			progressService.sendProgress(1, 1, 10, false, requestId);
 			for (ProductFlow productFlow : productFlows) {
 				productFlow.setTransaction(dbTransaction);
 				productFlowRepository.save(productFlow);
+				progressService.sendProgress(1, productFlows.size(), 40, false, requestId);
 			}
+			
 			return ShopApiResponse.builder().transaction(dbTransaction).build();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return ShopApiResponse.builder().code("-1").message(ex.getMessage()).build();
+		}finally {
+			progressService.sendComplete(requestId);
 		}
 	}
 
@@ -217,13 +224,17 @@ public class TransactionService {
 		return products;
 	}
 
-	public ShopApiResponse getStocksByProductName(ShopApiRequest request, boolean withCount) {
-
+	public ShopApiResponse getStocksByProductName(ShopApiRequest request, boolean withCount,String requestId) {
+		progressService.init(requestId);
+		progressService.sendProgress(1, 2, 100, false, requestId);
 		List<BaseEntity> productFlows = getProductFlowsByProduct("name", request.getProduct().getName(), withCount, 20,
 				NOT_EXACTS);
 		if (productFlows == null) {
+			progressService.sendComplete(requestId);
 			return ShopApiResponse.builder().code("01").message("Fetching error").build();
 		}
+		progressService.sendProgress(1, 2, 100, false, requestId);
+		progressService.sendComplete(requestId);
 		return ShopApiResponse.builder().entities(productFlows).build();
 	}
 
@@ -276,33 +287,38 @@ public class TransactionService {
 	 * @param httpRequest
 	 * @return
 	 */
-	public ShopApiResponse addPurchaseTransaction(ShopApiRequest request, HttpServletRequest httpRequest) {
-
+	public ShopApiResponse addPurchaseTransaction(ShopApiRequest request, HttpServletRequest httpRequest, String requestId) {
+		progressService.init(requestId);
 		User user = userSessionService.getUser(httpRequest);
 		if (null == user) {
 			return ShopApiResponse.builder().code("01").message("invalid user").build();
 		}
+		progressService.sendProgress(1, 1, 10, false, requestId);
 
 		// validate product and customer
 		Optional<Customer> dbCustomer = customerRepository.findById(request.getCustomer().getId());
 		if (dbCustomer.isPresent() == false) {
 			return ShopApiResponse.builder().code("01").message("invalid Customer").build();
 		}
+		progressService.sendProgress(1, 1, 10, false, requestId);
 		List<ProductFlow> productFlows = request.getProductFlows();
 		for (ProductFlow productFlow : productFlows) {
 			Optional<ProductFlow> dbFlow = productFlowRepository.findById(productFlow.getFlowReferenceId());
 
 			if (dbFlow.isPresent() == false) {
-				continue;
+				//continue;
+			}else {
+				ProductFlow refFlow = dbFlow.get();
+	
+				ProductFlowStock flowStock = getSingleStock(refFlow);
+				Integer remainingStock = flowStock.getRemainingStock();
+				if (productFlow.getCount() > remainingStock) {
+	//				continue;
+				}else {
+					productFlow.setProduct(refFlow.getProduct());
+				}
 			}
-			ProductFlow refFlow = dbFlow.get();
-
-			ProductFlowStock flowStock = getSingleStock(refFlow);
-			Integer remainingStock = flowStock.getRemainingStock();
-			if (productFlow.getCount() > remainingStock) {
-				continue;
-			}
-			productFlow.setProduct(refFlow.getProduct());
+			progressService.sendProgress(1, productFlows.size(), 40, false, requestId);
 
 		}
 		Transaction transaction = new Transaction();
@@ -313,16 +329,20 @@ public class TransactionService {
 		transaction.setCustomer(dbCustomer.get());
 		try {
 			Transaction newTransaction = transactionRepository.save(transaction);
+			progressService.sendProgress(1, 1, 10, false, requestId);
 			for (ProductFlow productFlow : productFlows) {
 				productFlow.setTransaction(newTransaction);
 				productFlow.setPrice(productFlow.getProduct().getPrice());
 				productFlow = productFlowRepository.save(productFlow);
+				progressService.sendProgress(1, productFlows.size(), 30, false, requestId);
 			}
 			newTransaction.setProductFlows(productFlows);
 			return ShopApiResponse.builder().transaction(newTransaction).build();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return ShopApiResponse.builder().code("-1").message(ex.getMessage()).build();
+		}finally {
+			progressService.sendComplete(requestId);
 		}
 	}
 
