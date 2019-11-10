@@ -74,7 +74,7 @@ public class EntityService {
 	@Autowired
 	private TransactionRepository transactionRepository;
 	@Autowired
-	private FileService fileService;
+	private FileService fileService; 
 
 	public ShopApiResponse addEntity(ShopApiRequest request, HttpServletRequest servletRequest, boolean newRecord) {
 
@@ -95,9 +95,17 @@ public class EntityService {
 			return saveMenu(request.getMenu(), newRecord);
 		case "category":
 			return saveCategory(request.getCategory(), newRecord);
+		case "userrole":
+			return saveUserRole(request.getUserrole(), newRecord);
 		}
 
 		return ShopApiResponse.builder().code("01").message("failed").build();
+	}
+
+	private ShopApiResponse saveUserRole(UserRole userRole, boolean newRecord) {
+		userRole = (UserRole) copyNewElement(userRole, newRecord);
+		UserRole newUserRole = userRoleRepository.save(userRole);
+		return ShopApiResponse.builder().entity(newUserRole).build();
 	}
 
 	private ShopApiResponse saveCategory(Category category, boolean newRecord) {
@@ -297,6 +305,11 @@ public class EntityService {
 		case "shopProfile":
 			entityClass = ShopProfile.class;
 			break;
+		case "userrole":
+		case "userRole":
+			entityClass = UserRole.class;
+			break;
+		
 		}
 		Filter filter = request.getFilter();
 		String[] sqlListAndCount = generateSqlByFilter(filter, entityClass);
@@ -564,6 +577,10 @@ public class EntityService {
 			case "shopprofile":
 			case "shopProfile":
 				shopProfileRepository.deleteById(id);
+				break;
+			case "userrole":
+			case "userRole":
+				userRoleRepository.deleteById(id);
 				break;
 			}
 			return ShopApiResponse.builder().build();

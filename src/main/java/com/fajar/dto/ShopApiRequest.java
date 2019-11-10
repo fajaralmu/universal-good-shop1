@@ -42,7 +42,7 @@ public class ShopApiRequest implements Serializable {
 	private Menu menu;
 	private Unit unit;
 	private Product product;
-	private UserRole userRole;
+	private UserRole userrole;
 	private Filter filter;
 	private ProductFlow productFlow;
 	private Transaction transaction;

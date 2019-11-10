@@ -17,8 +17,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fajar.entity.User;
 import com.fajar.entity.UserRole;
 import com.fajar.entity.setting.EntityProperty;
+import com.fajar.service.ComponentService;
 import com.fajar.service.EntityService;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
@@ -42,8 +44,11 @@ public class MvcManagementController extends BaseController {
 	private EntityService entityService;
 	@Autowired
 	private WebConfigService webAppConfiguration;
+	@Autowired
+	private ComponentService componentService;
 
 	private static String basePage;
+	private static final String ERROR_404 = "error/notfound";
 
 	public MvcManagementController() {
 		log.info("-----------------Mvc Management Controller------------------");
@@ -59,6 +64,12 @@ public class MvcManagementController extends BaseController {
 
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUser(request), "/management/unit") ;
+		} catch (Exception e) {
+			return ERROR_404;
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Unit", null);
 		model.addAttribute("entityProperty", entityProperty);
@@ -71,6 +82,12 @@ public class MvcManagementController extends BaseController {
 
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUser(request), "/management/profile") ;
+		} catch (Exception e) {
+			return ERROR_404;
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("ShopProfile", null);
 	 
@@ -88,6 +105,12 @@ public class MvcManagementController extends BaseController {
 
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUser(request), "/management/supplier") ;
+		} catch (Exception e) {
+			return ERROR_404;
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Supplier", null);
 		model.addAttribute("entityProperty", entityProperty);
@@ -100,6 +123,12 @@ public class MvcManagementController extends BaseController {
 
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUser(request), "/management/customer") ;
+		} catch (Exception e) {
+			return ERROR_404;
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Customer", null);
 		model.addAttribute("entityProperty", entityProperty);
@@ -112,6 +141,12 @@ public class MvcManagementController extends BaseController {
 
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUser(request), "/management/product") ;
+		} catch (Exception e) {
+			return ERROR_404;
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Product", null);
 		model.addAttribute("entityProperty", entityProperty);
@@ -124,10 +159,34 @@ public class MvcManagementController extends BaseController {
 
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUser(request), "/management/category") ;
+		} catch (Exception e) {
+			return ERROR_404;
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Category", null);
 		model.addAttribute("entityProperty", entityProperty);
 		model = constructCommonModel(request, model, "Category", "management");
+		return basePage;
+	}
+	
+	@RequestMapping(value = { "/userrole" })
+	public String userRole(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUser(request), "/management/userrole") ;
+		} catch (Exception e) {
+			return ERROR_404;
+		}
+		EntityProperty entityProperty = EntityUtil.createEntityProperty("UserRole", null);
+		model.addAttribute("entityProperty", entityProperty);
+		model = constructCommonModel(request, model, "UserRole", "management");
 		return basePage;
 	}
 
@@ -139,6 +198,12 @@ public class MvcManagementController extends BaseController {
 
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUser(request), "/management/productFlow") ;
+		} catch (Exception e) {
+			return ERROR_404;
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("ProductFlow", null);
 		model.addAttribute("entityProperty", entityProperty);
@@ -152,6 +217,12 @@ public class MvcManagementController extends BaseController {
 
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUser(request), "/management/transaction") ;
+		} catch (Exception e) {
+			return ERROR_404;
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Transaction", null);
 		entityProperty.setEditable(false);
@@ -166,6 +237,12 @@ public class MvcManagementController extends BaseController {
 
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUser(request), "/management/user") ;
+		} catch (Exception e) {
+			return ERROR_404;
 		}
 		HashMap<String, Object> listObject = new HashMap<>();
 		List<UserRole> roles = entityService.getAllUserRole();
@@ -182,6 +259,12 @@ public class MvcManagementController extends BaseController {
 
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUser(request), "/management/menu") ;
+		} catch (Exception e) {
+			return ERROR_404;
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Menu", null);
 		model.addAttribute("entityProperty", entityProperty);
@@ -224,6 +307,10 @@ public class MvcManagementController extends BaseController {
 		model.addAttribute("options", optionJson);
 		model.addAttribute("singleRecord", false);
 		return model;
+	}
+	
+	private void checkUserAccess(User user, String url) throws Exception {
+		componentService.checkAccess(user, url);
 	}
 
 }
