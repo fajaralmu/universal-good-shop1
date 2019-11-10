@@ -55,5 +55,8 @@ public class ShopProfile extends BaseEntity implements Serializable{
 	@FormField(type = "img", required = false, defaultValue = "DefaultIcon.BMP")
 	@Column(name = "icon_url")
 	private String iconUrl;
+	@FormField(type = "img", required = false, defaultValue = "DefaultBackground.BMP")
+	@Column(name = "background_url")
+	private String backgroundUrl;
 	
 }

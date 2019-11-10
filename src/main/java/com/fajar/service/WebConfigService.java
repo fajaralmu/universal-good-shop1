@@ -62,6 +62,7 @@ public class WebConfigService {
 		profile.setContact("087737666614");
 		profile.setWebsite("http://localhost:8080/universal-good-shop");
 		profile.setIconUrl("DefaultIcon.BMP");
+		profile.setBackgroundUrl("DefaultBackground.BMP");
 		profile.setMartCode(martCode);
 		profile.setShortDescription("we provide what u need");
 		profile.setColor("green");

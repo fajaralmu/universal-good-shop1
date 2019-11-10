@@ -4,7 +4,15 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div class="content">
-	<div id="welcome-header" class="page-header" style="padding:5px;margin-top:10px;margin-bottom:10px;  color:white;text-align: center;background-color:${shopProfile.color }; width:100%; font-size:3 em">
+	<div id="welcome-header" class="page-header" style="padding:5px;
+		margin-top:10px;margin-bottom:10px; 
+	 	color:white;text-align: center; 
+	  	background-position: center;
+		  background-repeat: no-repeat;
+		  background-size: cover;
+	 	background-image: url('${host}/${contextPath}/${imagePath}/${shopProfile.backgroundUrl }'); 
+	 	color:${shopProfile.fontColor }; 
+	 	width:100%; font-size:3 em">
 		<h3>Assalamu'alaikum, Good ${timeGreeting} Welcome to</h3>
 		<h1> ${shopProfile.name }</h1>
 		<p></p>
