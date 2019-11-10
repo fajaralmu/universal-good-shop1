@@ -54,7 +54,7 @@ public class RestAccountController {
 	public ShopApiResponse logout(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("logout {}", request);
-		if (userSessionService.hasSession(httpRequest)) {
+		if (userSessionService.hasSession(httpRequest, false)) {
 			accountService.logout(httpRequest);
 		}
 		 

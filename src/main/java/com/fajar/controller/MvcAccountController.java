@@ -29,7 +29,7 @@ public class MvcAccountController extends BaseController {
 
 	public MvcAccountController() {
 
-		log.info("----------------MvcAccountController---------------");
+		log.info("----------------Mvc Account Controller---------------");
 	}
 
 	@PostConstruct
@@ -50,7 +50,7 @@ public class MvcAccountController extends BaseController {
 
 	@RequestMapping(value = { "/logout" })
 	public String logout(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-		if (userSessionService.hasSession(request)) {
+		if (userSessionService.hasSession(request, false)) {
 			userSessionService.logout(request);
 		}
 

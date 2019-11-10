@@ -31,7 +31,7 @@ public class MvcPublicController extends BaseController{
 	private UserSessionService userSessionService;
 	
 	public MvcPublicController() {
-		log.info("---------------------------MvcCommonController------------------------------");
+		log.info("---------------------------Mvc Public Controller------------------------------");
 	}
 	
 	@PostConstruct

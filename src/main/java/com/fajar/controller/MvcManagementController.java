@@ -46,7 +46,7 @@ public class MvcManagementController extends BaseController {
 	private static String basePage;
 
 	public MvcManagementController() {
-		log.info("-----------------MvcManagementController------------------");
+		log.info("-----------------Mvc Management Controller------------------");
 	}
 
 	@PostConstruct

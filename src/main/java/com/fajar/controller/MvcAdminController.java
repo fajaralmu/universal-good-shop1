@@ -59,7 +59,7 @@ public class MvcAdminController extends BaseController {
 	private String basePage;
 
 	public MvcAdminController() {
-		log.info("-----------------MvcAdminController------------------");
+		log.info("-----------------Mvc Admin Controller------------------");
 	}
 
 	@PostConstruct
