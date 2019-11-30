@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<!-- <class name = "Employee" table = "EMPLOYEE"> <meta attribute = "class-description"> 
+	This class contains the employee detail. </meta> <id name = "id" type = "int" 
+	column = "id"> <generator class="native"/> </id> <property name = "firstName" 
+	column = "first_name" type = "string"/> <property name = "lastName" column 
+	= "last_name" type = "string"/> <property name = "salary" column = "salary" 
+	type = "int"/> </class> -->
+
+<hibernate-configuration>
+
+	
+
+	<session-factory>
+		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/goodshop</property>
+		<property name="hibernate.connection.username">root</property>
+		<property name="hibernate.connection.password"></property>
+		<property name="hibernate.connection.pool_size">1</property>
+		<property name="hibernate.current_session_context_class">thread</property>
+		<property name="hibernate.show_sql">true</property>
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+		 <mapping class="com.fajar.entity.ShopProfile"/>
+	</session-factory>
+</hibernate-configuration>

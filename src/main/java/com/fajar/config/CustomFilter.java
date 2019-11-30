@@ -25,7 +25,7 @@ public class CustomFilter implements javax.servlet.Filter {
  
 	 	
 	@Bean
-	public Registry registry() throws RemoteException {
+	public Registry registryBro() throws RemoteException {
 		Registry reg;
 		try {
 			System.out.println("========== REGISTRY CREATING ========= ");

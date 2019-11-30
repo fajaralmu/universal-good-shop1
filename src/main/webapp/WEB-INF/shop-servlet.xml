@@ -54,8 +54,13 @@
 	
 	<!-- persistance -->
 
+	 
 	<bean id="transactionManager"
-		class="org.springframework.orm.jpa.JpaTransactionManager" />
+		class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory"></property>
+	</bean>
+	
+<!-- 	<bean id="sessionFactory" class="org.hibernate.internal.SessionFactoryImpl"/> -->
 
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
@@ -71,18 +76,23 @@
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="packagesToScan" value="com.fajar*" />
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="dataSource" /><!-- 
+		<property name="sessionFactory" ref="sessionFactory"></property> -->
 		<property name="jpaProperties">
 			<props>
 				<prop key="hibernate.show_sql">true</prop>
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.current_session_context_class">org.hibernate.context.internal.ThreadLocalSessionContext</prop>
 			</props>
 		</property>
-		<property name="persistenceProvider">
-			<bean class="org.hibernate.jpa.HibernatePersistenceProvider"></bean>
+		<property name="persistenceProvider" ref="persistenceProvider">
+			<!-- <bean class="org.hibernate.jpa.HibernatePersistenceProvider"></bean> -->
 		</property>
 	</bean>
+	
+	<bean id="persistenceProvider"
+		class="org.hibernate.jpa.HibernatePersistenceProvider" />
 
 
 

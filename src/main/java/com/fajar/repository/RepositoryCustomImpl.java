@@ -8,10 +8,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Service;
 
 import com.fajar.annotation.CustomEntity;
-import com.fajar.entity.custom.CashFlow;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,7 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 
 	@PersistenceContext
-	EntityManager entityManager;
+	private EntityManager entityManager;
+	
+	public RepositoryCustomImpl() {
+		// TODO Auto-generated constructor stub  
+		LocalContainerEntityManagerFactoryBean xx;
+//		xx.get
+	}
 
 	@Override
 	public List<T> filterAndSort(String sql, Class clazz, String entityGraph) {
