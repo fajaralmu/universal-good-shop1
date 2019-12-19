@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fajar.annotation.Dto;
-import com.fajar.util.JSONUtil;
+import com.fajar.util.MyJsonUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,9 +42,9 @@ public class EntityProperty implements Serializable{/**
 	
 	public void setElementJsonList() { 
 		
-		this.dateElementsJson = JSONUtil.listToJson(dateElements);
-		this.imageElementsJson = JSONUtil.listToJson(imageElements);
-		this.currencyElementsJson = JSONUtil.listToJson(currencyElements);
+		this.dateElementsJson = MyJsonUtil.listToJson(dateElements);
+		this.imageElementsJson = MyJsonUtil.listToJson(imageElements);
+		this.currencyElementsJson = MyJsonUtil.listToJson(currencyElements);
 	}
  	
 

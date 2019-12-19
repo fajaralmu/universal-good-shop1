@@ -25,7 +25,7 @@ public class ComponentService {
 	@Autowired
 	private UserSessionService userSessionService;
 
-	public Object getDashboardMenus(HttpServletRequest request) {
+	public List<Menu> getDashboardMenus(HttpServletRequest request) {
 		List<Menu> menus = menuRepository.findByPageStartsWith("HOME");
 		List<BaseEntity> entities = new ArrayList<BaseEntity>();
 		menus = validateAccess(userSessionService.getUser(request), menus);
@@ -36,7 +36,7 @@ public class ComponentService {
 		return EntityUtil.validateDefaultValue(entities);
 	}
 
-	public Object getManagementMenus(HttpServletRequest request) {
+	public List<Menu> getManagementMenus(HttpServletRequest request) {
 		List<Menu> menus = menuRepository.findByPageStartsWith("MNGMNT");
 		System.out.println("MANAGEMENT MENUS: " + menus);
 		List<BaseEntity> entities = new ArrayList<BaseEntity>();
@@ -77,7 +77,7 @@ public class ComponentService {
 		return newMenus;
 	}
 
-	public Object getTransactionMenus(HttpServletRequest request) {
+	public List<Menu> getTransactionMenus(HttpServletRequest request) {
 		List<Menu> menus = menuRepository.findByPageStartsWith("TRX");
 		List<BaseEntity> entities = new ArrayList<BaseEntity>();
 		menus = validateAccess(userSessionService.getUser(request), menus);
@@ -88,7 +88,7 @@ public class ComponentService {
 		return EntityUtil.validateDefaultValue(entities);
 	}
 
-	public Object getPublicMenus(HttpServletRequest request) {
+	public List<Menu> getPublicMenus(HttpServletRequest request) {
 		List<Menu> menus = menuRepository.findByPageStartsWith("PUBLIC");
 		List<BaseEntity> entities = new ArrayList<BaseEntity>();
 		for (Menu menu : menus) {
@@ -102,8 +102,7 @@ public class ComponentService {
 		return categoryRepository.findByDeletedFalse();
 	}
 
-	public void checkAccess(User user, String url) throws Exception {
-		// TODO Auto-generated method stub
+	public void checkAccess(User user, String url) throws Exception { 
 		Menu menu = menuRepository.findTop1ByUrl(url);
 		if (menu == null) {
 			throw new Exception("Not Found");

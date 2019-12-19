@@ -1,8 +1,7 @@
 package com.fajar.config;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
-import java.rmi.registry.Registry;
+import java.util.Date;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -12,33 +11,21 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.fajar.service.UserSessionService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-@Configuration
 public class CustomFilter implements javax.servlet.Filter {
  
-	 	
-	@Bean
-	public Registry registryBro() throws RemoteException {
-		Registry reg;
-		try {
-			System.out.println("========== REGISTRY CREATING ========= ");
-			reg = java.rmi.registry.LocateRegistry.createRegistry(12345);
-			System.out.println("========== REGISTRY CREATED ========== ");
-			return reg;
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw e;
-		}
-		
-	}
+	@Autowired
+	private UserSessionService userSessionService;
+	
+	
 	
     @Override
     public void doFilter(
@@ -48,16 +35,24 @@ public class CustomFilter implements javax.servlet.Filter {
   
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-        System.out.println(" ________________________________BEGIN________________________________");
-      
-        log.info(
-          "Logging Request  {} : {}", req.getMethod(), 
-          req.getRequestURI());
+        
+        boolean isRestEndpoint = req.getRequestURI().contains("universal-good-shop/api");
+        
+        if(isRestEndpoint) {
+	        System.out.println("=====================BEGIN API==================");
+	        System.out.println(new Date());
+	        System.out.println(req.getMethod()) ;
+	        System.out.println(req.getRequestURI());
+	         
+        } 
+        	
         chain.doFilter(request, response);
-        log.info(
-          "Logging Response :{}", 
-          res.getContentType());
-        System.out.println(" ________________________________END________________________________ ");
+        
+        if(isRestEndpoint) {
+	        System.out.println(res.getStatus());
+	        System.out.println(res.getContentType());
+	        System.out.println("================END API=================");
+        }
     }
 
 	@Override

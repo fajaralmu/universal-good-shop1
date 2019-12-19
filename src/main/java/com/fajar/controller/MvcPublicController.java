@@ -19,7 +19,7 @@ import com.fajar.service.ComponentService;
 import com.fajar.service.ProductService;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
-import com.fajar.util.MVCUtil;
+import com.fajar.util.MvcUtil;
 
 @Controller
 public class MvcPublicController extends BaseController{

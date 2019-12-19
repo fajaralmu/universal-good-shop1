@@ -1,6 +1,7 @@
 package com.fajar.entity.setting;
 
 import java.rmi.Remote;
+import java.util.HashMap;
 
 import com.fajar.entity.User;
 
@@ -15,5 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RegistryModel implements Remote {
 	private User user;
+	private HashMap<String, Object> tokens;
+	private String userToken;
 
 }

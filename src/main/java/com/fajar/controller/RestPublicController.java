@@ -1,7 +1,6 @@
 package com.fajar.controller;
 
 import java.io.IOException;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,14 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
+import com.fajar.exception.InvalidRequestException;
 import com.fajar.service.ProductService;
+import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,10 +32,13 @@ public class RestPublicController {
 	private ProductService productService;
 	@Autowired
 	private WebConfigService webConfigService;
+	@Autowired
+	private UserSessionService userSessionService;
 
 	@PostMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse get(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
+		validatePageRequest(httpRequest);
 		log.info("register {}", request);
 		ShopApiResponse response = productService.getPublicEntities(request, httpRequest.getHeader("requestId"));
 		return response;
@@ -44,10 +47,20 @@ public class RestPublicController {
 	@PostMapping(value = "/moresupplier", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse moresupplier(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("register {}", request);
+		validatePageRequest(httpRequest);
+		log.info("more supplier {}", request);
 		ShopApiResponse response = productService.getMoreProductSupplier(request);
 		return response;
 	}
+	
+	private void validatePageRequest(HttpServletRequest req) {
+		String requestId = req.getHeader("requestId");
+		boolean validated = userSessionService.validatePageRequest(req );
+        if(!validated)  {
+        	throw new InvalidRequestException("Invalid page request");
+        }
+	}
+	
 	
 	 
 }

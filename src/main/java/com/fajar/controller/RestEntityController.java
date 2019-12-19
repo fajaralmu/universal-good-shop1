@@ -43,8 +43,7 @@ public class RestEntityController {
 		if(!accountService.validateToken(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
-		ShopApiResponse response = entityService.addEntity(request,httpRequest, true);
-		return response;
+		return entityService.addEntity(request,httpRequest, true); 
 	}
 	
 	@PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -54,8 +53,8 @@ public class RestEntityController {
 		if(!accountService.validateToken(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
-		ShopApiResponse response = entityService.addEntity(request,httpRequest, false);
-		return response;
+		return entityService.addEntity(request,httpRequest, false);
+		 
 	}
 	
 	@PostMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -65,8 +64,8 @@ public class RestEntityController {
 		if(!accountService.validateToken(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
-		ShopApiResponse response = entityService.filter(request );
-		return response;
+		return entityService.filter(request );
+		 
 	}
 	
 	@PostMapping(value = "/delete", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -76,8 +75,7 @@ public class RestEntityController {
 		if(!accountService.validateToken(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
-		ShopApiResponse response = entityService.delete(request );
-		return response;
+		return entityService.delete(request ); 
 	}
 
 }

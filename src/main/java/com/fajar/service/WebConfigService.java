@@ -2,7 +2,6 @@ package com.fajar.service;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,6 +20,7 @@ import com.fajar.annotation.Dto;
 import com.fajar.dto.UserTempRequest;
 import com.fajar.entity.ShopProfile;
 import com.fajar.repository.ShopProfileRepository;
+import com.fajar.util.EntityUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,9 +46,7 @@ public class WebConfigService {
 	private String basePage;
 	private String uploadedImageRealPath;
 	private String uploadedImagePath;
-	private String martCode;
-
-	private static Map<String, UserTempRequest> userTemporaryData;
+	private String martCode; 
 
 	@Autowired
 	private Session hibernateSession;
@@ -133,37 +131,18 @@ public class WebConfigService {
 
 	@PostConstruct
 	public void init() {
-//		ShopProfile dbProfile = shopProfileRepository.findByMartCode(martCode);
-//		if (null == dbProfile) {
-//			shopProfileRepository.save(defaultProfile());
-//		}
-	}
-
-	public ShopProfile getShopProfileFromSession() {
-		hibernateSession = sessionFactory.openSession();
-		Transaction tx = null;
-		try {
-			tx = hibernateSession.beginTransaction();
-			ShopProfile profile = (ShopProfile) hibernateSession.createCriteria(ShopProfile.class)
-					.add(Restrictions.naturalId().set("martCode", martCode)).list().get(0);
-			System.out.println("++++++++++SHOP PROFILE: " + profile);
-			tx.commit();
-			return profile;
-		} catch (HibernateException e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-			return null;
-		} finally {
-
-			hibernateSession.close();
+		ShopProfile dbProfile = shopProfileRepository.findByMartCode(martCode);
+		if (null == dbProfile) {
+			shopProfileRepository.save(defaultProfile());
 		}
 	}
 
-	public ShopProfile getProfile() {
-//		ShopProfile dbProfile = shopProfileRepository.findByMartCode(martCode);
+	 
 
-		return getShopProfileFromSession();// (ShopProfile) EntityUtil.validateDefaultValue(dbProfile);
+	public ShopProfile getProfile() {
+		ShopProfile dbProfile = shopProfileRepository.findByMartCode(martCode);
+
+		/*return getShopProfileFromSession(); */ return  EntityUtil.validateDefaultValue(dbProfile);
 	}
 
 	private ShopProfile defaultProfile() {
@@ -178,23 +157,10 @@ public class WebConfigService {
 		profile.setShortDescription("we provide what u need");
 		profile.setColor("green");
 		profile.setAbout(
-				"Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae.");
+				"Nam libero tempore.");
 		return profile;
 	}
 
-	public static UserTempRequest getUserTemporaryData(String key) {
-		if (userTemporaryData == null) {
-			userTemporaryData = new HashMap<>();
-		}
-		return userTemporaryData.get(key);
-	}
-
-	public static Map<String, UserTempRequest> putUserTempData(String key, UserTempRequest userData) {
-		if (userTemporaryData == null) {
-			userTemporaryData = new HashMap<>();
-		}
-		userTemporaryData.put(key, userData);
-		return userTemporaryData;
-	}
+	 
 
 }

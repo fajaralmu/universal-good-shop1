@@ -8,7 +8,6 @@ import javax.persistence.Table;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
-import com.fajar.entity.Product.ProductBuilder;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

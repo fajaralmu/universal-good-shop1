@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 @Dto
 @Entity
-@Table(name="shop_profile_$yy$mm")
+@Table(name="shop_profile")
 @Data
 @Builder
 @AllArgsConstructor

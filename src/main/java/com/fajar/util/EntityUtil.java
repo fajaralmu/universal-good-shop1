@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -93,7 +94,7 @@ public class EntityUtil {
 							.get(formField.entityReferenceName());
 					if (referenceEntityList != null) {
 						entityElement.setOptions(referenceEntityList);
-						entityElement.setJsonList(JSONUtil.listToJson(referenceEntityList));
+						entityElement.setJsonList(MyJsonUtil.listToJson(referenceEntityList));
 					}
 
 				} else if (!formField.entityReferenceName().equals("") && fieldType.equals("dynamiclist")) {
@@ -112,7 +113,7 @@ public class EntityUtil {
 			entityProperty.setElementJsonList();
 			entityProperty.setElements(entityElements);
 			entityProperty.setDetailFieldName(fieldToShowDetail);
-			entityProperty.setFieldNames(JSONUtil.listToJson(fieldNames));
+			entityProperty.setFieldNames(MyJsonUtil.listToJson(fieldNames));
 			log.info("============ENTITY PROPERTY: {} ", entityProperty);
 			return entityProperty;
 		} catch (ClassNotFoundException e) {
@@ -183,14 +184,7 @@ public class EntityUtil {
 				|| field.getType().equals(BigInteger.class);
 	}
 
-	public static void maiXXn(String[] ss) {
-		EntityProperty properties = createEntityProperty("Product", null);
-		List<EntityElement> elements = properties.getElements();
-		for (EntityElement entityElement : elements) {
-			System.out.println(entityElement);
-		}
-	}
-
+	 
 	public static Object copyFieldElementProperty(Object source, Class targetClass, boolean withId) {
 		System.out.println("CLASSSS :" + targetClass.getCanonicalName());
 		Object targetObject = null;
@@ -228,7 +222,7 @@ public class EntityUtil {
 		System.out.println(validateDefaultValue(pf));
 	}
 	
-	public static BaseEntity validateDefaultValue(BaseEntity baseEntity) {
+	public static <T extends BaseEntity> T validateDefaultValue(BaseEntity baseEntity) {
 		List<Field> fields = EntityUtil.getDeclaredFields(baseEntity.getClass());
 		try {
 			for (Field field : fields) {
@@ -276,14 +270,14 @@ public class EntityUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return baseEntity;
+		return (T) baseEntity;
 	}
 
-	public static List<BaseEntity> validateDefaultValue(List<BaseEntity> entities) {
+	public static <T extends Collection<? extends BaseEntity>> T validateDefaultValue(List<BaseEntity> entities) {
 		for (BaseEntity baseEntity : entities) {
 			baseEntity = validateDefaultValue(baseEntity);
 		}
-		return entities;
+		return (T) entities;
 	}
 
 }

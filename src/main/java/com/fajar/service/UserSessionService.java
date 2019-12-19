@@ -1,20 +1,20 @@
 package com.fajar.service;
 
-import java.rmi.Remote;
 import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fajar.dto.UserTempRequest;
+import com.fajar.entity.RegisteredRequest;
 import com.fajar.entity.User;
 import com.fajar.entity.setting.RegistryModel;
+import com.fajar.repository.RegisteredRequestRepository;
 import com.fajar.repository.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +27,10 @@ public class UserSessionService {
 	private UserRepository userRepository;
 	
 	@Autowired
-	private Registry registry;
+	private RegisteredRequestRepository registeredRequestRepository;
 
-	private Map<String, Object> userTokens = new HashMap<String, Object>();
+	@Autowired
+	private RegistryService registryService;
 
 	public User getUser(HttpServletRequest request) {
 		try {
@@ -38,18 +39,18 @@ public class UserSessionService {
 			return null;
 		}
 	}
-	
+
 	public boolean hasSession(HttpServletRequest request) {
 		return hasSession(request, true);
 	}
 
 	public boolean hasSession(HttpServletRequest request, boolean setRequestURI) {
-		if(setRequestURI) {
-			 
+		if (setRequestURI) {
+
 			request.getSession().setAttribute("requestURI", request.getRequestURI());
-			log.info("---REQUESTED URI: "+request.getSession(false).getAttribute("requestURI"));
+			log.info("---REQUESTED URI: " + request.getSession(false).getAttribute("requestURI"));
 		}
-		if (/* request.getUserPrincipal() == null || */request.getSession().getAttribute("user") == null) {
+		if (request.getSession().getAttribute("user") == null) {
 			log.info("session user NULL");
 			return false;
 		}
@@ -59,10 +60,15 @@ public class UserSessionService {
 			return false;
 		}
 		User sessionUser = (User) request.getSession().getAttribute("user");
-		
+
 		try {
-			RegistryModel registryModel = (RegistryModel) registry.lookup(sessionUser.getId().toString());
-			System.out.println("Registry Model: "+registryModel);
+			RegistryModel registryModel = registryService.getModel(sessionUser.getId().toString());
+
+			if (!sessionUser.equals(registryModel.getUser())) {
+				System.out.println("==========USER NOT EQUALS==========");
+				throw new Exception();
+			}
+
 			User loggedUser = userRepository.findByUsernameAndPassword(sessionUser.getUsername(),
 					sessionUser.getPassword());
 
@@ -73,53 +79,63 @@ public class UserSessionService {
 		}
 	}
 
-	public void addUserSession(User dbUser, HttpServletRequest httpRequest) {
-		RegistryModel registryModel = RegistryModel.builder().user(dbUser).build();
-		
+	public void addUserSession(final User dbUser, HttpServletRequest httpRequest) {
+		RegistryModel registryModel = RegistryModel.builder().user(dbUser).userToken(UUID.randomUUID().toString())
+				.build();
+
 		try {
-			registry.rebind(dbUser.getId().toString(), registryModel);
-			 
+			boolean registryIsSet = registryService.set(dbUser.getId().toString(), registryModel);
+			if (!registryIsSet) {
+				throw new Exception();
+			}
 			httpRequest.getSession(true).setAttribute("user", dbUser);
-		 
-			System.out.println(" > > > SUCCESS LOGIN :"+httpRequest.getAuthType());
-		} catch (Exception e) { 
+			System.out.println(" > > > SUCCESS LOGIN :");
+		} catch (Exception e) {
 			System.out.println(" < < < FAILED LOGIN");
-			e.printStackTrace(); 
+			e.printStackTrace();
 		}
-		setToken(dbUser);
-		WebConfigService.putUserTempData(dbUser.getId().toString(), UserTempRequest.builder().user(dbUser)
-				.requestURI(httpRequest.getRequestURI()).userId(dbUser.getId()).build());
 	}
 
-	public void logout(HttpServletRequest request) {
+	public boolean logout(HttpServletRequest request) {
 		User user = getUser(request);
 		try {
-			userTokens.remove(user.getId().toString());
-			registry.unbind(user.getId().toString());
+			boolean registryIsUnbound = registryService.unbind(user.getId().toString());
+
+			if (!registryIsUnbound) {
+				throw new Exception();
+			}
+
 			request.getSession(false).removeAttribute("user");
 			request.getSession(false).invalidate();
-//			request.logout();
+
 			System.out.println(" > > > > > SUCCESS LOGOUT");
-		} catch ( Exception e) {
-			// TODO Auto-generated catch block
+			return true;
+		} catch (Exception e) {
 			System.out.println(" < < < < < FAILED LOGOUT");
 			e.printStackTrace();
 		}
-		
-	}
-
-	private void setToken(User dbUser) {
-		userTokens.put(dbUser.getId().toString(), UUID.randomUUID().toString());
+		return false;
 
 	}
 
 	public String getToken(User user) {
-		try {
-			return (String) userTokens.get(user.getId().toString());
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return null;
+		RegistryModel reqModel = registryService.getModel(user.getId().toString());
+		String token = reqModel.getUserToken();
+		return token;
+	}
+
+	public boolean validatePageRequest(HttpServletRequest req) {
+		final String requestId = req.getHeader(RegistryService.PAGE_REQUEST_ID);
+		
+		//check from DB
+		RegisteredRequest registeredRequest = registeredRequestRepository.findTop1ByRequestId(requestId);
+		
+		if(registeredRequest!=null) {
+			System.out.println("x x x Found Registered Request: "+registeredRequest);
+			return true;
 		}
+		
+		return registryService.validatePageRequest(req);
 	}
 
 }

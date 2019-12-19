@@ -11,7 +11,7 @@ import com.fajar.annotation.Dto;
 import com.fajar.dto.Entity;
 import com.fajar.dto.RealtimeResponse;
 
-public class JSONUtil {
+public class MyJsonUtil {
 
 	public static void main(String[] aaa) {
 		RealtimeResponse response = new RealtimeResponse();

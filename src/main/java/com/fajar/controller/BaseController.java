@@ -2,6 +2,7 @@ package com.fajar.controller;
 
 import java.util.UUID;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import com.fajar.entity.ShopProfile;
 import com.fajar.entity.User;
 import com.fajar.service.AccountService;
+import com.fajar.service.RegistryService;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
 import com.fajar.util.DateUtil;
-import com.fajar.util.MVCUtil;
+import com.fajar.util.MvcUtil;
 @Controller
 public class BaseController {
 	
@@ -24,6 +26,8 @@ public class BaseController {
 	private UserSessionService userSessionService;
 	@Autowired
 	private AccountService accountService;
+	@Autowired
+	private RegistryService registryService;
 
 	@ModelAttribute("shopProfile")
 	public ShopProfile getProfile(HttpServletRequest request) {
@@ -46,7 +50,7 @@ public class BaseController {
 	
 	@ModelAttribute("host")
 	public String getHost(HttpServletRequest request) {
-		return MVCUtil.getHost(request);
+		return MvcUtil.getHost(request);
 	}
 	
 	@ModelAttribute("contextPath")
@@ -71,6 +75,17 @@ public class BaseController {
 	
 	@ModelAttribute("requestId")
 	public String requestId(HttpServletRequest request) {
-		return UUID.randomUUID().toString();
+		
+		return	registryService.addPageRequest(  getCookie(RegistryService.JSESSSIONID, request.getCookies()).getValue());
+		 
+	}
+	
+	public static Cookie getCookie(String name, Cookie[] cookies) {
+		try {
+			for (Cookie cookie : cookies) {
+				if(cookie.getName().equals(name)) { return cookie; }
+			}
+		}catch(Exception ex) { ex.printStackTrace(); }
+		return null;
 	}
 }

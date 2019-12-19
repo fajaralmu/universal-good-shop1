@@ -1,21 +1,38 @@
 package com.fajar.config;
 
+import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class SessionFactoryConfig {
+public class GeneralConfiguration {
 	private static SessionFactory factory;
 
-	
-	
+	@Bean
+	public Registry registryBro() throws RemoteException {
+		Registry reg;
+		try {
+			System.out.println("========== REGISTRY CREATING ========= ");
+			reg = java.rmi.registry.LocateRegistry.createRegistry(12345);
+			System.out.println("========== REGISTRY CREATED ========== ");
+			return reg;
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+	}
+
 	@Bean
 	public SessionFactory generateSession() {
 		System.out.println("SESSION FACTORY");
 		try {
-			factory = new org.hibernate.cfg.Configuration().setInterceptor(new HibernateInterceptor()).configure().buildSessionFactory();
+			factory = new org.hibernate.cfg.Configuration().setInterceptor(new HibernateInterceptor()).configure()
+					.buildSessionFactory();
 //			Session session = factory.openSession();
 			return factory;
 		} catch (Throwable ex) {
@@ -24,7 +41,8 @@ public class SessionFactoryConfig {
 		}
 
 	}
-	@Bean 
+
+	@Bean
 	public Session hibernateSession(SessionFactory sessionFactory) {
 		return sessionFactory.openSession();
 	}

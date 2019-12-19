@@ -75,13 +75,13 @@ public class AccountService {
 	
 	public String getToken(HttpServletRequest httpRequest) {
 		User user = userSessionService.getUser(httpRequest);
+		System.out.println("==loggedUser: "+user);
 		if(user == null)
 			return null;
 		return (String) userSessionService.getToken(user);
 	}
 
 	public boolean validateToken(HttpServletRequest httpRequest) {
-		// TODO Auto-generated method stub
 		String requestToken = httpRequest.getHeader("requestToken");
 		if(requestToken == null) {
 			System.out.println("NULL TOKEN");
