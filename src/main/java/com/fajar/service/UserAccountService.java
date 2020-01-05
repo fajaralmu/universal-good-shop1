@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
+import com.fajar.entity.BaseEntity;
 import com.fajar.entity.User;
 import com.fajar.entity.UserRole;
 import com.fajar.entity.setting.RegistryModel;
@@ -67,6 +68,8 @@ public class UserAccountService {
 		log.info("--------LOGIN SUCCESS");
 		
 		ShopApiResponse response = new ShopApiResponse("00","success");
+		BaseEntity registeredUser = userSessionService.getProfile(httpRequest).getEntity();
+		response.setEntity(registeredUser);
 		if(httpRequest.getSession(false).getAttribute("requestURI")!=null) {
 			log.info("WILL REDIRECT TO REQUESTED URI: "+httpRequest.getSession(false).getAttribute("requestURI"));
 			response.setRedirectUrl(httpRequest.getSession(false).getAttribute("requestURI").toString());			

@@ -72,7 +72,7 @@ public class RestAccountController {
 	public ShopApiResponse getprpfile(  HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		 
-		if (userSessionService.hasSession(httpRequest, false)) {
+		if (!userSessionService.hasSession(httpRequest, false)) {
 			return ShopApiResponse.failedResponse();
 		}
 		 

@@ -1,5 +1,6 @@
 package com.fajar.service;
 
+import java.lang.reflect.Field;
 import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +20,7 @@ import com.fajar.entity.User;
 import com.fajar.entity.setting.RegistryModel;
 import com.fajar.repository.RegisteredRequestRepository;
 import com.fajar.repository.UserRepository;
+import com.fajar.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -188,10 +190,27 @@ public class UserSessionService {
 		
 		return registryService.validatePageRequest(req);
 	}
+	
+	private static void removeAttribute(Object object,String ... fields   ) {
+		for (String fieldName : fields) {
+			Field field = EntityUtil.getDeclaredField(object.getClass(), fieldName);
+			try {
+				field.setAccessible(true);
+				field.set(object, null);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				 System.out.println("Error------- and catched");
+				e.printStackTrace();
+			}
+		}
+	}
 
 	public ShopApiResponse getProfile(HttpServletRequest httpRequest) {
 		 
-		return ShopApiResponse.builder().code("00").entity(getUserFromRegistry(httpRequest)).build();
+		User user = getUserFromRegistry(httpRequest);
+		if(user != null) {
+			removeAttribute(user, "role", "password");
+		}
+		return ShopApiResponse.builder().code("00").entity(user).build();
 	}
 
 }
