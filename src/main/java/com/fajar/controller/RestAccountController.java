@@ -2,6 +2,7 @@ package com.fajar.controller;
 
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
-import com.fajar.service.AccountService;
+import com.fajar.service.LogProxyFactory;
+import com.fajar.service.UserAccountService;
 import com.fajar.service.UserSessionService;
 
 @CrossOrigin
@@ -26,13 +28,18 @@ import com.fajar.service.UserSessionService;
 public class RestAccountController {
 	Logger log = LoggerFactory.getLogger(RestAccountController.class);
 	@Autowired
-	private AccountService accountService;
+	private UserAccountService accountService;
 	@Autowired
 	private UserSessionService userSessionService;
  
 	
 	public RestAccountController() {
 		log.info("------------------RestAccountController-----------------");
+	}
+	
+	@PostConstruct
+	public void init() {
+		LogProxyFactory.setLoggers(this);
 	}
 
 	@PostMapping(value =  "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -47,18 +54,29 @@ public class RestAccountController {
 	public ShopApiResponse login(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("login {}", request);
-		ShopApiResponse response = accountService.login(request, httpRequest);
+		ShopApiResponse response = accountService.login(request, httpRequest,httpResponse);
 		return response;
 	}
-	@PostMapping(value = "/logout", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse logout(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	@PostMapping(value = "/logout", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ShopApiResponse logout(  HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("logout {}", request);
+		 
+		boolean success = false;
 		if (userSessionService.hasSession(httpRequest, false)) {
-			accountService.logout(httpRequest);
+			success = accountService.logout(httpRequest);
 		}
 		 
-		return new ShopApiResponse();
+		return ShopApiResponse.builder().code(success?"00":"01").message("SUCCESS LOGOUT: "+success).build();
+	}
+	@PostMapping(value = "/getprofile", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ShopApiResponse getprpfile(  HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+		 
+		if (userSessionService.hasSession(httpRequest, false)) {
+			return ShopApiResponse.failedResponse();
+		}
+		 
+		return userSessionService.getProfile(httpRequest);
 	}
 
 }

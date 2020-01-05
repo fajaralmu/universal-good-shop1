@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.fajar.entity.ShopProfile;
 import com.fajar.entity.User;
-import com.fajar.service.AccountService;
+import com.fajar.service.UserAccountService;
 import com.fajar.service.RegistryService;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
@@ -25,7 +25,7 @@ public class BaseController {
 	@Autowired
 	private UserSessionService userSessionService;
 	@Autowired
-	private AccountService accountService;
+	private UserAccountService accountService;
 	@Autowired
 	private RegistryService registryService;
 
@@ -43,7 +43,7 @@ public class BaseController {
 	@ModelAttribute("loggedUser")
 	public User getLoggedUser(HttpServletRequest request) {
 		if(userSessionService.hasSession(request, false)) {
-			return userSessionService.getUser(request);
+			return userSessionService.getUserFromSession(request);
 		}
 		else return null;
 	} 
@@ -75,8 +75,9 @@ public class BaseController {
 	
 	@ModelAttribute("requestId")
 	public String requestId(HttpServletRequest request) {
-		
-		return	registryService.addPageRequest(  getCookie(RegistryService.JSESSSIONID, request.getCookies()).getValue());
+		Cookie cookie = getCookie(RegistryService.JSESSSIONID, request.getCookies());
+		String cookieValue = cookie == null ? UUID.randomUUID().toString():cookie.getValue();
+		return	registryService.addPageRequest(  cookieValue);
 		 
 	}
 	

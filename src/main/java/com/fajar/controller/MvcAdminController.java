@@ -25,6 +25,7 @@ import com.fajar.dto.ShopApiResponse;
 import com.fajar.dto.UniversalObject;
 import com.fajar.entity.Product;
 import com.fajar.service.ComponentService;
+import com.fajar.service.LogProxyFactory;
 import com.fajar.service.ProductService;
 import com.fajar.service.TransactionService;
 import com.fajar.service.UserSessionService;
@@ -63,6 +64,7 @@ public class MvcAdminController extends BaseController {
 	@PostConstruct
 	private void init() {
 		this.basePage = webAppConfiguration.getBasePage();
+		LogProxyFactory.setLoggers(this);
 	}
 
 	@RequestMapping(value = { "/home" })

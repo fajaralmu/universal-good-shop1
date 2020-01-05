@@ -61,16 +61,9 @@ public class TransactionService {
 	private ProgressService progressService;
 
 	@PostConstruct
-	public void editPrice() {
-//		List<ProductFlow> flows = productFlowRepository.findByPriceIsNull();
-//		for (ProductFlow productFlow : flows) {
-//			System.out.print("*");
-//			productFlow.setPrice(productFlow.getProduct().getPrice());
-//			productFlowRepository.save(productFlow);
-//		}
-//		System.out.println("done");
+	public void init() {
+		LogProxyFactory.setLoggers(this);
 	}
-
 	/**
 	 * add stock from supplier
 	 * 
@@ -80,7 +73,7 @@ public class TransactionService {
 	 */
 	public ShopApiResponse supplyProduct(ShopApiRequest request, HttpServletRequest httpRequest, String requestId) {
 		progressService.init(requestId);
-		User user = userSessionService.getUser(httpRequest);
+		User user = userSessionService.getUserFromSession(httpRequest);
 		if (null == user) {
 			return ShopApiResponse.builder().code("01").message("invalid user").build();
 		}
@@ -289,7 +282,7 @@ public class TransactionService {
 	 */
 	public ShopApiResponse addPurchaseTransaction(ShopApiRequest request, HttpServletRequest httpRequest, String requestId) {
 		progressService.init(requestId);
-		User user = userSessionService.getUser(httpRequest);
+		User user = userSessionService.getUserFromSession(httpRequest);
 		if (null == user) {
 			return ShopApiResponse.builder().code("01").message("invalid user").build();
 		}

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,6 +26,7 @@ import com.fajar.dto.Message;
 import com.fajar.dto.OutputMessage;
 import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
+import com.fajar.service.LogProxyFactory;
 import com.fajar.service.RealtimeService2;
 
 @CrossOrigin
@@ -38,6 +40,11 @@ public class SocketController {
 	
 	public SocketController() {
 		log.info("------------------SOCKET CONTROLLER #1-----------------");
+	}
+	
+	@PostConstruct
+	public void init() {
+		LogProxyFactory.setLoggers(this);
 	}
 	
 	@PostMapping(value="/game-app-simple/join", consumes=MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)

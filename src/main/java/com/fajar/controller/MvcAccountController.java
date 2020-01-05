@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fajar.service.LogProxyFactory;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
 
@@ -25,6 +26,8 @@ public class MvcAccountController extends BaseController {
 	private final WebConfigService webAppConfiguration;
 
 	private String basePage;
+	
+	
 
 	@Autowired
 	public MvcAccountController(UserSessionService userSessionService, WebConfigService webAppConfiguration) {
@@ -37,6 +40,7 @@ public class MvcAccountController extends BaseController {
 	@PostConstruct
 	private void init() {
 		this.basePage = webAppConfiguration.getBasePage();
+		LogProxyFactory.setLoggers(this);
 	}
 
 	@RequestMapping(value = { "/login" })

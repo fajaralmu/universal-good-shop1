@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
@@ -26,6 +27,7 @@ import com.fajar.entity.Customer;
 import com.fajar.entity.Menu;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
+import com.fajar.entity.RegisteredRequest;
 import com.fajar.entity.ShopProfile;
 import com.fajar.entity.Supplier;
 import com.fajar.entity.Transaction;
@@ -36,6 +38,7 @@ import com.fajar.repository.CategoryRepository;
 import com.fajar.repository.CustomerRepository;
 import com.fajar.repository.MenuRepository;
 import com.fajar.repository.ProductRepository;
+import com.fajar.repository.RegisteredRequestRepository;
 import com.fajar.repository.RepositoryCustomImpl;
 import com.fajar.repository.ShopProfileRepository;
 import com.fajar.repository.SupplierRepository;
@@ -74,7 +77,14 @@ public class EntityService {
 	@Autowired
 	private TransactionRepository transactionRepository;
 	@Autowired
+	private RegisteredRequestRepository registeredRequestRepository;
+	@Autowired
 	private FileService fileService; 
+	
+	@PostConstruct
+	public void init() {
+		LogProxyFactory.setLoggers(this);
+	}
 
 	public ShopApiResponse addEntity(ShopApiRequest request, HttpServletRequest servletRequest, boolean newRecord) {
 
@@ -97,9 +107,17 @@ public class EntityService {
 			return saveCategory(request.getCategory(), newRecord);
 		case "userrole":
 			return saveUserRole(request.getUserrole(), newRecord);
+		case "registeredrequest":
+			return saveRegisteredRequest(request.getRegisteredRequest(), newRecord);
 		}
 
 		return ShopApiResponse.builder().code("01").message("failed").build();
+	}
+
+	private ShopApiResponse saveRegisteredRequest(RegisteredRequest registeredRequest, boolean newRecord) {
+		registeredRequest = (RegisteredRequest) copyNewElement(registeredRequest, newRecord);
+		RegisteredRequest newRegisteredRequest = registeredRequestRepository.save(registeredRequest);
+		return ShopApiResponse.builder().entity(newRegisteredRequest).build();
 	}
 
 	private ShopApiResponse saveUserRole(UserRole userRole, boolean newRecord) {
@@ -270,7 +288,7 @@ public class EntityService {
 	}
 
 	public ShopApiResponse filter(ShopApiRequest request) {
-		Class entityClass = null;
+		Class<? extends BaseEntity> entityClass = null;
 
 		switch (request.getEntity().toLowerCase()) {
 		case "unit":
@@ -308,6 +326,9 @@ public class EntityService {
 		case "userrole":
 		case "userRole":
 			entityClass = UserRole.class;
+		case "registeredrequest":
+		case "registeredRequest":
+			entityClass = RegisteredRequest.class;
 			break;
 		
 		}
@@ -324,7 +345,7 @@ public class EntityService {
 		return ShopApiResponse.builder().entities(entities).totalData(count).filter(filter).build();
 	}
 
-	private String[] generateSqlByFilter(Filter filter, Class entityClass) {
+	private String[] generateSqlByFilter(Filter filter, Class<? extends BaseEntity> entityClass) {
 
 //		String entityName = request.getEntity();
 		Integer offset = filter.getPage() * filter.getLimit();
@@ -348,7 +369,7 @@ public class EntityService {
 		return new String[] { sql, sqlCount };
 	}
 
-	public List<BaseEntity> getEntitiesBySql(String sql, Class entityClass) {
+	public List<BaseEntity> getEntitiesBySql(String sql, Class<? extends BaseEntity> entityClass) {
 		List<BaseEntity> entities = repositoryCustom.filterAndSort(sql, entityClass);
 		return EntityUtil.validateDefaultValue(entities);
 	}
@@ -539,6 +560,7 @@ public class EntityService {
 	}
 
 	private static String getTableName(Class entityClass) {
+		System.out.println("entity class: "+entityClass.getCanonicalName());
 		Table table = (Table) entityClass.getAnnotation(Table.class);
 		if (table != null) {
 			if (table.name() != null && !table.name().equals("")) {
@@ -582,8 +604,11 @@ public class EntityService {
 			case "userRole":
 				userRoleRepository.deleteById(id);
 				break;
+			case "registeredrequest":
+			case "registeredRequest":
+				registeredRequestRepository.deleteById(id);
 			}
-			return ShopApiResponse.builder().build();
+			return ShopApiResponse.builder().code("00").message("deleted successfully").build();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return ShopApiResponse.builder().code("01").message("failed").build();

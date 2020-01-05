@@ -10,6 +10,7 @@ import javax.persistence.Table;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,5 +44,9 @@ public class User extends BaseEntity implements Serializable{
 	@ManyToOne
 	@FormField(entityReferenceName="userRole",type="fixedlist",optionItemName="name")
 	private UserRole role;
+	
+	@javax.persistence.Transient
+	@JsonIgnore
+	private String loginKey;
 	 
 }

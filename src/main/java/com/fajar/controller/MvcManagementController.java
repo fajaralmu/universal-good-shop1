@@ -23,6 +23,7 @@ import com.fajar.entity.UserRole;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.service.ComponentService;
 import com.fajar.service.EntityService;
+import com.fajar.service.LogProxyFactory;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
 import com.fajar.util.EntityUtil;
@@ -59,6 +60,7 @@ public class MvcManagementController extends BaseController {
 	@PostConstruct
 	private void init() {
 		basePage = webAppConfiguration.getBasePage();
+		LogProxyFactory.setLoggers(this);
 	}
 
 	@RequestMapping(value = { "/unit" })
@@ -69,7 +71,7 @@ public class MvcManagementController extends BaseController {
 			return basePage;
 		}
 		try {
-			checkUserAccess(userService.getUser(request), "/management/unit");
+			checkUserAccess(userService.getUserFromSession(request), "/management/unit");
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
@@ -86,7 +88,7 @@ public class MvcManagementController extends BaseController {
 			return basePage;
 		}
 		try {
-			checkUserAccess(userService.getUser(request), "/management/profile");
+			checkUserAccess(userService.getUserFromSession(request), "/management/profile");
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
@@ -107,13 +109,31 @@ public class MvcManagementController extends BaseController {
 			return basePage;
 		}
 		try {
-			checkUserAccess(userService.getUser(request), "/management/supplier");
+			checkUserAccess(userService.getUserFromSession(request), "/management/supplier");
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Supplier", null);
 
 		model = constructCommonModel(request, entityProperty, model, "Supplier", "management");
+		return basePage;
+	}
+	
+	@RequestMapping(value = { "/registeredrequest" })
+	public String registeredRequest(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUserFromSession(request), "/management/registeredrequest");
+		} catch (Exception e) {
+			return ERROR_404_PAGE;
+		}
+		EntityProperty entityProperty = EntityUtil.createEntityProperty("RegisteredRequest", null);
+
+		model = constructCommonModel(request, entityProperty, model, "RegisteredRequest", "management");
 		return basePage;
 	}
 
@@ -125,7 +145,7 @@ public class MvcManagementController extends BaseController {
 			return basePage;
 		}
 		try {
-			checkUserAccess(userService.getUser(request), "/management/customer");
+			checkUserAccess(userService.getUserFromSession(request), "/management/customer");
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
@@ -142,7 +162,7 @@ public class MvcManagementController extends BaseController {
 			return basePage;
 		}
 		try {
-			checkUserAccess(userService.getUser(request), "/management/product");
+			checkUserAccess(userService.getUserFromSession(request), "/management/product");
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
@@ -159,7 +179,7 @@ public class MvcManagementController extends BaseController {
 			return basePage;
 		}
 		try {
-			checkUserAccess(userService.getUser(request), "/management/category");
+			checkUserAccess(userService.getUserFromSession(request), "/management/category");
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
@@ -176,7 +196,7 @@ public class MvcManagementController extends BaseController {
 			return basePage;
 		}
 		try {
-			checkUserAccess(userService.getUser(request), "/management/userrole");
+			checkUserAccess(userService.getUserFromSession(request), "/management/userrole");
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
@@ -196,7 +216,7 @@ public class MvcManagementController extends BaseController {
 			return basePage;
 		}
 		try {
-			checkUserAccess(userService.getUser(request), "/management/productFlow");
+			checkUserAccess(userService.getUserFromSession(request), "/management/productFlow");
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
@@ -214,7 +234,7 @@ public class MvcManagementController extends BaseController {
 			return basePage;
 		}
 		try {
-			checkUserAccess(userService.getUser(request), "/management/transaction");
+			checkUserAccess(userService.getUserFromSession(request), "/management/transaction");
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
@@ -233,7 +253,7 @@ public class MvcManagementController extends BaseController {
 			return basePage;
 		}
 		try {
-			checkUserAccess(userService.getUser(request), "/management/user");
+			checkUserAccess(userService.getUserFromSession(request), "/management/user");
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
@@ -252,7 +272,7 @@ public class MvcManagementController extends BaseController {
 			return basePage;
 		}
 		try {
-			checkUserAccess(userService.getUser(request), "/management/menu");
+			checkUserAccess(userService.getUserFromSession(request), "/management/menu");
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}

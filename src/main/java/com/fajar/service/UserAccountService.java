@@ -1,6 +1,8 @@
 package com.fajar.service;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,7 @@ import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.User;
 import com.fajar.entity.UserRole;
+import com.fajar.entity.setting.RegistryModel;
 import com.fajar.repository.UserRepository;
 import com.fajar.repository.UserRoleRepository;
 
@@ -16,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class AccountService {
+public class UserAccountService {
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -24,6 +27,13 @@ public class AccountService {
 	private UserRoleRepository userRoleRepository;
 	@Autowired
 	private UserSessionService userSessionService;
+	@Autowired
+	private RegistryService registryService;
+	
+	@PostConstruct
+	public void init() {
+		LogProxyFactory.setLoggers(this);
+	}
 	
 	
 	public ShopApiResponse registerUser(ShopApiRequest request) { 
@@ -46,14 +56,14 @@ public class AccountService {
 		}
 	}
 
-	public ShopApiResponse login(ShopApiRequest request, HttpServletRequest httpRequest) {
+	public ShopApiResponse login(ShopApiRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 		User dbUser = userRepository.findByUsernameAndPassword(request.getUser().getUsername(), request.getUser().getPassword());
 		 
 		if(dbUser == null) {
 			return new ShopApiResponse("01","invalid credential");
 		}
 		 
-		userSessionService.addUserSession(dbUser,httpRequest);
+		userSessionService.addUserSession(dbUser,httpRequest,httpResponse);
 		log.info("--------LOGIN SUCCESS");
 		
 		ShopApiResponse response = new ShopApiResponse("00","success");
@@ -65,16 +75,25 @@ public class AccountService {
 	}
 	
 	public boolean logout(HttpServletRequest httpRequest) {
-		User user = userSessionService.getUser(httpRequest);
-		if(user == null)
-			return false;
+		User user = userSessionService.getUserFromSession(httpRequest);
+		if(user == null) {
+			if(httpRequest.getHeader("loginKey")!=null) {
+				String apiKey = httpRequest.getHeader("loginKey");
+				RegistryModel registryModel = registryService.getModel(apiKey);
+				if(registryModel == null) {
+					return false;
+				}
+				user = registryModel.getUser();
+			}else
+				return false;
+		}
 		 
 		userSessionService.logout(httpRequest);
 		return true;
 	}
 	
 	public String getToken(HttpServletRequest httpRequest) {
-		User user = userSessionService.getUser(httpRequest);
+		User user = userSessionService.getUserFromSession(httpRequest);
 		System.out.println("==loggedUser: "+user);
 		if(user == null)
 			return null;
@@ -83,6 +102,13 @@ public class AccountService {
 
 	public boolean validateToken(HttpServletRequest httpRequest) {
 		String requestToken = httpRequest.getHeader("requestToken");
+		/**
+		 * TESTING
+		 */
+		boolean validated = userSessionService.validatePageRequest(httpRequest );
+		if(validated) {
+			return true;
+		}
 		if(requestToken == null) {
 			System.out.println("NULL TOKEN");
 			return false;

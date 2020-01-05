@@ -28,7 +28,7 @@ public class ComponentService {
 	public List<Menu> getDashboardMenus(HttpServletRequest request) {
 		List<Menu> menus = menuRepository.findByPageStartsWith("HOME");
 		List<BaseEntity> entities = new ArrayList<BaseEntity>();
-		menus = validateAccess(userSessionService.getUser(request), menus);
+		menus = validateAccess(userSessionService.getUserFromSession(request), menus);
 		for (Menu menu : menus) {
 			menu.setUrl(request.getContextPath() + menu.getUrl());
 			entities.add(menu);
@@ -40,7 +40,7 @@ public class ComponentService {
 		List<Menu> menus = menuRepository.findByPageStartsWith("MNGMNT");
 		System.out.println("MANAGEMENT MENUS: " + menus);
 		List<BaseEntity> entities = new ArrayList<BaseEntity>();
-		menus = validateAccess(userSessionService.getUser(request), menus);
+		menus = validateAccess(userSessionService.getUserFromSession(request), menus);
 		for (Menu menu : menus) {
 			menu.setUrl(request.getContextPath() + menu.getUrl());
 			entities.add(menu);
@@ -80,7 +80,7 @@ public class ComponentService {
 	public List<Menu> getTransactionMenus(HttpServletRequest request) {
 		List<Menu> menus = menuRepository.findByPageStartsWith("TRX");
 		List<BaseEntity> entities = new ArrayList<BaseEntity>();
-		menus = validateAccess(userSessionService.getUser(request), menus);
+		menus = validateAccess(userSessionService.getUserFromSession(request), menus);
 		for (Menu menu : menus) {
 			menu.setUrl(request.getContextPath() + menu.getUrl());
 			entities.add(menu);

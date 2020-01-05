@@ -2,6 +2,7 @@ package com.fajar.controller;
 
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,8 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
-import com.fajar.service.AccountService;
+import com.fajar.service.UserAccountService;
 import com.fajar.service.EntityService;
+import com.fajar.service.LogProxyFactory;
 import com.fajar.service.UserSessionService;
 
 @CrossOrigin
@@ -27,13 +29,18 @@ import com.fajar.service.UserSessionService;
 public class RestEntityController {
 	Logger log = LoggerFactory.getLogger(RestEntityController.class);
 	@Autowired
-	private AccountService accountService;
+	private UserAccountService accountService;
 	@Autowired
 	private EntityService entityService;
 	 
 
 	public RestEntityController() {
 		log.info("------------------RestEntityController-----------------");
+	}
+	
+	@PostConstruct
+	public void init() {
+		LogProxyFactory.setLoggers(this);
 	}
 
 	@PostMapping(value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

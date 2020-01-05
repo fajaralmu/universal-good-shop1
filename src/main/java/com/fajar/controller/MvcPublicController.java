@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.service.ComponentService;
+import com.fajar.service.LogProxyFactory;
 import com.fajar.service.ProductService;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
@@ -41,6 +42,7 @@ public class MvcPublicController extends BaseController{
 	@PostConstruct
 	public void init() {
 		basePage = webAppConfiguration.getBasePage();
+		LogProxyFactory.setLoggers(this);
 	}
 
 	@RequestMapping(value = { "/", "index" })

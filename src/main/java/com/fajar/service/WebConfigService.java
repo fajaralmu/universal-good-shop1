@@ -4,20 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fajar.annotation.Dto;
-import com.fajar.dto.UserTempRequest;
 import com.fajar.entity.ShopProfile;
 import com.fajar.repository.ShopProfileRepository;
 import com.fajar.util.EntityUtil;
@@ -46,14 +38,7 @@ public class WebConfigService {
 	private String basePage;
 	private String uploadedImageRealPath;
 	private String uploadedImagePath;
-	private String martCode; 
-
-	@Autowired
-	private Session hibernateSession;
-
-	@Autowired
-	private SessionFactory sessionFactory;
-	
+	private String martCode;  
 	public static String readFile(String path) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(path));
 		try {
@@ -131,14 +116,13 @@ public class WebConfigService {
 
 	@PostConstruct
 	public void init() {
+		LogProxyFactory.setLoggers(this);
 		ShopProfile dbProfile = shopProfileRepository.findByMartCode(martCode);
 		if (null == dbProfile) {
 			shopProfileRepository.save(defaultProfile());
 		}
-	}
-
-	 
-
+	} 
+	
 	public ShopProfile getProfile() {
 		ShopProfile dbProfile = shopProfileRepository.findByMartCode(martCode);
 

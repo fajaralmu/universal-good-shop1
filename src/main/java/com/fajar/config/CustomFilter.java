@@ -11,10 +11,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.fajar.service.UserSessionService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,9 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomFilter implements javax.servlet.Filter {
  
-	@Autowired
-	private UserSessionService userSessionService;
-	
 	
 	
     @Override

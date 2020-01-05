@@ -2,6 +2,7 @@ package com.fajar.controller;
 
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
-import com.fajar.service.AccountService;
+import com.fajar.service.UserAccountService;
+import com.fajar.service.UserSessionService;
+import com.fajar.service.LogProxyFactory;
 import com.fajar.service.ProductService;
 import com.fajar.service.TransactionService;
 
@@ -28,7 +31,7 @@ import com.fajar.service.TransactionService;
 public class RestTransactionController {
 	Logger log = LoggerFactory.getLogger(RestTransactionController.class);
 	@Autowired
-	private AccountService accountService;
+	private UserSessionService userSessionService;
 	@Autowired
 	private TransactionService transactionService;
 	@Autowired
@@ -38,11 +41,16 @@ public class RestTransactionController {
 		log.info("------------------RestTransactionController-----------------");
 	}
 
+	@PostConstruct
+	public void init() {
+		LogProxyFactory.setLoggers(this);
+	}
+	
 	@PostMapping(value = "/supply", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse addSupply(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("supply {}", request);
-		if(!accountService.validateToken(httpRequest)) {
+		if(!userSessionService.hasSession(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
 		ShopApiResponse response = transactionService.supplyProduct(request, httpRequest,httpRequest.getHeader("requestId"));
@@ -53,7 +61,7 @@ public class RestTransactionController {
 	public ShopApiResponse purchase(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("purchase {}", request);
-		if(!accountService.validateToken(httpRequest)) {
+		if(!userSessionService.hasSession(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
 		ShopApiResponse response = transactionService.addPurchaseTransaction(request, httpRequest,httpRequest.getHeader("requestId"));
@@ -63,7 +71,7 @@ public class RestTransactionController {
 	public ShopApiResponse stockinfo(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("stocks {}", request);
-		if(!accountService.validateToken(httpRequest)) {
+		if(!userSessionService.hasSession(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
 		ShopApiResponse response = transactionService.getStocksByProductName(request, false, httpRequest.getHeader("requestId"));
@@ -74,7 +82,7 @@ public class RestTransactionController {
 	public ShopApiResponse stockInfo(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("stockinfo {}", request);
-		if(!accountService.validateToken(httpRequest)) {
+		if(!userSessionService.hasSession(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
 		ShopApiResponse response = transactionService.stockInfo(request);
@@ -85,7 +93,7 @@ public class RestTransactionController {
 	public ShopApiResponse cashflowinfo(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("cashflowinfo {}", request);
-		if(!accountService.validateToken(httpRequest)) {
+		if(!userSessionService.hasSession(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
 		ShopApiResponse response = transactionService.getCashFlow(request);
@@ -96,7 +104,7 @@ public class RestTransactionController {
 	public ShopApiResponse detailcashflow(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("cashflowdetail {}", request);
-		if(!accountService.validateToken(httpRequest)) {
+		if(!userSessionService.hasSession(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
 		ShopApiResponse response = transactionService.getCashflowDetail(request, httpRequest.getHeader("requestId"));
@@ -107,7 +115,7 @@ public class RestTransactionController {
 	public ShopApiResponse productsales(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("productsales {}", request);
-		if(!accountService.validateToken(httpRequest)) {
+		if(!userSessionService.hasSession(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
 		ShopApiResponse response = productService.getProductSales(request, httpRequest.getHeader("requestId"));
@@ -118,7 +126,7 @@ public class RestTransactionController {
 	public ShopApiResponse productsalesdetail(@PathVariable(required = true, name="id") Long productId,@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("productsales {}", request);
-		if(!accountService.validateToken(httpRequest)) {
+		if(!userSessionService.hasSession(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
 		ShopApiResponse response = productService.getProductSalesDetail(request,productId, httpRequest.getHeader("requestId"));

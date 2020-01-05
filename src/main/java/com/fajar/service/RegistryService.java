@@ -8,6 +8,7 @@ import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,20 +30,40 @@ public class RegistryService {
 	@Autowired
 	private Registry registry;
 
+	@PostConstruct
+	public void init() {
+		LogProxyFactory.setLoggers(this);
+	}
+
+	/**
+	 * get remote object
+	 * 
+	 * @param <T>
+	 * @param key
+	 * @return
+	 */
 	public <T> T getModel(String key) {
 		try {
 			T object = (T) registry.lookup(key);
 			System.out.println("==registry model: " + object);
 			return object;
 		} catch (RemoteException | NotBoundException e) {
-			e.printStackTrace();
+			System.out.println("key not bound");
 			return null;
 		} catch (Exception ex) {
+			System.out.println("Unexpected error");
 			ex.printStackTrace();
 			return null;
 		}
 	}
 
+	/**
+	 * set registry remote object
+	 * 
+	 * @param key
+	 * @param registryModel
+	 * @return
+	 */
 	public boolean set(String key, Remote registryModel) {
 		try {
 			if (getModel(key) == null) {
@@ -59,6 +80,12 @@ public class RegistryService {
 		return false;
 	}
 
+	/**
+	 * unbind remote object
+	 * 
+	 * @param key
+	 * @return
+	 */
 	public boolean unbind(String key) {
 		try {
 			registry.unbind(key);
@@ -70,6 +97,12 @@ public class RegistryService {
 
 	}
 
+	/**
+	 * register new page request to request list
+	 * 
+	 * @param cookie
+	 * @return
+	 */
 	public String addPageRequest(String cookie) {
 		String pageRequestId = UUID.randomUUID().toString();
 		if (getModel(PAGE_REQUEST) != null) {
@@ -90,12 +123,20 @@ public class RegistryService {
 
 	}
 
+	/**
+	 * check page request against cookie jsessionID
+	 * 
+	 * @param req
+	 * @return
+	 */
 	public boolean validatePageRequest(HttpServletRequest req) {
 		System.out.println("Will validate page request");
 		try {
 			RegistryModel model = getModel(PAGE_REQUEST);
 
-			if (null == model) { return false; }
+			if (null == model) {
+				return false;
+			}
 
 			Cookie jsessionCookie = BaseController.getCookie(JSESSSIONID, req.getCookies());
 			String pageRequestId = req.getHeader(PAGE_REQUEST_ID);

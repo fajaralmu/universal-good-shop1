@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.dto.ShopApiResponse;
 import com.fajar.dto.UserTempRequest;
 import com.fajar.entity.RegisteredRequest;
 import com.fajar.entity.User;
@@ -31,13 +34,29 @@ public class UserSessionService {
 
 	@Autowired
 	private RegistryService registryService;
+	
+	@PostConstruct
+	public void init() {
+		LogProxyFactory.setLoggers(this);
+	}
 
-	public User getUser(HttpServletRequest request) {
+	public User getUserFromSession(HttpServletRequest request) {
 		try {
 			return (User) request.getSession(false).getAttribute("user");
 		} catch (Exception ex) {
 			return null;
 		}
+	}
+	
+	public User getUserFromRegistry(HttpServletRequest request) {
+		String loginKey=request.getHeader("loginKey");
+		RegistryModel registryModel = registryService.getModel(loginKey);
+		
+		if(registryModel == null) {
+			return null;
+		}
+		
+		return registryModel.getUser();
 	}
 
 	public boolean hasSession(HttpServletRequest request) {
@@ -50,6 +69,23 @@ public class UserSessionService {
 			request.getSession().setAttribute("requestURI", request.getRequestURI());
 			log.info("---REQUESTED URI: " + request.getSession(false).getAttribute("requestURI"));
 		}
+		
+		/**
+		 * handle FE
+		 */
+		
+		String remoteAddress = request.getRemoteAddr();
+		int remotePort = request.getRemotePort();
+		System.out.println("remoteAddress:"+remoteAddress+":"+remotePort);
+		if(request.getHeader("loginKey")!=null) {
+			boolean registered = getUserFromRegistry(request)!=null;
+			return registered;
+		}
+		
+		/**
+		 * end handle FE
+		 */
+		
 		if (request.getSession().getAttribute("user") == null) {
 			log.info("session user NULL");
 			return false;
@@ -62,9 +98,9 @@ public class UserSessionService {
 		User sessionUser = (User) request.getSession().getAttribute("user");
 
 		try {
-			RegistryModel registryModel = registryService.getModel(sessionUser.getId().toString());
+			RegistryModel registryModel = registryService.getModel(sessionUser.getLoginKey().toString());
 
-			if (!sessionUser.equals(registryModel.getUser())) {
+			if (sessionUser==null || registryModel==null ||!sessionUser.equals(registryModel.getUser())) {
 				System.out.println("==========USER NOT EQUALS==========");
 				throw new Exception();
 			}
@@ -72,22 +108,30 @@ public class UserSessionService {
 			User loggedUser = userRepository.findByUsernameAndPassword(sessionUser.getUsername(),
 					sessionUser.getPassword());
 
+			System.out.println("USER HAS SESSION");
 			return loggedUser != null;
+			
 		} catch (Exception ex) {
+			System.out.println("USER DOSE NOT HAVE SESSION");
 			ex.printStackTrace();
 			return false;
 		}
 	}
 
-	public void addUserSession(final User dbUser, HttpServletRequest httpRequest) {
+	public void addUserSession(final User dbUser, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 		RegistryModel registryModel = RegistryModel.builder().user(dbUser).userToken(UUID.randomUUID().toString())
 				.build();
 
 		try {
-			boolean registryIsSet = registryService.set(dbUser.getId().toString(), registryModel);
+			String key = UUID.randomUUID().toString();
+			dbUser.setLoginKey(key);
+			boolean registryIsSet = registryService.set(key, registryModel);
 			if (!registryIsSet) {
 				throw new Exception();
 			}
+			
+			httpResponse.addHeader("loginKey", key);
+			httpResponse.addHeader("Access-Control-Expose-Headers","*");
 			httpRequest.getSession(true).setAttribute("user", dbUser);
 			System.out.println(" > > > SUCCESS LOGIN :");
 		} catch (Exception e) {
@@ -97,9 +141,15 @@ public class UserSessionService {
 	}
 
 	public boolean logout(HttpServletRequest request) {
-		User user = getUser(request);
+		User user = getUserFromSession(request);
+		if(user == null) {
+			user = getUserFromRegistry(request);
+			if(user == null) {
+				return false;
+			}
+		}
 		try {
-			boolean registryIsUnbound = registryService.unbind(user.getId().toString());
+			boolean registryIsUnbound = registryService.unbind(user.getLoginKey().toString());
 
 			if (!registryIsUnbound) {
 				throw new Exception();
@@ -119,14 +169,14 @@ public class UserSessionService {
 	}
 
 	public String getToken(User user) {
-		RegistryModel reqModel = registryService.getModel(user.getId().toString());
+		RegistryModel reqModel = registryService.getModel(user.getLoginKey());
 		String token = reqModel.getUserToken();
 		return token;
 	}
 
 	public boolean validatePageRequest(HttpServletRequest req) {
 		final String requestId = req.getHeader(RegistryService.PAGE_REQUEST_ID);
-		
+		System.out.println("Page request id: "+requestId);
 		//check from DB
 		RegisteredRequest registeredRequest = registeredRequestRepository.findTop1ByRequestId(requestId);
 		
@@ -134,8 +184,14 @@ public class UserSessionService {
 			System.out.println("x x x Found Registered Request: "+registeredRequest);
 			return true;
 		}
+		System.out.println("Reuqest not registered");
 		
 		return registryService.validatePageRequest(req);
+	}
+
+	public ShopApiResponse getProfile(HttpServletRequest httpRequest) {
+		 
+		return ShopApiResponse.builder().code("00").entity(getUserFromRegistry(httpRequest)).build();
 	}
 
 }

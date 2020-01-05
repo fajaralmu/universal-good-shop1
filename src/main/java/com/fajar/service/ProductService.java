@@ -46,12 +46,7 @@ public class ProductService {
 
 	@PostConstruct
 	public void init() {
-//		List<Product> products = productRepository.findAll();
-//		for (Product product : products) {
-//			product.setCode(product.getType()+"-"+StringUtil.generateRandomNumber(5));
-//			
-//			productRepository.save(product);
-//		}
+		LogProxyFactory.setLoggers(this);
 	}
 
 	public ShopApiResponse getProductsCatalog(ShopApiRequest request, String requestId) {

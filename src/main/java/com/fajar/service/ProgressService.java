@@ -1,5 +1,7 @@
 package com.fajar.service;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,11 @@ public class ProgressService {
 	private RealtimeService2 realtimeService;
 	
 	private double currentProgress=  0.0;
+	
+	@PostConstruct
+	public void init() {
+		LogProxyFactory.setLoggers(this);
+	}
 	
 	public void init(String requestId) {
 		currentProgress = 0.0;

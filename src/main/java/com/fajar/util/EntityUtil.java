@@ -20,7 +20,7 @@ import com.fajar.entity.setting.EntityProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.extern.slf4j.Slf4j;
-
+ 
 @Slf4j
 public class EntityUtil {
 
@@ -130,7 +130,7 @@ public class EntityUtil {
 			}
 			return field;
 		} catch (NoSuchFieldException | SecurityException e) {
-			e.printStackTrace();
+			System.out.println("Error get declared field in the class, and try access super class");
 		}
 		if (clazz.getSuperclass() != null) {
 			try {

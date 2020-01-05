@@ -2,6 +2,7 @@ package com.fajar.controller;
 
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.exception.InvalidRequestException;
+import com.fajar.service.LogProxyFactory;
 import com.fajar.service.ProductService;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
@@ -35,6 +37,11 @@ public class RestPublicController {
 	@Autowired
 	private UserSessionService userSessionService;
 
+	@PostConstruct
+	public void init() {
+		LogProxyFactory.setLoggers(this);
+	}
+	
 	@PostMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse get(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
@@ -53,8 +60,7 @@ public class RestPublicController {
 		return response;
 	}
 	
-	private void validatePageRequest(HttpServletRequest req) {
-		String requestId = req.getHeader("requestId");
+	private void validatePageRequest(HttpServletRequest req) { 
 		boolean validated = userSessionService.validatePageRequest(req );
         if(!validated)  {
         	throw new InvalidRequestException("Invalid page request");
