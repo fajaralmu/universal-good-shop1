@@ -4,6 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,7 +71,9 @@ public class UserAccountService {
 		ShopApiResponse response = new ShopApiResponse("00","success");
 		 
 		BaseEntity registeredUser = userSessionService.getUserFromRegistry(loggedUser.getLoginKey());
-		response.setEntity(registeredUser);
+		BaseEntity clonedUser = new User();
+		BeanUtils.copyProperties(registeredUser, clonedUser, "password","role");
+		response.setEntity(clonedUser);
 		if(httpRequest.getSession(false).getAttribute("requestURI")!=null) {
 			log.info("WILL REDIRECT TO REQUESTED URI: "+httpRequest.getSession(false).getAttribute("requestURI"));
 			response.setRedirectUrl(httpRequest.getSession(false).getAttribute("requestURI").toString());			

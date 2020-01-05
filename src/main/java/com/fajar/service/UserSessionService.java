@@ -68,7 +68,7 @@ public class UserSessionService {
 			return null;
 		}
 		User user = registryModel.getUser();
-		removeAttribute(user, "role", "password");
+		 
 		return user;
 	}
 

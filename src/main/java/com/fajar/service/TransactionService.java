@@ -32,6 +32,7 @@ import com.fajar.repository.ProductRepository;
 import com.fajar.repository.RepositoryCustom;
 import com.fajar.repository.SupplierRepository;
 import com.fajar.repository.TransactionRepository;
+import com.fajar.util.EntityUtil;
 import com.fajar.util.StringUtil;
 
 @Service
@@ -163,7 +164,12 @@ public class TransactionService {
 
 	public ShopApiResponse stockInfo(ShopApiRequest request) {
 		ProductFlowStock productFlowStock = getSingleStock(request.getProductFlow());
-
+		if(productFlowStock == null) {
+			return ShopApiResponse.failedResponse();
+		}
+		productFlowStock.getProductFlow().getTransaction().setUser(null);
+		Product product = productFlowStock.getProductFlow().getProduct(); 
+		productFlowStock.getProductFlow().setProduct( EntityUtil.validateDefaultValue(product));
 		return ShopApiResponse.builder().productFlowStock(productFlowStock).build();
 	}
 
@@ -284,7 +290,10 @@ public class TransactionService {
 		progressService.init(requestId);
 		User user = userSessionService.getUserFromSession(httpRequest);
 		if (null == user) {
-			return ShopApiResponse.builder().code("01").message("invalid user").build();
+		 
+			user = userSessionService.getUserFromRegistry(httpRequest);
+			if(null == user)
+				return ShopApiResponse.builder().code("01").message("invalid user").build();
 		}
 		progressService.sendProgress(1, 1, 10, false, requestId);
 
