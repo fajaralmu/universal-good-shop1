@@ -30,13 +30,13 @@ public class UserSessionService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private RegisteredRequestRepository registeredRequestRepository;
 
 	@Autowired
 	private RegistryService registryService;
-	
+
 	@PostConstruct
 	public void init() {
 		LogProxyFactory.setLoggers(this);
@@ -49,16 +49,27 @@ public class UserSessionService {
 			return null;
 		}
 	}
-	
+
 	public User getUserFromRegistry(HttpServletRequest request) {
-		String loginKey=request.getHeader("loginKey");
+		String loginKey = request.getHeader("loginKey");
 		RegistryModel registryModel = registryService.getModel(loginKey);
-		
-		if(registryModel == null) {
+
+		if (registryModel == null) {
 			return null;
 		}
-		
+
 		return registryModel.getUser();
+	}
+
+	public User getUserFromRegistry(String loginKey) {
+		RegistryModel registryModel = registryService.getModel(loginKey);
+
+		if (registryModel == null) {
+			return null;
+		}
+		User user = registryModel.getUser();
+		removeAttribute(user, "role", "password");
+		return user;
 	}
 
 	public boolean hasSession(HttpServletRequest request) {
@@ -71,23 +82,23 @@ public class UserSessionService {
 			request.getSession().setAttribute("requestURI", request.getRequestURI());
 			log.info("---REQUESTED URI: " + request.getSession(false).getAttribute("requestURI"));
 		}
-		
+
 		/**
 		 * handle FE
 		 */
-		
+
 		String remoteAddress = request.getRemoteAddr();
 		int remotePort = request.getRemotePort();
-		System.out.println("remoteAddress:"+remoteAddress+":"+remotePort);
-		if(request.getHeader("loginKey")!=null) {
-			boolean registered = getUserFromRegistry(request)!=null;
+		System.out.println("remoteAddress:" + remoteAddress + ":" + remotePort);
+		if (request.getHeader("loginKey") != null) {
+			boolean registered = getUserFromRegistry(request) != null;
 			return registered;
 		}
-		
+
 		/**
 		 * end handle FE
 		 */
-		
+
 		if (request.getSession().getAttribute("user") == null) {
 			log.info("session user NULL");
 			return false;
@@ -102,7 +113,7 @@ public class UserSessionService {
 		try {
 			RegistryModel registryModel = registryService.getModel(sessionUser.getLoginKey().toString());
 
-			if (sessionUser==null || registryModel==null ||!sessionUser.equals(registryModel.getUser())) {
+			if (sessionUser == null || registryModel == null || !sessionUser.equals(registryModel.getUser())) {
 				System.out.println("==========USER NOT EQUALS==========");
 				throw new Exception();
 			}
@@ -112,7 +123,7 @@ public class UserSessionService {
 
 			System.out.println("USER HAS SESSION");
 			return loggedUser != null;
-			
+
 		} catch (Exception ex) {
 			System.out.println("USER DOSE NOT HAVE SESSION");
 			ex.printStackTrace();
@@ -120,7 +131,7 @@ public class UserSessionService {
 		}
 	}
 
-	public void addUserSession(final User dbUser, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+	public User addUserSession(final User dbUser, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IllegalAccessException {
 		RegistryModel registryModel = RegistryModel.builder().user(dbUser).userToken(UUID.randomUUID().toString())
 				.build();
 
@@ -131,22 +142,23 @@ public class UserSessionService {
 			if (!registryIsSet) {
 				throw new Exception();
 			}
-			
+
 			httpResponse.addHeader("loginKey", key);
-			httpResponse.addHeader("Access-Control-Expose-Headers","*");
+			httpResponse.addHeader("Access-Control-Expose-Headers", "*");
 			httpRequest.getSession(true).setAttribute("user", dbUser);
 			System.out.println(" > > > SUCCESS LOGIN :");
+			return dbUser;
 		} catch (Exception e) {
 			System.out.println(" < < < FAILED LOGIN");
-			e.printStackTrace();
+			throw new IllegalAccessException("Login Failed");
 		}
 	}
 
 	public boolean logout(HttpServletRequest request) {
 		User user = getUserFromSession(request);
-		if(user == null) {
+		if (user == null) {
 			user = getUserFromRegistry(request);
-			if(user == null) {
+			if (user == null) {
 				return false;
 			}
 		}
@@ -178,36 +190,36 @@ public class UserSessionService {
 
 	public boolean validatePageRequest(HttpServletRequest req) {
 		final String requestId = req.getHeader(RegistryService.PAGE_REQUEST_ID);
-		System.out.println("Page request id: "+requestId);
-		//check from DB
+		System.out.println("Page request id: " + requestId);
+		// check from DB
 		RegisteredRequest registeredRequest = registeredRequestRepository.findTop1ByRequestId(requestId);
-		
-		if(registeredRequest!=null) {
-			System.out.println("x x x Found Registered Request: "+registeredRequest);
+
+		if (registeredRequest != null) {
+			System.out.println("x x x Found Registered Request: " + registeredRequest);
 			return true;
 		}
 		System.out.println("Reuqest not registered");
-		
+
 		return registryService.validatePageRequest(req);
 	}
-	
-	private static void removeAttribute(Object object,String ... fields   ) {
+
+	private static void removeAttribute(Object object, String... fields) {
 		for (String fieldName : fields) {
 			Field field = EntityUtil.getDeclaredField(object.getClass(), fieldName);
 			try {
 				field.setAccessible(true);
 				field.set(object, null);
 			} catch (IllegalArgumentException | IllegalAccessException e) {
-				 System.out.println("Error------- and catched");
+				System.out.println("Error------- and catched");
 				e.printStackTrace();
 			}
 		}
 	}
 
 	public ShopApiResponse getProfile(HttpServletRequest httpRequest) {
-		 
+
 		User user = getUserFromRegistry(httpRequest);
-		if(user != null) {
+		if (user != null) {
 			removeAttribute(user, "role", "password");
 		}
 		return ShopApiResponse.builder().code("00").entity(user).build();

@@ -52,7 +52,7 @@ public class RestAccountController {
 	
 	@PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse login(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
+			HttpServletResponse httpResponse) throws IOException, IllegalAccessException {
 		log.info("login {}", request);
 		ShopApiResponse response = accountService.login(request, httpRequest,httpResponse);
 		return response;

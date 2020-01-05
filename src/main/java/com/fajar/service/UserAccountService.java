@@ -57,18 +57,19 @@ public class UserAccountService {
 		}
 	}
 
-	public ShopApiResponse login(ShopApiRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+	public ShopApiResponse login(ShopApiRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IllegalAccessException {
 		User dbUser = userRepository.findByUsernameAndPassword(request.getUser().getUsername(), request.getUser().getPassword());
 		 
 		if(dbUser == null) {
 			return new ShopApiResponse("01","invalid credential");
 		}
 		 
-		userSessionService.addUserSession(dbUser,httpRequest,httpResponse);
+		User loggedUser = userSessionService.addUserSession(dbUser,httpRequest,httpResponse);
 		log.info("--------LOGIN SUCCESS");
 		
 		ShopApiResponse response = new ShopApiResponse("00","success");
-		BaseEntity registeredUser = userSessionService.getProfile(httpRequest).getEntity();
+		 
+		BaseEntity registeredUser = userSessionService.getUserFromRegistry(loggedUser.getLoginKey());
 		response.setEntity(registeredUser);
 		if(httpRequest.getSession(false).getAttribute("requestURI")!=null) {
 			log.info("WILL REDIRECT TO REQUESTED URI: "+httpRequest.getSession(false).getAttribute("requestURI"));
