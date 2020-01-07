@@ -40,14 +40,13 @@ public class Transaction extends BaseEntity implements Serializable {
 	*/
 	private static final long serialVersionUID = -5995699726278991966L;
 
-	
 	@JoinColumn(name = "customer_id")
 	@ManyToOne
-	@FormField (entityReferenceName="customer",optionItemName="name",type="dynamiclist")
+	@FormField(entityReferenceName = "customer", optionItemName = "name", type = "dynamiclist")
 	private Customer customer;
 	@JoinColumn(name = "supplier_id")
 	@ManyToOne
-	@FormField (entityReferenceName="supplier",optionItemName="name",type="dynamiclist")
+	@FormField(entityReferenceName = "supplier", optionItemName = "name", type = "dynamiclist")
 	private Supplier supplier;
 	@Column(unique = true)
 	@FormField
@@ -55,12 +54,12 @@ public class Transaction extends BaseEntity implements Serializable {
 	@Column
 	@FormField
 	private String type;
-	@Column(name="transaction_date")
+	@Column(name = "transaction_date")
 	@FormField(type = "date")
 	private Date transactionDate;
 	@JoinColumn(name = "user_id")
 	@ManyToOne
-	@FormField (entityReferenceName="user",optionItemName="username",type="dynamiclist")
+	@FormField(entityReferenceName = "user", optionItemName = "username", type = "dynamiclist")
 	private User user;
 	@OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@Builder.Default
@@ -70,7 +69,15 @@ public class Transaction extends BaseEntity implements Serializable {
 	@Builder.Default
 	@Transient
 	@FormField(showDetail = true, lableName = "Product Flow", optionItemName = "code", detailFields = {
-			"transaction.code", "id", "expiryDate","product.name","count", "price","totalPrice",
-	})
+			"transaction.code", "id", "expiryDate", "product.name", "count", "price", "totalPrice", })
 	private Object productFlow = "See Detail";
+
+	@Override
+	public String toString() {
+
+		return "Transaction [customer=" + customer + ", supplier=" + supplier + ", code=" + code + ", type=" + type
+				+ ", transactionDate=" + transactionDate + ", user=" + user + ", productFlows="
+				+ (productFlows == null ? "0" : productFlows.size()) + "]";
+	}
+
 }

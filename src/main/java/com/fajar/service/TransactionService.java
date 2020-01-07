@@ -65,6 +65,7 @@ public class TransactionService {
 	public void init() {
 		LogProxyFactory.setLoggers(this);
 	}
+
 	/**
 	 * add stock from supplier
 	 * 
@@ -76,7 +77,9 @@ public class TransactionService {
 		progressService.init(requestId);
 		User user = userSessionService.getUserFromSession(httpRequest);
 		if (null == user) {
-			return ShopApiResponse.builder().code("01").message("invalid user").build();
+			user = userSessionService.getUserFromRegistry(httpRequest);
+			if (null == user)
+				return ShopApiResponse.builder().code("01").message("invalid user").build();
 		}
 		if (request.getProductFlows() == null || request.getProductFlows().isEmpty()
 				|| !userSessionService.hasSession(httpRequest)) {
@@ -113,12 +116,12 @@ public class TransactionService {
 				productFlowRepository.save(productFlow);
 				progressService.sendProgress(1, productFlows.size(), 40, false, requestId);
 			}
-			
+
 			return ShopApiResponse.builder().transaction(dbTransaction).build();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return ShopApiResponse.builder().code("-1").message(ex.getMessage()).build();
-		}finally {
+		} finally {
 			progressService.sendComplete(requestId);
 		}
 	}
@@ -164,17 +167,17 @@ public class TransactionService {
 
 	public ShopApiResponse stockInfo(ShopApiRequest request) {
 		ProductFlowStock productFlowStock = getSingleStock(request.getProductFlow());
-		if(productFlowStock == null) {
+		if (productFlowStock == null) {
 			return ShopApiResponse.failedResponse();
 		}
 		productFlowStock.getProductFlow().getTransaction().setUser(null);
-		Product product = productFlowStock.getProductFlow().getProduct(); 
-		productFlowStock.getProductFlow().setProduct( EntityUtil.validateDefaultValue(product));
+		Product product = productFlowStock.getProductFlow().getProduct();
+		productFlowStock.getProductFlow().setProduct(EntityUtil.validateDefaultValue(product));
 		return ShopApiResponse.builder().productFlowStock(productFlowStock).build();
 	}
 
 	public List<Product> populateProductWithStocks(List<Product> products, boolean withCount, String requestId) {
-		 
+
 		for (Product product : products) {
 			int totalCount = 0;
 			int used = 0;
@@ -214,16 +217,15 @@ public class TransactionService {
 			product.setCount(remainingCount);
 			System.out.println(product.getCode() + "====================TOTAL: " + totalCount);
 			System.out.println("====================USED:" + used);
-			
-		 
-			progressService.sendProgress(1, products.size(), 30, false ,requestId); 
-			 
+
+			progressService.sendProgress(1, products.size(), 30, false, requestId);
+
 		}
 
 		return products;
 	}
 
-	public ShopApiResponse getStocksByProductName(ShopApiRequest request, boolean withCount,String requestId) {
+	public ShopApiResponse getStocksByProductName(ShopApiRequest request, boolean withCount, String requestId) {
 		progressService.init(requestId);
 		progressService.sendProgress(1, 2, 100, false, requestId);
 		List<BaseEntity> productFlows = getProductFlowsByProduct("name", request.getProduct().getName(), withCount, 20,
@@ -286,13 +288,13 @@ public class TransactionService {
 	 * @param httpRequest
 	 * @return
 	 */
-	public ShopApiResponse addPurchaseTransaction(ShopApiRequest request, HttpServletRequest httpRequest, String requestId) {
+	public ShopApiResponse addPurchaseTransaction(ShopApiRequest request, HttpServletRequest httpRequest,
+			String requestId) {
 		progressService.init(requestId);
 		User user = userSessionService.getUserFromSession(httpRequest);
 		if (null == user) {
-		 
 			user = userSessionService.getUserFromRegistry(httpRequest);
-			if(null == user)
+			if (null == user)
 				return ShopApiResponse.builder().code("01").message("invalid user").build();
 		}
 		progressService.sendProgress(1, 1, 10, false, requestId);
@@ -308,15 +310,15 @@ public class TransactionService {
 			Optional<ProductFlow> dbFlow = productFlowRepository.findById(productFlow.getFlowReferenceId());
 
 			if (dbFlow.isPresent() == false) {
-				//continue;
-			}else {
+				// continue;
+			} else {
 				ProductFlow refFlow = dbFlow.get();
-	
+
 				ProductFlowStock flowStock = getSingleStock(refFlow);
 				Integer remainingStock = flowStock.getRemainingStock();
 				if (productFlow.getCount() > remainingStock) {
-	//				continue;
-				}else {
+					// continue;
+				} else {
 					productFlow.setProduct(refFlow.getProduct());
 				}
 			}
@@ -343,7 +345,7 @@ public class TransactionService {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return ShopApiResponse.builder().code("-1").message(ex.getMessage()).build();
-		}finally {
+		} finally {
 			progressService.sendComplete(requestId);
 		}
 	}
@@ -376,8 +378,8 @@ public class TransactionService {
 	public Integer[] getMinAndMaxTransactionYear() {
 		Integer minYear = getTransactionYear("asc");
 		Integer maxYear = getTransactionYear("desc");
-		System.out.println("##MAX YEAR: "+maxYear);
-		System.out.println("##MIN YEAR: "+minYear);
+		System.out.println("##MAX YEAR: " + maxYear);
+		System.out.println("##MIN YEAR: " + minYear);
 		return new Integer[] { minYear, maxYear };
 	}
 
@@ -389,7 +391,7 @@ public class TransactionService {
 		String sql = "select year( `transaction`.transaction_date) from `transaction` where `transaction`.transaction_date is not null "
 				+ "order by transaction_date " + orderType + " limit 1";
 		Object result = productFlowRepositoryCustom.getSingleResult(sql);
-		if (result == null ||! result.getClass().equals(BigInteger.class))
+		if (result == null || !result.getClass().equals(BigInteger.class))
 			return Calendar.getInstance().get(Calendar.YEAR);
 
 		return ((BigInteger) result).intValue();
@@ -397,11 +399,11 @@ public class TransactionService {
 	}
 
 	public List<Supplier> getProductSupplier(Long id, int limit, int offset) {
-		 
+
 		String sqlSelectTransaction = "select * from `transaction` "
 				+ "left join product_flow on product_flow.transaction_id = transaction.id "
 				+ "where product_flow.product_id = " + id + " and `transaction`.`type` = 'IN' "
-				+ "group by supplier_id limit "+limit+" offset "+offset;
+				+ "group by supplier_id limit " + limit + " offset " + offset;
 		List<Transaction> transactions = transactionCustomRespositoryCustom.filterAndSort(sqlSelectTransaction,
 				Transaction.class);
 		List<Supplier> suppliers = new ArrayList<>();
@@ -411,14 +413,13 @@ public class TransactionService {
 		}
 		return suppliers;
 	}
-	
+
 	public Transaction getFirstTransaction(Long productId) {
-		String sql = "select  * from `transaction` left join product_flow on `product_flow`.transaction_id=`transaction`.id  " + 
-				"WHERE `product_flow`.product_id ="+productId+"  and `transaction`.`type` = 'IN' " + 
-				"order by `transaction`.transaction_date asc limit 1";
-		List<Transaction> transactions = transactionCustomRespositoryCustom.filterAndSort(sql,
-				Transaction.class);
-		if(transactions != null && transactions.size() >0) {
+		String sql = "select  * from `transaction` left join product_flow on `product_flow`.transaction_id=`transaction`.id  "
+				+ "WHERE `product_flow`.product_id =" + productId + "  and `transaction`.`type` = 'IN' "
+				+ "order by `transaction`.transaction_date asc limit 1";
+		List<Transaction> transactions = transactionCustomRespositoryCustom.filterAndSort(sql, Transaction.class);
+		if (transactions != null && transactions.size() > 0) {
 			return transactions.get(0);
 		}
 		return null;
@@ -489,34 +490,35 @@ public class TransactionService {
 		List<int[]> periods = getMonths(cal, diffMonth);
 		List<BaseEntity> supplies = new ArrayList<>();
 		List<BaseEntity> purchases = new ArrayList<>();
-		Long maxValue = 0L; 
+		Long maxValue = 0L;
 		for (int[] period : periods) {
-			//supply
+			// supply
 			CashFlow cashflowSupply = getCashflow(period[1], period[0], "IN");
-			
+
 			cashflowSupply.setMonth(period[1]);
 			cashflowSupply.setYear(period[0]);
-			System.out.println("CASHFLOW SUPPLY: "+cashflowSupply);
+			System.out.println("CASHFLOW SUPPLY: " + cashflowSupply);
 			supplies.add(cashflowSupply);
-			if(cashflowSupply!=null && cashflowSupply.getAmount()!=null && cashflowSupply.getAmount() > maxValue) {
+			if (cashflowSupply != null && cashflowSupply.getAmount() != null && cashflowSupply.getAmount() > maxValue) {
 				maxValue = cashflowSupply.getAmount();
 			}
-			//purchase
+			// purchase
 			CashFlow cashflowPurchase = getCashflow(period[1], period[0], "OUT");
-			
+
 			cashflowPurchase.setMonth(period[1]);
 			cashflowPurchase.setYear(period[0]);
-			System.out.println("CASHFLOW PURCHASE: "+cashflowPurchase);
+			System.out.println("CASHFLOW PURCHASE: " + cashflowPurchase);
 			purchases.add(cashflowPurchase);
-			if(cashflowPurchase!=null && cashflowPurchase.getAmount()!=null && cashflowPurchase.getAmount() > maxValue) {
+			if (cashflowPurchase != null && cashflowPurchase.getAmount() != null
+					&& cashflowPurchase.getAmount() > maxValue) {
 				maxValue = cashflowPurchase.getAmount();
 			}
-			progressService.sendProgress(1, periods.size(), 100, false,requestId);
-			
+			progressService.sendProgress(1, periods.size(), 100, false, requestId);
+
 		}
 		ShopApiResponse response = new ShopApiResponse();
-	 
-		response.setMaxValue(maxValue );
+
+		response.setMaxValue(maxValue);
 		response.setSupplies(supplies);
 		response.setPurchases(purchases);
 		return response;
