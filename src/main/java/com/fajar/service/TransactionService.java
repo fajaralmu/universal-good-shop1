@@ -357,6 +357,8 @@ public class TransactionService {
 		CashFlow cashflow = getCashflow(request.getFilter().getMonth(), request.getFilter().getYear(),
 				request.getFilter().getModule());
 		if (cashflow != null) {
+			cashflow.setYear(request.getFilter().getYear());
+			cashflow.setMonth(request.getFilter().getMonth());
 			response.setEntity(cashflow);
 		}
 
