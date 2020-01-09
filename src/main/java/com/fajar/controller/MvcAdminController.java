@@ -84,7 +84,7 @@ public class MvcAdminController extends BaseController {
 		model.addAttribute("page", "dashboard");
 		model.addAttribute("currentMonth", cal.get(Calendar.MONTH) + 1);
 		model.addAttribute("currentYear", cal.get(Calendar.YEAR));
-		Integer[] transactionYears = transactionService.getMinAndMaxTransactionYear();
+		int[] transactionYears = transactionService.getMinAndMaxTransactionYear();
 		model.addAttribute("minYear", transactionYears[0]);
 		model.addAttribute("maxYear", transactionYears[1]);
 		return basePage;
@@ -128,7 +128,7 @@ public class MvcAdminController extends BaseController {
 		model.addAttribute("currentMonth", cal.get(Calendar.MONTH) + 1);
 		model.addAttribute("currentYear", cal.get(Calendar.YEAR));
 		model.addAttribute("productId", product.getId());
-		Integer[] transactionYears = transactionService.getMinAndMaxTransactionYear();
+		int[] transactionYears = transactionService.getMinAndMaxTransactionYear();
 		model.addAttribute("minYear", transactionYears[0]);
 		model.addAttribute("maxYear", transactionYears[1]);
 		return basePage;

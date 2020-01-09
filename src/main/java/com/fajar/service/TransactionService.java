@@ -361,7 +361,7 @@ public class TransactionService {
 			cashflow.setMonth(request.getFilter().getMonth());
 			response.setEntity(cashflow);
 		}
-
+		response.setTransactionYears(getMinAndMaxTransactionYear());
 		return response;
 	}
 
@@ -377,12 +377,12 @@ public class TransactionService {
 		return (CashFlow) cashflow;
 	}
 
-	public Integer[] getMinAndMaxTransactionYear() {
+	public int[] getMinAndMaxTransactionYear() {
 		Integer minYear = getTransactionYear("asc");
 		Integer maxYear = getTransactionYear("desc");
 		System.out.println("##MAX YEAR: " + maxYear);
 		System.out.println("##MIN YEAR: " + minYear);
-		return new Integer[] { minYear, maxYear };
+		return new int[] { minYear, maxYear };
 	}
 
 	private Integer getTransactionYear(String orderType) {

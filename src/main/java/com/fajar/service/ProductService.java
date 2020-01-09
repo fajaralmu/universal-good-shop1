@@ -161,6 +161,7 @@ public class ProductService {
 		}
 		progressService.sendComplete(requestId);
 		response.setEntities(convertList(productSalesList));
+		response.setFilter(request.getFilter());
 		return response;
 	}
 
