@@ -34,6 +34,8 @@ public class ProgressService {
 
 	public void sendComplete(String requestId) {
 		System.out.println("________COMPLETE PROGRESS________");
+		realtimeService.sendProgress(98, requestId);
+		realtimeService.sendProgress(99, requestId);
 		realtimeService.sendProgress(100, requestId);
 		
 	}
