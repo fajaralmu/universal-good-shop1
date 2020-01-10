@@ -145,8 +145,9 @@ public class ProductService {
 		String periodBefore = DateUtil.getFullFirstDate(filter.getMonth(), filter.getYear());
 		String periodAfter = DateUtil.getFullFirstDate(filter.getMonthTo(), filter.getYearTo());
 
+		String productName =  request.getProduct()== null || request.getProduct().getName() == null ? "":request.getProduct().getName();
 		List<Product> products = productRepository.getByLimitAndOffset(filter.getLimit(),
-				filter.getLimit() * filter.getPage());
+				filter.getLimit() * filter.getPage(),productName);
 
 		List<ProductSales> productSalesList = new ArrayList<>();
 		for (Product product : products) {

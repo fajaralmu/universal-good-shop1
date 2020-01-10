@@ -8,7 +8,7 @@ import com.fajar.entity.Product;
 
 public interface ProductRepository extends JpaRepository<Product	, Long>{
 	
-	@Query(nativeQuery = true,value = "select * from product limit ?1 offset ?2")
-	public List<Product> getByLimitAndOffset(int limit, int offset);
+	@Query(nativeQuery = true,value = "select * from product where name like %?3% limit ?1 offset ?2")
+	public List<Product> getByLimitAndOffset(int limit, int offset, String name);
 	
 }

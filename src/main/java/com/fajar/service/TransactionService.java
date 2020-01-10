@@ -250,9 +250,8 @@ public class TransactionService {
 					+ "(select sum(count) as total_count from product_flow where flow_ref_id=flowId and deleted!=1) as used,  "
 					+ " product_flow.* from product_flow  "
 					+ "left join `transaction` on product_flow.transaction_id = transaction.id "
-					+ "left join product on product_flow.product_id = product.id " + "where transaction.`type` = 'IN' "
-					+ " and product." + key + " $CONDITION "
-
+					+ "left join product on product_flow.product_id = product.id where transaction.`type` = 'IN' "
+					+ " and product." + key + " $CONDITION " 
 					+ "having(used is null or flowCount-used>0) " + (limit > 0 ? " limit " + limit : "");
 
 			String condition = " like '%" + value + "%' ";
