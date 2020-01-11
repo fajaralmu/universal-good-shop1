@@ -1,5 +1,4 @@
 var stompClient = null;
-		
 
 function updateMovement() {
 	stompClient.send("/app/move", {}, JSON.stringify({
@@ -12,30 +11,57 @@ function updateMovement() {
 				'y' : entity.physical.y,
 				'direction' : entity.physical.direction,
 				'color' : entity.physical.color,
-				'lastUpdated': new Date()
+				'lastUpdated' : new Date()
 			},
 			'missiles' : entity.missiles
 		}
 	}));
 }
 
-function connectToWebsocket(callback) {
-	var socket = new SockJS('/universal-good-shop/shop-app');
-	stompClient = Stomp.over(socket);
-	stompClient.connect({}, function(frame) {
-		//setConnected(true);
-		console.log('Connected -> ' + frame, stompClient.ws._transport.ws.url);
+function connectToWebsocket(callback1, callback2, callback3) {
+	let stompClients;
 	 
-//		document.getElementById("ws-info").innerHTML = stompClient.ws._transport.ws.url;
-		stompClient.subscribe('/wsResp/progress', function(response) {
-			console.log("Progress Updated...");
+	var socket = new SockJS('/universal-good-shop/shop-app');
+	stompClients = Stomp.over(socket);
+	stompClients.connect({}, function(frame) {
+		// setConnected(true);
+		console.log('Connected -> ' + frame, stompClients.ws._transport.ws.url);
+
+		// document.getElementById("ws-info").innerHTML =
+		// stompClient.ws._transport.ws.url;
+
+		stompClients.subscribe("/wsResp/progress", function(response) {
+			if(!callback1) return;
+			console.log("Websocket Updated...");
 			var respObject = JSON.parse(response.body);
-		 	callback(respObject);
-		 	//document.getElementById("realtime-info").innerHTML = response.body;
+			callback1(respObject);
+			// document.getElementById("realtime-info").innerHTML =
+			// response.body;
 		});
-		 
+
+		stompClients.subscribe("/wsResp/sessions", function(response) {
+			if(!callback2) return;
+			console.log("Websocket Updated...");
+			
+			var respObject = JSON.parse(response.body);
+			callback2(respObject);
+			// document.getElementById("realtime-info").innerHTML =
+			// response.body;
+		});
+
+		stompClients.subscribe("/wsResp/messages", function(response) {
+			if(!callback3) return;
+			console.log("Websocket Updated...");
+			
+			var respObject = JSON.parse(response.body);
+			console.log("Response connectWesocket: ", respObject);
+			callback3(respObject);
+			// document.getElementById("realtime-info").innerHTML =
+			// response.body;
+		});
+
 	});
-	
+
 }
 
 function disconnect() {
@@ -46,10 +72,10 @@ function disconnect() {
 	console.log("Disconnected");
 }
 
-function leaveApp(entityId){
+function leaveApp(entityId) {
 	stompClient.send("/app/leave", {}, JSON.stringify({
 		'entity' : {
-			'id':entityId*1
+			'id' : entityId * 1
 		}
 	}));
 }

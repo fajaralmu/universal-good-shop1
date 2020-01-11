@@ -49,7 +49,8 @@ public class ShopApiRequest implements Serializable {
 	private Transaction transaction;
 	private Category category;
 	private RegisteredRequest registeredRequest; 
-	private String key;
+	
+	private String destination;
 	private String value;
 	
 	@Builder.Default

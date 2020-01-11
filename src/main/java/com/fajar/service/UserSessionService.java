@@ -2,6 +2,7 @@ package com.fajar.service;
 
 import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +16,7 @@ import com.fajar.dto.RegistryModel;
 import com.fajar.dto.SessionData;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
+import com.fajar.entity.BaseEntity;
 import com.fajar.entity.RegisteredRequest;
 import com.fajar.entity.User;
 import com.fajar.exception.InvalidRequestException;
@@ -36,9 +38,15 @@ public class UserSessionService {
 
 	@Autowired
 	private RegisteredRequestRepository registeredRequestRepository;
+	
+	@Autowired
+	private RealtimeService2 realtimeService;
 
 	@Autowired
 	private RegistryService registryService;
+	
+	@Autowired
+	private MessagingService messagingService;
 
 	@PostConstruct
 	public void init() {
@@ -252,6 +260,7 @@ public class UserSessionService {
 		sessionData.addNewApp(request);
 		if (!registryService.set(SESSION_DATA, sessionData))
 			throw new InvalidRequestException("Error generating request id");
+		realtimeService.sendUpdateSession(getAppRequest());
 		return ShopApiResponse.builder().code("00").message(requestId).build();
 	}
 
@@ -261,13 +270,19 @@ public class UserSessionService {
 			if (!registryService.set(SESSION_DATA, new SessionData()))
 				throw new InvalidRequestException("Error updating session data");
 		}
-		return ShopApiResponse.builder().code("00").entities(CollectionUtil.mapToList(sessionData.getRegisteredApps())).build();
+		List<BaseEntity> appSessions = CollectionUtil.mapToList(sessionData.getRegisteredApps());
+		 
+		for (BaseEntity appSession : appSessions) {
+			List<BaseEntity> messages = messagingService.getMessages(((RegisteredRequest)appSession).getRequestId());
+			((RegisteredRequest)appSession).setMessages(messages);
+		}
+		return ShopApiResponse.builder().code("00").entities(appSessions).build();
 	}
 
 	public ShopApiResponse deleteSession(ShopApiRequest request) {
 		SessionData sessionData = registryService.getModel(SESSION_DATA);
 		sessionData.remove(request.getRegisteredRequest().getRequestId());
-		if (!registryService.set(SESSION_DATA, new SessionData()))
+		if (!registryService.set(SESSION_DATA, sessionData))
 			throw new InvalidRequestException("Error updating session data");
 
 		return ShopApiResponse.builder().code("00").sessionData(sessionData).build();

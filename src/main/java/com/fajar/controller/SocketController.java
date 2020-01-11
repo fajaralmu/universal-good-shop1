@@ -47,15 +47,7 @@ public class SocketController {
 		LogProxyFactory.setLoggers(this);
 	}
 	
-	@PostMapping(value="/game-app-simple/join", consumes=MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public RealtimeResponse register( HttpServletRequest request, HttpServletResponse response) throws IOException {
-		response.setContentType(APPLICATION_JSON);
-		response.setCharacterEncoding(UTF_8);
-		RealtimeResponse responseObject = realtimeUserService.registerUser(request);
-		responseObject.setEntities(realtimeUserService.getUsers());
-		join2(responseObject);
-		return responseObject;
-	}
+	 
 	
 	//@MessageMapping("/move")
 	//@SendTo("/wsResp/players")
@@ -64,33 +56,33 @@ public class SocketController {
 		return response;
 	}
 	
-	@MessageMapping("/addUser")
-	@SendTo("/wsResp/players")
-	public RealtimeResponse join( RealtimeRequest request) throws IOException {
-		
-		return realtimeUserService.connectUser(request);
-	}
-	
-	@MessageMapping("/addEntity")
-	@SendTo("/wsResp/players")
-	public RealtimeResponse addEntity( RealtimeRequest request) throws IOException {
-		
-		return realtimeUserService.addEntity(request);
-	}
-	
-	@MessageMapping("/move")
-	@SendTo("/wsResp/players")
-	public RealtimeResponse move( RealtimeRequest request) throws IOException {
-		log.info("MOVE: {},",request);
-		return realtimeUserService.move(request);
-	}
-	
-	@MessageMapping("/leave")
-	@SendTo("/wsResp/players")
-	public RealtimeResponse leave( RealtimeRequest request) throws IOException {
-		
-		return realtimeUserService.disconnectUser(request);
-	}
+//	@MessageMapping("/addUser")
+//	@SendTo("/wsResp/players")
+//	public RealtimeResponse join( RealtimeRequest request) throws IOException {
+//		
+//		return realtimeUserService.connectUser(request);
+//	}
+//	
+//	@MessageMapping("/addEntity")
+//	@SendTo("/wsResp/players")
+//	public RealtimeResponse addEntity( RealtimeRequest request) throws IOException {
+//		
+//		return realtimeUserService.addEntity(request);
+//	}
+//	
+//	@MessageMapping("/move")
+//	@SendTo("/wsResp/players")
+//	public RealtimeResponse move( RealtimeRequest request) throws IOException {
+//		log.info("MOVE: {},",request);
+//		return realtimeUserService.move(request);
+//	}
+//	
+//	@MessageMapping("/leave")
+//	@SendTo("/wsResp/players")
+//	public RealtimeResponse leave( RealtimeRequest request) throws IOException {
+//		
+//		return realtimeUserService.disconnectUser(request);
+//	}
 	
 	
 	

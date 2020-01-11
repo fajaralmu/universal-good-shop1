@@ -55,7 +55,7 @@
 	function initProgressWebsocket(){
 		hide('progress-bar-wrapper');
 		var requestId = "${requestId}";
-		connectToWebsocket(function(response){
+		connectToWebsocket( function(response){
 			if(response.requestId.trim() != requestId.trim()){
 				return;
 			}
@@ -65,7 +65,7 @@
 			if(response.percentage>=100){
 			hide('progress-bar-wrapper');
 			}
-		});
+		},null, null);
 	}
 	initProgressWebsocket();
 	</script></body>

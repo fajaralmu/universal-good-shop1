@@ -3,6 +3,7 @@ package com.fajar.entity;
 import java.io.Serializable;
 import java.rmi.Remote;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +12,7 @@ import javax.persistence.Transient;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fajar.dto.Message;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
@@ -41,5 +43,7 @@ public class RegisteredRequest extends BaseEntity implements Serializable, Remot
 	private String referrer;
 	@Column(name="user_agent")
 	private String userAgent;
+	@Transient
+	private  List<? extends BaseEntity> messages;
 	
 }

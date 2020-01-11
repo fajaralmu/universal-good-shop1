@@ -48,6 +48,12 @@ function createCell(val){
 	return column;
 }
 
+function createRow(val){
+	let column = document.createElement("tr");
+	column.innerHTML = val;
+	return column;
+}
+
 function createInputText(id, className){
 	let input = document.createElement("input");
 	input.id = id;
@@ -129,12 +135,12 @@ function createImgTag(id, className, w, h, src){
 
 
 /** BEGIN ENTITY DETAIL**/
-function createTableHeaderByColumns(columns){
+function createTableHeaderByColumns(columns, ignoreNumber){
 	console.log("Headers", columns);
 	
 	let row = createElement("tr","th-header-detail",null);
-	 
-	row.append(createCell("<b>No</b>"));
+	if(!ignoreNumber)
+		row.append(createCell("<b>No</b>"));
 	for (var i = 0; i < columns.length; i++) {
 		var column = columns[i];
 		column = column.toUpperCase();
@@ -146,13 +152,22 @@ function createTableHeaderByColumns(columns){
 }
 
 //return array of TR !!!!
-function createTableBody(columns, entities){
-	 createTableBody(columns, entities, 0);
+function createTableBody(columns, entities ,ignoreNumber){
+	 createTableBody(columns, entities, 0,ignoreNumber);
 }
 
-function createTableBody(columns, entities, beginNumber){
+function createTableFromRows(rows, id){
+	let table = createElement	("table", id, "table");
+	for (var i = 0; i < rows.length; i++) {
+		table.appendChild(rows[i]);
+	}
+	return table;
+}
+
+function createTableBody(columns, entities, beginNumber,ignoreNumber){
 	if(beginNumber == null){
 		beginNumber = 0;
+		 
 	}
 	// let tbody = createElement("tbody", "tbody-detail", "tbody-detail");
 	let rows = [];
@@ -160,8 +175,8 @@ function createTableBody(columns, entities, beginNumber){
 		let entity = entities[j];
 		
 		let row = createElement("tr","tr-body-detail-"+j,null);
-		 
-		row.append(createCell(beginNumber+1)); 
+		if(!ignoreNumber)
+			row.append(createCell(beginNumber+1)); 
 		beginNumber++;
 		for (let i = 0; i < columns.length; i++) {
 			let column = columns[i];

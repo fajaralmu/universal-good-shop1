@@ -68,7 +68,7 @@ public class RestPublicController {
 		return response;
 	}
 	
-	private void validatePageRequest(HttpServletRequest req) { 
+	public void validatePageRequest(HttpServletRequest req) { 
 		boolean validated = userSessionService.validatePageRequest(req );
         if(!validated)  {
         	throw new InvalidRequestException("Invalid page request");
