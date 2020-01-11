@@ -16,7 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fajar.controller.BaseController;
-import com.fajar.entity.setting.RegistryModel;
+import com.fajar.dto.RegistryModel;
+import com.fajar.dto.SessionData;
 
 @Service
 public class RegistryService {
@@ -33,6 +34,7 @@ public class RegistryService {
 	@PostConstruct
 	public void init() {
 		LogProxyFactory.setLoggers(this);
+		set(UserSessionService.SESSION_DATA, new SessionData());
 	}
 
 	/**

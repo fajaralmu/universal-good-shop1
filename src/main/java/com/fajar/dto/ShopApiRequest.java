@@ -48,8 +48,7 @@ public class ShopApiRequest implements Serializable {
 	private ProductFlow productFlow;
 	private Transaction transaction;
 	private Category category;
-	private RegisteredRequest registeredRequest;
-	
+	private RegisteredRequest registeredRequest; 
 	private String key;
 	private String value;
 	

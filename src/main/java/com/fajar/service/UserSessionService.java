@@ -1,9 +1,7 @@
 package com.fajar.service;
 
 import java.lang.reflect.Field;
-import java.rmi.registry.Registry;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
@@ -13,13 +11,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.dto.RegistryModel;
+import com.fajar.dto.SessionData;
+import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
-import com.fajar.dto.UserTempRequest;
 import com.fajar.entity.RegisteredRequest;
 import com.fajar.entity.User;
-import com.fajar.entity.setting.RegistryModel;
+import com.fajar.exception.InvalidRequestException;
 import com.fajar.repository.RegisteredRequestRepository;
 import com.fajar.repository.UserRepository;
+import com.fajar.util.CollectionUtil;
 import com.fajar.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class UserSessionService {
+
+	public static final String SESSION_DATA = "session_data";
 
 	@Autowired
 	private UserRepository userRepository;
@@ -68,7 +71,7 @@ public class UserSessionService {
 			return null;
 		}
 		User user = registryModel.getUser();
-		 
+
 		return user;
 	}
 
@@ -131,7 +134,8 @@ public class UserSessionService {
 		}
 	}
 
-	public User addUserSession(final User dbUser, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IllegalAccessException {
+	public User addUserSession(final User dbUser, HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+			throws IllegalAccessException {
 		RegistryModel registryModel = RegistryModel.builder().user(dbUser).userToken(UUID.randomUUID().toString())
 				.build();
 
@@ -193,7 +197,12 @@ public class UserSessionService {
 		System.out.println("Page request id: " + requestId);
 		// check from DB
 		RegisteredRequest registeredRequest = registeredRequestRepository.findTop1ByRequestId(requestId);
-
+		if (null == registeredRequest) {
+			SessionData sessionData = registryService.getModel(SESSION_DATA);
+			if (null != sessionData) {
+				registeredRequest = sessionData.getRequest(requestId);
+			}
+		}
 		if (registeredRequest != null) {
 			System.out.println("x x x Found Registered Request: " + registeredRequest);
 			return true;
@@ -223,6 +232,45 @@ public class UserSessionService {
 			removeAttribute(user, "role", "password");
 		}
 		return ShopApiResponse.builder().code("00").entity(user).build();
+	}
+	
+	/**
+	 * ===================SESSION MANAGEMENT========================
+	 * 
+	 */
+
+	public ShopApiResponse requestId(HttpServletRequest servletRequest) {
+		String requestId = UUID.randomUUID().toString();
+		SessionData sessionData = registryService.getModel(SESSION_DATA);
+		if (null == sessionData) {
+			if (!registryService.set(SESSION_DATA, new SessionData()))
+				throw new InvalidRequestException("Error getting session data");
+		}
+		String referrer =  servletRequest.getRequestURI();
+		String userAgent = servletRequest.getHeader("User-Agent");
+		RegisteredRequest request = RegisteredRequest.builder().referrer(referrer).userAgent(userAgent).requestId(requestId).created(new Date()).value(null).build();
+		sessionData.addNewApp(request);
+		if (!registryService.set(SESSION_DATA, sessionData))
+			throw new InvalidRequestException("Error generating request id");
+		return ShopApiResponse.builder().code("00").message(requestId).build();
+	}
+
+	public ShopApiResponse getAppRequest() {
+		SessionData sessionData = registryService.getModel(SESSION_DATA);
+		if (null == sessionData) {
+			if (!registryService.set(SESSION_DATA, new SessionData()))
+				throw new InvalidRequestException("Error updating session data");
+		}
+		return ShopApiResponse.builder().code("00").entities(CollectionUtil.mapToList(sessionData.getRegisteredApps())).build();
+	}
+
+	public ShopApiResponse deleteSession(ShopApiRequest request) {
+		SessionData sessionData = registryService.getModel(SESSION_DATA);
+		sessionData.remove(request.getRegisteredRequest().getRequestId());
+		if (!registryService.set(SESSION_DATA, new SessionData()))
+			throw new InvalidRequestException("Error updating session data");
+
+		return ShopApiResponse.builder().code("00").sessionData(sessionData).build();
 	}
 
 }

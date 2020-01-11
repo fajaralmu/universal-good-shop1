@@ -1,5 +1,7 @@
 
-
+function _byId(id){
+	return document.getElementById(id);
+}
 
 function infoLoading() {
 	document.getElementById("loading-div").innerHTML = 

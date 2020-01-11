@@ -52,6 +52,7 @@ public class ShopApiResponse implements Serializable {
 	private double percentage;
 	private String requestId;
 	private int[] transactionYears;
+	private SessionData sessionData;
 
 	public ShopApiResponse(String code, String message) {
 		this.code = code;

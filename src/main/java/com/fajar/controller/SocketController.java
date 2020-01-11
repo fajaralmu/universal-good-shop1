@@ -100,7 +100,7 @@ public class SocketController {
 		RealtimeResponse response = new RealtimeResponse();
 		System.out.println("Message > "+message);
 	    String time = new SimpleDateFormat("HH:mm:ss").format(new Date());
-	    OutputMessage msg =new  OutputMessage(message.getFrom(), message.getText(), time);
+	    OutputMessage msg =new  OutputMessage(message.getSender(), message.getText(), time);
 	    System.out.println("Output > "+msg);
 	    response.setMessage(msg);
 	    return response;

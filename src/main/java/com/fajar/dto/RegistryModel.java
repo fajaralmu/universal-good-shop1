@@ -1,4 +1,4 @@
-package com.fajar.entity.setting;
+package com.fajar.dto;
 
 import java.rmi.Remote;
 import java.util.HashMap;

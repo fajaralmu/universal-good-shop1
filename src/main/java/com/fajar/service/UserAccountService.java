@@ -8,12 +8,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.dto.RegistryModel;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.User;
 import com.fajar.entity.UserRole;
-import com.fajar.entity.setting.RegistryModel;
 import com.fajar.repository.UserRepository;
 import com.fajar.repository.UserRoleRepository;
 

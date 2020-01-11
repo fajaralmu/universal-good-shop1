@@ -1,29 +1,21 @@
 package com.fajar.dto;
 
+import java.util.Date;
+
 import com.fajar.annotation.Dto;
 
+import lombok.Builder;
+import lombok.Data;
+
 @Dto
+@Data
+@Builder
 public class Message {
 	 
-    private String from;
-    private String text;
-	public String getFrom() {
-		return from;
-	}
-	public void setFrom(String from) {
-		this.from = from;
-	}
-	public String getText() {
-		return text;
-	}
-	public void setText(String text) {
-		this.text = text;
-	}
-	@Override
-	public String toString() {
-		return "Message [from=" + from + ", text=" + text + "]";
-	}
- 
-    // getters and setters
+    private String sender;
+    private String text; 
+    private Date date;
+    private long id;
+    private String requestId;
     
 }

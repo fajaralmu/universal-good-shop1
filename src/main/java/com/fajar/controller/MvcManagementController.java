@@ -1,17 +1,14 @@
 package com.fajar.controller;
 
+import static com.fajar.util.MvcUtil.constructCommonModel;
+
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import static com.fajar.util.MvcUtil.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.entity.User;
-import com.fajar.entity.UserRole;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.service.ComponentService;
 import com.fajar.service.EntityService;
@@ -27,7 +23,6 @@ import com.fajar.service.LogProxyFactory;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
 import com.fajar.util.EntityUtil;
-import com.fajar.util.MyJsonUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -278,6 +273,30 @@ public class MvcManagementController extends BaseController {
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty("Menu", null); 
 		model = constructCommonModel(request, entityProperty, model, "Menu", "management");
+		return basePage;
+	} 
+	
+	/**
+	 * 
+						NON ENTITY
+
+	 */
+	
+	@RequestMapping(value = { "/appsession" })
+	public String appsession(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUserFromSession(request), "/management/menu");
+		} catch (Exception e) {
+			return ERROR_404_PAGE;
+		}
+		model.addAttribute("title", "Apps Sessions");
+		model.addAttribute("pageUrl", "shop/app-session"); 
+		model.addAttribute("page", "management");
 		return basePage;
 	} 
 

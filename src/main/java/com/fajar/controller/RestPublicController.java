@@ -60,6 +60,14 @@ public class RestPublicController {
 		return response;
 	}
 	
+	@PostMapping(value = "/requestid", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ShopApiResponse getRequestId(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException { 
+		log.info("register {}", request);
+		ShopApiResponse response = userSessionService.requestId(httpRequest);
+		return response;
+	}
+	
 	private void validatePageRequest(HttpServletRequest req) { 
 		boolean validated = userSessionService.validatePageRequest(req );
         if(!validated)  {
