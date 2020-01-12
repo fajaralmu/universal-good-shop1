@@ -22,7 +22,7 @@ public class CollectionUtil {
 	}
 
 	public static List< BaseEntity> mapToList(Map<? extends Object, ? extends BaseEntity> map) {
-		List list = new ArrayList();
+		List< BaseEntity> list = new ArrayList<>();
 		for (Object key : map.keySet()) {
 			list.add(map.get(key));
 		}

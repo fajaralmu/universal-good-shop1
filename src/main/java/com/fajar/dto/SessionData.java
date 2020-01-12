@@ -39,6 +39,13 @@ public class SessionData implements Remote, Serializable{
 		registeredApps.remove(reqId);
 	}
 	
+	public void clear() {
+		if(registeredApps == null) {
+			registeredApps = new HashMap<>();
+		}
+		registeredApps.clear();
+	}
+	
 	public RegisteredRequest getRequest(String reqId) {
 		if(registeredApps == null) {
 			registeredApps = new HashMap<>();

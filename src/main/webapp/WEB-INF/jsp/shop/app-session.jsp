@@ -6,11 +6,19 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
+<div class="content">
+	<p id="info" align="center"></p>
+	<h2>Sessions Management</h2>
+	<button id="btn-clear-sessions" onclick="clearSessions()" class="btn btn-danger">Clear
+		All Sessions</button>
+	<table id="app-sessions">
+	</table>
+	<p></p>
+</div>
 <script type="text/javascript">
 	var ctxPath = "${contextPath}";
 
 	function deleteSession(requestId) {
-
 		infoLoading();
 		var requestObject = {
 			'registeredRequest' : {
@@ -22,10 +30,9 @@
 					infoDone();
 					var response = (xhr.data);
 					if (response != null && response.code == "00") {
-						alert("Operation success!");
 						getAppSessions();
 					} else {
-						alert("Data Not Found");
+						alert("Error delete session");
 					}
 				});
 	}
@@ -39,7 +46,6 @@
 					infoDone();
 					var response = (xhr.data);
 					if (response != null && response.code == "00") {
-						console.log("Response:", response);
 						populateTable(response.entities);
 					} else {
 						alert("Data Not Found");
@@ -96,11 +102,23 @@
 				requestObject, function(xhr) {
 					infoDone();
 					var response = (xhr.data);
-					if (response != null && response.code == "00") {
-						console.log("Response:", response);
+					if (response != null && response.code != "00") {
+						alert("Error sending reply");
+					}
+				});
+	}
 
-					} else {
-						alert("Data Not Found");
+	function clearSessions() {
+		if (!confirm("Are you sure to clear ALL SESSIONS?"))
+			return;
+		infoLoading();
+		var requestObject = {};
+		postReq("<spring:url value="/api/admin/clearsession" />",
+				requestObject, function(xhr) {
+					infoDone();
+					var response = (xhr.data);
+					if (response != null && response.code != "00") {
+						alert("Error clear session");
 					}
 				});
 	}
@@ -130,7 +148,7 @@
 				}
 			}
 
-			let rows = createTableBody([ "text" ], messages,0,true);
+			let rows = createTableBody([ "text" ], messages, 0, true);
 			let tableMsg = createTableFromRows(rows, "chat-msg-"
 					+ response.code);
 			let rowReply = createRow("<td colspan=\"2\"><input  class=\"form-control\" type=\"text\" id=\"reply-msg"+response.code+"\" placeholder=\"reply\" />"
@@ -175,10 +193,4 @@
 	getAppSessions();
 	connectWesocket();
 </script>
-<div class="content">
-	<p id="info" align="center"></p>
-	<h2>App Sessions</h2>
-	<table id="app-sessions">
-	</table>
-	<p></p>
-</div>
+

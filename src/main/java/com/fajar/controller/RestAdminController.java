@@ -83,6 +83,16 @@ public class RestAdminController {
 		ShopApiResponse response = messagingService.replyMessage(request,httpRequest);
 		return response;
 	}
+	
+	@PostMapping(value =  "/clearsession", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ShopApiResponse clearsessions(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+		if (!accountService.validateToken(httpRequest)) {
+			return ShopApiResponse.failedResponse();
+		}
+		ShopApiResponse response = userSessionService.clearSessions();
+		return response;
+	}
 
 
 }

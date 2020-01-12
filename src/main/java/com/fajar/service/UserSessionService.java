@@ -288,4 +288,13 @@ public class UserSessionService {
 		return ShopApiResponse.builder().code("00").sessionData(sessionData).build();
 	}
 
+	public ShopApiResponse clearSessions() {
+		SessionData sessionData = registryService.getModel(SESSION_DATA);
+		sessionData.clear();
+		if (!registryService.set(SESSION_DATA, sessionData))
+			throw new InvalidRequestException("Error updating session data");
+		realtimeService.sendUpdateSession(getAppRequest());
+		return ShopApiResponse.builder().code("00").sessionData(sessionData).build();
+	}
+
 }
