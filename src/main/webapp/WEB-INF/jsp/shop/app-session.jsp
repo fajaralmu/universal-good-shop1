@@ -141,7 +141,8 @@
 							+ "<div style=\"border-radius:4px; margin:2px;padding:3px;  background-color: cadetblue\">"
 							+ message.text + "</div>";
 				} else {
-					message.text = "USER "
+					let alias = !message.alias || message.alias.trim() == ""?"" :"["+message.alias+"]";
+					message.text = "USER "+alias
 							+ dateComponent
 							+ "<div style=\"border-radius:4px; margin:2px;padding:3px; background-color: wheat\">"
 							+ message.text + "</div>";

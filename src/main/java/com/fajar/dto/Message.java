@@ -32,6 +32,7 @@ public class Message extends BaseEntity{
     private String text; 
     @JsonFormat(pattern = "DD-MM-yyyy' 'hh:mm:ss")
     private Date date;
+    private String alias;
     
     private String requestId;
     

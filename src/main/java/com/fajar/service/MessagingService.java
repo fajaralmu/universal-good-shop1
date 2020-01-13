@@ -43,6 +43,7 @@ public class MessagingService {
 		String reqId = httpRequest.getHeader("requestId");
 		
 		Message message = new Message(reqId, content, new Date(), Long.valueOf(StringUtil.generateRandomNumber(3)), reqId);
+		message.setAlias(request.getUsername() == null? "":request.getUsername());
 		putMessage(reqId, message);
 		
 		ShopApiResponse response = ShopApiResponse.builder().code(reqId).entities(messages.get(reqId)).build();

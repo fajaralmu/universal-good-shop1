@@ -51,6 +51,7 @@ public class ShopApiRequest implements Serializable {
 	private RegisteredRequest registeredRequest; 
 	
 	private String destination;
+	private String username;
 	private String value;
 	
 	@Builder.Default
