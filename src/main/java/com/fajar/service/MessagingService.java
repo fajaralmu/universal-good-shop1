@@ -38,6 +38,14 @@ public class MessagingService {
 		return messages.get(requestId);
 	}
 	
+	public ShopApiResponse getMessages( HttpServletRequest httpRequest) { 
+		 
+		String reqId = httpRequest.getHeader("requestId"); 
+		ShopApiResponse response = ShopApiResponse.builder().code(reqId).entities(messages.get(reqId)).build();
+		realtimeService.sendMessageChat(response);
+		return response;
+	}
+	
 	public ShopApiResponse sendMessage(ShopApiRequest request, HttpServletRequest httpRequest) { 
 		String content= request.getValue();
 		String reqId = httpRequest.getHeader("requestId");
@@ -70,9 +78,11 @@ public class MessagingService {
 		String messageUsername = message.getAlias();
 		if(messages.get(requestId) == null)
 			messages.put(requestId, new ArrayList<>());
+		
 		List<BaseEntity> currentMessages = messages.get(requestId);
 		for (BaseEntity baseEntity : currentMessages) {
-			((Message) baseEntity).setAlias(messageUsername);
+			if(((Message) baseEntity).getAdmin() == 0 && message.getAdmin() == 0)
+				((Message) baseEntity).setAlias(messageUsername);
 		}
 		currentMessages.add(message);
 		messages.put(requestId,currentMessages);
