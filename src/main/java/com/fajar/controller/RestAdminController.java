@@ -74,6 +74,14 @@ public class RestAdminController {
 		return response;
 	}
 	
+	@PostMapping(value =  "/getmessages", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ShopApiResponse getmessages(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+		 restPublicController.validatePageRequest(httpRequest);
+		ShopApiResponse response = messagingService.getMessages(httpRequest);
+		return response;
+	}
+	
 	@PostMapping(value =  "/replymessage", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse replyMessage(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
