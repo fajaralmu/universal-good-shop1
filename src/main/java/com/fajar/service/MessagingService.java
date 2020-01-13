@@ -67,9 +67,15 @@ public class MessagingService {
 	}
 	
 	void putMessage(String requestId, Message message) {
+		String messageUsername = message.getAlias();
 		if(messages.get(requestId) == null)
 			messages.put(requestId, new ArrayList<>());
-		messages.get(requestId).add(message);
+		List<BaseEntity> currentMessages = messages.get(requestId);
+		for (BaseEntity baseEntity : currentMessages) {
+			((Message) baseEntity).setAlias(messageUsername);
+		}
+		currentMessages.add(message);
+		messages.put(requestId,currentMessages);
 	}
 
 }
