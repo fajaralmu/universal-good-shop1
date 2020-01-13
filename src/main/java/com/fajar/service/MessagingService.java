@@ -13,10 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.SerializationUtils;
 
-import com.fajar.dto.Message;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
+import com.fajar.entity.Message;
+import com.fajar.repository.MessageRepository;
 import com.fajar.util.StringUtil;
 import com.sun.xml.internal.ws.developer.Serialization;
 
@@ -25,6 +26,9 @@ public class MessagingService {
 
 	@Autowired
 	private RealtimeService2 realtimeService;
+	
+	@Autowired
+	private MessageRepository messageRepository;
 	
 	private HashMap<String, List<BaseEntity>> messages = new HashMap<>();
 	
@@ -86,6 +90,7 @@ public class MessagingService {
 		}
 		currentMessages.add(message);
 		messages.put(requestId,currentMessages);
+		messageRepository.save(message);
 	}
 
 }

@@ -12,7 +12,6 @@ import javax.persistence.Transient;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
-import com.fajar.dto.Message;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;

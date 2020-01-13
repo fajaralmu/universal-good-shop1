@@ -254,7 +254,7 @@ public class UserSessionService {
 			if (!registryService.set(SESSION_DATA, new SessionData()))
 				throw new InvalidRequestException("Error getting session data");
 		}
-		String referrer =  servletRequest.getRequestURI();
+		String referrer =  servletRequest.getHeader("Referer");
 		String userAgent = servletRequest.getHeader("User-Agent");
 		RegisteredRequest request = RegisteredRequest.builder().referrer(referrer).userAgent(userAgent).requestId(requestId).created(new Date()).value(null).build();
 		sessionData.addNewApp(request);

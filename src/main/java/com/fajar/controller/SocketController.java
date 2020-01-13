@@ -22,10 +22,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fajar.dto.Message;
 import com.fajar.dto.OutputMessage;
 import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
+import com.fajar.entity.Message;
 import com.fajar.service.LogProxyFactory;
 import com.fajar.service.RealtimeService2;
 
