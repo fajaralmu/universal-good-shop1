@@ -255,16 +255,28 @@ public class UserSessionService {
 				throw new InvalidRequestException("Error getting session data");
 			sessionData  = registryService.getModel(SESSION_DATA);
 		}
-		
+		String ipAddress = servletRequest.getHeader("X-FORWARDED-FOR");  
+		if (ipAddress == null) {  
+		    ipAddress = servletRequest.getRemoteAddr();  
+		}
 		
 		String referrer =  servletRequest.getHeader("Referer");
 		String userAgent = servletRequest.getHeader("User-Agent");
-		RegisteredRequest request = RegisteredRequest.builder().referrer(referrer).userAgent(userAgent).requestId(requestId).created(new Date()).value(null).build();
+		RegisteredRequest request = RegisteredRequest.builder().ipAddress(ipAddress).referrer(referrer).userAgent(userAgent).requestId(requestId).created(new Date()).value(null).build();
 		sessionData.addNewApp(request);
 		if (!registryService.set(SESSION_DATA, sessionData))
 			throw new InvalidRequestException("Error generating request id");
 		realtimeService.sendUpdateSession(getAppRequest());
 		return ShopApiResponse.builder().code("00").message(requestId).build();
+	}
+	
+	public RegisteredRequest getRegisteredRequest(String requestId) {
+		SessionData sessionData = registryService.getModel(SESSION_DATA);
+		RegisteredRequest registeredRequest = sessionData.getRequest(requestId);
+		if(null == registeredRequest) {
+			throw new RuntimeException("Invalid Session Data");
+		}
+		return registeredRequest;
 	}
 
 	public ShopApiResponse getAppRequest() {

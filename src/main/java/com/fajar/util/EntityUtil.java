@@ -116,6 +116,7 @@ public class EntityUtil {
 			entityProperty.setElements(entityElements);
 			entityProperty.setDetailFieldName(fieldToShowDetail);
 			entityProperty.setFieldNames(MyJsonUtil.listToJson(fieldNames));
+			entityProperty.setFieldNameList(fieldNames);
 			log.info("============ENTITY PROPERTY: {} ", entityProperty);
 			return entityProperty;
 		} catch (ClassNotFoundException e) {

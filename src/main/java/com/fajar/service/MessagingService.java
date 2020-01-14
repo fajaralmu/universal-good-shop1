@@ -17,6 +17,7 @@ import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Message;
+import com.fajar.entity.RegisteredRequest;
 import com.fajar.repository.MessageRepository;
 import com.fajar.util.StringUtil; 
 
@@ -28,6 +29,9 @@ public class MessagingService {
 	
 	@Autowired
 	private MessageRepository messageRepository;
+	
+	@Autowired
+	private UserSessionService userSessionService;
 	
 	private HashMap<String, List<BaseEntity>> messages = new HashMap<>();
 	
@@ -53,8 +57,12 @@ public class MessagingService {
 		String content= request.getValue();
 		String reqId = httpRequest.getHeader("requestId");
 		
+		RegisteredRequest registeredRequest = userSessionService.getRegisteredRequest(reqId);
+		
 		Message message = new Message(reqId, content, new Date(), Long.valueOf(StringUtil.generateRandomNumber(3)), reqId);
 		message.setAlias(request.getUsername() == null? "":request.getUsername());
+		message.setUserAgent(registeredRequest.getUserAgent());
+		message.setIpAddress(registeredRequest.getIpAddress());
 		putMessage(reqId, message);
 		
 		ShopApiResponse response = ShopApiResponse.builder().code(reqId).entities(messages.get(reqId)).build();
@@ -65,9 +73,13 @@ public class MessagingService {
 	public ShopApiResponse replyMessage(ShopApiRequest request, HttpServletRequest httpRequest) { 
 		String content= request.getValue(); 
 		
+		RegisteredRequest registeredRequest = userSessionService.getRegisteredRequest(request.getDestination());
+		
 		Message message = new Message("ADMIN", content, new Date(), Long.valueOf(StringUtil.generateRandomNumber(3)), request.getDestination());
 		message.setAdmin(1);
 		putMessage(request.getDestination(), message);
+		message.setUserAgent(registeredRequest.getUserAgent());
+		message.setIpAddress(registeredRequest.getIpAddress());
 		
 		ShopApiResponse response = ShopApiResponse.builder().code(request.getDestination()).entities(messages.get(request.getDestination())).build();
 		realtimeService.sendMessageChat(response);

@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import com.fajar.annotation.Dto;
+import com.fajar.annotation.FormField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
@@ -31,17 +32,29 @@ public class Message extends BaseEntity{
 	}
 
     @Column
+    @FormField
     private int admin;
     @Column
+    @FormField
 	private String sender;
+    @Column(name="user_agent")
+    @FormField
+    private String userAgent;
+    @Column(name="ip_address")
+    @FormField
+    private String ipAddress;
     @Column
+    @FormField
     private String text; 
     @JsonFormat(pattern = "DD-MM-yyyy' 'hh:mm:ss")
     @Column
+    @FormField
     private Date date;
     @Column
+    @FormField
     private String alias;
     @Column(name="request_id")
+    @FormField
     private String requestId;
     
 }

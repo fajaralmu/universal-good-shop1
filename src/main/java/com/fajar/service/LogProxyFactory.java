@@ -62,7 +62,7 @@ public class LogProxyFactory {
 
 				Object methodName = invocation.getMethod().getName();
 				logger.info("=========>[Execute Method: {}]", methodName);  
-				 
+				try {
 				/**
 				 * prints parameters of the method
 				 */
@@ -70,7 +70,7 @@ public class LogProxyFactory {
 				if(params == null) {
 					params = new String[] {"arg0"};
 				}
-				try {
+				
 				Object[] arguments = invocation.getArguments();
 				if(null == arguments || arguments.length == 0) {
 					logger.info("[No Argument]");

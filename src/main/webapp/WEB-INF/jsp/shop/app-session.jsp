@@ -59,10 +59,10 @@
 
 		table.innerHTML = "";
 
-		let header = createTableHeaderByColumns([ "ID", "Referer", "Requested Date",
+		let header = createTableHeaderByColumns([ "ID", "Referer","IP Address", "Requested Date",
 				"User Agent", "Option" ])
 		table.appendChild(header);
-		let rows = createTableBody([ "requestId", "referrer", "created", "userAgent" ],
+		let rows = createTableBody([ "requestId", "referrer", "ipAddress", "created", "userAgent" ],
 				entities);
 		for (var i = 0; i < rows.length; i++) {
 			let row = rows[i];
@@ -78,7 +78,7 @@
 			let optionCell = createCell("");
 			row.appendChild(button);
 
-			let rowMessage = createRow("<td colspan=\"6\" id=\""+entity.requestId+"\">Messages</td>");
+			let rowMessage = createRow("<td colspan=\"6\" id=\""+entity.requestId+"\"></td>");
 			table.appendChild(row);
 			table.appendChild(rowMessage);
 			console.log("=>=>=>messages:", entity.messages);

@@ -25,6 +25,7 @@ import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Category;
 import com.fajar.entity.Customer;
 import com.fajar.entity.Menu;
+import com.fajar.entity.Message;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.RegisteredRequest;
@@ -79,8 +80,8 @@ public class EntityService {
 	@Autowired
 	private RegisteredRequestRepository registeredRequestRepository;
 	@Autowired
-	private FileService fileService; 
-	
+	private FileService fileService;
+
 	@PostConstruct
 	public void init() {
 		LogProxyFactory.setLoggers(this);
@@ -91,24 +92,34 @@ public class EntityService {
 		switch (request.getEntity().toLowerCase()) {
 		case "unit":
 			return saveUnit(request.getUnit(), newRecord);
+
 		case "product":
 			return saveProduct(request.getProduct(), newRecord);
+
 		case "customer":
 			return saveCustomer(request.getCustomer(), newRecord);
+
 		case "supplier":
 			return saveSupplier(request.getSupplier(), newRecord);
+
 		case "shopprofile":
+
 			return saveProfile(request.getShopprofile(), newRecord);
 		case "user":
 			return saveUser(request.getUser(), newRecord);
+
 		case "menu":
 			return saveMenu(request.getMenu(), newRecord);
+
 		case "category":
 			return saveCategory(request.getCategory(), newRecord);
+
 		case "userrole":
 			return saveUserRole(request.getUserrole(), newRecord);
+
 		case "registeredrequest":
 			return saveRegisteredRequest(request.getRegisteredRequest(), newRecord);
+
 		}
 
 		return ShopApiResponse.builder().code("01").message("failed").build();
@@ -146,7 +157,7 @@ public class EntityService {
 				String imageName = fileService.writeImage("MN", base64Image);
 				menu.setIconUrl(imageName);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+
 				menu.setIconUrl(null);
 				e.printStackTrace();
 			}
@@ -171,7 +182,7 @@ public class EntityService {
 				String imageName = fileService.writeImage("SPLY", base64Image);
 				supplier.setIconUrl(imageName);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+
 				supplier.setIconUrl(null);
 				e.printStackTrace();
 			}
@@ -186,7 +197,7 @@ public class EntityService {
 		Supplier newSupplier = supplierRepository.save(supplier);
 		return ShopApiResponse.builder().entity(newSupplier).build();
 	}
-	
+
 	private ShopApiResponse saveProfile(ShopProfile shopProfile, boolean newRecord) {
 
 		shopProfile = (ShopProfile) copyNewElement(shopProfile, newRecord);
@@ -196,7 +207,7 @@ public class EntityService {
 				String imageName = fileService.writeImage("PROFILE", base64Image);
 				shopProfile.setIconUrl(imageName);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+
 				shopProfile.setIconUrl(null);
 				e.printStackTrace();
 			}
@@ -253,7 +264,7 @@ public class EntityService {
 						}
 						imageUrls[i] = (imageName);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
+
 						product.setImageUrl(null);
 						e.printStackTrace();
 					}
@@ -294,43 +305,59 @@ public class EntityService {
 		case "unit":
 			entityClass = Unit.class;
 			break;
+
 		case "product":
 			entityClass = Product.class;
 			break;
+
 		case "customer":
 			entityClass = Customer.class;
 			break;
+
 		case "supplier":
 			entityClass = Supplier.class;
 			break;
+
 		case "user":
 			entityClass = User.class;
 			break;
+
 		case "menu":
 			entityClass = Menu.class;
 			break;
+
 		case "category":
 			entityClass = Category.class;
 			break;
+
 		case "transaction":
 			entityClass = Transaction.class;
 			break;
+
 		case "productflow":
 		case "productFlow":
 			entityClass = ProductFlow.class;
 			break;
+
 		case "shopprofile":
 		case "shopProfile":
 			entityClass = ShopProfile.class;
 			break;
+
 		case "userrole":
 		case "userRole":
 			entityClass = UserRole.class;
+			break;
+
 		case "registeredrequest":
 		case "registeredRequest":
 			entityClass = RegisteredRequest.class;
 			break;
-		
+
+		case "message":
+			entityClass = Message.class;
+			break;
+
 		}
 		Filter filter = request.getFilter();
 		String[] sqlListAndCount = generateSqlByFilter(filter, entityClass);
@@ -345,6 +372,12 @@ public class EntityService {
 		return ShopApiResponse.builder().entities(entities).totalData(count).filter(filter).build();
 	}
 
+	/**
+	 * 
+	 * @param filter
+	 * @param entityClass
+	 * @return sql & sqlCount
+	 */
 	private String[] generateSqlByFilter(Filter filter, Class<? extends BaseEntity> entityClass) {
 
 //		String entityName = request.getEntity();
@@ -391,8 +424,6 @@ public class EntityService {
 		return columnName;
 	}
 
-	
-
 	private static String createLeftJoinSQL(Class entityClass) {
 		String tableName = getTableName(entityClass);
 		String sql = "";
@@ -413,11 +444,11 @@ public class EntityService {
 		}
 		return sql;
 	}
-	
+
 	public static void main(String[] sdfdf) {
 		String ss = "FAJAR [EXACTS]";
 		System.out.println(ss.split("\\[EXACTS\\]")[0]);
-		
+
 	}
 
 	private static String createFilterSQL(Class entityClass, Map<String, Object> filter, boolean contains,
@@ -427,11 +458,11 @@ public class EntityService {
 		List<Field> fields = EntityUtil.getDeclaredFields(entityClass);
 		log.info("=======FILTER: {}", filter);
 		for (final String rawKey : filter.keySet()) {
-			System.out.println("................."+rawKey+":"+filter.get(rawKey));
+			System.out.println("................." + rawKey + ":" + filter.get(rawKey));
 			String key = rawKey;
 			if (filter.get(rawKey) == null)
 				continue;
-			
+
 			boolean itemExacts = exacts;
 			boolean itemContains = contains;
 
@@ -440,7 +471,7 @@ public class EntityService {
 				itemContains = false;
 				key = rawKey.split("\\[EXACTS\\]")[0];
 			}
-			System.out.println("-------KEY:"+key);
+			System.out.println("-------KEY:" + key);
 			String[] multiKey = key.split(",");
 			boolean isMultiKey = multiKey.length > 1;
 			if (isMultiKey) {
@@ -469,7 +500,7 @@ public class EntityService {
 				}
 				Field field = getFieldByName(fieldName, fields);
 				if (field == null) {
-					System.out.println("!!!!!!!!!!! FIELD NOT FOUND: "+fieldName);
+					System.out.println("!!!!!!!!!!! FIELD NOT FOUND: " + fieldName);
 					continue;
 				}
 				columnName = getColumnName(field);
@@ -482,7 +513,7 @@ public class EntityService {
 			Field field = getFieldByName(key, fields);
 
 			if (field == null) {
-				System.out.println("!!!!!!!Field Not Found :"+key);
+				System.out.println("!!!!!!!Field Not Found :" + key);
 				continue;
 			}
 			if (field.getAnnotation(Column.class) != null)
@@ -498,15 +529,15 @@ public class EntityService {
 					if (isMultiKey) {
 						referenceFieldName = multiKey[1];
 					}
-					Field fieldField = EntityUtil.getDeclaredField(  fieldClass, referenceFieldName);
+					Field fieldField = EntityUtil.getDeclaredField(fieldClass, referenceFieldName);
 					String fieldColumnName = getColumnName(fieldField);
 					if (fieldColumnName == null || fieldColumnName.equals("")) {
 						fieldColumnName = key;
 					}
 					sqlItem = " `" + joinTableName + "`.`" + fieldColumnName + "` ";
-				} catch ( SecurityException e) {
+				} catch (SecurityException e) {
 					e.printStackTrace();
-					System.out.println("!!!!!"+e.getClass()+" "+e.getMessage()+" "+fieldClass);
+					System.out.println("!!!!!" + e.getClass() + " " + e.getMessage() + " " + fieldClass);
 					continue;
 				}
 
@@ -521,7 +552,7 @@ public class EntityService {
 			} else if (itemExacts) {
 				sqlItem += " = '" + filter.get(rawKey) + "' ";
 			}
-			System.out.println("SQL ITEM: "+sqlItem+" contains :"+itemContains+", exacts:"+itemExacts);
+			System.out.println("SQL ITEM: " + sqlItem + " contains :" + itemContains + ", exacts:" + itemExacts);
 			filters.add(sqlItem);
 		}
 		return " WHERE " + String.join(" AND ", filters);
@@ -560,7 +591,7 @@ public class EntityService {
 	}
 
 	private static String getTableName(Class entityClass) {
-		System.out.println("entity class: "+entityClass.getCanonicalName());
+		System.out.println("entity class: " + entityClass.getCanonicalName());
 		Table table = (Table) entityClass.getAnnotation(Table.class);
 		if (table != null) {
 			if (table.name() != null && !table.name().equals("")) {

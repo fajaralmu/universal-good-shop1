@@ -23,6 +23,7 @@ import com.fajar.service.LogProxyFactory;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
 import com.fajar.util.EntityUtil;
+import com.fajar.util.MyJsonUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -202,6 +203,27 @@ public class MvcManagementController extends BaseController {
 
 	/** RESTRICTED ACCESS **/
 
+	@RequestMapping(value = { "/messages" })
+	public String messages(Model model, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUserFromSession(request), "/management/messages");
+		} catch (Exception e) {
+			return ERROR_404_PAGE;
+		}
+		EntityProperty entityProperty = EntityUtil.createEntityProperty("Message", null); 
+		entityProperty.setEditable(false);
+		entityProperty.removeElements("color", "fontColor");
+		System.out.println("================ELEMENTS:"+MyJsonUtil.listToJson(entityProperty.getElements()));
+		model = constructCommonModel(request,entityProperty, model, "message", "management");
+		return basePage;
+	}
+	
 	@RequestMapping(value = { "/productFlow" })
 	public String productflow(Model model, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {

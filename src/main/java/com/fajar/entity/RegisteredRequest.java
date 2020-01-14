@@ -42,6 +42,8 @@ public class RegisteredRequest extends BaseEntity implements Serializable, Remot
 	private String referrer;
 	@Column(name="user_agent")
 	private String userAgent;
+	@Column(name="ip_address")
+	private String ipAddress;
 	@Transient
 	private  List<? extends BaseEntity> messages;
 	
