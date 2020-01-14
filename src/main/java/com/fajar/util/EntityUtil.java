@@ -87,6 +87,7 @@ public class EntityUtil {
 
 					Class referenceEntityClass = field.getType();
 					Field idField = getIdField(referenceEntityClass);
+					if(idField == null) continue;
 					entityElement.setOptionValueName(idField.getName());
 					entityElement.setOptionItemName(formField.optionItemName());
 
@@ -100,6 +101,7 @@ public class EntityUtil {
 				} else if (!formField.entityReferenceName().equals("") && fieldType.equals("dynamiclist")) {
 					Class referenceEntityClass = field.getType();
 					Field idField = getIdField(referenceEntityClass);
+					if(idField == null) continue;
 					entityElement.setOptionValueName(idField.getName());
 					entityElement.setOptionItemName(formField.optionItemName());
 					entityElement.setEntityReferenceClass(referenceEntityClass.getSimpleName());
@@ -203,6 +205,7 @@ public class EntityUtil {
 				}
 
 				Field currentField = getDeclaredField(targetClass, field.getName());
+				if(currentField == null) continue;
 				currentField.setAccessible(true);
 				field.setAccessible(true);
 				try {
@@ -244,8 +247,9 @@ public class EntityUtil {
 						continue;
 					Object newValue = "1";
 					String[] multiplyFields = formField.multiply();
-					for (String multiplyFieldName : multiplyFields) {
+					loop:for (String multiplyFieldName : multiplyFields) {
 						Field multiplyField = getDeclaredField(baseEntity.getClass(), multiplyFieldName);
+						if(multiplyField == null) continue loop;
 						multiplyField.setAccessible(true);
 						Object multiplyFieldValue = multiplyField.get(baseEntity);
 						String strVal = "0";

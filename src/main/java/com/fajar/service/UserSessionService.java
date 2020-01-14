@@ -253,7 +253,10 @@ public class UserSessionService {
 		if (null == sessionData) {
 			if (!registryService.set(SESSION_DATA, new SessionData()))
 				throw new InvalidRequestException("Error getting session data");
+			sessionData  = registryService.getModel(SESSION_DATA);
 		}
+		
+		
 		String referrer =  servletRequest.getHeader("Referer");
 		String userAgent = servletRequest.getHeader("User-Agent");
 		RegisteredRequest request = RegisteredRequest.builder().referrer(referrer).userAgent(userAgent).requestId(requestId).created(new Date()).value(null).build();
@@ -269,6 +272,7 @@ public class UserSessionService {
 		if (null == sessionData) {
 			if (!registryService.set(SESSION_DATA, new SessionData()))
 				throw new InvalidRequestException("Error updating session data");
+			sessionData  = registryService.getModel(SESSION_DATA);
 		}
 		List<BaseEntity> appSessions = CollectionUtil.mapToList(sessionData.getRegisteredApps());
 		 
@@ -293,6 +297,8 @@ public class UserSessionService {
 		sessionData.clear();
 		if (!registryService.set(SESSION_DATA, sessionData))
 			throw new InvalidRequestException("Error updating session data");
+		sessionData  = registryService.getModel(SESSION_DATA);
+		
 		realtimeService.sendUpdateSession(getAppRequest());
 		return ShopApiResponse.builder().code("00").sessionData(sessionData).build();
 	}

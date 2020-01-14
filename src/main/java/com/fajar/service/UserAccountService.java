@@ -1,5 +1,7 @@
 package com.fajar.service;
 
+import java.util.Optional;
+
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,7 +42,12 @@ public class UserAccountService {
 	
 	public ShopApiResponse registerUser(ShopApiRequest request) { 
 		ShopApiResponse response  = new ShopApiResponse();
-		UserRole regularRole = userRoleRepository.findById(2L).get();
+		Optional<UserRole> regularRoleOpt = userRoleRepository.findById(2L);
+		
+		if(regularRoleOpt.isPresent() == false) {
+			throw new RuntimeException("invalid role");
+		}
+		UserRole regularRole = regularRoleOpt.get();
 		User user = new User();
 		user.setDisplayName(request.getUser().getDisplayName());
 		user.setDeleted(false);

@@ -96,9 +96,7 @@ public class TransactionService {
 			Optional<Product> product = productRepository.findById(productFlow.getProduct().getId());
 			progressService.sendProgress(1, productFlows.size(), 40, false, requestId);
 			if (!product.isPresent()) {
-				productFlow.setProduct(product.get());
-
-				continue;
+				return ShopApiResponse.failedResponse();
 			}
 		}
 		// transaction.set
@@ -259,7 +257,7 @@ public class TransactionService {
 				condition = " = '" + value + "'";
 			}
 			sql = sql.replace("$CONDITION", condition);
-
+			
 			List<ProductFlow> productFlows = productFlowRepositoryCustom.filterAndSort(sql, ProductFlow.class);
 			List<BaseEntity> entities = new ArrayList<>();
 			for (ProductFlow productFlow : productFlows) {
@@ -314,6 +312,8 @@ public class TransactionService {
 				ProductFlow refFlow = dbFlow.get();
 
 				ProductFlowStock flowStock = getSingleStock(refFlow);
+				if(null == flowStock) 
+					flowStock = new ProductFlowStock();
 				Integer remainingStock = flowStock.getRemainingStock();
 				if (productFlow.getCount() > remainingStock) {
 					// continue;

@@ -4,8 +4,10 @@ import java.util.Random;
 
 public class StringUtil {
 	
+	static final Random rand = new Random();
+	
 	public static String generateRandomNumber(int length) {
-		Random rand = new Random();
+		 
 		String random = "";
 		if(length<1) {
 			length=1;

@@ -21,7 +21,7 @@ body {
 	margin: auto;
 	width: 80%;
 	height: auto;
-	//border: solid 1px;
+	/*  border: solid 1px; */
 	padding:0;
 	background-color: white
 }
@@ -42,12 +42,12 @@ a :hover{
 	width: 100%; 
 	margin:0;
 	padding:0;
-	//border: solid 1px;
+	/*  border: solid 1px; */
 }
 
 .login-form {
 	font-size: 20px;
-	font-family: Segoe UI;
+	font-family: monospace;
 	text-align: left;
 	/* border-radius: 30px; */
 	left: 25%;
@@ -64,7 +64,7 @@ a :hover{
 		rgba(0, 0, 0, 0.19);
 	text-align: center;
 	margin-right: 10%;
-	margin-bottm: 10%;
+	margin-bottom: 10%;
 	
 }
 

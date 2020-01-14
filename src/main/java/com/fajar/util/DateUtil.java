@@ -4,7 +4,7 @@ import java.util.Calendar;
 
 public class DateUtil {
 	
-	static final Calendar cal = Calendar.getInstance();
+	static final Calendar cal() { return Calendar.getInstance(); }
 	
 	public static Integer[] getMonths(){
 		return new Integer[] {
@@ -13,7 +13,7 @@ public class DateUtil {
 	}
 	
 	public static String getTimeGreeting() {
-		int hour = cal.get(Calendar.HOUR_OF_DAY);
+		int hour = cal().get(Calendar.HOUR_OF_DAY);
 		String time = "Morning";
 		if(hour>=3 &&hour < 11) {
 			time = "Morning";

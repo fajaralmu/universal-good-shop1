@@ -18,8 +18,7 @@ import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Message;
 import com.fajar.repository.MessageRepository;
-import com.fajar.util.StringUtil;
-import com.sun.xml.internal.ws.developer.Serialization;
+import com.fajar.util.StringUtil; 
 
 @Service
 public class MessagingService {
