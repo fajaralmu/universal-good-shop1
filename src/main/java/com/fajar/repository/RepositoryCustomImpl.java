@@ -16,22 +16,20 @@ import com.fajar.annotation.CustomEntity;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
+//@Service
 public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 
 	@PersistenceContext
 	private EntityManager entityManager;
 	
-	public RepositoryCustomImpl() {
-		// TODO Auto-generated constructor stub  
-		LocalContainerEntityManagerFactoryBean xx;
-//		xx.get
+	public RepositoryCustomImpl() {  
 	}
 
 	@Override
-	public List<T> filterAndSort(String sql, Class clazz, String entityGraph) {
+	public List<T> filterAndSort(String sql, Class<?> clazz ) {
+	 
 		log.info("==============GET LIST FROM NATIVE SQL: " + sql);
-		List<T> resultList = entityManager.createNativeQuery(sql, clazz).getResultList();
+		List<T> resultList =  entityManager.createNativeQuery(sql,clazz).getResultList();
 		if(resultList == null) {
 			resultList = new ArrayList<>();
 		}
@@ -39,12 +37,7 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 		return resultList;
 
 	}
-
-	@Override
-	public List<T> filterAndSort(String q, Class clazz) {
-		return filterAndSort(q, clazz, null);
-
-	}
+ 
 
 	@Override
 	public Object getSingleResult(String sql) {

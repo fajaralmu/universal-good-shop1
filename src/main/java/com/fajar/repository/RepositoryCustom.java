@@ -8,9 +8,8 @@ import javax.persistence.Query;
 
 public interface RepositoryCustom<T> {
 
-	List<T> filterAndSort(String q,  Class clazz, String entityGraph);
-	
-	List<T> filterAndSort(String q, Class clazz);
+	 
+	List<T> filterAndSort(String q, Class<?> objectClass);
 	
 	Object getSingleResult(String q); 
 	

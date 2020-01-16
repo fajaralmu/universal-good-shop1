@@ -18,6 +18,7 @@ import com.fajar.entity.User;
 import com.fajar.repository.InventoryItemRepository;
 import com.fajar.repository.ProductFlowRepository;
 import com.fajar.repository.ProductRepository;
+import com.fajar.repository.RepositoryCustom;
 import com.fajar.repository.TransactionRepository;
 import com.fajar.util.StringUtil;
 
@@ -33,7 +34,7 @@ public class ProductInventoryService {
 	@Autowired
 	private TransactionRepository transactionRepository;
 	@Autowired
-	private ProgressService progressService;
+	private ProgressService progressService; 
 
 	public Transaction saveSupplyTransaction(List<ProductFlow> productFlows, String requestId, User user,
 			Supplier supplier, Date d) {
@@ -51,7 +52,7 @@ public class ProductInventoryService {
 			for (ProductFlow productFlow : productFlows) {
 
 				productFlow.setId(null);// never update
-				//IMPORTANT!!
+				// IMPORTANT!!
 				productFlow.setTransaction(dbTransaction);
 				productFlow = productFlowRepository.save(productFlow);
 
@@ -76,12 +77,12 @@ public class ProductInventoryService {
 		}
 	}
 
-	public /* synchronized */ Transaction savePurchaseTransaction(Date d,List<ProductFlow> productFlows, String requestId, User user,
-			Customer customer) {
-		if(productFlows == null || productFlows.size() == 0) {
+	public synchronized Transaction savePurchaseTransaction(Date d, List<ProductFlow> productFlows, String requestId,
+			User user, Customer customer) {
+		if (productFlows == null || productFlows.size() == 0) {
 			throw new RuntimeException("INVALID PRODUCTS");
 		}
-		
+
 		Transaction transaction = new Transaction();
 		transaction.setCode(StringUtil.generateRandomNumber(10));
 		transaction.setUser(user);
@@ -93,21 +94,22 @@ public class ProductInventoryService {
 			progressService.sendProgress(1, 1, 10, false, requestId);
 			int purchasedProduct = 0;
 			for (ProductFlow productFlow : productFlows) {
-				if(productFlow.getCount() <= 0) continue;
-				//IMPORTANT!!
+				if (productFlow.getCount() <= 0)
+					continue;
+				// IMPORTANT!!
 				productFlow.setTransaction(newTransaction);
 				productFlow.setPrice(productFlow.getProduct().getPrice());
 
 				InventoryItem inventoryItem = inventoryItemRepository
 						.findByIncomingFlowId(productFlow.getFlowReferenceId());
 				if (null == inventoryItem) {
-					throw new RuntimeException("Inventory Item not found:"+productFlow.getFlowReferenceId());
+					throw new RuntimeException("Inventory Item not found:" + productFlow.getFlowReferenceId());
 				}
 				/**
 				 * update count
 				 */
 				inventoryItem.setCount(inventoryItem.getCount() - productFlow.getCount());
-				if(inventoryItem.getCount()<0) {
+				if (inventoryItem.getCount() < 0) {
 					continue;
 				}
 				inventoryItemRepository.save(inventoryItem);
@@ -116,7 +118,7 @@ public class ProductInventoryService {
 				progressService.sendProgress(1, productFlows.size(), 30, false, requestId);
 
 			}
-			System.out.println("PURCHASES PRODUCTS: "+purchasedProduct);
+			System.out.println("PURCHASES PRODUCTS: " + purchasedProduct);
 			newTransaction.setProductFlows(productFlows);
 			return newTransaction;
 		} catch (Exception ex) {
@@ -126,9 +128,34 @@ public class ProductInventoryService {
 			progressService.sendComplete(requestId);
 		}
 	}
+
+	public InventoryItem getInventoryByFlowRefId(long reffId) {
+		return inventoryItemRepository.findByIncomingFlowId(reffId);
+	}
 	
-	 public InventoryItem getInventoryByFlowRefId(long reffId) {
-		 return inventoryItemRepository.findByIncomingFlowId(reffId);
-	 }
+	/**
+	 * get inventories
+	 * @param field
+	 * @param value
+	 * @param match
+	 * @param limit
+	 * @return
+	 */
+	public List<InventoryItem> getInventoriesByProduct(String field, Object value, boolean match,int limit){
+		String sql = "select * from inventoryitem left join product on inventoryitem.product_id = product.id " + 
+				" where inventoryitem.count > 0 and product."+field+" ";
+		if(match) {
+			sql += " = '"+value+"'";
+		}
+		else {
+			sql += " like '%"+value+"%'";
+		}
+		if(limit>0) {
+			sql += " limit "+limit;
+		}
+		return inventoryItemRepository.filterAndSort(sql, InventoryItem.class);
+	}
+	
+	 
 
 }

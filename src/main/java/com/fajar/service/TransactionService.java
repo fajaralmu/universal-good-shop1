@@ -19,6 +19,7 @@ import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Customer;
+import com.fajar.entity.InventoryItem;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.ProductFlowStock;
@@ -32,6 +33,7 @@ import com.fajar.repository.ProductRepository;
 import com.fajar.repository.RepositoryCustom;
 import com.fajar.repository.SupplierRepository;
 import com.fajar.repository.TransactionRepository;
+import com.fajar.util.CollectionUtil;
 import com.fajar.util.EntityUtil;
 import com.fajar.util.StringUtil;
 
@@ -52,10 +54,6 @@ public class TransactionService {
 	private UserSessionService userSessionService;
 	@Autowired
 	private CustomerRepository customerRepository;
-	@Autowired
-	private RepositoryCustom<ProductFlow> productFlowRepositoryCustom;
-	@Autowired
-	private RepositoryCustom<Transaction> transactionCustomRespositoryCustom;
 	@Autowired
 	private EntityService entityService;
 	@Autowired
@@ -139,7 +137,7 @@ public class TransactionService {
 		String sql = "select (select `count` from product_flow where id=$FLOW_ID) as total, "
 				+ "(select sum(count) as total_count from product_flow where flow_ref_id=$FLOW_ID and deleted!=1) as used ";
 		sql = sql.replace("$FLOW_ID", productFlow.getId().toString());
-		Query query = productFlowRepositoryCustom.createNativeQuery(sql);
+		Query query = productFlowRepository.createNativeQuery(sql);
 		Object result = query.getSingleResult();
 
 		Object[] objectList = (Object[]) result;
@@ -177,14 +175,14 @@ public class TransactionService {
 					+ " left join product on product_flow.product_id = product.id "
 					+ " left join `transaction` on transaction.id = product_flow.transaction_id "
 					+ " where transaction.`type` = 'OUT' and product.id = '$PRODUCT_ID'";
-			Object resultUsedProduct = productFlowRepositoryCustom
+			Object resultUsedProduct = productFlowRepository
 					.getSingleResult(sqlGetUsedCount.replace("$PRODUCT_ID", product.getId().toString()));
 
 			final String sqlGetTotalCount = "select sum(product_flow.count) as flowCount from product_flow   "
 					+ "left join `transaction` on product_flow.transaction_id = transaction.id "
 					+ "left join product on product_flow.product_id = product.id  "
 					+ "where   transaction.`type` = 'IN' and product.id = '$PRODUCT_ID'";
-			Object resultTotalProduct = productFlowRepositoryCustom
+			Object resultTotalProduct = productFlowRepository
 					.getSingleResult(sqlGetTotalCount.replace("$PRODUCT_ID", product.getId().toString()));
 
 			Integer remainingCount = 0;
@@ -219,53 +217,49 @@ public class TransactionService {
 
 	public ShopApiResponse getStocksByProductName(ShopApiRequest request, boolean withCount, String requestId) {
 		progressService.init(requestId);
-		progressService.sendProgress(1, 2, 100, false, requestId);
+
 		List<BaseEntity> productFlows = getProductFlowsByProduct("name", request.getProduct().getName(), withCount, 20,
-				NOT_EXACTS);
+				NOT_EXACTS, requestId);
+		
 		if (productFlows == null) {
 			progressService.sendComplete(requestId);
 			return ShopApiResponse.builder().code("01").message("Fetching error").build();
-		}
-		progressService.sendProgress(1, 2, 100, false, requestId);
+		} 
+		
 		progressService.sendComplete(requestId);
 		return ShopApiResponse.builder().entities(productFlows).build();
 	}
 
 	private List<BaseEntity> getProductFlowsByProduct(String key, Object value, boolean withCount, int limit,
-			boolean exacts) {
+			boolean match, String requestId) {
 		try {
 //			String sql = "select * from product_flow left join `transaction` on transaction_id = transaction.id "
 //					+ "left join product on product_id = product.id "
 //					+ "where transaction.`type` = 'IN' and product.name like '%" + productName + "%' limit 20";
 
-			String sql = "select product_flow.id as flowId, product_flow.count as flowCount, "
-					+ "(select sum(count) as total_count from product_flow where flow_ref_id=flowId and deleted!=1) as used,  "
-					+ " product_flow.* from product_flow  "
-					+ "left join `transaction` on product_flow.transaction_id = transaction.id "
-					+ "left join product on product_flow.product_id = product.id where transaction.`type` = 'IN' "
-					+ " and product." + key + " $CONDITION " + "having(used is null or flowCount-used>0) "
-					+ (limit > 0 ? " limit " + limit : "");
+//			String sql = "select product_flow.id as flowId, product_flow.count as flowCount, "
+//					+ "(select sum(count) as total_count from product_flow where flow_ref_id=flowId and deleted!=1) as used,  "
+//					+ " product_flow.* from product_flow  "
+//					+ "left join `transaction` on product_flow.transaction_id = transaction.id "
+//					+ "left join product on product_flow.product_id = product.id where transaction.`type` = 'IN' "
+//					+ " and product." + key + " $CONDITION " + "having(used is null or flowCount-used>0) "
+//					+ (limit > 0 ? " limit " + limit : "");
 
-			String condition = " like '%" + value + "%' ";
-			if (exacts) {
-				condition = " = '" + value + "'";
-			}
-			sql = sql.replace("$CONDITION", condition);
-
-			List<ProductFlow> productFlows = productFlowRepositoryCustom.filterAndSort(sql, ProductFlow.class);
-			List<BaseEntity> entities = new ArrayList<>();
-			for (ProductFlow productFlow : productFlows) {
-				/*
-				 * if (withCount) { ProductFlowStock productFlowStock =
-				 * getSingleStock(productFlow); productFlowStock.setProductFlow(null); if
-				 * (productFlowStock.getRemainingStock() <= 0) { continue; }
-				 * productFlow.setProductFlowStock(productFlowStock); }
-				 * productFlow.setTransactionId(productFlow.getTransaction().getId());
-				 */
-				entities.add(productFlow);
+			List<ProductFlow> productFlows = new ArrayList<>();
+			List<InventoryItem> inventories = productInventoryService.getInventoriesByProduct(key, value, match, limit);
+			
+			progressService.sendProgress(1, 1, 10, false, requestId); 
+			
+			for (InventoryItem inventoryItem : inventories) {
+				Optional<ProductFlow> productFlow = productFlowRepository.findById(inventoryItem.getIncomingFlowId());
+				progressService.sendProgress(1, inventories.size(), 90, false, requestId);
+				
+				if (productFlow.isPresent() == false)
+					continue;
+				productFlows.add(productFlow.get());
 			}
 
-			return (entities);
+			return CollectionUtil.convertList(productFlows);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -324,8 +318,8 @@ public class TransactionService {
 		 * save to db
 		 */
 		try {
-			Transaction newTransaction = productInventoryService.savePurchaseTransaction(new Date(),productFlows, requestId, user,
-					dbCustomer.get());
+			Transaction newTransaction = productInventoryService.savePurchaseTransaction(new Date(), productFlows,
+					requestId, user, dbCustomer.get());
 			return ShopApiResponse.builder().transaction(newTransaction).build();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -351,7 +345,7 @@ public class TransactionService {
 		return response;
 	}
 
-	private CashFlow getCashflow(Integer month, Integer year,final String module) {
+	private CashFlow getCashflow(Integer month, Integer year, final String module) {
 		String sql = " select sum(`product_flow`.count) as count, sum(`product_flow`.count * `product_flow`.price) as price,`transaction`.`type` as module from `product_flow`  "
 				+ " LEFT JOIN `transaction` ON  `transaction`.`id` = `product_flow`.`transaction_id`  "
 				+ " WHERE  `transaction`.`type` = '$MODULE' and month(`transaction`.transaction_date) =$MM "
@@ -359,7 +353,7 @@ public class TransactionService {
 
 		sql = sql.replace("$YYYY", year.toString()).replace("$MODULE", module).replace("$MM", month.toString());
 
-		Object cashflow = productFlowRepositoryCustom.getCustomedObjectFromNativeQuery(sql, CashFlow.class);
+		Object cashflow = productFlowRepository.getCustomedObjectFromNativeQuery(sql, CashFlow.class);
 		return (CashFlow) cashflow;
 	}
 
@@ -378,7 +372,7 @@ public class TransactionService {
 
 		String sql = "select year( `transaction`.transaction_date) from `transaction` where `transaction`.transaction_date is not null "
 				+ "order by transaction_date " + orderType + " limit 1";
-		Object result = productFlowRepositoryCustom.getSingleResult(sql);
+		Object result = productFlowRepository.getSingleResult(sql);
 		if (result == null || !result.getClass().equals(BigInteger.class))
 			return Calendar.getInstance().get(Calendar.YEAR);
 
@@ -392,8 +386,7 @@ public class TransactionService {
 				+ "left join product_flow on product_flow.transaction_id = transaction.id "
 				+ "where product_flow.product_id = " + id + " and `transaction`.`type` = 'IN' "
 				+ "group by supplier_id limit " + limit + " offset " + offset;
-		List<Transaction> transactions = transactionCustomRespositoryCustom.filterAndSort(sqlSelectTransaction,
-				Transaction.class);
+		List<Transaction> transactions = transactionRepository.filterAndSort(sqlSelectTransaction, Transaction.class);
 		List<Supplier> suppliers = new ArrayList<>();
 
 		for (Transaction transaction : transactions) {
@@ -406,7 +399,7 @@ public class TransactionService {
 		String sql = "select  * from `transaction` left join product_flow on `product_flow`.transaction_id=`transaction`.id  "
 				+ "WHERE `product_flow`.product_id =" + productId + "  and `transaction`.`type` = 'IN' "
 				+ "order by `transaction`.transaction_date asc limit 1";
-		List<Transaction> transactions = transactionCustomRespositoryCustom.filterAndSort(sql, Transaction.class);
+		List<Transaction> transactions = transactionRepository.filterAndSort(sql, Transaction.class);
 		if (transactions != null && transactions.size() > 0) {
 			return transactions.get(0);
 		}

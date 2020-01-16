@@ -37,9 +37,7 @@ public class ProductService {
 	private TransactionService transactionService;
 
 	@Autowired
-	private ProductRepository productRepository;
-	@Autowired
-	private RepositoryCustom repositoryCustom;
+	private ProductRepository productRepository; 
 
 	@Autowired
 	private ProgressService progressService;
@@ -116,7 +114,7 @@ public class ProductService {
 				+ "month(transaction.transaction_date) = " + month + " and  year(transaction.transaction_date) = "
 				+ year + " and product.id = " + productId;
 		try {
-			count = (BigDecimal) repositoryCustom.getSingleResult(sql);
+			count = (BigDecimal) productRepository.getSingleResult(sql);
 			return count.intValue();
 		} catch (Exception ex) {
 			return 0;
@@ -130,7 +128,7 @@ public class ProductService {
 				+ " and transaction.transaction_date >= '" + period1 + "' and " + " transaction.transaction_date <= '"
 				+ period2 + "' ";
 		try {
-			BigDecimal count = (BigDecimal) repositoryCustom.getSingleResult(sql);
+			BigDecimal count = (BigDecimal) productRepository.getSingleResult(sql);
 			return count.intValue();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -248,7 +246,7 @@ public class ProductService {
 	public List<String> getRandomProductImages(String imagebasePath) {
 		// TODO Auto-generated method stub
 		String sqlSelectImage = "select product.image_url from product where product.image_url is not null limit 7";
-		Query query = repositoryCustom.createNativeQuery(sqlSelectImage);
+		Query query = productRepository.createNativeQuery(sqlSelectImage);
 		List result = query.getResultList();
 		if (result == null || result.size() == 0) {
 			return new ArrayList<>();

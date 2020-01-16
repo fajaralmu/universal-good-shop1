@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.fajar.entity.ProductFlow;
 
-public interface ProductFlowRepository extends JpaRepository<ProductFlow, Long> {
+public interface ProductFlowRepository extends JpaRepository<ProductFlow, Long>,RepositoryCustom<ProductFlow> {
 	List<ProductFlow> findByTransaction_Type(String type);
 
 	Optional<ProductFlow> findByIdAndTransaction_Type(Long id, String type);
