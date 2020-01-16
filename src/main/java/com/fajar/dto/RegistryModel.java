@@ -1,5 +1,6 @@
 package com.fajar.dto;
 
+import java.io.Serializable;
 import java.rmi.Remote;
 import java.util.HashMap;
 
@@ -14,7 +15,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegistryModel implements Remote {
+public class RegistryModel implements Remote  {
+	/**
+	 * 
+	 */
+	//private static final long serialVersionUID = 3868645032944633878L;
 	private User user;
 	private HashMap<String, Object> tokens;
 	private String userToken;

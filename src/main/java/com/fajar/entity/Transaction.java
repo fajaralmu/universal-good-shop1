@@ -61,7 +61,8 @@ public class Transaction extends BaseEntity implements Serializable {
 	@ManyToOne
 	@FormField(entityReferenceName = "user", optionItemName = "username", type = "dynamiclist")
 	private User user;
-	@OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	//@OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL/* , fetch = FetchType.LAZY */)
+	@Transient
 	@Builder.Default
 	@JsonIgnore
 	private List<ProductFlow> productFlows = new ArrayList<>();

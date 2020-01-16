@@ -60,6 +60,8 @@ public class TransactionService {
 	private EntityService entityService;
 	@Autowired
 	private ProgressService progressService;
+	@Autowired
+	private ProductInventoryService productInventoryService;
 
 	@PostConstruct
 	public void init() {
@@ -85,40 +87,32 @@ public class TransactionService {
 				|| !userSessionService.hasSession(httpRequest)) {
 			return ShopApiResponse.builder().code("01").message("product is empty").build();
 		}
-		Transaction transaction = new Transaction();
+
 		List<ProductFlow> productFlows = request.getProductFlows();
 		Optional<Supplier> supplier = supplierRepository.findById(request.getSupplier().getId());
 		if (!supplier.isPresent()) {
 			return ShopApiResponse.builder().code("01").message("supplier is empty").build();
 		}
 		progressService.sendProgress(1, 1, 10, false, requestId);
+		/**
+		 * check if product is exist
+		 */
 		for (ProductFlow productFlow : productFlows) {
 			Optional<Product> product = productRepository.findById(productFlow.getProduct().getId());
 			progressService.sendProgress(1, productFlows.size(), 40, false, requestId);
 			if (!product.isPresent()) {
 				return ShopApiResponse.failedResponse();
 			}
+			productFlow.setProduct(product.get());
 		}
-		// transaction.set
-		transaction.setCode(StringUtil.generateRandomNumber(10));
-		transaction.setUser(user);
-		transaction.setType("IN");
-		transaction.setTransactionDate(new Date());
-		transaction.setSupplier(supplier.get());
 
 		try {
-			Transaction dbTransaction = transactionRepository.save(transaction);
-			progressService.sendProgress(1, 1, 10, false, requestId);
-			for (ProductFlow productFlow : productFlows) {
-				productFlow.setTransaction(dbTransaction);
-				productFlowRepository.save(productFlow);
-				progressService.sendProgress(1, productFlows.size(), 40, false, requestId);
-			}
-
-			return ShopApiResponse.builder().transaction(dbTransaction).build();
+			Transaction savedTransaction = productInventoryService.saveSupplyTransaction(productFlows, requestId, user,
+					supplier.get(), new Date());
+			return ShopApiResponse.builder().transaction(savedTransaction).build();
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			return ShopApiResponse.builder().code("-1").message(ex.getMessage()).build();
+			return ShopApiResponse.builder().code("01").message(ex.getMessage()).build();
 		} finally {
 			progressService.sendComplete(requestId);
 		}
@@ -249,15 +243,15 @@ public class TransactionService {
 					+ " product_flow.* from product_flow  "
 					+ "left join `transaction` on product_flow.transaction_id = transaction.id "
 					+ "left join product on product_flow.product_id = product.id where transaction.`type` = 'IN' "
-					+ " and product." + key + " $CONDITION " 
-					+ "having(used is null or flowCount-used>0) " + (limit > 0 ? " limit " + limit : "");
+					+ " and product." + key + " $CONDITION " + "having(used is null or flowCount-used>0) "
+					+ (limit > 0 ? " limit " + limit : "");
 
 			String condition = " like '%" + value + "%' ";
 			if (exacts) {
 				condition = " = '" + value + "'";
 			}
 			sql = sql.replace("$CONDITION", condition);
-			
+
 			List<ProductFlow> productFlows = productFlowRepositoryCustom.filterAndSort(sql, ProductFlow.class);
 			List<BaseEntity> entities = new ArrayList<>();
 			for (ProductFlow productFlow : productFlows) {
@@ -296,7 +290,9 @@ public class TransactionService {
 		}
 		progressService.sendProgress(1, 1, 10, false, requestId);
 
-		// validate product and customer
+		/**
+		 * validate products and customer
+		 */
 		Optional<Customer> dbCustomer = customerRepository.findById(request.getCustomer().getId());
 		if (dbCustomer.isPresent() == false) {
 			return ShopApiResponse.builder().code("01").message("invalid Customer").build();
@@ -310,9 +306,8 @@ public class TransactionService {
 				// continue;
 			} else {
 				ProductFlow refFlow = dbFlow.get();
-
 				ProductFlowStock flowStock = getSingleStock(refFlow);
-				if(null == flowStock) 
+				if (null == flowStock)
 					flowStock = new ProductFlowStock();
 				Integer remainingStock = flowStock.getRemainingStock();
 				if (productFlow.getCount() > remainingStock) {
@@ -324,22 +319,13 @@ public class TransactionService {
 			progressService.sendProgress(1, productFlows.size(), 40, false, requestId);
 
 		}
-		Transaction transaction = new Transaction();
-		transaction.setCode(StringUtil.generateRandomNumber(10));
-		transaction.setUser(user);
-		transaction.setTransactionDate(new Date());
-		transaction.setType("OUT");
-		transaction.setCustomer(dbCustomer.get());
+
+		/**
+		 * save to db
+		 */
 		try {
-			Transaction newTransaction = transactionRepository.save(transaction);
-			progressService.sendProgress(1, 1, 10, false, requestId);
-			for (ProductFlow productFlow : productFlows) {
-				productFlow.setTransaction(newTransaction);
-				productFlow.setPrice(productFlow.getProduct().getPrice());
-				productFlow = productFlowRepository.save(productFlow);
-				progressService.sendProgress(1, productFlows.size(), 30, false, requestId);
-			}
-			newTransaction.setProductFlows(productFlows);
+			Transaction newTransaction = productInventoryService.savePurchaseTransaction(new Date(),productFlows, requestId, user,
+					dbCustomer.get());
 			return ShopApiResponse.builder().transaction(newTransaction).build();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -358,13 +344,14 @@ public class TransactionService {
 		if (cashflow != null) {
 			cashflow.setYear(request.getFilter().getYear());
 			cashflow.setMonth(request.getFilter().getMonth());
+			cashflow.setModule(request.getFilter().getModule());
 			response.setEntity(cashflow);
 		}
 		response.setTransactionYears(getMinAndMaxTransactionYear());
 		return response;
 	}
 
-	private CashFlow getCashflow(Integer month, Integer year, String module) {
+	private CashFlow getCashflow(Integer month, Integer year,final String module) {
 		String sql = " select sum(`product_flow`.count) as count, sum(`product_flow`.count * `product_flow`.price) as price,`transaction`.`type` as module from `product_flow`  "
 				+ " LEFT JOIN `transaction` ON  `transaction`.`id` = `product_flow`.`transaction_id`  "
 				+ " WHERE  `transaction`.`type` = '$MODULE' and month(`transaction`.transaction_date) =$MM "

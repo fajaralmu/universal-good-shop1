@@ -42,10 +42,10 @@ public class ProductFlow extends BaseEntity implements Serializable{
 	private Date expiryDate;
 	@Column
 	@FormField (type="currency")
-	private Long price;
+	private long price;
 	@Column
 	@FormField 
-	private Integer count;
+	private int count;
 	@Column(name="flow_ref_id")
 	@FormField
 	private Long flowReferenceId;
@@ -54,12 +54,12 @@ public class ProductFlow extends BaseEntity implements Serializable{
 	@FormField (entityReferenceName="product",optionItemName="name",type="dynamiclist")
 	private Product product;
 	@Transient
-	private Long transactionId;
+	private long transactionId;
 	@Transient
 	private ProductFlowStock productFlowStock;
 	@FormField(multiply = {"count","price"})
 	@Transient
-	private Long totalPrice;
+	private long totalPrice;
 	
 	
 	public ProductFlow() {

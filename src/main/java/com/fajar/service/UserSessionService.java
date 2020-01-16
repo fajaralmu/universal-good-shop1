@@ -161,6 +161,7 @@ public class UserSessionService {
 			System.out.println(" > > > SUCCESS LOGIN :");
 			return dbUser;
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.out.println(" < < < FAILED LOGIN");
 			throw new IllegalAccessException("Login Failed");
 		}
@@ -196,6 +197,9 @@ public class UserSessionService {
 
 	public String getToken(User user) {
 		RegistryModel reqModel = registryService.getModel(user.getLoginKey());
+		if(reqModel == null) {
+			throw new InvalidRequestException("Invalid Session");
+		}
 		String token = reqModel.getUserToken();
 		return token;
 	}

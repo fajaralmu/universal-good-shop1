@@ -42,7 +42,7 @@ public class Product extends BaseEntity implements Serializable {
 	private String description;
 	@Column
 	@FormField(type="currency")
-	private Long price;
+	private long price;
 	@Column
 	@FormField 
 	private String type;
@@ -61,7 +61,7 @@ public class Product extends BaseEntity implements Serializable {
 	@Transient
 	private boolean newProduct;	
 	@Transient
-	private Integer count;
+	private int count;
 	@Transient
 	private List<Supplier> suppliers;
 
