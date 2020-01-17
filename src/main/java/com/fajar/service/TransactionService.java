@@ -30,18 +30,16 @@ import com.fajar.entity.custom.CashFlow;
 import com.fajar.repository.CustomerRepository;
 import com.fajar.repository.ProductFlowRepository;
 import com.fajar.repository.ProductRepository;
-import com.fajar.repository.RepositoryCustom;
 import com.fajar.repository.SupplierRepository;
 import com.fajar.repository.TransactionRepository;
 import com.fajar.util.CollectionUtil;
 import com.fajar.util.EntityUtil;
-import com.fajar.util.StringUtil;
 
 @Service
 public class TransactionService {
 
 	private static final boolean NOT_EXACTS = false;
-	private static final boolean EXACTS = true;
+	private static final boolean MATCH = true;
 	@Autowired
 	private TransactionRepository transactionRepository;
 	@Autowired
@@ -54,8 +52,6 @@ public class TransactionService {
 	private UserSessionService userSessionService;
 	@Autowired
 	private CustomerRepository customerRepository;
-	@Autowired
-	private EntityService entityService;
 	@Autowired
 	private ProgressService progressService;
 	@Autowired
@@ -145,7 +141,6 @@ public class TransactionService {
 		Integer used = objectList[1] == null ? 0 : Integer.parseInt(objectList[1].toString());
 		Integer remaining = total - used;
 
-		System.out.println(productFlow.getId() + " TOTAL: " + total + ", used: " + used + ". sql: " + sql);
 		ProductFlowStock productFlowStock = new ProductFlowStock();
 		productFlowStock.setProductFlow(productFlow);
 		productFlowStock.setUsedStock(used);
@@ -171,42 +166,29 @@ public class TransactionService {
 		for (Product product : products) {
 			int totalCount = 0;
 			int used = 0;
-			final String sqlGetUsedCount = " select sum(product_flow.count) as used from product_flow "
-					+ " left join product on product_flow.product_id = product.id "
-					+ " left join `transaction` on transaction.id = product_flow.transaction_id "
-					+ " where transaction.`type` = 'OUT' and product.id = '$PRODUCT_ID'";
-			Object resultUsedProduct = productFlowRepository
-					.getSingleResult(sqlGetUsedCount.replace("$PRODUCT_ID", product.getId().toString()));
+			 
+			Object resultUsedProduct = productFlowRepository.findFlowCount("OUT", product.getId());  
+			 
+			Object resultTotalProduct = productFlowRepository.findFlowCount("IN", product.getId()); 
 
-			final String sqlGetTotalCount = "select sum(product_flow.count) as flowCount from product_flow   "
-					+ "left join `transaction` on product_flow.transaction_id = transaction.id "
-					+ "left join product on product_flow.product_id = product.id  "
-					+ "where   transaction.`type` = 'IN' and product.id = '$PRODUCT_ID'";
-			Object resultTotalProduct = productFlowRepository
-					.getSingleResult(sqlGetTotalCount.replace("$PRODUCT_ID", product.getId().toString()));
-
-			Integer remainingCount = 0;
+			int remainingCount = 0;
 			try {
-				used = ((BigDecimal) resultUsedProduct).intValue();
+				used = Integer.parseInt(resultUsedProduct.toString());
 			} catch (Exception ex) {
 				used = 0;
-				ex.printStackTrace();
-				System.out.println("==============ERROR PARSING USED COUNT:" + ex.getMessage());
+				ex.printStackTrace(); 
 			}
 			try {
-				totalCount = ((BigDecimal) resultTotalProduct).intValue();
+				totalCount =  Integer.parseInt(resultTotalProduct.toString());
 			} catch (Exception ex) {
 				totalCount = 0;
-				ex.printStackTrace();
-				System.out.println("==============ERROR PARSING TOTAL COUNT:" + ex.getMessage());
+				ex.printStackTrace(); 
 			}
 			if (totalCount - used > 0) {
 				remainingCount = totalCount - used;
 			}
 
-			product.setCount(remainingCount);
-			System.out.println(product.getCode() + "====================TOTAL: " + totalCount);
-			System.out.println("====================USED:" + used);
+			product.setCount(remainingCount); 
 
 			progressService.sendProgress(1, products.size(), 30, false, requestId);
 
@@ -220,12 +202,12 @@ public class TransactionService {
 
 		List<BaseEntity> productFlows = getProductFlowsByProduct("name", request.getProduct().getName(), withCount, 20,
 				NOT_EXACTS, requestId);
-		
+
 		if (productFlows == null) {
 			progressService.sendComplete(requestId);
 			return ShopApiResponse.builder().code("01").message("Fetching error").build();
-		} 
-		
+		}
+
 		progressService.sendComplete(requestId);
 		return ShopApiResponse.builder().entities(productFlows).build();
 	}
@@ -233,27 +215,17 @@ public class TransactionService {
 	private List<BaseEntity> getProductFlowsByProduct(String key, Object value, boolean withCount, int limit,
 			boolean match, String requestId) {
 		try {
-//			String sql = "select * from product_flow left join `transaction` on transaction_id = transaction.id "
-//					+ "left join product on product_id = product.id "
-//					+ "where transaction.`type` = 'IN' and product.name like '%" + productName + "%' limit 20";
 
-//			String sql = "select product_flow.id as flowId, product_flow.count as flowCount, "
-//					+ "(select sum(count) as total_count from product_flow where flow_ref_id=flowId and deleted!=1) as used,  "
-//					+ " product_flow.* from product_flow  "
-//					+ "left join `transaction` on product_flow.transaction_id = transaction.id "
-//					+ "left join product on product_flow.product_id = product.id where transaction.`type` = 'IN' "
-//					+ " and product." + key + " $CONDITION " + "having(used is null or flowCount-used>0) "
-//					+ (limit > 0 ? " limit " + limit : "");
 
 			List<ProductFlow> productFlows = new ArrayList<>();
 			List<InventoryItem> inventories = productInventoryService.getInventoriesByProduct(key, value, match, limit);
-			
-			progressService.sendProgress(1, 1, 10, false, requestId); 
-			
+
+			progressService.sendProgress(1, 1, 10, false, requestId);
+
 			for (InventoryItem inventoryItem : inventories) {
 				Optional<ProductFlow> productFlow = productFlowRepository.findById(inventoryItem.getIncomingFlowId());
 				progressService.sendProgress(1, inventories.size(), 90, false, requestId);
-				
+
 				if (productFlow.isPresent() == false)
 					continue;
 				productFlows.add(productFlow.get());
@@ -341,11 +313,13 @@ public class TransactionService {
 			cashflow.setModule(request.getFilter().getModule());
 			response.setEntity(cashflow);
 		}
-		response.setTransactionYears(getMinAndMaxTransactionYear());
+		response.setTransactionYears(
+				new int[] { getMinTransactionYear() , Calendar.getInstance().get(Calendar.YEAR) });
 		return response;
 	}
 
 	private CashFlow getCashflow(Integer month, Integer year, final String module) {
+		
 		String sql = " select sum(`product_flow`.count) as count, sum(`product_flow`.count * `product_flow`.price) as price,`transaction`.`type` as module from `product_flow`  "
 				+ " LEFT JOIN `transaction` ON  `transaction`.`id` = `product_flow`.`transaction_id`  "
 				+ " WHERE  `transaction`.`type` = '$MODULE' and month(`transaction`.transaction_date) =$MM "
@@ -355,38 +329,22 @@ public class TransactionService {
 
 		Object cashflow = productFlowRepository.getCustomedObjectFromNativeQuery(sql, CashFlow.class);
 		return (CashFlow) cashflow;
-	}
+	} 
 
-	public int[] getMinAndMaxTransactionYear() {
-		Integer minYear = getTransactionYear("asc");
-		Integer maxYear = getTransactionYear("desc");
-		System.out.println("##MAX YEAR: " + maxYear);
-		System.out.println("##MIN YEAR: " + minYear);
-		return new int[] { minYear, maxYear };
-	}
-
-	private Integer getTransactionYear(String orderType) {
-		if (orderType == null || (!orderType.toLowerCase().equals("asc") && !orderType.toLowerCase().equals("desc"))) {
-			orderType = "asc";
-		}
-
-		String sql = "select year( `transaction`.transaction_date) from `transaction` where `transaction`.transaction_date is not null "
-				+ "order by transaction_date " + orderType + " limit 1";
-		Object result = productFlowRepository.getSingleResult(sql);
-		if (result == null || !result.getClass().equals(BigInteger.class))
+	public int getMinTransactionYear( ) {
+		 
+		Object result = transactionRepository.findTransactionYearAsc();
+		if (result == null)
 			return Calendar.getInstance().get(Calendar.YEAR);
-
-		return ((BigInteger) result).intValue();
+		int resultInt = Integer.parseInt(result.toString());
+		return resultInt;
 
 	}
 
 	public List<Supplier> getProductSupplier(Long id, int limit, int offset) {
 
-		String sqlSelectTransaction = "select * from `transaction` "
-				+ "left join product_flow on product_flow.transaction_id = transaction.id "
-				+ "where product_flow.product_id = " + id + " and `transaction`.`type` = 'IN' "
-				+ "group by supplier_id limit " + limit + " offset " + offset;
-		List<Transaction> transactions = transactionRepository.filterAndSort(sqlSelectTransaction, Transaction.class);
+		List<Transaction> transactions = transactionRepository.findProductSupplier(id, limit, offset);// .filterAndSort(sqlSelectTransaction,
+																										// Transaction.class);
 		List<Supplier> suppliers = new ArrayList<>();
 
 		for (Transaction transaction : transactions) {
@@ -396,10 +354,8 @@ public class TransactionService {
 	}
 
 	public Transaction getFirstTransaction(Long productId) {
-		String sql = "select  * from `transaction` left join product_flow on `product_flow`.transaction_id=`transaction`.id  "
-				+ "WHERE `product_flow`.product_id =" + productId + "  and `transaction`.`type` = 'IN' "
-				+ "order by `transaction`.transaction_date asc limit 1";
-		List<Transaction> transactions = transactionRepository.filterAndSort(sql, Transaction.class);
+
+		List<Transaction> transactions = transactionRepository.findFirstTransaction(productId);
 		if (transactions != null && transactions.size() > 0) {
 			return transactions.get(0);
 		}
@@ -407,7 +363,7 @@ public class TransactionService {
 	}
 
 	public static List reverse(List arrayList) {
-		ArrayList reversedArrayList = new ArrayList<>();
+		List reversedArrayList = new ArrayList<>();
 		for (int i = arrayList.size() - 1; i >= 0; i--) {
 
 			// Append the elements in reverse order
@@ -472,24 +428,27 @@ public class TransactionService {
 		List<BaseEntity> supplies = new ArrayList<>();
 		List<BaseEntity> purchases = new ArrayList<>();
 		Long maxValue = 0L;
+
 		for (int[] period : periods) {
+
 			// supply
 			CashFlow cashflowSupply = getCashflow(period[1], period[0], "IN");
-
 			cashflowSupply.setMonth(period[1]);
 			cashflowSupply.setYear(period[0]);
-			System.out.println("CASHFLOW SUPPLY: " + cashflowSupply);
+
 			supplies.add(cashflowSupply);
+
 			if (cashflowSupply != null && cashflowSupply.getAmount() != null && cashflowSupply.getAmount() > maxValue) {
 				maxValue = cashflowSupply.getAmount();
 			}
+
 			// purchase
 			CashFlow cashflowPurchase = getCashflow(period[1], period[0], "OUT");
-
 			cashflowPurchase.setMonth(period[1]);
 			cashflowPurchase.setYear(period[0]);
-			System.out.println("CASHFLOW PURCHASE: " + cashflowPurchase);
+
 			purchases.add(cashflowPurchase);
+
 			if (cashflowPurchase != null && cashflowPurchase.getAmount() != null
 					&& cashflowPurchase.getAmount() > maxValue) {
 				maxValue = cashflowPurchase.getAmount();

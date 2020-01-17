@@ -3,7 +3,6 @@ package com.fajar.service;
 import static com.fajar.util.CollectionUtil.arrayToList;
 import static com.fajar.util.CollectionUtil.convertList;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +24,6 @@ import com.fajar.entity.ProductSales;
 import com.fajar.entity.Supplier;
 import com.fajar.entity.Transaction;
 import com.fajar.repository.ProductRepository;
-import com.fajar.repository.RepositoryCustom;
 import com.fajar.util.DateUtil;
 
 @Service
@@ -106,30 +104,26 @@ public class ProductService {
 		return filteredProducts;
 	}
 
-	public Integer getProductSalesAt(int month, int year, Long productId) {
-		BigDecimal count = BigDecimal.ZERO;
-		String sql = "select sum(product_flow.count) as productCount  from product   "
-				+ "left join product_flow on product.id = product_flow.product_id "
-				+ "left join `transaction` on transaction.id = product_flow.transaction_id  where transaction.`type` = 'OUT' and  "
-				+ "month(transaction.transaction_date) = " + month + " and  year(transaction.transaction_date) = "
-				+ year + " and product.id = " + productId;
+	public int getProductSalesAt(int month, int year, Long productId) {
+
 		try {
-			count = (BigDecimal) productRepository.getSingleResult(sql);
-			return count.intValue();
+			Object result = productRepository.findProductSales(month, year, productId);//.getSingleResult(sql);
+			return Integer.parseInt(result.toString());
+			
 		} catch (Exception ex) {
 			return 0;
 		}
 	}
 
-	public Integer getProductSalesBetween(String period1, String period2, Long productId) {
+	public int getProductSalesBetween(String period1, String period2, Long productId) {
 		String sql = "select sum(product_flow.count) as productCount from product_flow  "
 				+ " left join `transaction` on transaction.id = product_flow.transaction_id "
 				+ " where transaction.`type` = 'OUT' and product_flow.product_id = " + productId
 				+ " and transaction.transaction_date >= '" + period1 + "' and " + " transaction.transaction_date <= '"
 				+ period2 + "' ";
 		try {
-			BigDecimal count = (BigDecimal) productRepository.getSingleResult(sql);
-			return count.intValue();
+			Object count =  productRepository.findProductSalesBetween(period1, period2, productId);//.getSingleResult(sql);
+			return Integer.parseInt(count.toString());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return 0;
@@ -168,8 +162,10 @@ public class ProductService {
 		ShopApiResponse response = new ShopApiResponse();
 		Filter filter = request.getFilter();
 		Integer productId = (Integer) filter.getFieldsFilter().get("productId");
+		
 		List<Supplier> suppliers = transactionService.getProductSupplier(productId.longValue(), 5,
 				5 * filter.getPage());
+		
 		List<BaseEntity> entities = new ArrayList<>();
 		for (Supplier supplier : suppliers) {
 			entities.add(supplier);
@@ -178,14 +174,16 @@ public class ProductService {
 		return response;
 	}
 
-	public ShopApiResponse getProductSalesDetail(ShopApiRequest request, Long productId, String requestId) {
-		// TODO Auto-generated method stub
-		progressService.init(requestId);
-		System.out.println("x x x x x x Product ID: " + productId);
+	public ShopApiResponse getProductSalesDetail(ShopApiRequest request, Long productId, String requestId) { 
+		
+		progressService.init(requestId); 
+		
 		Optional<Product> productOpt = productRepository.findById(productId);
 		Product product = null;
+		
 		if (productOpt.isPresent()) {
 			product = productOpt.get();
+			
 		} else {
 			return ShopApiResponse.failedResponse();
 		}
@@ -194,6 +192,7 @@ public class ProductService {
 		int year1 = filter.getYear();
 		int month2 = filter.getMonthTo();
 		int year2 = filter.getYearTo();
+		
 		Integer maxValue = 0;
 		Integer totalPeriod = 0;
 		Integer runningPeriod = 0;
@@ -223,14 +222,14 @@ public class ProductService {
 				salesList.add(sales);
 				if (productSales > maxValue) {
 					maxValue = productSales;
-				}
-				double percentage = runningPeriod.doubleValue() / totalPeriod.doubleValue();
+				} 
+				
 				progressService.sendProgress(1, totalPeriod, 100, false, requestId);
 			}
 		}
 		for (ProductSales sales : salesList) {
 			double ratio = (Double.parseDouble(sales.getSales().toString()) / Double.parseDouble(maxValue.toString()));
-			// System.out.println("x x x x RATIO: "+ratio);
+			 
 			double percentage = ratio * 100;
 			sales.setPercentage(percentage);
 		}
@@ -243,11 +242,11 @@ public class ProductService {
 		return response;
 	}
 
-	public List<String> getRandomProductImages(String imagebasePath) {
-		// TODO Auto-generated method stub
+	public List<String> getRandomProductImages(String imagebasePath) { 
+		
 		String sqlSelectImage = "select product.image_url from product where product.image_url is not null limit 7";
 		Query query = productRepository.createNativeQuery(sqlSelectImage);
-		List result = query.getResultList();
+		List<?> result = query.getResultList();
 		if (result == null || result.size() == 0) {
 			return new ArrayList<>();
 		}
@@ -269,7 +268,6 @@ public class ProductService {
 	}
 
 	public ShopApiResponse getPublicEntities(ShopApiRequest request, String requestId) {
-		
 		
 		if(request.getEntity().equals("product")) {
 			return getProductsCatalog(request, requestId);

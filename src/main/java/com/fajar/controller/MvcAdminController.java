@@ -11,8 +11,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -84,9 +82,9 @@ public class MvcAdminController extends BaseController {
 		model.addAttribute("page", "dashboard");
 		model.addAttribute("currentMonth", cal.get(Calendar.MONTH) + 1);
 		model.addAttribute("currentYear", cal.get(Calendar.YEAR));
-		int[] transactionYears = transactionService.getMinAndMaxTransactionYear();
-		model.addAttribute("minYear", transactionYears[0]);
-		model.addAttribute("maxYear", transactionYears[1]);
+		int minYear = transactionService.getMinTransactionYear();
+		model.addAttribute("minYear", minYear);
+		model.addAttribute("maxYear", cal.get(Calendar.YEAR));
 		return basePage;
 	}
 
@@ -116,7 +114,6 @@ public class MvcAdminController extends BaseController {
 		for (String string : imageUrlList) {
 			imageUrlObjects.add(UniversalObject.builder().value(string).build());
 		}
-		System.out.println(" . . . . . IMAGE URL LIST:" + imageUrlList);
 		model.addAttribute("product", product);
 		model.addAttribute("contextPath", request.getContextPath());
 		model.addAttribute("title", product.getName());
@@ -128,9 +125,10 @@ public class MvcAdminController extends BaseController {
 		model.addAttribute("currentMonth", cal.get(Calendar.MONTH) + 1);
 		model.addAttribute("currentYear", cal.get(Calendar.YEAR));
 		model.addAttribute("productId", product.getId());
-		int[] transactionYears = transactionService.getMinAndMaxTransactionYear();
-		model.addAttribute("minYear", transactionYears[0]);
-		model.addAttribute("maxYear", transactionYears[1]);
+		int minYear = transactionService.getMinTransactionYear();
+		model.addAttribute("minYear", minYear);
+		model.addAttribute("maxYear", cal.get(Calendar.YEAR));
+//		model.addAttribute("maxYear", transactionYears[1]);
 		return basePage;
 
 	}

@@ -2,23 +2,18 @@ package com.fajar.service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.Customer;
 import com.fajar.entity.InventoryItem;
-import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Supplier;
 import com.fajar.entity.Transaction;
 import com.fajar.entity.User;
 import com.fajar.repository.InventoryItemRepository;
 import com.fajar.repository.ProductFlowRepository;
-import com.fajar.repository.ProductRepository;
-import com.fajar.repository.RepositoryCustom;
 import com.fajar.repository.TransactionRepository;
 import com.fajar.util.StringUtil;
 
@@ -28,9 +23,7 @@ public class ProductInventoryService {
 	@Autowired
 	private InventoryItemRepository inventoryItemRepository;
 	@Autowired
-	private ProductFlowRepository productFlowRepository;
-	@Autowired
-	private ProductRepository productRepository;
+	private ProductFlowRepository productFlowRepository; 
 	@Autowired
 	private TransactionRepository transactionRepository;
 	@Autowired
@@ -134,7 +127,7 @@ public class ProductInventoryService {
 	}
 	
 	/**
-	 * get inventories
+	 * get available inventories
 	 * @param field
 	 * @param value
 	 * @param match
