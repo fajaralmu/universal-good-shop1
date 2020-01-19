@@ -388,6 +388,7 @@ public class EntityService {
 		boolean contains = filter.isContains();
 		boolean exacts = filter.isExacts();
 		boolean withFilteredField = filter.getFieldsFilter().isEmpty() == false;
+		
 		String orderType = filter.getOrderType();
 		String orderBy = filter.getOrderBy();
 		String tableName = getTableName(entityClass);
@@ -554,6 +555,9 @@ public class EntityService {
 			}
 			System.out.println("SQL ITEM: " + sqlItem + " contains :" + itemContains + ", exacts:" + itemExacts);
 			filters.add(sqlItem);
+		}
+		if(filters == null || filters.size() == 0) {
+			return "";
 		}
 		return " WHERE " + String.join(" AND ", filters);
 	}
