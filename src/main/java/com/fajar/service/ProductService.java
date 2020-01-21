@@ -35,7 +35,7 @@ public class ProductService {
 	private TransactionService transactionService;
 
 	@Autowired
-	private ProductRepository productRepository; 
+	private ProductRepository productRepository;
 
 	@Autowired
 	private ProgressService progressService;
@@ -63,7 +63,8 @@ public class ProductService {
 
 		request.getFilter().getFieldsFilter().remove("withStock");
 		ShopApiResponse filteredProducts = entityService.filter(request);
-		progressService.sendProgress(1, 1, 20.0, true, requestId);
+		if (withStock)
+			progressService.sendProgress(1, 1, 20.0, true, requestId);
 		if (filteredProducts == null || filteredProducts.getEntities() == null
 				|| filteredProducts.getEntities().size() == 0) {
 			return new ShopApiResponse("01", "Data Not Found");
@@ -84,7 +85,8 @@ public class ProductService {
 					}
 				}
 			}
-			progressService.sendProgress(1, entities.size(), 30, false, requestId);
+			if (withStock)
+				progressService.sendProgress(1, entities.size(), 30, false, requestId);
 			products.add(product);
 
 		}
@@ -95,10 +97,12 @@ public class ProductService {
 			for (Product product : products) {
 				List<Supplier> suppliers = transactionService.getProductSupplier(product.getId(), 5, 0);
 				product.setSuppliers(suppliers);
-				progressService.sendProgress(1, products.size(), 20, false, requestId);
+				if (withStock)
+					progressService.sendProgress(1, products.size(), 20, false, requestId);
 			}
 		}
-		progressService.sendComplete(requestId);
+		if (withStock)
+			progressService.sendComplete(requestId);
 		filteredProducts.setFilter(request.getFilter());
 		filteredProducts.setEntities(convertList(products));
 		return filteredProducts;
@@ -107,9 +111,9 @@ public class ProductService {
 	public int getProductSalesAt(int month, int year, Long productId) {
 
 		try {
-			Object result = productRepository.findProductSales(month, year, productId);//.getSingleResult(sql);
+			Object result = productRepository.findProductSales(month, year, productId);// .getSingleResult(sql);
 			return Integer.parseInt(result.toString());
-			
+
 		} catch (Exception ex) {
 			return 0;
 		}
@@ -122,7 +126,7 @@ public class ProductService {
 				+ " and transaction.transaction_date >= '" + period1 + "' and " + " transaction.transaction_date <= '"
 				+ period2 + "' ";
 		try {
-			Object count =  productRepository.findProductSalesBetween(period1, period2, productId);//.getSingleResult(sql);
+			Object count = productRepository.findProductSalesBetween(period1, period2, productId);// .getSingleResult(sql);
 			return Integer.parseInt(count.toString());
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -137,9 +141,10 @@ public class ProductService {
 		String periodBefore = DateUtil.getFullFirstDate(filter.getMonth(), filter.getYear());
 		String periodAfter = DateUtil.getFullFirstDate(filter.getMonthTo(), filter.getYearTo());
 
-		String productName =  request.getProduct()== null || request.getProduct().getName() == null ? "":request.getProduct().getName();
+		String productName = request.getProduct() == null || request.getProduct().getName() == null ? ""
+				: request.getProduct().getName();
 		List<Product> products = productRepository.getByLimitAndOffset(filter.getLimit(),
-				filter.getLimit() * filter.getPage(),productName);
+				filter.getLimit() * filter.getPage(), productName);
 
 		List<ProductSales> productSalesList = new ArrayList<>();
 		for (Product product : products) {
@@ -162,10 +167,10 @@ public class ProductService {
 		ShopApiResponse response = new ShopApiResponse();
 		Filter filter = request.getFilter();
 		Integer productId = (Integer) filter.getFieldsFilter().get("productId");
-		
+
 		List<Supplier> suppliers = transactionService.getProductSupplier(productId.longValue(), 5,
 				5 * filter.getPage());
-		
+
 		List<BaseEntity> entities = new ArrayList<>();
 		for (Supplier supplier : suppliers) {
 			entities.add(supplier);
@@ -174,16 +179,16 @@ public class ProductService {
 		return response;
 	}
 
-	public ShopApiResponse getProductSalesDetail(ShopApiRequest request, Long productId, String requestId) { 
-		
-		progressService.init(requestId); 
-		
+	public ShopApiResponse getProductSalesDetail(ShopApiRequest request, Long productId, String requestId) {
+
+		progressService.init(requestId);
+
 		Optional<Product> productOpt = productRepository.findById(productId);
 		Product product = null;
-		
+
 		if (productOpt.isPresent()) {
 			product = productOpt.get();
-			
+
 		} else {
 			return ShopApiResponse.failedResponse();
 		}
@@ -192,7 +197,7 @@ public class ProductService {
 		int year1 = filter.getYear();
 		int month2 = filter.getMonthTo();
 		int year2 = filter.getYearTo();
-		
+
 		Integer maxValue = 0;
 		Integer totalPeriod = 0;
 		Integer runningPeriod = 0;
@@ -222,14 +227,14 @@ public class ProductService {
 				salesList.add(sales);
 				if (productSales > maxValue) {
 					maxValue = productSales;
-				} 
-				
+				}
+
 				progressService.sendProgress(1, totalPeriod, 100, false, requestId);
 			}
 		}
 		for (ProductSales sales : salesList) {
 			double ratio = (Double.parseDouble(sales.getSales().toString()) / Double.parseDouble(maxValue.toString()));
-			 
+
 			double percentage = ratio * 100;
 			sales.setPercentage(percentage);
 		}
@@ -242,8 +247,8 @@ public class ProductService {
 		return response;
 	}
 
-	public List<String> getRandomProductImages(String imagebasePath) { 
-		
+	public List<String> getRandomProductImages(String imagebasePath) {
+
 		String sqlSelectImage = "select product.image_url from product where product.image_url is not null limit 7";
 		Query query = productRepository.createNativeQuery(sqlSelectImage);
 		List<?> result = query.getResultList();
@@ -268,10 +273,10 @@ public class ProductService {
 	}
 
 	public ShopApiResponse getPublicEntities(ShopApiRequest request, String requestId) {
-		
-		if(request.getEntity().equals("product")) {
+
+		if (request.getEntity().equals("product")) {
 			return getProductsCatalog(request, requestId);
-		}else if(request.getEntity().equals("supplier")) {
+		} else if (request.getEntity().equals("supplier")) {
 			return entityService.filter(request);
 		}
 		return null;
