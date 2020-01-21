@@ -47,6 +47,7 @@ import com.fajar.repository.TransactionRepository;
 import com.fajar.repository.UnitRepository;
 import com.fajar.repository.UserRepository;
 import com.fajar.repository.UserRoleRepository;
+import com.fajar.util.CollectionUtil;
 import com.fajar.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -262,14 +263,19 @@ public class EntityService {
 						if (updated) {
 							imageName = fileService.writeImage("PRD", base64Image);
 						}
-						imageUrls[i] = (imageName);
+						if(null != imageName)
+							imageUrls[i] = (imageName);
 					} catch (IOException e) {
 
 						product.setImageUrl(null);
 						e.printStackTrace();
 					}
 				}
-				String imageUrl = String.join("~", imageUrls);
+				
+				List validUrls = removeNullItemFromArray(imageUrls);
+				String[] arrayOfString =  CollectionUtil.toArrayOfString(validUrls);
+				
+				String imageUrl = String.join("~", arrayOfString);
 				product.setImageUrl(imageUrl);
 
 			}
@@ -284,6 +290,19 @@ public class EntityService {
 		}
 		Product newProduct = productRepository.save(product);
 		return ShopApiResponse.builder().entity(newProduct).build();
+	}
+	
+	
+	
+	private List removeNullItemFromArray(String[] array) {
+		List<Object> result = new ArrayList<>();
+		for (String string : array) {
+			if(string!=null) {
+				result.add(string);
+			}
+		}
+		return result;
+		
 	}
 
 	private ShopApiResponse saveUnit(Unit unit, boolean newRecord) {

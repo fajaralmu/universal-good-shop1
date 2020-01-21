@@ -29,18 +29,7 @@ public class CollectionUtil {
 
 		return list;
 	}
-
-	public static <T> T[] listToArray(List<T> list) {
-		int size = list.size();
-		T[] array = (T[]) new Object[size];
-		for (int i = 0; i < list.size(); i++) {
-			T object = list.get(i);
-			array[i] = object;
-
-		}
-		return array;
-
-	}
+ 
 
 	public static <T> List<T> convertList(List list) {
 		List<T> newList = new ArrayList<T>();
@@ -48,6 +37,17 @@ public class CollectionUtil {
 			newList.add((T) object);
 		}
 		return newList;
+	}
+
+	public static String[] toArrayOfString(List validUrls) {
+		if(validUrls == null) {
+			return new String[] {};
+		}
+		String[] array = new String[validUrls.size()];
+		for (int i = 0; i < validUrls.size(); i++) {
+			array[i] = validUrls.get(i).toString();
+		}
+		return array;
 	}
 
 }
