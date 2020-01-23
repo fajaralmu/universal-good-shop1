@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
@@ -20,6 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name="message")
 public class Message extends BaseEntity{
 	 
     public Message(String sender, String content, Date date2, Long valueOf, String reqId2) { 

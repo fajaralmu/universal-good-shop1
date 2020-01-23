@@ -5,20 +5,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiRequest.ShopApiRequestBuilder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -28,7 +23,7 @@ import lombok.NoArgsConstructor;
 
 @Dto
 @Entity
-@Table
+@Table(name="transaction")
 @Data
 @Builder
 @AllArgsConstructor

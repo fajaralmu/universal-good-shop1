@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 
 @Dto
 @Entity
-@Table
+@Table(name="product")
 @Data
 @Builder
 @AllArgsConstructor

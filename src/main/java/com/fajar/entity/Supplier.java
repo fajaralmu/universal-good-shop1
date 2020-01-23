@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 @Dto
 @Entity
-@Table
+@Table(name="supplier")
 @Data
 @Builder
 @AllArgsConstructor
