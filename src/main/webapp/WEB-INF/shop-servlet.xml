@@ -71,7 +71,7 @@
 		<property name="username" value="root" />
 		<property name="password" value="" />
 	</bean>
-	<bean id="dataSource"
+	<bean id="dataSource_CLOUD"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName"
 			value="com.mysql.jdbc.Driver" />
@@ -85,7 +85,7 @@
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="packagesToScan" value="com.fajar*" />
-		<property name="dataSource" ref="dataSource" /><!-- 
+		<property name="dataSource" ref="dataSource_OFFLINE" /><!-- 
 		<property name="sessionFactory" ref="sessionFactory"></property> -->
 		<property name="jpaProperties">
 			<props>

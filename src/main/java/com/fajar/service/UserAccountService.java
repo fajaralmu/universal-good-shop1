@@ -80,7 +80,9 @@ public class UserAccountService {
 		BaseEntity registeredUser = userSessionService.getUserFromRegistry(loggedUser.getLoginKey());
 		BaseEntity clonedUser = new User();
 		BeanUtils.copyProperties(registeredUser, clonedUser, "password","role");
+		
 		response.setEntity(clonedUser);
+		
 		if(httpRequest.getSession(false).getAttribute("requestURI")!=null) {
 			log.info("WILL REDIRECT TO REQUESTED URI: "+httpRequest.getSession(false).getAttribute("requestURI"));
 			response.setRedirectUrl(httpRequest.getSession(false).getAttribute("requestURI").toString());			

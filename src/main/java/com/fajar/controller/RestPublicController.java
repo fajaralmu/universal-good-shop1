@@ -64,7 +64,7 @@ public class RestPublicController {
 	public ShopApiResponse getRequestId(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException { 
 		log.info("register {}", request);
-		ShopApiResponse response = userSessionService.requestId(httpRequest);
+		ShopApiResponse response = userSessionService.requestId(httpRequest, httpResponse);
 		return response;
 	}
 	
