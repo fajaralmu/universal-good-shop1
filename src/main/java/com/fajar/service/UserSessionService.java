@@ -1,6 +1,7 @@
 package com.fajar.service;
 
 import java.lang.reflect.Field;
+import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -144,8 +145,16 @@ public class UserSessionService {
 
 	public User addUserSession(final User dbUser, HttpServletRequest httpRequest, HttpServletResponse httpResponse)
 			throws IllegalAccessException {
-		RegistryModel registryModel = RegistryModel.builder().user(dbUser).userToken(UUID.randomUUID().toString())
-				.build();
+		RegistryModel registryModel = null;
+		try {
+			registryModel = new RegistryModel();
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			throw new IllegalAccessException("Login Failed");
+		}
+		registryModel.setUser(dbUser);
+		registryModel.setUserToken(UUID.randomUUID().toString());
 
 		try {
 			String key = UUID.randomUUID().toString();

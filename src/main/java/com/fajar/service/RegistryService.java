@@ -114,12 +114,19 @@ public class RegistryService {
 				return pageRequestId;
 			}
 
-		} else {
-			RegistryModel model = RegistryModel.builder().tokens(new HashMap<>()).build();
-			model.getTokens().put(pageRequestId, cookie);
-			if (set(PAGE_REQUEST, model)) {
-				return pageRequestId;
+		} else { 
+			try {
+				RegistryModel	model = new  RegistryModel();
+				model.setTokens(new HashMap<>()); 
+				model.getTokens().put(pageRequestId, cookie);
+				if (set(PAGE_REQUEST, model)) {
+					return pageRequestId;
+				}
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			
 		}
 		return null;
 
