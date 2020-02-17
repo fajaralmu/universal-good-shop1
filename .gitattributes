@@ -2,5 +2,5 @@
 *.xml linguist-detectable=false
 *.js linguist-language=Java
 *.java linguist-language=Java
-*.jsp linguist-language=Java
+*.sql linguist-language=Java
 
