@@ -229,7 +229,7 @@
 
 <!-- CONTENT -->
 <div class="content">
-	<h2>${entityProperty.entityName}-Management</h2>
+	<h2>${entityProperty.entityName.toUpperCase()}-Management</h2>
 	<p></p>
 	<a role="button" class="btn btn-secondary" href="<spring:url value="/admin/management" />">Back</a>
 	<c:if test="${entityProperty.editable == true }">

@@ -76,6 +76,7 @@ public class EntityUtil {
 				}
 
 				fieldNames.add(field.getName());
+				
 				entityElement.setIdentity(isId);
 				entityElement.setLableName(lableName.toUpperCase());
 				entityElement.setRequired(formField.required());

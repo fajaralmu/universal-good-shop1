@@ -39,6 +39,10 @@ public class CostFlow extends BaseEntity implements Remote, Serializable{
 	@Column 
 	@FormField(type = FormField.FIELD_TYPE_TEXTAREA)
 	private String description; 
+	@Column 
+	@FormField(type = FormField.FIELD_TYPE_CURRENCY)
+	private long nominal; 
+	
 	@JoinColumn(name="cost_id")
 	@ManyToOne
 	@FormField(entityReferenceName="cost",type=FormField.FIELD_TYPE_FIXED_LIST,optionItemName="name")
