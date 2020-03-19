@@ -6,6 +6,8 @@ import java.util.List;
 
 import com.fajar.annotation.Dto;
 import com.fajar.entity.Category;
+import com.fajar.entity.Cost;
+import com.fajar.entity.CostFlow;
 import com.fajar.entity.Customer;
 import com.fajar.entity.Menu;
 import com.fajar.entity.Product;
@@ -49,6 +51,8 @@ public class ShopApiRequest implements Serializable {
 	private Transaction transaction;
 	private Category category;
 	private RegisteredRequest registeredRequest; 
+	private Cost cost;
+	private CostFlow costFlow;
 	
 	private String destination;
 	private String username;

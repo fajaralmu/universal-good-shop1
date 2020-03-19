@@ -15,15 +15,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 @Dto
 @Entity
-@Table (name="category")
+@Table (name="cost")
 @Data
 @Builder	
 @AllArgsConstructor
 @NoArgsConstructor
-public class Category extends BaseEntity implements Serializable{/**
+public class Cost extends BaseEntity implements Serializable{ 
+	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -1168912843978053906L; 
+	private static final long serialVersionUID = 4969863194918869183L;
 	@FormField 
 	@Column(unique = true)
 	private String name;

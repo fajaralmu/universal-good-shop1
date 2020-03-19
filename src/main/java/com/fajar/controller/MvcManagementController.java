@@ -15,7 +15,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fajar.entity.Category;
+import com.fajar.entity.Cost;
+import com.fajar.entity.CostFlow;
+import com.fajar.entity.Customer;
+import com.fajar.entity.Menu;
+import com.fajar.entity.Message;
+import com.fajar.entity.Product;
+import com.fajar.entity.ProductFlow;
+import com.fajar.entity.RegisteredRequest;
+import com.fajar.entity.ShopProfile;
+import com.fajar.entity.Supplier;
+import com.fajar.entity.Transaction;
+import com.fajar.entity.Unit;
 import com.fajar.entity.User;
+import com.fajar.entity.UserRole;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.service.ComponentService;
 import com.fajar.service.EntityService;
@@ -71,7 +85,7 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty("Unit", null); 
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(Unit.class, null); 
 		model = constructCommonModel(request, entityProperty, model, "Unit", "management");
 		return basePage;
 	}
@@ -88,7 +102,7 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty("ShopProfile", null); 
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(ShopProfile.class, null); 
 		
 		model = constructCommonModel(request, entityProperty, model, "shopProfile", "management");
 		// override singleObject
@@ -109,7 +123,7 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty("Supplier", null);
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(Supplier.class, null);
 
 		model = constructCommonModel(request, entityProperty, model, "Supplier", "management");
 		return basePage;
@@ -127,7 +141,7 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty("RegisteredRequest", null);
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(RegisteredRequest.class, null);
 
 		model = constructCommonModel(request, entityProperty, model, "RegisteredRequest", "management");
 		return basePage;
@@ -145,7 +159,7 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty("Customer", null); 
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(Customer.class, null); 
 		model = constructCommonModel(request, entityProperty, model, "Customer", "management");
 		return basePage;
 	}
@@ -162,7 +176,7 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty("Product", null); 
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(Product.class, null); 
 		model = constructCommonModel(request, entityProperty, model, "Product", "management");
 		return basePage;
 	}
@@ -179,8 +193,43 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty("Category", null); 
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(Category.class, null); 
 		model = constructCommonModel(request, entityProperty, model, "Category", "management");
+		return basePage;
+	}
+	
+	@RequestMapping(value = { "/cost" })
+	public String cost(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUserFromSession(request), "/management/cost");
+		} catch (Exception e) {
+			return ERROR_404_PAGE;
+		}
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(Cost.class, null); 
+		model = constructCommonModel(request, entityProperty, model, "Cost", "management");
+		return basePage;
+	}
+	@RequestMapping(value = { "/costflow" })
+	public String costflow(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUserFromSession(request), "/management/costflow");
+		} catch (Exception e) {
+			return ERROR_404_PAGE;
+		}
+		HashMap<String, Object> listObject = new HashMap<>();
+		listObject.put("costType", entityService.getAllCostType());
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(CostFlow.class, listObject); 
+		model = constructCommonModel(request, entityProperty, model, "CostFlow", "management");
 		return basePage;
 	}
 
@@ -196,7 +245,7 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty("UserRole", null); 
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(UserRole.class, null); 
 		model = constructCommonModel(request, entityProperty, model, "UserRole", "management");
 		return basePage;
 	}
@@ -216,7 +265,7 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty("Message", null); 
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(Message.class, null); 
 		entityProperty.setEditable(false);
 		entityProperty.removeElements("color", "fontColor");
 		System.out.println("================ELEMENTS:"+MyJsonUtil.listToJson(entityProperty.getElements()));
@@ -237,7 +286,7 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty("ProductFlow", null); 
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(ProductFlow.class, null); 
 		model = constructCommonModel(request,entityProperty, model, "productFlow", "management");
 		return basePage;
 	}
@@ -255,7 +304,7 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty("Transaction", null);
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(Transaction.class, null);
 		entityProperty.setEditable(false);
 		entityProperty.setWithDetail(true);
 		model = constructCommonModel(request, entityProperty, model, "Transaction", "transaction", option);
@@ -276,7 +325,7 @@ public class MvcManagementController extends BaseController {
 		}
 		HashMap<String, Object> listObject = new HashMap<>();
 		listObject.put("userRole", entityService.getAllUserRole());
-		EntityProperty entityProperty = EntityUtil.createEntityProperty("User", listObject); 
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(User.class, listObject); 
 		model = constructCommonModel(request, entityProperty, model, "User", "management");
 		return basePage;
 	}
@@ -293,7 +342,7 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty("Menu", null); 
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(Menu.class, null); 
 		model = constructCommonModel(request, entityProperty, model, "Menu", "management");
 		return basePage;
 	} 

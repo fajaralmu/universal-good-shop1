@@ -90,7 +90,7 @@
 		<property name="jpaProperties">
 			<props>
 				<prop key="hibernate.show_sql">false</prop>
-				<prop key="hibernate.hbm2ddl.auto">none</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
 				<prop key="hibernate.current_session_context_class">org.hibernate.context.internal.ThreadLocalSessionContext</prop>
 			</props>

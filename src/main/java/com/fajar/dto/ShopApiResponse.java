@@ -54,12 +54,28 @@ public class ShopApiResponse implements Serializable {
 	private int[] transactionYears;
 	private SessionData sessionData;
 
-	public ShopApiResponse(String code, String message) {
-		this.code = code;
-		this.message = message;
-	}
+	 
 	
 	public static ShopApiResponse failedResponse() {
 		return new ShopApiResponse("01","INVALID REQUEST");
+	}
+	public ShopApiResponse(String code, String message) {
+		this.code = code;
+		this.message = message;
+		this.date = new Date();
+	}
+	public static ShopApiResponse failed() {
+		return   failed("INVALID REQUEST");
+	}
+	
+	public static ShopApiResponse failed(String msg) {
+		return new ShopApiResponse("01", msg);
+	} 
+
+	public static ShopApiResponse success() {
+		return new ShopApiResponse("00", "SUCCESS");
+	}
+	public static ShopApiResponse invalidSession() { 
+		return new ShopApiResponse("02","Invalid Session");
 	}
 }

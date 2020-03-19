@@ -33,7 +33,7 @@ public class Menu extends BaseEntity implements Serializable {
 	@FormField
 	@Column
 	private String name;
-	@FormField(type = "textarea")
+	@FormField(type = FormField.FIELD_TYPE_TEXTAREA)
 	@Column
 	private String description;
 	@FormField
@@ -42,7 +42,7 @@ public class Menu extends BaseEntity implements Serializable {
 	@FormField
 	@Column
 	private String page;
-	@FormField(type = "img", required = false, defaultValue = "DefaultIcon.BMP")
+	@FormField(type = FormField.FIELD_TYPE_IMAGE, required = false, defaultValue = "DefaultIcon.BMP")
 	@Column(name = "icon_url")
 	private String iconUrl;
 	 

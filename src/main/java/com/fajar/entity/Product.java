@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 
 @Dto
 @Entity
-@Table(name="product")
+@Table(name = "product")
 @Data
 @Builder
 @AllArgsConstructor
@@ -32,34 +32,34 @@ public class Product extends BaseEntity implements Serializable {
 	*/
 	private static final long serialVersionUID = 3494963248002164943L;
 	@Column(unique = true)
-	@FormField 
+	@FormField
 	private String code;
 	@Column(unique = true)
-	@FormField 
+	@FormField
 	private String name;
 	@Column
-	@FormField 
+	@FormField
 	private String description;
 	@Column
-	@FormField(type="currency")
+	@FormField(type = "currency")
 	private long price;
 	@Column
-	@FormField 
+	@FormField
 	private String type;
-	@Column(name="image_url", unique = true)
-	@FormField (type="img", required = false,multiple = true, defaultValue="Default.BMP")
+	@Column(name = "image_url", unique = true)
+	@FormField(type = FormField.FIELD_TYPE_IMAGE, required = false, multiple = true, defaultValue = "Default.BMP")
 	private String imageUrl;
 	@JoinColumn(name = "unit_id")
 	@ManyToOne
-	@FormField (entityReferenceName="unit",optionItemName="name",type="dynamiclist")
+	@FormField(entityReferenceName = "unit", optionItemName = "name", type = FormField.FIELD_TYPE_DYNAMIC_LIST)
 	private Unit unit;
 	@JoinColumn(name = "category_id", nullable = true)
 	@ManyToOne
-	@FormField (entityReferenceName="category",optionItemName="name",type="dynamiclist")
+	@FormField(entityReferenceName = "category", optionItemName = "name", type = "dynamiclist")
 	private Category category;
-	
+
 	@Transient
-	private boolean newProduct;	
+	private boolean newProduct;
 	@Transient
 	private int count;
 	@Transient

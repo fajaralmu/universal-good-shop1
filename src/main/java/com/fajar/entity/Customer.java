@@ -17,38 +17,34 @@ import lombok.NoArgsConstructor;
 
 @Dto
 @Entity
-@Table(name="customer")
+@Table(name = "customer")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Customer extends BaseEntity implements Serializable{
+public class Customer extends BaseEntity implements Serializable {
 
-	 /**
-	 * 
-	 */
+	/**
+	* 
+	*/
 	private static final long serialVersionUID = -8365369638070739369L;
 	@Column(unique = true)
-	@FormField 
+	@FormField
 	private String username;
-	@Column(name="display_name")
-	@FormField 
+	@Column(name = "display_name")
+	@FormField
 	private String name;
 	@Column
-	@FormField(required=false, type="textarea") 
+	@FormField(required = false, type = FormField.FIELD_TYPE_TEXTAREA)
 	private String address;
 	@Column
-	@FormField 
+	@FormField
 	private String phone;
-	@Column 
-	private String type;
-	
 	@Column
-	@FormField 
+	private String type;
+
+	@Column
+	@FormField
 	private String email;
 
-	 
-	
-	
-	
 }
