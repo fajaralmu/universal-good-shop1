@@ -63,8 +63,10 @@ public class ProductService {
 
 		request.getFilter().getFieldsFilter().remove("withStock");
 		ShopApiResponse filteredProducts = entityService.filter(request);
+		
 		if (withStock)
 			progressService.sendProgress(1, 1, 20.0, true, requestId);
+		
 		if (filteredProducts == null || filteredProducts.getEntities() == null
 				|| filteredProducts.getEntities().size() == 0) {
 			return new ShopApiResponse("01", "Data Not Found");
@@ -135,7 +137,9 @@ public class ProductService {
 	}
 
 	public ShopApiResponse getProductSales(ShopApiRequest request, String requestId) {
+		
 		progressService.init(requestId);
+		
 		ShopApiResponse response = new ShopApiResponse();
 		Filter filter = request.getFilter();
 		String periodBefore = DateUtil.getFullFirstDate(filter.getMonth(), filter.getYear());

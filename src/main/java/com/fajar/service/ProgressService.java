@@ -23,6 +23,14 @@ public class ProgressService {
 		realtimeService.sendProgress(1,requestId);
 	}
 	
+	/**
+	 * 
+	 * @param progress
+	 * @param maxProgress
+	 * @param percent
+	 * @param newProgress
+	 * @param requestId
+	 */
 	public void sendProgress(double progress, double maxProgress, double percent, boolean newProgress, String requestId) {
 		if(newProgress) {
 			currentProgress = 0.0;
