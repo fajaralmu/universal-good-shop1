@@ -111,7 +111,7 @@ public class EntityService {
 			return saveCommonEntity(request.getCost(), newRecord);
 			
 		case "costflow":
-			return saveCommonEntity(request.getCostFlow(), newRecord);
+			return saveCommonEntity(request.getCostflow(), newRecord);
 
 		}
 

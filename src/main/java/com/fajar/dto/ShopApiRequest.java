@@ -52,7 +52,7 @@ public class ShopApiRequest implements Serializable {
 	private Category category;
 	private RegisteredRequest registeredRequest; 
 	private Cost cost;
-	private CostFlow costFlow;
+	private CostFlow costflow;
 	
 	private String destination;
 	private String username;
