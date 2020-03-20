@@ -5,7 +5,9 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
@@ -166,29 +169,29 @@ public class TransactionService {
 		for (Product product : products) {
 			int totalCount = 0;
 			int used = 0;
-			 
-			Object resultUsedProduct = productFlowRepository.findFlowCount("OUT", product.getId());  
-			 
-			Object resultTotalProduct = productFlowRepository.findFlowCount("IN", product.getId()); 
+
+			Object resultUsedProduct = productFlowRepository.findFlowCount("OUT", product.getId());
+
+			Object resultTotalProduct = productFlowRepository.findFlowCount("IN", product.getId());
 
 			int remainingCount = 0;
 			try {
 				used = Integer.parseInt(resultUsedProduct.toString());
 			} catch (Exception ex) {
 				used = 0;
-				ex.printStackTrace(); 
+				ex.printStackTrace();
 			}
 			try {
-				totalCount =  Integer.parseInt(resultTotalProduct.toString());
+				totalCount = Integer.parseInt(resultTotalProduct.toString());
 			} catch (Exception ex) {
 				totalCount = 0;
-				ex.printStackTrace(); 
+				ex.printStackTrace();
 			}
 			if (totalCount - used > 0) {
 				remainingCount = totalCount - used;
 			}
 
-			product.setCount(remainingCount); 
+			product.setCount(remainingCount);
 
 			progressService.sendProgress(1, products.size(), 30, false, requestId);
 
@@ -215,7 +218,6 @@ public class TransactionService {
 	private List<BaseEntity> getProductFlowsByProduct(String key, Object value, boolean withCount, int limit,
 			boolean match, String requestId) {
 		try {
-
 
 			List<ProductFlow> productFlows = new ArrayList<>();
 			List<InventoryItem> inventories = productInventoryService.getInventoriesByProduct(key, value, match, limit);
@@ -313,13 +315,12 @@ public class TransactionService {
 			cashflow.setModule(request.getFilter().getModule());
 			response.setEntity(cashflow);
 		}
-		response.setTransactionYears(
-				new int[] { getMinTransactionYear() , Calendar.getInstance().get(Calendar.YEAR) });
+		response.setTransactionYears(new int[] { getMinTransactionYear(), Calendar.getInstance().get(Calendar.YEAR) });
 		return response;
 	}
 
 	private CashFlow getCashflow(Integer month, Integer year, final String module) {
-		
+
 		String sql = " select sum(`product_flow`.count) as count, sum(`product_flow`.count * `product_flow`.price) as price,`transaction`.`type` as module from `product_flow`  "
 				+ " LEFT JOIN `transaction` ON  `transaction`.`id` = `product_flow`.`transaction_id`  "
 				+ " WHERE  `transaction`.`type` = '$MODULE' and month(`transaction`.transaction_date) =$MM "
@@ -329,10 +330,10 @@ public class TransactionService {
 
 		Object cashflow = productFlowRepository.getCustomedObjectFromNativeQuery(sql, CashFlow.class);
 		return (CashFlow) cashflow;
-	} 
+	}
 
-	public int getMinTransactionYear( ) {
-		 
+	public int getMinTransactionYear() {
+
 		Object result = transactionRepository.findTransactionYearAsc();
 		if (result == null)
 			return Calendar.getInstance().get(Calendar.YEAR);
@@ -416,6 +417,71 @@ public class TransactionService {
 			System.out.println(string[0] + "-" + string[1]);
 		}
 		System.out.println(getDiffMonth(6, 2019, 12, 2020));
+	}
+
+	private static Map<Integer, CashFlow> parseCashflow(final String module, List<ProductFlow> productFlows) {
+
+		Map<Integer, CashFlow> result = new HashMap<Integer, CashFlow>();
+
+		/**
+		 * filling days
+		 */
+		for (int i = 1; i <= 31; i++) {
+			result.put(i, CashFlow.builder().amount(0L).count(0L).module(module).build());
+		}
+
+		if (productFlows == null || productFlows.size() == 0) {
+			System.out.println("empty cashflow");
+			return result;
+		}
+
+		for (ProductFlow productFlow : productFlows) {
+
+			if (productFlow.getTransaction() == null) {
+				continue;
+			}
+
+			final Date transactionDate = productFlow.getTransaction().getTransactionDate();
+
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(transactionDate);
+			
+			int day = cal.get(Calendar.DAY_OF_MONTH) + 1;
+			long amount = productFlow.getCount() * productFlow.getPrice();
+			
+			CashFlow currentCashflow = result.get(day);
+			currentCashflow.setAmount(currentCashflow.getAmount() + amount);
+			currentCashflow.setCount(currentCashflow.getCount()+productFlow.getCount());
+			
+			result.put(day, currentCashflow);
+
+		}
+
+		return result;
+	}
+
+	public ShopApiResponse getCashflowMonthly(ShopApiRequest request, String requestId) {
+
+		ShopApiResponse response = new ShopApiResponse();
+
+		try {
+
+			Filter filter 	= request.getFilter();
+			int month 		= filter.getMonth();
+			int year 		= filter.getYear();
+
+			List<ProductFlow> flowIncome = productFlowRepository.findByTransactionTypeAndPeriod("OUT", month, year);
+			List<ProductFlow> flowCost = productFlowRepository.findByTransactionTypeAndPeriod("IN", month, year); 
+			
+			response.setMonthlyDetailIncome(parseCashflow("OUT", flowIncome));
+			response.setMonthlyDetailCost(parseCashflow("IN", flowCost));
+			
+		} catch (Exception e) {
+
+			System.out.println("Error: " + e);
+			return ShopApiResponse.failed(e.getMessage());
+		}
+		return response;
 	}
 
 	public ShopApiResponse getCashflowDetail(ShopApiRequest request, String requestId) {

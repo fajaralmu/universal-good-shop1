@@ -30,6 +30,12 @@ public interface ProductFlowRepository extends JpaRepository<ProductFlow, Long>,
 	Object findFlowCount(String type, Long productId);
 	
 	
+	@Query(nativeQuery = true, value="select * from `product_flow`  " + 
+			"	 LEFT JOIN `transaction` ON  `transaction`.`id` = `product_flow`.`transaction_id`   " + 
+			"	  WHERE  `transaction`.`type` = ?1 and month(`transaction`.transaction_date) = ?2  " + 
+			"	  and year(`transaction`.transaction_date) = ?3 and `transaction`.deleted = false and `product_flow`.deleted = false")
+	public List<ProductFlow> findByTransactionTypeAndPeriod(String type, int month, int year);
+	
 	
 //	String sql = "select * from product_flow left join `transaction` on transaction_id = transaction.id "
 //	+ "left join product on product_id = product.id "

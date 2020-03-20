@@ -29,5 +29,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
 			+ "WHERE `product_flow`.product_id = ?1  and `transaction`.`type` = 'IN' "
 			+ "order by `transaction`.transaction_date asc limit 1")
 	List<Transaction> findFirstTransaction(Long productId);
+	
+	@Query(nativeQuery = true, value= "select * from `transaction`where type=?1"
+			+ " and year(`transaction_date`) = ?3 and month(`transaction_date`) = ?2 ")
+	List<Transaction> findTransactionByTypeAndPeriod(String type, int month, int year);
 
 }
