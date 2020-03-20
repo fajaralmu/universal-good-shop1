@@ -467,6 +467,12 @@ public class TransactionService {
 		System.out.println(getDiffMonth(6, 2019, 12, 2020));
 	}
 
+	/**
+	 * construct hashMap with key: DAY_OF_MONTH and value: cashFlow in that day
+	 * @param module
+	 * @param productFlows
+	 * @return
+	 */
 	private static Map<Integer, CashFlow> parseCashflow(final String module, List<ProductFlow> productFlows) {
 
 		Map<Integer, CashFlow> result = new HashMap<Integer, CashFlow>();
@@ -508,6 +514,12 @@ public class TransactionService {
 		return result;
 	}
 
+	/**
+	 * get day by day cashFlow in selected month
+	 * @param request
+	 * @param requestId
+	 * @return
+	 */
 	public ShopApiResponse getCashflowMonthly(ShopApiRequest request, String requestId) {
 
 		ShopApiResponse response = new ShopApiResponse();
