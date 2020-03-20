@@ -1,7 +1,5 @@
 package com.fajar.service;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -73,20 +71,25 @@ public class TransactionService {
 	 * @return
 	 */
 	public ShopApiResponse supplyProduct(ShopApiRequest request, HttpServletRequest httpRequest, String requestId) {
+		
 		progressService.init(requestId);
 		User user = userSessionService.getUserFromSession(httpRequest);
+		
 		if (null == user) {
 			user = userSessionService.getUserFromRegistry(httpRequest);
 			if (null == user)
 				return ShopApiResponse.builder().code("01").message("invalid user").build();
 		}
+		
 		if (request.getProductFlows() == null || request.getProductFlows().isEmpty()
 				|| !userSessionService.hasSession(httpRequest)) {
+			
 			return ShopApiResponse.builder().code("01").message("product is empty").build();
 		}
 
 		List<ProductFlow> productFlows = request.getProductFlows();
 		Optional<Supplier> supplier = supplierRepository.findById(request.getSupplier().getId());
+		
 		if (!supplier.isPresent()) {
 			return ShopApiResponse.builder().code("01").message("supplier is empty").build();
 		}
@@ -104,12 +107,16 @@ public class TransactionService {
 		}
 
 		try {
+			
 			Transaction savedTransaction = productInventoryService.saveSupplyTransaction(productFlows, requestId, user,
 					supplier.get(), new Date());
+			
 			return ShopApiResponse.builder().transaction(savedTransaction).build();
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return ShopApiResponse.builder().code("01").message(ex.getMessage()).build();
+			
 		} finally {
 			progressService.sendComplete(requestId);
 		}
@@ -131,18 +138,21 @@ public class TransactionService {
 			return null;
 		}
 		productFlow = dbProductFlow.get();
+		
 		productFlow.setTransactionId(productFlow.getTransaction().getId());
 
-		String sql = "select (select `count` from product_flow where id=$FLOW_ID) as total, "
-				+ "(select sum(count) as total_count from product_flow where flow_ref_id=$FLOW_ID and deleted!=1) as used ";
-		sql = sql.replace("$FLOW_ID", productFlow.getId().toString());
-		Query query = productFlowRepository.createNativeQuery(sql);
-		Object result = query.getSingleResult();
+		String sql 		= "select (select `count` from product_flow where id=$FLOW_ID) as total, "
+							+ "(select sum(count) as total_count from product_flow where flow_ref_id=$FLOW_ID and deleted!=1) as used ";
+		sql 			= sql.replace("$FLOW_ID", productFlow.getId().toString());
+		
+		Query query 	= productFlowRepository.createNativeQuery(sql);
+		Object result 	= query.getSingleResult();
 
 		Object[] objectList = (Object[]) result;
-		Integer total = objectList[0] == null ? 0 : Integer.parseInt(objectList[0].toString());
-		Integer used = objectList[1] == null ? 0 : Integer.parseInt(objectList[1].toString());
-		Integer remaining = total - used;
+		
+		Integer total 		= objectList[0] == null ? 0 : Integer.parseInt(objectList[0].toString());
+		Integer used 		= objectList[1] == null ? 0 : Integer.parseInt(objectList[1].toString());
+		Integer remaining 	= total - used;
 
 		ProductFlowStock productFlowStock = new ProductFlowStock();
 		productFlowStock.setProductFlow(productFlow);
@@ -155,12 +165,16 @@ public class TransactionService {
 
 	public ShopApiResponse stockInfo(ShopApiRequest request) {
 		ProductFlowStock productFlowStock = getSingleStock(request.getProductFlow());
+		
 		if (productFlowStock == null) {
 			return ShopApiResponse.failedResponse();
 		}
-		productFlowStock.getProductFlow().getTransaction().setUser(null);
+
 		Product product = productFlowStock.getProductFlow().getProduct();
+		
+		productFlowStock.getProductFlow().getTransaction().setUser(null);
 		productFlowStock.getProductFlow().setProduct(EntityUtil.validateDefaultValue(product));
+		
 		return ShopApiResponse.builder().productFlowStock(productFlowStock).build();
 	}
 
@@ -249,12 +263,18 @@ public class TransactionService {
 	 */
 	public ShopApiResponse addPurchaseTransaction(ShopApiRequest request, HttpServletRequest httpRequest,
 			String requestId) {
+		
 		progressService.init(requestId);
+		
 		User user = userSessionService.getUserFromSession(httpRequest);
+		
 		if (null == user) {
 			user = userSessionService.getUserFromRegistry(httpRequest);
-			if (null == user)
+			
+			if (null == user) {
 				return ShopApiResponse.builder().code("01").message("invalid user").build();
+			}
+			
 		}
 		progressService.sendProgress(1, 1, 10, false, requestId);
 
@@ -262,11 +282,15 @@ public class TransactionService {
 		 * validate products and customer
 		 */
 		Optional<Customer> dbCustomer = customerRepository.findById(request.getCustomer().getId());
+		
 		if (dbCustomer.isPresent() == false) {
 			return ShopApiResponse.builder().code("01").message("invalid Customer").build();
 		}
+		
 		progressService.sendProgress(1, 1, 10, false, requestId);
+		
 		List<ProductFlow> productFlows = request.getProductFlows();
+		
 		for (ProductFlow productFlow : productFlows) {
 			Optional<ProductFlow> dbFlow = productFlowRepository.findById(productFlow.getFlowReferenceId());
 
@@ -275,9 +299,13 @@ public class TransactionService {
 			} else {
 				ProductFlow refFlow = dbFlow.get();
 				ProductFlowStock flowStock = getSingleStock(refFlow);
-				if (null == flowStock)
+				
+				if (null == flowStock) {
 					flowStock = new ProductFlowStock();
+				}
+				
 				Integer remainingStock = flowStock.getRemainingStock();
+				
 				if (productFlow.getCount() > remainingStock) {
 					// continue;
 				} else {
@@ -295,9 +323,11 @@ public class TransactionService {
 			Transaction newTransaction = productInventoryService.savePurchaseTransaction(new Date(), productFlows,
 					requestId, user, dbCustomer.get());
 			return ShopApiResponse.builder().transaction(newTransaction).build();
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return ShopApiResponse.builder().code("-1").message(ex.getMessage()).build();
+			
 		} finally {
 			progressService.sendComplete(requestId);
 		}
@@ -305,10 +335,15 @@ public class TransactionService {
 
 //	
 	public ShopApiResponse getCashFlow(ShopApiRequest request) {
+		
 		ShopApiResponse response = new ShopApiResponse();
+		
 		// getTransaction
-		CashFlow cashflow = getCashflow(request.getFilter().getMonth(), request.getFilter().getYear(),
-				request.getFilter().getModule());
+		int month			= request.getFilter().getMonth();
+		int year			= request.getFilter().getYear();
+		String module		= request.getFilter().getModule();
+		CashFlow cashflow 	= getCashflow(month, year, module);
+		
 		if (cashflow != null) {
 			cashflow.setYear(request.getFilter().getYear());
 			cashflow.setMonth(request.getFilter().getMonth());
@@ -335,8 +370,10 @@ public class TransactionService {
 	public int getMinTransactionYear() {
 
 		Object result = transactionRepository.findTransactionYearAsc();
+		
 		if (result == null)
 			return Calendar.getInstance().get(Calendar.YEAR);
+		
 		int resultInt = Integer.parseInt(result.toString());
 		return resultInt;
 
@@ -378,11 +415,18 @@ public class TransactionService {
 	public static int getDiffMonth(int m0, int y0, int m1, int y1) {
 		int diff = 0;
 		for (int i = y0; i <= y1; i++) {
+			
 			int beginMonth = 1;
-			if (i == y0)
+			
+			if (i == y0) {
+				
 				beginMonth = m0;
+			}
+			
 			for (int j = beginMonth; j <= 12; j++) {
+				
 				if (i == y1 && j == m1) {
+					
 					return diff;
 				}
 				diff++;
@@ -394,11 +438,13 @@ public class TransactionService {
 
 	public static List<int[]> getMonths(Calendar calendar, int diff) {
 
-		Integer currentMonth = calendar.get(Calendar.MONTH) + 1;
-		Integer currentYear = calendar.get(Calendar.YEAR);
-		List<int[]> periods = new ArrayList<>();
-		String monthString = currentMonth >= 10 ? currentMonth.toString() : "0" + currentMonth;
+		Integer currentMonth 	= calendar.get(Calendar.MONTH) + 1;
+		Integer currentYear 	= calendar.get(Calendar.YEAR);
+		List<int[]> periods 	= new ArrayList<>();
+		String monthString 		= currentMonth >= 10 ? currentMonth.toString() : "0" + currentMonth;
+		
 		periods.add(new int[] { currentYear, Integer.parseInt(monthString) });
+		
 		for (int i = 1; i <= diff - 1; i++) {
 			currentMonth--;
 			if (currentMonth <= 0) {
@@ -413,9 +459,11 @@ public class TransactionService {
 
 	public static void main(String[] args) {
 		List<int[]> months = getMonths(Calendar.getInstance(), 20);
+		
 		for (int[] string : months) {
 			System.out.println(string[0] + "-" + string[1]);
 		}
+		
 		System.out.println(getDiffMonth(6, 2019, 12, 2020));
 	}
 
@@ -446,7 +494,7 @@ public class TransactionService {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(transactionDate);
 			
-			int day = cal.get(Calendar.DAY_OF_MONTH) + 1;
+			int day 	= cal.get(Calendar.DAY_OF_MONTH) + 1;
 			long amount = productFlow.getCount() * productFlow.getPrice();
 			
 			CashFlow currentCashflow = result.get(day);
@@ -485,15 +533,22 @@ public class TransactionService {
 	}
 
 	public ShopApiResponse getCashflowDetail(ShopApiRequest request, String requestId) {
+		
 		progressService.init(requestId);
-		int diffMonth = getDiffMonth(request.getFilter().getMonth(), request.getFilter().getYear(),
-				request.getFilter().getMonthTo(), request.getFilter().getYearTo());
-		Calendar cal = Calendar.getInstance();
+		
+		int monthFrom	= request.getFilter().getMonth();
+		int yearFrom	= request.getFilter().getYear();
+		int monthTo		= request.getFilter().getMonthTo();
+		int yearTo		= request.getFilter().getYearTo();		
+		int diffMonth	= getDiffMonth(monthFrom, yearFrom, monthTo, yearTo); 
+		Calendar cal	= Calendar.getInstance();
+		
 		cal.set(request.getFilter().getYearTo(), request.getFilter().getMonthTo(), 1);
-		List<int[]> periods = getMonths(cal, diffMonth);
-		List<BaseEntity> supplies = new ArrayList<>();
-		List<BaseEntity> purchases = new ArrayList<>();
-		Long maxValue = 0L;
+		
+		List<int[]> periods 		= getMonths(cal, diffMonth);
+		List<BaseEntity> supplies 	= new ArrayList<>();
+		List<BaseEntity> purchases 	= new ArrayList<>();
+		Long maxValue 				= 0L;
 
 		for (int[] period : periods) {
 

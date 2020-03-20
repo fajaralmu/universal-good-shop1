@@ -111,6 +111,17 @@ public class RestTransactionController {
 		return response;
 	}
 	
+	@PostMapping(value = "/monthlycashflow", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ShopApiResponse monthlyDetailCasflow(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+		log.info("monthlycashflow {}", request);
+		if(!userSessionService.hasSession(httpRequest)) {
+			return ShopApiResponse.failedResponse();
+		}
+		ShopApiResponse response = transactionService.getCashflowMonthly(request, httpRequest.getHeader("requestId"));
+		return response;
+	}
+	
 	@PostMapping(value = "/productsales", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse productsales(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
