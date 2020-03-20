@@ -21,7 +21,7 @@ function updateMovement() {
 function connectToWebsocket(callback1, callback2, callback3) {
 	let stompClients;
 	 
-	var socket = new SockJS('/shop-app');
+	var socket = new SockJS('/universal-good-shop/shop-app');
 	stompClients = Stomp.over(socket);
 	stompClients.connect({}, function(frame) {
 		// setConnected(true);

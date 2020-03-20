@@ -55,6 +55,7 @@
 			</div>
 			<div class="input-group-append">
 				<button class="btn btn-outline-secondary" onclick="getCashflow()">OK</button>
+				<button class="btn btn-outline-secondary" onclick="getCashflowThisMonth()">Detail In This Month</button>
 			</div>
 		</div>
 		<p></p>
@@ -201,6 +202,28 @@
 		
 		fetchCashflow(selectMonth.value, selectYear.value, "IN");
 		fetchCashflow(selectMonth.value, selectYear.value, "OUT");
+	}
+	
+	function getCashflowThisMonth(){
+		infoLoading();
+		var requestObject = {
+				"filter":{
+					"year":selectYear.value,
+					"month":selectMonth.value 
+				}
+		};
+		
+		console.log("get cashflow", requestObject);
+		postReq("<spring:url value="/api/transaction/monthlycashflow" />"  ,
+				requestObject, function(xhr) {
+					var response = (xhr.data);
+					if (response != null && response.code == "00") {
+						 
+					} else {
+						alert("Failed getting cashflow: "+module);
+					} 
+					infoDone();
+				});
 	}
 	
 	function showDetail(){
