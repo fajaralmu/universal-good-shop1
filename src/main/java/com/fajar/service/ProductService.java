@@ -103,7 +103,7 @@ public class ProductService {
 					progressService.sendProgress(1, products.size(), 20, false, requestId);
 			}
 		}
-		if (withStock)
+		//if (withStock)
 			progressService.sendComplete(requestId);
 		filteredProducts.setFilter(request.getFilter());
 		filteredProducts.setEntities(convertList(products));
