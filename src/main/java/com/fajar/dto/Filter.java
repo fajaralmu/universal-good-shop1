@@ -34,6 +34,8 @@ public class Filter implements Serializable {
 	@Builder.Default
 	private boolean exacts = false;
 	@Builder.Default
+	private Integer day = 0;
+	@Builder.Default
 	private Integer year = 0;
 	@Builder.Default
 	private Integer month = 0;

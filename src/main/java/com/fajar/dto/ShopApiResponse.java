@@ -58,6 +58,7 @@ public class ShopApiResponse implements Serializable {
 	private Map<Integer, CashFlow> monthlyDetailIncome;
 	private Map<Integer, CashFlow> monthlyDetailCost;
 	 
+	private Map<String, CashFlow> dailyCashflow;
 	
 	public static ShopApiResponse failedResponse() {
 		return new ShopApiResponse("01","INVALID REQUEST");

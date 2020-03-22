@@ -5,6 +5,7 @@ import java.io.Serializable;
 import com.fajar.annotation.CustomEntity;
 import com.fajar.annotation.Dto;
 import com.fajar.entity.BaseEntity;
+import com.fajar.entity.Product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,5 +30,6 @@ public class CashFlow extends BaseEntity implements Serializable{
 	private String module;
 	private int year;
 	private int month;
+	private Product product;
 	
 }
