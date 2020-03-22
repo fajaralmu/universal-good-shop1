@@ -10,7 +10,9 @@
 	<div id="monthly-detail-wrapper"
 		style="border: solid 1px blue; display: none">
 		<div id="monthly-detail-title" style="padding: 5px;">
-			<h3 id="title">Monthly Detail</h3>
+			<h3 id="title">
+				Monthly Detail <small id="info-period"></small>
+			</h3>
 			<button class="btn btn-sm btn-secondary"
 				onclick="hide('monthly-detail-wrapper'); show('btn-show-monthly')">Close</button>
 		</div>
@@ -35,7 +37,8 @@
 	//detail cashflow
 	var tableDetail = document.getElementById("detail-cashflow");
 	var monthlyDetail = document.getElementById("monthly-detail");
-	
+	var infoDetailPeriod = document.getElementById("info-period");
+
 	var selectedMonth = 0;
 	var selectedYear = 0;
 
@@ -146,10 +149,10 @@
 
 	function loadMonthlyCashflow(month, year) {
 		infoLoading();
-		
-		selectedMonth	= month;
-		selectedYear	= year;
-		
+
+		selectedMonth = month;
+		selectedYear = year;
+
 		var requestObject = {
 			"filter" : {
 				"year" : year,
@@ -172,6 +175,7 @@
 	function populateMonthlyDetail(response) {
 
 		monthlyDetail.innerHTML = "";
+		infoDetailPeriod.innerHTML = selectedMonth + " - " + selectedYear;
 
 		let thWrapper = createGridWrapper(4);
 		thWrapper.innerHTML = "<p>Date</p><p>Module</p><p>Count</p><p>Amount</p>";
@@ -185,16 +189,15 @@
 			detail income
 		 */
 		for (let i = 1; i <= 31; i++) {
-			
+
 			const rowWrapper = createGridWrapper(4, "20%");
 			rowWrapper.setAttribute("class", "clickable center-aligned");
 
-			
 			/*
 				cash
-			*/
-			
-			const cashflow = detailIncome[i]; 
+			 */
+
+			const cashflow = detailIncome[i];
 
 			rowWrapper.appendChild(createLabel(i));
 			rowWrapper.appendChild(createLabel(cashflow.module));
@@ -202,11 +205,11 @@
 					.appendChild(createLabel(beautifyNominal(cashflow.count)));
 			rowWrapper
 					.appendChild(createLabel(beautifyNominal(cashflow.amount)));
-			
+
 			/*
 				cost
-			*/
-			const costFlow = detailCost[i]; 
+			 */
+			const costFlow = detailCost[i];
 
 			rowWrapper.appendChild(createLabel(""));
 			rowWrapper.appendChild(createLabel(costFlow.module));
@@ -214,9 +217,8 @@
 					.appendChild(createLabel(beautifyNominal(costFlow.count)));
 			rowWrapper
 					.appendChild(createLabel(beautifyNominal(costFlow.amount)));
-			
-			
-			rowWrapper.onclick = function(){
+
+			rowWrapper.onclick = function() {
 				loadDailyCashflow(i, selectedMonth, selectedYear);
 			}
 
