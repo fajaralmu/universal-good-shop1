@@ -52,7 +52,7 @@ function showDetail(){
 							i+1,
 							"<span class=\"clickable\" onclick=\"loadMonthlyCashflow("+month+","+year+")\"> "+ month+"-"+ year +"</span>",
 							"<p style=\" font-size:0.8em;text-align:right\">"+beautifyNominal(cashflowSupplies.amount) +" ("+beautifyNominal(cashflowSupplies.count)+" unit)</p>"+
-							"<p  style=\" font-size:0.8em;text-align:right\">"+beautifyNominal(cashflowPurchases.amount) +" ("+beautifyNominal(cashflowPurchases.count)+" unit)</p> setting= <style>width:200px</style>",
+							"<p style=\" font-size:0.8em;text-align:right\">"+beautifyNominal(cashflowPurchases.amount) +" ("+beautifyNominal(cashflowPurchases.count)+" unit)</p> setting= <style>width:200px</style>",
 							//supply
 							"<div class=\"rounded-right\" style=\" height: 30px;width:"+percentSupplies+"; font-size:0.7em; background-color:orange\">"+
 							"</div>"+
