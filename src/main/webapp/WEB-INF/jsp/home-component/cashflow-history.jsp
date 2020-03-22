@@ -5,7 +5,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div id="content-detail" style="display: none;">
 	<button id="btn-show-monthly" class="btn btn-sm btn-secondary"
-		onclick="show('monthly-detail-wrapper'); hide('btn-show-monthly')">Show Monthly Detail</button>
+		onclick="show('monthly-detail-wrapper'); hide('btn-show-monthly')">Show
+		Monthly Detail</button>
 	<div id="monthly-detail-wrapper"
 		style="border: solid 1px blue; display: none">
 		<div id="monthly-detail-title" style="padding: 5px;">
@@ -14,9 +15,7 @@
 				onclick="hide('monthly-detail-wrapper'); show('btn-show-monthly')">Close</button>
 		</div>
 		<div style="overflow: scroll; height: 300px;">
-			<div id="monthly-detail"
-				style="display: grid; grid-template-columns: auto auto auto auto; padding: 5px;">
-			</div>
+			<div id="monthly-detail" style="padding: 5px;"></div>
 		</div>
 	</div>
 	<div id="main-detail">
@@ -36,6 +35,9 @@
 	//detail cashflow
 	var tableDetail = document.getElementById("detail-cashflow");
 	var monthlyDetail = document.getElementById("monthly-detail");
+	
+	var selectedMonth = 0;
+	var selectedYear = 0;
 
 	function showDetail() {
 
@@ -120,8 +122,34 @@
 		showDetail();
 	}
 
+	function loadDailyCashflow(day, month, year) {
+		infoLoading();
+		var requestObject = {
+			"filter" : {
+				"year" : year,
+				"month" : month,
+				"day" : day
+			}
+		};
+
+		postReq("<spring:url value="/api/transaction/dailycashflow" />",
+				requestObject, function(xhr) {
+					var response = (xhr.data);
+					if (response != null && response.code == "00") {
+
+					} else {
+						alert("Failed getting cashflow: ");
+					}
+					infoDone();
+				});
+	}
+
 	function loadMonthlyCashflow(month, year) {
 		infoLoading();
+		
+		selectedMonth	= month;
+		selectedYear	= year;
+		
 		var requestObject = {
 			"filter" : {
 				"year" : year,
@@ -143,7 +171,12 @@
 
 	function populateMonthlyDetail(response) {
 
-		monthlyDetail.innerHTML = "<p>Date</p><p>Module</p><p>Count</p><p>Amount</p>";
+		monthlyDetail.innerHTML = "";
+
+		let thWrapper = createGridWrapper(4);
+		thWrapper.innerHTML = "<p>Date</p><p>Module</p><p>Count</p><p>Amount</p>";
+
+		monthlyDetail.appendChild(thWrapper);
 
 		let detailIncome = response.monthlyDetailIncome;
 		let detailCost = response.monthlyDetailCost;
@@ -152,24 +185,42 @@
 			detail income
 		 */
 		for (let i = 1; i <= 31; i++) {
-			const cashflow = detailIncome[i];
-			monthlyDetail.appendChild(createLabel(i));
-			monthlyDetail.appendChild(createLabel(cashflow.module));
-			monthlyDetail
-					.appendChild(createLabel(beautifyNominal(cashflow.count)));
-			monthlyDetail
-					.appendChild(createLabel(beautifyNominal(cashflow.amount)));
-		}
+			
+			const rowWrapper = createGridWrapper(4, "20%");
+			rowWrapper.setAttribute("class", "clickable center-aligned");
 
-		/*
-			detail cost
-		 */
-		for (let i = 1; i <= 31; i++) {
-			const cashflow = detailCost[i];
-			monthlyDetail.appendChild(createLabel(i));
-			monthlyDetail.appendChild(createLabel(cashflow.module));
-			monthlyDetail.appendChild(createLabel(cashflow.count));
-			monthlyDetail.appendChild(createLabel(cashflow.amount));
+			
+			/*
+				cash
+			*/
+			
+			const cashflow = detailIncome[i]; 
+
+			rowWrapper.appendChild(createLabel(i));
+			rowWrapper.appendChild(createLabel(cashflow.module));
+			rowWrapper
+					.appendChild(createLabel(beautifyNominal(cashflow.count)));
+			rowWrapper
+					.appendChild(createLabel(beautifyNominal(cashflow.amount)));
+			
+			/*
+				cost
+			*/
+			const costFlow = detailCost[i]; 
+
+			rowWrapper.appendChild(createLabel(""));
+			rowWrapper.appendChild(createLabel(costFlow.module));
+			rowWrapper
+					.appendChild(createLabel(beautifyNominal(costFlow.count)));
+			rowWrapper
+					.appendChild(createLabel(beautifyNominal(costFlow.amount)));
+			
+			
+			rowWrapper.onclick = function(){
+				loadDailyCashflow(i, selectedMonth, selectedYear);
+			}
+
+			monthlyDetail.appendChild(rowWrapper);
 		}
 
 		show('monthly-detail-wrapper');

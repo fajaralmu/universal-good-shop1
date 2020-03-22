@@ -139,8 +139,19 @@ function createImgTag(id, className, w, h, src){
 	return img;
 }
 
+function createGridWrapper(cols, width){
+	let div = document.createElement("div");
+	div.style.display = "grid";
+	
+	if(width == null){
+		div.style.gridTemplateColumns = "auto ".repeat(cols);
+	}else{
+		div.style.gridTemplateColumns = (width+" ").repeat(cols);
+	}
+	return div;
+}
 
-/** BEGIN ENTITY DETAIL**/
+/** BEGIN ENTITY DETAIL* */
 function createTableHeaderByColumns(columns, ignoreNumber){
 	console.log("Headers", columns);
 	
@@ -157,7 +168,7 @@ function createTableHeaderByColumns(columns, ignoreNumber){
 	return row;
 }
 
-//return array of TR !!!!
+// return array of TR !!!!
 function createTableBody(columns, entities ,ignoreNumber){
 	 createTableBody(columns, entities, 0,ignoreNumber);
 }
@@ -224,10 +235,10 @@ function createTableBody(columns, entities, beginNumber,ignoreNumber){
 	return rows;
 }
 
-/**END ENTITY DETAIL**/
+/** END ENTITY DETAIL* */
 
 function createFilterInputDate(inputGroup, fieldName, callback){
-	//input day
+	// input day
 	let inputDay = createInputText(
 			"filter-" + fieldName + "-day", "filter-field form-control"); 
 	inputDay.setAttribute("field", fieldName + "-day");
@@ -235,7 +246,7 @@ function createFilterInputDate(inputGroup, fieldName, callback){
 	inputDay.onkeyup = function() {
 		callback();
 	}
-	//input month
+	// input month
 	let inputMonth = createInputText("filter-" + fieldName
 			+ "-month", "filter-field form-control");
 	inputMonth.setAttribute("field", fieldName + "-month");
@@ -243,7 +254,7 @@ function createFilterInputDate(inputGroup, fieldName, callback){
 	inputMonth.onkeyup = function() {
 		callback();
 	}
-	//input year
+	// input year
 	let inputYear = createInputText(
 			"filter-" + fieldName + "-year", "filter-field form-control");
 	inputYear.setAttribute("field", fieldName + "-year"); 
@@ -267,12 +278,12 @@ function createTBodyWithGivenValue(rowList){
 			let column = document.createElement("td");
 			if(null!=cell && typeof(cell) == "string" && cell.includes("setting=")){
 				var setting = cell.split("setting=")[1];
-				//colspan
+				// colspan
 				if(setting.includes("<colspan>")){
 					var collspan = setting.split("<colspan>")[1];
 					column.setAttribute("colspan",collspan.split("</colspan>")[0]);
 				}
-				//style
+				// style
 				if(setting.includes("<style>")){
 					var style = setting.split("<style>")[1].split("</style>")[0];
 					column.setAttribute("style",style);
@@ -346,14 +357,14 @@ function createNavigationButtons(navigationPanel,currentPage,totalData,limit,but
 			lastSeparated = true;
 			var lastSeparator = document.createElement("span");
 			lastSeparator.innerHTML = "...";
-	//		navigationPanel.appendChild(lastSeparator);
+	// navigationPanel.appendChild(lastSeparator);
 
 		}
 		if (!included && i != 0 && !firstSeparated) {
 			firstSeparated = true;
 			var firstSeparator = document.createElement("span");
 			firstSeparator.innerHTML = "...";
-		//	navigationPanel.appendChild(firstSeparator);
+		// navigationPanel.appendChild(firstSeparator);
 
 		}
 		if (!included && i != 0 && i != (buttonCount - 1)) {

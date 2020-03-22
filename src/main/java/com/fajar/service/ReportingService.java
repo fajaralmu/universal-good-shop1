@@ -238,7 +238,7 @@ public class ReportingService {
 
 			response.setMonthlyDetailIncome(parseCashflow("OUT", flowIncome));
 			response.setMonthlyDetailCost(parseCashflow("IN", flowCost));
-
+			response.setFilter(filter);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error: " + e);
@@ -300,7 +300,12 @@ public class ReportingService {
 		return response;
 	}
 	
-	
+	/**
+	 * get cash flow in specified DAY
+	 * @param shopApiRequest
+	 * @param requestId
+	 * @return
+	 */
 	public ShopApiResponse getCashflowDaily(ShopApiRequest shopApiRequest, String requestId) {
 		
 		ShopApiResponse response = new ShopApiResponse();
@@ -321,6 +326,7 @@ public class ReportingService {
 			List<ProductFlow> productSold = productFlowRepository.findByTransactionTypeAndPeriod(type, day, month, year);
 		//	List<ProductFlow> productSupp = productFlowRepository.findByTransactionTypeAndPeriod(type, day, month, year); 
 			response.setDailyCashflow(parseDailyCashflow(productSold));
+			response.setFilter(filter);
 			
 			return response ;
 			

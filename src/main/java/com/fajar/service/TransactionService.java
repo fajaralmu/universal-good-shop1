@@ -1,11 +1,8 @@
 package com.fajar.service;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -15,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
@@ -27,12 +23,10 @@ import com.fajar.entity.ProductFlowStock;
 import com.fajar.entity.Supplier;
 import com.fajar.entity.Transaction;
 import com.fajar.entity.User;
-import com.fajar.entity.custom.CashFlow;
 import com.fajar.repository.CustomerRepository;
 import com.fajar.repository.ProductFlowRepository;
 import com.fajar.repository.ProductRepository;
 import com.fajar.repository.SupplierRepository;
-import com.fajar.repository.TransactionRepository;
 import com.fajar.util.CollectionUtil;
 import com.fajar.util.EntityUtil;
 
@@ -363,5 +357,9 @@ public class TransactionService {
 	public ShopApiResponse getCashflowMonthly(ShopApiRequest request, String requestId) { 
 		return reportingService.getCashflowMonthly(request, requestId);
 	} 
+	
+	public ShopApiResponse getCashflowDaily(ShopApiRequest request, String requestId) {
+		return reportingService.getCashflowDaily(request, requestId);
+	}
 	
 }

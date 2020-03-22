@@ -102,8 +102,15 @@ a :hover{
 	color:white;
 }
 
+/******* COMMON **********/
+
 .clickable:hover{
 	cursor: pointer;
+	background-color: gray;
+}
+
+.center-aligned{
+	text-align: center;
 }
 
 /******MENUS*******/
@@ -111,3 +118,5 @@ a :hover{
 ul#menu-1 li{
 	display: inline;
 }
+
+/******* REPORT *******/
