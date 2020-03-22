@@ -4,12 +4,16 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div id="content-detail" style="display: none;">
-	<div id="monthly-detail-wrapper" style="border: solid 1px blue; display: none">
+	<button id="btn-show-monthly" class="btn btn-sm btn-secondary"
+		onclick="show('monthly-detail-wrapper'); hide('btn-show-monthly')">Show Monthly Detail</button>
+	<div id="monthly-detail-wrapper"
+		style="border: solid 1px blue; display: none">
 		<div id="monthly-detail-title" style="padding: 5px;">
+			<h3 id="title">Monthly Detail</h3>
 			<button class="btn btn-sm btn-secondary"
-				onclick="hide('monthly-detail-wrapper')">Close</button>
+				onclick="hide('monthly-detail-wrapper'); show('btn-show-monthly')">Close</button>
 		</div>
-		<div style=" overflow: scroll; height: 80%;">
+		<div style="overflow: scroll; height: 300px;">
 			<div id="monthly-detail"
 				style="display: grid; grid-template-columns: auto auto auto auto; padding: 5px;">
 			</div>
@@ -169,6 +173,7 @@
 		}
 
 		show('monthly-detail-wrapper');
+		hide('btn-show-monthly');
 
 	}
 </script>
