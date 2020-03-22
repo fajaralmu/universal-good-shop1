@@ -67,6 +67,11 @@
 			}
 		},null, null);
 	}
-	initProgressWebsocket();
+	
+	document.body.onload = function (){
+		console.log("init progress websocket");
+		initProgressWebsocket();
+		
+	}
 	</script></body>
 </html>

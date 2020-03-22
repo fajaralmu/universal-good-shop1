@@ -34,7 +34,7 @@ public class RealtimeService2 {
 	}
 
 	public void sendProgress(ShopApiResponse shopApiResponse) {
-		webSocket.convertAndSend("/wsResp/progress", shopApiResponse);
+		webSocket.convertAndSend("/wsResp/progress/"+shopApiResponse.getRequestId(), shopApiResponse);
 	}
 
 

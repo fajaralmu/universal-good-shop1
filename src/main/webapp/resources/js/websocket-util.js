@@ -20,6 +20,7 @@ function updateMovement() {
 
 function connectToWebsocket(callback1, callback2, callback3) {
 	let stompClients;
+	const requestIdElement = document.getElementById("request-id");
 	 
 	var socket = new SockJS('/universal-good-shop/shop-app');
 	stompClients = Stomp.over(socket);
@@ -30,14 +31,19 @@ function connectToWebsocket(callback1, callback2, callback3) {
 		// document.getElementById("ws-info").innerHTML =
 		// stompClient.ws._transport.ws.url;
 
-		stompClients.subscribe("/wsResp/progress", function(response) {
-			if(!callback1) return;
-			console.log("Websocket Updated...");
-			var respObject = JSON.parse(response.body);
-			callback1(respObject);
-			// document.getElementById("realtime-info").innerHTML =
-			// response.body;
-		});
+		if(requestIdElement != null){
+		
+			stompClients.subscribe("/wsResp/progress/"+requestIdElement.value, function(response) {
+				if(!callback1) return;
+				
+				
+				console.log("Websocket Updated...");
+				var respObject = JSON.parse(response.body);
+				callback1(respObject);
+				// document.getElementById("realtime-info").innerHTML =
+				// response.body;
+			});
+		}
 
 		stompClients.subscribe("/wsResp/sessions", function(response) {
 			if(!callback2) return;
