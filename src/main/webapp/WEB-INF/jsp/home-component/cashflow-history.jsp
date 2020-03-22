@@ -3,25 +3,30 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<div id="content-detail" style="display: none">
-	<div id="monthly-detail-wrapper"
-		style="overflow: scroll; height: 300px; padding: 5px; border: solid 1px blue">
-		<div id="monthly-detail"
-			style="display: grid; grid-template-columns: auto auto auto auto; padding: 5px;">
-
+<div id="content-detail" style="display: none;">
+	<div id="monthly-detail-wrapper" style="border: solid 1px blue; display: none">
+		<div id="monthly-detail-title" style="padding: 5px;">
+			<button class="btn btn-sm btn-secondary"
+				onclick="hide('monthly-detail-wrapper')">Close</button>
 		</div>
-		<div id="main-detail">
-			<h3>Cashflow History</h3>
-			<button id="sdsjdh" class="btn btn-info"
-				onclick="show('filter-detail')">Show Filter</button>
-			<button class="btn btn-secondary"
-				onclick="hide('content-detail');hide('filter-detail'); show('content-dashboard')">Close</button>
-
-			<table id="detail-cashflow" class="table">
-
-			</table>
+		<div style=" overflow: scroll; height: 80%;">
+			<div id="monthly-detail"
+				style="display: grid; grid-template-columns: auto auto auto auto; padding: 5px;">
+			</div>
 		</div>
 	</div>
+	<div id="main-detail">
+		<h3>Cashflow History</h3>
+		<button id="sdsjdh" class="btn btn-info"
+			onclick="show('filter-detail')">Show Filter</button>
+		<button class="btn btn-secondary"
+			onclick="hide('content-detail');hide('filter-detail'); show('content-dashboard')">Close</button>
+
+		<table id="detail-cashflow" class="table">
+
+		</table>
+	</div>
+
 </div>
 <script type="text/javascript">
 	//detail cashflow
@@ -134,8 +139,7 @@
 
 	function populateMonthlyDetail(response) {
 
-		monthlyDetail.innerHTML = "<p>Date</p><p>Module</p><p>Count</p><p>Amount</p>"
-				+ "<p></p><p></p><p></p><button class=\"btn btn-secondary\" onclick=\"hide('monthly-detail-wrapper')\">Close</button>";
+		monthlyDetail.innerHTML = "<p>Date</p><p>Module</p><p>Count</p><p>Amount</p>";
 
 		let detailIncome = response.monthlyDetailIncome;
 		let detailCost = response.monthlyDetailCost;
@@ -163,6 +167,8 @@
 			monthlyDetail.appendChild(createLabel(cashflow.count));
 			monthlyDetail.appendChild(createLabel(cashflow.amount));
 		}
+
+		show('monthly-detail-wrapper');
 
 	}
 </script>
