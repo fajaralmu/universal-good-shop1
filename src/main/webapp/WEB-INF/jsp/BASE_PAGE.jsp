@@ -22,22 +22,15 @@
 <script src="<c:url value="/res/js/bootstrap.min.js"  />"></script>
 <script src="<c:url value="/res/js/sockjs-0.3.2.min.js"></c:url >"></script>
 <script src="<c:url value="/res/js/stomp.js"></c:url >"></script>
-<script src="<c:url value="/res/js/websocket-util.js"></c:url >">
-	 
-</script>
-
-
-
-
+<script src="<c:url value="/res/js/websocket-util.js"></c:url >"></script>  
 <script src="<c:url value="/res/js/ajax.js?v=1"></c:url >"></script>
-<script src="<c:url value="/res/js/util.js?v=1"></c:url >">
-	 
-</script>
-
-
+<script src="<c:url value="/res/js/util.js?v=1"></c:url >"></script> 
 </head>
 <body>
-	<div id="progress-bar-wrapper" class="box-shadow" style="display:none; height: 50px; padding:10px; background-color: white; margin:auto; position: fixed; width:100%">
+	<div id="progress-bar-wrapper" 
+	onclick="hide('progress-bar-wrapper');"
+	class="box-shadow" 
+	style="display:none; height: 50px; padding:10px; background-color: white; margin:auto; position: fixed; width:100%">
 			<div class="progress"  >
 	 			<div  id="progress-bar" class="progress-bar progress-bar-striped bg-info" role="progressbar"  aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
 			</div>

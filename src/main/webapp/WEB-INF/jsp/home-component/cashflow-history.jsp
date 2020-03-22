@@ -48,18 +48,25 @@ function showDetail(){
 						let month = cashflowSupplies.month;
 						let year  = cashflowSupplies.year;
 						
+						let chartLegend = "<p style=\" font-size:0.8em;text-align:right\">"+beautifyNominal(cashflowSupplies.amount) +" ("+beautifyNominal(cashflowSupplies.count)+" unit)</p>"+
+						"<p style=\" font-size:0.8em;text-align:right\">"+beautifyNominal(cashflowPurchases.amount) +" ("+beautifyNominal(cashflowPurchases.count)+" unit)</p> setting= <style>width:200px</style>";
+						
+						let chartBody = //supply
+							"<div class=\"rounded-right\" "+
+							"style=\" margin:5px; height: 30px;width:"+percentSupplies+"; font-size:0.7em; background-color:orange\">"+
+							"</div>"+
+							//purchase
+							"<div class=\"rounded-right\" "+
+							"style=\" margin:5px; height: 30px;width:"+percentPurchases+"; font-size:0.7em; background-color:green\">"+
+							"</div>"
+							+"setting= <colspan>5</colspan>";
+						
+						
 						let columns = [
 							i+1,
 							"<span class=\"clickable\" onclick=\"loadMonthlyCashflow("+month+","+year+")\"> "+ month+"-"+ year +"</span>",
-							"<p style=\" font-size:0.8em;text-align:right\">"+beautifyNominal(cashflowSupplies.amount) +" ("+beautifyNominal(cashflowSupplies.count)+" unit)</p>"+
-							"<p style=\" font-size:0.8em;text-align:right\">"+beautifyNominal(cashflowPurchases.amount) +" ("+beautifyNominal(cashflowPurchases.count)+" unit)</p> setting= <style>width:200px</style>",
-							//supply
-							"<div class=\"rounded-right\" style=\" height: 30px;width:"+percentSupplies+"; font-size:0.7em; background-color:orange\">"+
-							"</div>"+
-							//purchase
-							"<div class=\"rounded-right\" style=\" height: 30px;width:"+percentPurchases+"; font-size:0.7em; background-color:green\">"+
-							"</div>"
-							+"setting= <colspan>5</colspan>"
+							chartLegend,
+							chartBody
 							];  
 						 
 						tableColumns.push(columns);

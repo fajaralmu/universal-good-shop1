@@ -25,8 +25,8 @@ public class CashFlow extends BaseEntity implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 4767704206272308090L;
-	private Long amount;
-	private Long count;
+	private long amount;
+	private long count;
 	private String module;
 	private int year;
 	private int month;

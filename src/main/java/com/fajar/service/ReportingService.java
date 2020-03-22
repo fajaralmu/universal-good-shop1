@@ -271,7 +271,7 @@ public class ReportingService {
 
 			supplies.add(cashflowSupply);
 
-			if (cashflowSupply != null && cashflowSupply.getAmount() != null && cashflowSupply.getAmount() > maxValue) {
+			if (cashflowSupply != null  && cashflowSupply.getAmount() > maxValue) {
 				maxValue = cashflowSupply.getAmount();
 			}
 
@@ -282,7 +282,7 @@ public class ReportingService {
 
 			purchases.add(cashflowPurchase);
 
-			if (cashflowPurchase != null && cashflowPurchase.getAmount() != null
+			if (cashflowPurchase != null  
 					&& cashflowPurchase.getAmount() > maxValue) {
 				maxValue = cashflowPurchase.getAmount();
 			}
