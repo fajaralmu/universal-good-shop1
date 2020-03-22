@@ -108,6 +108,12 @@ function createOption(value, html){
 	return option;
 }
 
+function createLabel(text){
+	let element = document.createElement("label");
+	element.innerHTML = text;
+	return element;
+}
+
 function createHeading(tag ,id, className, html){
 	let option = createElement(tag,id, className);
 	option.innerHTML = html;

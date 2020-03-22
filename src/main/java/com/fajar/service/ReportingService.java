@@ -203,6 +203,9 @@ public class ReportingService {
 			long amount = productFlow.getCount() * productFlow.getPrice();
 
 			CashFlow currentCashflow = result.get(day);
+			if(null == currentCashflow) {
+				currentCashflow = CashFlow.builder().amount(0L).count(0L).module(module).build();
+			}
 			currentCashflow.setAmount(currentCashflow.getAmount() + amount);
 			currentCashflow.setCount(currentCashflow.getCount() + productFlow.getCount());
 
@@ -237,9 +240,9 @@ public class ReportingService {
 			response.setMonthlyDetailCost(parseCashflow("IN", flowCost));
 
 		} catch (Exception e) {
-
+			e.printStackTrace();
 			System.out.println("Error: " + e);
-			return ShopApiResponse.failed(e.getMessage());
+			return ShopApiResponse.failed(e.toString());
 		}
 		return response;
 	}
