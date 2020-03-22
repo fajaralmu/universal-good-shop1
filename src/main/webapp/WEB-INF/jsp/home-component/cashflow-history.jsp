@@ -44,10 +44,13 @@ function showDetail(){
 						
 						let percentSupplies = ((cashflowSupplies.amount/maxValue)*100)+"%";
 						let percentPurchases = ((cashflowPurchases.amount/maxValue)*100)+"%";
-						 
+						
+						let month = cashflowSupplies.month;
+						let year  = cashflowSupplies.year;
+						
 						let columns = [
 							i+1,
-							cashflowSupplies.month+"-"+cashflowSupplies.year,
+							"<span class=\"clickable\" onclick=\"loadMonthlyCashflow("+month+","+year+")\"> "+ month+"-"+ year +"</span>",
 							"<p style=\" font-size:0.8em;text-align:right\">"+beautifyNominal(cashflowSupplies.amount) +" ("+beautifyNominal(cashflowSupplies.count)+" unit)</p>"+
 							"<p  style=\" font-size:0.8em;text-align:right\">"+beautifyNominal(cashflowPurchases.amount) +" ("+beautifyNominal(cashflowPurchases.count)+" unit)</p> setting= <style>width:200px</style>",
 							//supply
@@ -76,4 +79,26 @@ function showDetail(){
 		show('filter-detail');
 		showDetail();
 	}
+	
+	function loadMonthlyCashflow(month, year){
+		infoLoading();
+		var requestObject = {
+				"filter":{
+					"year":year,
+					"month":month 
+				}
+		};
+		
+		postReq("<spring:url value="/api/transaction/monthlycashflow" />"  ,
+				requestObject, function(xhr) {
+					var response = (xhr.data);
+					if (response != null && response.code == "00") {
+						 
+					} else {
+						alert("Failed getting cashflow: "+module);
+					} 
+					infoDone();
+				});
+	}
+	
 </script>

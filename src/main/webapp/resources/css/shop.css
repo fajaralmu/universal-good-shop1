@@ -102,6 +102,9 @@ a :hover{
 	color:white;
 }
 
+.clickable:hover{
+	cursor: pointer;
+}
 
 /******MENUS*******/
  
