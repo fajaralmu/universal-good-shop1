@@ -208,7 +208,7 @@
 			const rowWrapper = createGridWrapper(3, "30%");
 			rowWrapper.setAttribute("class", "center-aligned");
 			
-			rowWrapper.appendChild(createLabel(cashflow.produc?cashflow.product.name:"")); 
+			rowWrapper.appendChild(createLabel(cashflow.product?cashflow.product.name:"")); 
 			rowWrapper
 					.appendChild(createLabel(beautifyNominal(cashflow.count)));
 			rowWrapper
