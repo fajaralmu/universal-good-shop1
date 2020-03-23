@@ -192,7 +192,7 @@
 		}
 		
 		const thWrapper = createGridWrapper(3);
-		thWrapper.innerHTML = "<p>Product</p><p>Count</p><p>Amount</p>";
+		thWrapper.innerHTML = "<p><b>Product</b></p><p><b>Sold Quantity</b></p><p><b>Total Price</b></p>";
 
 		monthlyDetail.appendChild(btnClose);
 		monthlyDetail.appendChild(thWrapper);
@@ -235,7 +235,7 @@
 		infoDetailPeriod.innerHTML = monthNames[ selectedMonth - 1] + " " + selectedYear;
 
 		const thWrapper = createGridWrapper(4);
-		thWrapper.innerHTML = "<p>Date</p><p>Module</p><p>Count</p><p>Amount</p>";
+		thWrapper.innerHTML = "<p><b>Date</b></p><p><b>Module</b></p><p><b>Quantity</b></p><p><b>Amount</b></p>";
 
 		monthlyDetail.appendChild(thWrapper);
 
