@@ -197,7 +197,7 @@
 
 		let dailyIncome = responseDetailDaily.dailyCashflow; 
 
-		/*
+		/**
 			detail  
 		 */
 		for (var key in dailyIncome) {
@@ -206,7 +206,7 @@
 			console.log("CASHFLOW: ",cashflow);
 			
 			const rowWrapper = createGridWrapper(3, "30%");
-			rowWrapper.setAttribute("class", "center-aligned");
+			rowWrapper.setAttribute("class", "left-aligned");
 			
 			rowWrapper.appendChild(createLabel(cashflow.product?cashflow.product.name:"")); 
 			rowWrapper

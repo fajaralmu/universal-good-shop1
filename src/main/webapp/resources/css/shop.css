@@ -113,6 +113,10 @@ a :hover{
 	text-align: center;
 }
 
+.left-aligned{
+	text-align: left;
+}
+
 /******MENUS*******/
  
 ul#menu-1 li{
