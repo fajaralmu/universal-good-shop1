@@ -10,11 +10,12 @@
 	<div id="monthly-detail-wrapper"
 		style="border: solid 1px blue; display: none">
 		<div id="monthly-detail-title" style="padding: 5px;">
+			<button class="btn btn-sm btn-secondary"
+				onclick="hide('monthly-detail-wrapper'); show('btn-show-monthly')">Close</button>
 			<h3 id="title">
 				Monthly Detail <small id="info-period"></small>
 			</h3>
-			<button class="btn btn-sm btn-secondary"
-				onclick="hide('monthly-detail-wrapper'); show('btn-show-monthly')">Close</button>
+
 		</div>
 		<div style="overflow: scroll; height: 300px;">
 			<div id="monthly-detail" style="padding: 5px;"></div>
@@ -38,9 +39,11 @@
 	var tableDetail = document.getElementById("detail-cashflow");
 	var monthlyDetail = document.getElementById("monthly-detail");
 	var infoDetailPeriod = document.getElementById("info-period");
-
+	var responseDetailMonthly = {};
+	var responseDetailDaily = {};
 	var selectedMonth = 0;
 	var selectedYear = 0;
+	var selectedDay = 0;
 
 	function showDetail() {
 
@@ -78,33 +81,33 @@
 						let month = cashflowSupplies.month;
 						let year = cashflowSupplies.year;
 
-						let chartLegend = "<p style=\" font-size:0.8em;text-align:right\">"
+						let chartLegend = "<p style=\"color:orange; font-size:0.8em;text-align:right\">"
 								+ beautifyNominal(cashflowSupplies.amount)
 								+ " ("
 								+ beautifyNominal(cashflowSupplies.count)
 								+ " unit)</p>"
-								+ "<p style=\" font-size:0.8em;text-align:right\">"
+								+ "<p style=\"color:green; font-size:0.8em;text-align:right\">"
 								+ beautifyNominal(cashflowPurchases.amount)
 								+ " ("
 								+ beautifyNominal(cashflowPurchases.count)
 								+ " unit)</p> setting= <style>width:200px</style>";
 
 						let chartBody = //supply
-						"<div class=\"rounded-right\" "+
-							"style=\" margin:5px; height: 20px;width:"+percentSupplies+"; font-size:0.7em; background-color:orange\">"
+						"<div class=\"rounded-right chart-item-hr\" "+
+							"style=\" width:"+percentSupplies+"; font-size:0.7em; background-color:orange\">"
 								+ "</div>"
 								+
 								//purchase
-								"<div class=\"rounded-right\" "+
-							"style=\" margin:5px; height: 20px;width:"+percentPurchases+"; font-size:0.7em; background-color:green\">"
+								"<div class=\"rounded-right chart-item-hr\" "+
+							"style=\" width:"+percentPurchases+"; font-size:0.7em; background-color:green\">"
 								+ "</div>" + "setting= <colspan>5</colspan>";
 
 						let columns = [
 								i + 1,
 								"<span class=\"clickable\" onclick=\"loadMonthlyCashflow("
-										+ month + "," + year + ")\"> " + month
-										+ "-" + year + "</span>", chartLegend,
-								chartBody ];
+										+ month + "," + year + ")\"> "
+										+ ( monthNames[month - 1] + "-" + year) + "</span>",
+								chartLegend, chartBody ];
 
 						tableColumns.push(columns);
 					}
@@ -127,6 +130,9 @@
 
 	function loadDailyCashflow(day, month, year) {
 		infoLoading();
+		
+		selectedDay = day;
+		
 		var requestObject = {
 			"filter" : {
 				"year" : year,
@@ -139,7 +145,8 @@
 				requestObject, function(xhr) {
 					var response = (xhr.data);
 					if (response != null && response.code == "00") {
-
+						window['responseDetailDaily'] = response;
+						populateDailyDetail();
 					} else {
 						alert("Failed getting cashflow: ");
 					}
@@ -164,7 +171,8 @@
 				requestObject, function(xhr) {
 					var response = (xhr.data);
 					if (response != null && response.code == "00") {
-						populateMonthlyDetail(response);
+						window['responseDetailMonthly'] = response;
+						populateMonthlyDetail();
 					} else {
 						alert("Failed getting cashflow: ");
 					}
@@ -172,18 +180,55 @@
 				});
 	}
 
-	function populateMonthlyDetail(response) {
+	function populateDailyDetail(){
+		monthlyDetail.innerHTML = "";
+		infoDetailPeriod.innerHTML = selectedDay+" "+ monthNames[ selectedMonth - 1] + " " + selectedYear;
+		
+		let btnClose = createButton("btn-close", "Back to monthly");
+		btnClose.onclick = function (){
+			populateMonthlyDetail();
+		}
+		
+		let thWrapper = createGridWrapper(3);
+		thWrapper.innerHTML = "<p>Product</p><p>Count</p><p>Amount</p>";
+
+		monthlyDetail.appendChild(btnClose);
+		monthlyDetail.appendChild(thWrapper);
+
+		let dailyIncome = responseDetailMonthly.dailyCashflow; 
+
+		/*
+			detail  
+		 */
+		for (var key in dailyIncome) {
+
+			const cashflow   = dailyIncome[key];
+			const rowWrapper = createGridWrapper(3, "30%");
+			rowWrapper.setAttribute("class", "center-aligned");
+			
+			rowWrapper.appendChild(createLabel(cashflow.produc?cashflow.product.name:"")); 
+			rowWrapper
+					.appendChild(createLabel(beautifyNominal(cashflow.count)));
+			rowWrapper
+					.appendChild(createLabel(beautifyNominal(cashflow.amount)));
+			
+			monthlyDetail.appendChild(rowWrapper);
+
+		}
+	}
+	
+	function populateMonthlyDetail() {
 
 		monthlyDetail.innerHTML = "";
-		infoDetailPeriod.innerHTML = selectedMonth + " - " + selectedYear;
+		infoDetailPeriod.innerHTML = monthNames[ selectedMonth - 1] + " " + selectedYear;
 
 		let thWrapper = createGridWrapper(4);
 		thWrapper.innerHTML = "<p>Date</p><p>Module</p><p>Count</p><p>Amount</p>";
 
 		monthlyDetail.appendChild(thWrapper);
 
-		let detailIncome = response.monthlyDetailIncome;
-		let detailCost = response.monthlyDetailCost;
+		let detailIncome = responseDetailMonthly.monthlyDetailIncome;
+		let detailCost = responseDetailMonthly.monthlyDetailCost;
 
 		/*
 			detail income

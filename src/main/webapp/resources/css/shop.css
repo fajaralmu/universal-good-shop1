@@ -120,3 +120,8 @@ ul#menu-1 li{
 }
 
 /******* REPORT *******/
+
+.chart-item-hr {
+	
+	margin:5px; height: 15px;
+}
