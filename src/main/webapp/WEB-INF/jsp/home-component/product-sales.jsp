@@ -4,7 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
 <div id="content-product-sales" style="display: none">
-	<h3>Product Sales</h3>
+	<h3>Product Sales <small id="info-sales-period"></small></h3>
 	<button id="sdsds" class="btn btn-info" onclick="show('filter-detail')">Show
 		Filter</button>
 	<button class="btn btn-secondary"
@@ -69,6 +69,13 @@
 		for (var i = 0; i < bodyRows.length; i++) {
 			let row = bodyRows[i];
 			tableSales.append(row);
-		}
+		} 
+		
+		const monthFrom = monthNames[ selectMonthFrom.value-1];
+		const monthTo = monthNames[selectMonthTo.value-1];
+		const yearFrom = selectYearFrom.value;
+		const yearTo = selectYearTo.value;
+		
+		document.getElementById("info-sales-period").innerHTML = monthFrom+" "+yearFrom+" - "+monthTo+" "+yearTo;
 	}
 </script>

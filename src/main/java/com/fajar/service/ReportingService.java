@@ -53,6 +53,13 @@ public class ReportingService {
 		return response;
 	}
 
+	/**
+	 * get cash flow with specified month and year and module
+	 * @param month
+	 * @param year
+	 * @param module
+	 * @return
+	 */
 	private CashFlow getCashflow(Integer month, Integer year, final String module) {
 
 		String sql = " select sum(`product_flow`.count) as count, sum(`product_flow`.count * `product_flow`.price) as price,`transaction`.`type` as module from `product_flow`  "
@@ -66,6 +73,10 @@ public class ReportingService {
 		return (CashFlow) cashflow;
 	}
 
+	/**
+	 * find the first year transaction performed
+	 * @return
+	 */
 	public int getMinTransactionYear() {
 
 		Object result = transactionRepository.findTransactionYearAsc();
@@ -144,7 +155,7 @@ public class ReportingService {
 
 		periods.add(new int[] { currentYear, Integer.parseInt(monthString) });
 
-		for (int i = 1; i <= diff - 1; i++) {
+		for (int i = 1; i <= diff  ; i++) {
 			currentMonth--;
 			if (currentMonth <= 0) {
 				currentMonth = 12;
@@ -247,7 +258,32 @@ public class ReportingService {
 		}
 		return response;
 	}
+	
+	private static int getMonthDayCount(int year, int month) {
+		
+		int day = 30;
+		
+		if(month == 2 && year % 4 == 0) {
+			return 29;
+		}else if(month == 2) {
+			return 28;
+		}
+		
+		if(month < 8 && month % 2 != 0) {
+			return 30;
+		}else if(month >= 8 && month % 2 == 0) {
+			return 31;
+		}
+		
+		return day;
+	}
 
+	/**
+	 * get cash flow list by selected range of period
+	 * @param request
+	 * @param requestId
+	 * @return
+	 */
 	public ShopApiResponse getCashflowDetail(ShopApiRequest request, String requestId) {
 
 		progressService.init(requestId);
@@ -257,16 +293,17 @@ public class ReportingService {
 		int monthTo = request.getFilter().getMonthTo();
 		int yearTo = request.getFilter().getYearTo();
 		int diffMonth = getDiffMonth(monthFrom, yearFrom, monthTo, yearTo);
-		Calendar cal = Calendar.getInstance();
+		
+		Calendar periodTo = Calendar.getInstance(); 
+		periodTo.set(request.getFilter().getYearTo(), request.getFilter().getMonthTo() - 1, getMonthDayCount(yearTo, monthTo));
 
-		cal.set(request.getFilter().getYearTo(), request.getFilter().getMonthTo(), 1);
-
-		List<int[]> periods = getMonths(cal, diffMonth);
+		List<int[]> periods = getMonths(periodTo, diffMonth);
 		List<BaseEntity> supplies = new ArrayList<>();
 		List<BaseEntity> purchases = new ArrayList<>();
 		Long maxValue = 0L;
 
 		for (int[] period : periods) {
+			System.out.println("o o PERIOD: "+period[0]+", "+period[1]);
 
 			// supply
 			CashFlow cashflowSupply = getCashflow(period[1], period[0], "IN");
@@ -298,6 +335,9 @@ public class ReportingService {
 		response.setMaxValue(maxValue);
 		response.setSupplies(supplies);
 		response.setPurchases(purchases);
+		
+		progressService.sendComplete(requestId);
+		
 		return response;
 	}
 	
