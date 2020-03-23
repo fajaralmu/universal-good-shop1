@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -345,7 +346,6 @@ public class ReportingService {
 			
 			Product product = productFlow.getProduct();
 			
-			
 			if(product == null) {
 				continue;
 			}
@@ -364,7 +364,39 @@ public class ReportingService {
 			cashflowMap.put(productCode, currentCashflow);
 		}
 		
+		/**
+		 * calculate proportion for chart
+		 */
+		final Long maxValue = maxAmountValue(cashflowMap);
+		
+		for (String key : cashflowMap.keySet()) {
+			Long amount = cashflowMap.get(key).getAmount();
+			double proportion = amount.doubleValue() / maxValue.doubleValue() * 100.d;
+			cashflowMap.get(key).setProportion(proportion);
+		}
+		
+		
 		return cashflowMap;
+	}
+	
+	/**
+	 * get max amount value from cash flow map
+	 * @param cashflowMap
+	 * @return
+	 */
+	private static long maxAmountValue(Map<String, CashFlow> cashflowMap) { 
+		
+		long maxValue = Long.MIN_VALUE;
+		Set<String> mapKeys = cashflowMap.keySet();
+		
+		for (String key : mapKeys) {
+			long amount = cashflowMap.get(key).getAmount();
+			if(amount > maxValue) {
+				maxValue = amount;
+			}
+		}
+		
+		return maxValue;
 	}
 
 }

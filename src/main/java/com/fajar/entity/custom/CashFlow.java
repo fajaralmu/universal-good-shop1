@@ -32,4 +32,6 @@ public class CashFlow extends BaseEntity implements Serializable{
 	private int month;
 	private Product product;
 	
+	private double proportion;
+	
 }

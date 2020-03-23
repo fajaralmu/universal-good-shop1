@@ -36,9 +36,10 @@
 </div>
 <script type="text/javascript">
 	//detail cashflow
-	var tableDetail = document.getElementById("detail-cashflow");
-	var monthlyDetail = document.getElementById("monthly-detail");
-	var infoDetailPeriod = document.getElementById("info-period");
+	const tableDetail = document.getElementById("detail-cashflow");
+	const monthlyDetail = document.getElementById("monthly-detail");
+	const infoDetailPeriod = document.getElementById("info-period");
+	
 	var responseDetailMonthly = {};
 	var responseDetailDaily = {};
 	var selectedMonth = 0;
@@ -47,7 +48,7 @@
 
 	function showDetail() {
 
-		var requestObject = {
+		const requestObject = {
 			"filter" : {
 				"month" : selectMonthFrom.value,
 				"year" : selectYearFrom.value,
@@ -60,10 +61,10 @@
 				"<spring:url value="/api/transaction/cashflowdetail" />",
 				requestObject,
 				function(xhr) {
-					var supplies = xhr.data.supplies;
-					var maxValue = xhr.data.maxValue;
-					var purchases = xhr.data.purchases;
-					var tableColumns = [ [
+					const supplies = xhr.data.supplies;
+					const maxValue = xhr.data.maxValue;
+					const purchases = xhr.data.purchases;
+					const tableColumns = [ [
 							"No setting= <style>width:50px</style>",
 							"Period setting= <style>width:60px</style>",
 							"Amount setting=<colspan>6</colspan>" ]
@@ -81,7 +82,7 @@
 						let month = cashflowSupplies.month;
 						let year = cashflowSupplies.year;
 
-						let chartLegend = "<p style=\"color:orange; font-size:0.8em;text-align:right\">"
+						const chartLegend = "<p style=\"color:orange; font-size:0.8em;text-align:right\">"
 								+ beautifyNominal(cashflowSupplies.amount)
 								+ " ("
 								+ beautifyNominal(cashflowSupplies.count)
@@ -92,7 +93,7 @@
 								+ beautifyNominal(cashflowPurchases.count)
 								+ " unit)</p> setting= <style>width:200px</style>";
 
-						let chartBody = //supply
+						const chartBody = //supply
 						"<div class=\"rounded-right chart-item-hr\" "+
 							"style=\" width:"+percentSupplies+"; font-size:0.7em; background-color:orange\">"
 								+ "</div>"
@@ -102,7 +103,7 @@
 							"style=\" width:"+percentPurchases+"; font-size:0.7em; background-color:green\">"
 								+ "</div>" + "setting= <colspan>5</colspan>";
 
-						let columns = [
+						const columns = [
 								i + 1,
 								"<span class=\"clickable\" onclick=\"loadMonthlyCashflow("
 										+ month + "," + year + ")\"> "
@@ -111,7 +112,7 @@
 
 						tableColumns.push(columns);
 					}
-					let tbody = createTBodyWithGivenValue(tableColumns);
+					const tbody = createTBodyWithGivenValue(tableColumns);
 					tableDetail.innerHTML = tbody.innerHTML;
 				});
 
@@ -133,7 +134,7 @@
 		
 		selectedDay = day;
 		
-		var requestObject = {
+		const requestObject = {
 			"filter" : {
 				"year" : year,
 				"month" : month,
@@ -184,33 +185,40 @@
 		monthlyDetail.innerHTML = "";
 		infoDetailPeriod.innerHTML = selectedDay+" "+ monthNames[ selectedMonth - 1] + " " + selectedYear;
 		
-		let btnClose = createButton("btn-close", "Back to monthly");
+		const btnClose = createButton("btn-close", "Back");
+		btnClose.className = "btn";
 		btnClose.onclick = function (){
 			populateMonthlyDetail();
 		}
 		
-		let thWrapper = createGridWrapper(3);
+		const thWrapper = createGridWrapper(3);
 		thWrapper.innerHTML = "<p>Product</p><p>Count</p><p>Amount</p>";
 
 		monthlyDetail.appendChild(btnClose);
 		monthlyDetail.appendChild(thWrapper);
 
-		let dailyIncome = responseDetailDaily.dailyCashflow; 
+		const dailyIncome = responseDetailDaily.dailyCashflow; 
 
 		/**
 			detail  
 		 */
 		for (var key in dailyIncome) {
 
-			const cashflow   = dailyIncome[key];
-			console.log("CASHFLOW: ",cashflow);
+			const cashflow   = dailyIncome[key]; 
 			
 			const rowWrapper = createGridWrapper(3, "30%");
 			rowWrapper.setAttribute("class", "left-aligned");
 			
+			const productCount = createDiv(key, "chart-item");
+			productCount.style.backgroundColor = 'lightGreen';
+			productCount.style.width = cashflow.proportion+"%";
+			productCount.style.height = '13px';
+			productCount.style.fontSize = '0.7em';
+			productCount.style.margin = '3px';
+			productCount.innerHTML = beautifyNominal(cashflow.count);
+			
 			rowWrapper.appendChild(createLabel(cashflow.product?cashflow.product.name:"")); 
-			rowWrapper
-					.appendChild(createLabel(beautifyNominal(cashflow.count)));
+			rowWrapper.appendChild(productCount);
 			rowWrapper
 					.appendChild(createLabel(beautifyNominal(cashflow.amount)));
 			
@@ -224,13 +232,13 @@
 		monthlyDetail.innerHTML = "";
 		infoDetailPeriod.innerHTML = monthNames[ selectedMonth - 1] + " " + selectedYear;
 
-		let thWrapper = createGridWrapper(4);
+		const thWrapper = createGridWrapper(4);
 		thWrapper.innerHTML = "<p>Date</p><p>Module</p><p>Count</p><p>Amount</p>";
 
 		monthlyDetail.appendChild(thWrapper);
 
-		let detailIncome = responseDetailMonthly.monthlyDetailIncome;
-		let detailCost = responseDetailMonthly.monthlyDetailCost;
+		const detailIncome = responseDetailMonthly.monthlyDetailIncome;
+		const detailCost = responseDetailMonthly.monthlyDetailCost;
 
 		/*
 			detail income
