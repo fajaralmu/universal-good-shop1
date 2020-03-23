@@ -367,11 +367,11 @@ public class ReportingService {
 		/**
 		 * calculate proportion for chart
 		 */
-		final Long maxValue = maxAmountValue(cashflowMap);
+		final Long maxValue = maxCountValue(cashflowMap);
 		
 		for (String key : cashflowMap.keySet()) {
-			Long amount = cashflowMap.get(key).getAmount();
-			double proportion = amount.doubleValue() / maxValue.doubleValue() * 100.d;
+			Long count = cashflowMap.get(key).getCount();
+			double proportion = count.doubleValue() / maxValue.doubleValue() * 100.d;
 			cashflowMap.get(key).setProportion(proportion);
 		}
 		
@@ -384,15 +384,15 @@ public class ReportingService {
 	 * @param cashflowMap
 	 * @return
 	 */
-	private static long maxAmountValue(Map<String, CashFlow> cashflowMap) { 
+	private static long maxCountValue(Map<String, CashFlow> cashflowMap) { 
 		
 		long maxValue = Long.MIN_VALUE;
 		Set<String> mapKeys = cashflowMap.keySet();
 		
 		for (String key : mapKeys) {
-			long amount = cashflowMap.get(key).getAmount();
-			if(amount > maxValue) {
-				maxValue = amount;
+			long count = cashflowMap.get(key).getCount();
+			if(count > maxValue) {
+				maxValue = count;
 			}
 		}
 		

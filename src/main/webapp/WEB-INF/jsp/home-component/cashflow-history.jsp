@@ -198,6 +198,7 @@
 		monthlyDetail.appendChild(thWrapper);
 
 		const dailyIncome = responseDetailDaily.dailyCashflow; 
+		let number = 1;
 
 		/**
 			detail  
@@ -217,13 +218,14 @@
 			productCount.style.margin = '3px';
 			productCount.innerHTML = beautifyNominal(cashflow.count);
 			
-			rowWrapper.appendChild(createLabel(cashflow.product?cashflow.product.name:"")); 
+			rowWrapper.appendChild(createLabel(cashflow.product ? number+". "+cashflow.product.name:"")); 
 			rowWrapper.appendChild(productCount);
 			rowWrapper
 					.appendChild(createLabel(beautifyNominal(cashflow.amount)));
 			
 			monthlyDetail.appendChild(rowWrapper);
 
+			number++;
 		}
 	}
 	
