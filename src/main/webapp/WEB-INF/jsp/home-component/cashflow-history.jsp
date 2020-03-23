@@ -195,7 +195,7 @@
 		monthlyDetail.appendChild(btnClose);
 		monthlyDetail.appendChild(thWrapper);
 
-		let dailyIncome = responseDetailMonthly.dailyCashflow; 
+		let dailyIncome = responseDetailDaily.dailyCashflow; 
 
 		/*
 			detail  
@@ -203,6 +203,8 @@
 		for (var key in dailyIncome) {
 
 			const cashflow   = dailyIncome[key];
+			console.log("CASHFLOW: ",cashflow);
+			
 			const rowWrapper = createGridWrapper(3, "30%");
 			rowWrapper.setAttribute("class", "center-aligned");
 			
