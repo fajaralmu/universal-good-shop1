@@ -951,6 +951,7 @@
 				endPoint = "update";
 			}
 			requestObject[entityName] = entity;
+			requestObject['entityObject'] = entity;
 			requestObject.entity = entityName;
 			console.log("request object", requestObject);
 			doSubmit("<spring:url value="/api/entity/" />" + endPoint, requestObject, function(){

@@ -136,6 +136,13 @@ public class ProductService {
 		}
 	}
 
+	
+	/**
+	 * get product sales in period range
+	 * @param request
+	 * @param requestId
+	 * @return
+	 */
 	public ShopApiResponse getProductSales(ShopApiRequest request, String requestId) {
 		
 		progressService.init(requestId);
@@ -147,6 +154,7 @@ public class ProductService {
 
 		String productName = request.getProduct() == null || request.getProduct().getName() == null ? ""
 				: request.getProduct().getName();
+		
 		List<Product> products = productRepository.getByLimitAndOffset(filter.getLimit(),
 				filter.getLimit() * filter.getPage(), productName);
 

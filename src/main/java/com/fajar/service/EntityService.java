@@ -1,6 +1,7 @@
 package com.fajar.service;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import com.fajar.entity.Transaction;
 import com.fajar.entity.Unit;
 import com.fajar.entity.User;
 import com.fajar.entity.UserRole;
+import com.fajar.entity.setting.EntityManagementConfig;
 import com.fajar.repository.EntityRepository;
 import com.fajar.repository.MenuRepository;
 import com.fajar.repository.ProductRepository;
@@ -40,6 +42,7 @@ import com.fajar.repository.RepositoryCustomImpl;
 import com.fajar.repository.ShopProfileRepository;
 import com.fajar.repository.SupplierRepository;
 import com.fajar.repository.UserRepository;
+import com.fajar.service.entity.BaseEntityUpdateService;
 import com.fajar.util.CollectionUtil;
 import com.fajar.util.EntityUtil;
 import com.fajar.util.QueryUtil;
@@ -50,8 +53,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EntityService {
  
-	private static final String ORIGINAL_PREFFIX = "{ORIGINAL>>";
-	private static final String PRODUCT_IMG_PREFFIX = "PRD";
+	public static final String ORIGINAL_PREFFIX = "{ORIGINAL>>";
+	public static final String PRODUCT_IMG_PREFFIX = "PRD";
+	
 	@Autowired
 	private ProductRepository productRepository; 
 	@Autowired
@@ -68,216 +72,117 @@ public class EntityService {
 	private FileService fileService;
 	@Autowired
 	private EntityRepository entityRepository;
+	 
 
+	private Map<String, EntityManagementConfig> entityClasses = new HashMap<>();
+	
 	@PostConstruct
 	public void init() {
 		LogProxyFactory.setLoggers(this);
+		setEntityConfig();
+	}
+	
+	public void setEntityConfig() {
+		entityClasses.put(  "unit", new EntityManagementConfig("unit", Unit.class, entityRepository.getCommonUpdateService())); 
+		entityClasses.put( "product", new EntityManagementConfig("product",Product.class ,entityRepository.getProductUpdateService())); 
+		entityClasses.put( "customer", new EntityManagementConfig("customer",Customer.class,entityRepository.getCommonUpdateService())); 
+		entityClasses.put( "supplier", new EntityManagementConfig("supplier",Supplier.class,entityRepository.getSupplierUpdateService())); 
+		entityClasses.put( "user", new EntityManagementConfig("user",User.class,entityRepository.getUserUpdateService())); 
+		entityClasses.put( "menu", new EntityManagementConfig("menu",Menu.class,entityRepository.getMenuUpdateService())); 
+		entityClasses.put( "category", new EntityManagementConfig("category",Category.class,entityRepository.getCommonUpdateService()));
+		entityClasses.put( "shopprofile", new EntityManagementConfig("shopprofile",ShopProfile.class,entityRepository.getShopProfileUpdateService())); 
+		entityClasses.put( "userrole", new EntityManagementConfig("userrole",UserRole.class,entityRepository.getCommonUpdateService())); 
+		entityClasses.put( "registeredrequest", new EntityManagementConfig("registeredRequest",RegisteredRequest.class,entityRepository.getCommonUpdateService())); 
+		entityClasses.put( "cost", new EntityManagementConfig("cost",Cost.class,entityRepository.getCommonUpdateService()));
+		entityClasses.put( "costflow",new EntityManagementConfig("costflow",CostFlow.class,entityRepository.getCommonUpdateService())); 
+	
+		/**
+		 * unable to update
+		 */
+		entityClasses.put( "transaction", new EntityManagementConfig(null,Transaction.class,entityRepository.getBaseEntityUpdateService())); 
+		entityClasses.put( "productflow", new EntityManagementConfig(null,ProductFlow.class,entityRepository.getBaseEntityUpdateService())); 
+		entityClasses.put( "message", new EntityManagementConfig(null,Message.class,entityRepository.getCommonUpdateService()));
+		
 	}
 
+	/**
+	 * add & update entity
+	 * @param request
+	 * @param servletRequest
+	 * @param newRecord
+	 * @return
+	 */
 	public ShopApiResponse addEntity(ShopApiRequest request, HttpServletRequest servletRequest, boolean newRecord) {
 
-		switch (request.getEntity().toLowerCase()) {
-		case "unit":
-			return saveCommonEntity(request.getUnit(), newRecord);
+		
+		try {
+			
+			final String key = request.getEntity().toLowerCase();
+			BaseEntityUpdateService updateService = entityClasses.get(key).getEntityUpdateService();
+			String fieldName = entityClasses.get(key).getFieldName();
+			Object entityValue = null;
+			try {
+				Field entityField = EntityUtil.getDeclaredField(ShopApiRequest.class, fieldName);
+//				entityField.setAccessible(true);
+				entityValue = entityField.get(request);
+			}catch (Exception e) {
+				e.printStackTrace();
+				return ShopApiResponse.failed();
+			} 
+			
+			if(entityValue != null)
+				return updateService.saveEntity((BaseEntity)entityValue, newRecord);
+			
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		/*switch (request.getEntity().toLowerCase()) {
+		
 
 		case "product":
-			return saveProduct(request.getProduct(), newRecord);
-
-		case "customer":
-			return saveCommonEntity(request.getCustomer(), newRecord);
-
+			return saveProduct(request.getProduct(), newRecord); 
 		case "supplier":
-			return saveSupplier(request.getSupplier(), newRecord);
-
-		case "shopprofile":
-
+			return saveSupplier(request.getSupplier(), newRecord); 
+		case "shopprofile": 
 			return saveProfile(request.getShopprofile(), newRecord);
 		case "user":
-			return saveUser(request.getUser(), newRecord);
-
+			return saveUser(request.getUser(), newRecord); 
 		case "menu":
 			return saveMenu(request.getMenu(), newRecord);
-
-		case "category":
-			return saveCommonEntity(request.getCategory(), newRecord);
-
-		case "userrole":
-			return saveCommonEntity(request.getUserrole(), newRecord);
-
-		case "registeredrequest":
-			return saveCommonEntity(request.getRegisteredRequest(), newRecord);
-		
-		case "cost":
-			return saveCommonEntity(request.getCost(), newRecord);
 			
+		/**
+		 * ========================
+		 *     common entities
+		 * ========================
+		  
+		case "customer":
+			return saveCommonEntity(request.getCustomer(), newRecord); 
+		case "unit":
+			return saveCommonEntity(request.getUnit(), newRecord);
+		case "category":
+			return saveCommonEntity(request.getCategory(), newRecord); 
+		case "userrole":
+			return saveCommonEntity(request.getUserrole(), newRecord); 
+		case "registeredrequest":
+			return saveCommonEntity(request.getRegisteredRequest(), newRecord); 
+		case "cost":
+			return saveCommonEntity(request.getCost(), newRecord); 
 		case "costflow":
 			return saveCommonEntity(request.getCostflow(), newRecord);
 
 		}
-
+		*/
 		return ShopApiResponse.builder().code("01").message("failed").build();
 	}
 
-	private ShopApiResponse saveUser(User user, boolean newRecord) {
-		user = (User) copyNewElement(user, newRecord);
-		User newUser = userRepository.save(user);
-		return ShopApiResponse.builder().entity(newUser).build();
-	}
-
-	private ShopApiResponse saveMenu(Menu menu, boolean newRecord) {
-		menu = (Menu) copyNewElement(menu, newRecord);
-		String base64Image = menu.getIconUrl();
-		if (base64Image != null && !base64Image.equals("")) {
-			try {
-				String imageName = fileService.writeImage("MN", base64Image);
-				menu.setIconUrl(imageName);
-			} catch (IOException e) {
-
-				menu.setIconUrl(null);
-				e.printStackTrace();
-			}
-		} else {
-			if (!newRecord) {
-				Optional<Menu> dbMenu = menuRepository.findById(menu.getId());
-				if (dbMenu.isPresent()) {
-					menu.setIconUrl(dbMenu.get().getIconUrl());
-				}
-			}
-		}
-		Menu newMenu = menuRepository.save(menu);
-		return ShopApiResponse.builder().entity(newMenu).build();
-	}
-
-	private ShopApiResponse saveSupplier(Supplier supplier, boolean newRecord) {
-
-		supplier = (Supplier) copyNewElement(supplier, newRecord);
-		String base64Image = supplier.getIconUrl();
-		if (base64Image != null && !base64Image.equals("")) {
-			try {
-				String imageName = fileService.writeImage("SPLY", base64Image);
-				supplier.setIconUrl(imageName);
-			} catch (IOException e) {
-
-				supplier.setIconUrl(null);
-				e.printStackTrace();
-			}
-		} else {
-			if (!newRecord) {
-				Optional<Supplier> dbSupplier = supplierRepository.findById(supplier.getId());
-				if (dbSupplier.isPresent()) {
-					supplier.setIconUrl(dbSupplier.get().getIconUrl());
-				}
-			}
-		}
-		Supplier newSupplier = supplierRepository.save(supplier);
-		return ShopApiResponse.builder().entity(newSupplier).build();
-	}
-
-	private ShopApiResponse saveProfile(ShopProfile shopProfile, boolean newRecord) {
-
-		shopProfile = (ShopProfile) copyNewElement(shopProfile, newRecord);
-		String base64Image = shopProfile.getIconUrl();
-		if (base64Image != null && !base64Image.equals("")) {
-			try {
-				String imageName = fileService.writeImage("PROFILE", base64Image);
-				shopProfile.setIconUrl(imageName);
-			} catch (IOException e) {
-
-				shopProfile.setIconUrl(null);
-				e.printStackTrace();
-			}
-		} else {
-			if (!newRecord) {
-				Optional<Supplier> dbSupplier = supplierRepository.findById(shopProfile.getId());
-				if (dbSupplier.isPresent()) {
-					shopProfile.setIconUrl(dbSupplier.get().getIconUrl());
-				}
-			}
-		}
-		ShopProfile newShopProfile = shopProfileRepository.save(shopProfile);
-		return ShopApiResponse.builder().entity(newShopProfile).build();
-	}
-
-	private Object copyNewElement(Object source, boolean newRecord) {
-		return EntityUtil.copyFieldElementProperty(source, source.getClass(), !newRecord);
-	}
-
-	private ShopApiResponse saveProduct(Product product, boolean newRecord) {
-
-		product = (Product) copyNewElement(product, newRecord);
-
-		String imageData = product.getImageUrl();
-		if (imageData != null && !imageData.equals("")) {
-			String[] base64Images = imageData.split("~");
-			if (base64Images != null && base64Images.length > 0) {
-				String[] imageUrls = new String[base64Images.length];
-				for (int i = 0; i < base64Images.length; i++) {
-					String base64Image = base64Images[i];
-					if (base64Image == null || base64Image.equals(""))
-						continue;
-					try {
-						boolean updated = true;
-						String imageName = null;
-						if (base64Image.startsWith(ORIGINAL_PREFFIX)) {
-							String[] raw = base64Image.split("}");
-							if (raw.length > 1) {
-								base64Image = raw[1];
-							} else {
-								imageName = raw[0].replace(ORIGINAL_PREFFIX, "");
-								updated = false;
-							}
-						}
-						if (updated) {
-							imageName = fileService.writeImage(PRODUCT_IMG_PREFFIX, base64Image);
-						}
-						if (null != imageName)
-							imageUrls[i] = (imageName);
-					} catch (IOException e) {
-
-						product.setImageUrl(null);
-						e.printStackTrace();
-					}
-				}
-
-				List validUrls = removeNullItemFromArray(imageUrls);
-				String[] arrayOfString = CollectionUtil.toArrayOfString(validUrls);
-
-				String imageUrl = String.join("~", arrayOfString);
-				product.setImageUrl(imageUrl);
-
-			}
-
-		} else {
-			if (!newRecord) {
-				Optional<Product> dbProduct = productRepository.findById(product.getId());
-				if (dbProduct.isPresent()) {
-					product.setImageUrl(dbProduct.get().getImageUrl());
-				}
-			}
-		}
-		Product newProduct = productRepository.save(product);
-		return ShopApiResponse.builder().entity(newProduct).build();
-	}
-
-	private List removeNullItemFromArray(String[] array) {
-		List<Object> result = new ArrayList<>();
-		for (String string : array) {
-			if (string != null) {
-				result.add(string);
-			}
-		}
-		return result;
-
-	}
-
-	private ShopApiResponse saveCommonEntity(BaseEntity entity, boolean newRecord) {
-
-		entity = (BaseEntity) copyNewElement(entity, newRecord);
-		BaseEntity newEntity = entityRepository.save(entity);
-		return ShopApiResponse.builder().entity(newEntity).build();
-	}
- 
-
+	 
+	/**
+	 * get list of entities filtered
+	 * @param request
+	 * @return
+	 */
 	public ShopApiResponse filter(ShopApiRequest request) {
 		Class<? extends BaseEntity> entityClass = null;
 		
@@ -289,83 +194,16 @@ public class EntityService {
 		if (filter.getFieldsFilter() == null) {
 			filter.setFieldsFilter(new HashMap<>());
 		}
-		
+		 
 		try {
-			switch (request.getEntity().toLowerCase()) {
-			case "unit":
-				entityClass = Unit.class;
-				break;
-
-			case "product":
-				entityClass = Product.class;
-				break;
-
-			case "customer":
-				entityClass = Customer.class;
-				break;
-
-			case "supplier":
-				entityClass = Supplier.class;
-				break;
-
-			case "user":
-				entityClass = User.class;
-				break;
-
-			case "menu":
-				entityClass = Menu.class;
-				break;
-
-			case "category":
-				entityClass = Category.class;
-				break;
-
-			case "transaction":
-				entityClass = Transaction.class;
-				break;
-
-			case "productflow":
-			case "productFlow":
-				entityClass = ProductFlow.class;
-				break;
-
-			case "shopprofile":
-			case "shopProfile":
-				entityClass = ShopProfile.class;
-				break;
-
-			case "userrole":
-			case "userRole":
-				entityClass = UserRole.class;
-				break;
-
-			case "registeredrequest":
-			case "registeredRequest":
-				entityClass = RegisteredRequest.class;
-				break;
-
-			case "message":
-				entityClass = Message.class;
-				break;
-			case "cost":
-				entityClass = Cost.class;
-				break;
-			case "costflow":
-				entityClass = CostFlow.class;
-				break;
-
+			
+			String entityName = request.getEntity().toLowerCase();
+			entityClass = entityClasses.get(entityName).getEntityClass();
+			
+			if(null == entityClass) {
+				throw new Exception("Invalid entity");
 			}
-//			Filter filter = request.getFilter();
-//			String[] sqlListAndCount = generateSqlByFilter(filter, entityClass);
-//			String sql = sqlListAndCount[0];
-//			String sqlCount = sqlListAndCount[1];
-//			List<BaseEntity> entities = getEntitiesBySql(sql, entityClass);
-//			Integer count = 0;
-//			Object countResult = repositoryCustom.getSingleResult(sqlCount);
-//			if (countResult != null) {
-//				count = ((BigInteger) countResult).intValue();
-//			}
-//			return ShopApiResponse.builder().entities(entities).totalData(count).filter(filter).build();
+			 
 			/**
 			 * Generate query string
 			 */
@@ -388,6 +226,7 @@ public class EntityService {
 					totalData(count).
 					filter(filter).
 					build();
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return ShopApiResponse.failed();
@@ -401,60 +240,41 @@ public class EntityService {
 
 	}  
 
+	/**
+	 * delete entity
+	 * @param request
+	 * @return
+	 */
 	public ShopApiResponse delete(ShopApiRequest request) {
-		Map<String, Object> filter = request.getFilter().getFieldsFilter();
+		
+		
+		
 		try {
-			Long id = Long.parseLong(filter.get("id").toString());
-			switch (request.getEntity()) {
-			case "unit":
-				entityRepository.deleteById(id, Unit.class);
-				break;
-			case "product":
-				entityRepository.deleteById(id, Product.class);
-				break;
-			case "customer":
-				entityRepository.deleteById(id, Customer.class);
-				break;
-			case "supplier":
-				entityRepository.deleteById(id, Supplier.class);
-				break;
-			case "user":
-				entityRepository.deleteById(id, User.class);
-				break;
-			case "menu":
-				entityRepository.deleteById(id, Menu.class);
-				break;
-			case "category":
-				entityRepository.deleteById(id, Category.class);
-				break;
-			case "shopprofile":
-			case "shopProfile":
-				shopProfileRepository.deleteById(id);
-				break;
-			case "userrole":
-			case "userRole":
-				entityRepository.deleteById(id, UserRole.class);
-				break;
-			case "registeredrequest":
-			case "registeredRequest":
-				entityRepository.deleteById(id, RegisteredRequest.class);
-				break;
-			case "cost":
-				entityRepository.deleteById(id, Cost.class);
-				break;
+			Map<String, Object> filter = request.getFilter().getFieldsFilter();
+			Long id = Long.parseLong(filter.get("id").toString()); 
+			String entityName = request.getEntity().toLowerCase();
+			Class<? extends BaseEntity> entityClass = entityClasses.get(entityName).getEntityClass();
+			
+			if(null == entityClass) {
+				throw new Exception("Invalid entity");
 			}
+			
+			entityRepository.deleteById(id,entityClass); 
+			 
 			return ShopApiResponse.builder().code("00").message("deleted successfully").build();
+			
 		} catch (Exception ex) {
+			
 			ex.printStackTrace();
-			return ShopApiResponse.builder().code("01").message("failed").build();
+			return ShopApiResponse.builder().code("01").message("failed: "+ex.getMessage()).build();
 		}
 	}
 
-	public List  getAllUserRole() {
+	public List<UserRole> getAllUserRole() {
 		return entityRepository.findAll(UserRole.class);
 	}
 	
-	public List getAllCostType() {
+	public List<Cost> getAllCostType() {
 		return entityRepository.findAll(Cost.class);
 	}
 	

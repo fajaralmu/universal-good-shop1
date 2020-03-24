@@ -15,7 +15,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import com.fajar.entity.BaseEntity;
-import com.fajar.entity.CostFlow;
+import com.fajar.service.entity.BaseEntityUpdateService;
+import com.fajar.service.entity.CommonUpdateService;
+import com.fajar.service.entity.MenuUpdateService;
+import com.fajar.service.entity.ProductUpdateService;
+import com.fajar.service.entity.ShopProfileUpdateService;
+import com.fajar.service.entity.SupplierUpdateService;
+import com.fajar.service.entity.UserUpdateService;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +63,21 @@ public class EntityRepository {
 	private UserRoleRepository userRoleRepository;
 	@Autowired
 	private CostFlowRepository costFlowRepository;
+	
+	@Autowired
+	private CommonUpdateService commonUpdateService;
+	@Autowired
+	private MenuUpdateService menuUpdateService;
+	@Autowired
+	private ProductUpdateService productUpdateService;
+	@Autowired
+	private SupplierUpdateService supplierUpdateService;
+	@Autowired
+	private UserUpdateService userUpdateService;
+	@Autowired
+	private ShopProfileUpdateService shopProfileUpdateService;
+	@Autowired
+	private BaseEntityUpdateService baseEntityUpdateService;
 
 	public <T> T save(BaseEntity baseEntity) {
 		log.info("execute method save");
@@ -131,6 +152,9 @@ public class EntityRepository {
 
 	public JpaRepository findRepo(Class<? extends BaseEntity> entityClass) {
 
+		
+		log.info("will find repo by class: {}", entityClass);
+		
 		Class<?> clazz = this.getClass();
 		Field[] fields = clazz.getDeclaredFields();
 
@@ -143,7 +167,7 @@ public class EntityRepository {
 			Class<?> fieldClass = field.getType();
 			Class<?> originalEntityClass = getGenericClassIndexZero(fieldClass);
 
-			if (originalEntityClass.equals(entityClass)) {
+			if (originalEntityClass != null && originalEntityClass.equals(entityClass)) {
 				try {
 					return (JpaRepository) field.get(this);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
@@ -167,14 +191,20 @@ public class EntityRepository {
 		Type[] interfaces = clazz.getGenericInterfaces();
 
 		if (interfaces == null) {
+			log.info("interfaces is null");
 			return null;
 		}
+		
+		log.info("interfaces size: {}", interfaces.length);
+		
 		for (Type type : interfaces) {
 
-			if (type.getTypeName().startsWith(JpaRepository.class.getCanonicalName())) {
+			boolean isJpaRepository = type.getTypeName().startsWith(JpaRepository.class.getCanonicalName());
+			
+			if (isJpaRepository) {
 				ParameterizedType parameterizedType = (ParameterizedType) type;
 
-				if (parameterizedType.getActualTypeArguments() != null) {
+				if (parameterizedType.getActualTypeArguments() != null && parameterizedType.getActualTypeArguments().length > 0) {
 					return (T) parameterizedType.getActualTypeArguments()[0];
 				}
 			}

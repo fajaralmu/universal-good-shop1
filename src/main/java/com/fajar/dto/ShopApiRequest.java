@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fajar.annotation.Dto;
+import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Category;
 import com.fajar.entity.Cost;
 import com.fajar.entity.CostFlow;
@@ -37,8 +38,14 @@ public class ShopApiRequest implements Serializable {
 	 */
 	private static final long serialVersionUID = 110411933791444017L;
 
-	private User user;
+
+	
+	/**
+	 * CRUD
+	 */
+
 	private String entity;
+	private User user;
 	private Supplier supplier;
 	private Customer customer;
 	private ShopProfile shopprofile;
@@ -46,13 +53,17 @@ public class ShopApiRequest implements Serializable {
 	private Unit unit;
 	private Product product;
 	private UserRole userrole;
-	private Filter filter;
-	private ProductFlow productFlow;
-	private Transaction transaction;
 	private Category category;
 	private RegisteredRequest registeredRequest; 
 	private Cost cost;
 	private CostFlow costflow;
+	
+
+	private Filter filter;
+	private ProductFlow productFlow;
+	private Transaction transaction;
+	
+	private BaseEntity entityObject;
 	
 	private String destination;
 	private String username;

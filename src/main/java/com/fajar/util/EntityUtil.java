@@ -164,6 +164,7 @@ public class EntityUtil {
 			if (field == null) {
 
 			}
+			field.setAccessible(true);
 			return field;
 
 		} catch (Exception e) {
@@ -173,8 +174,10 @@ public class EntityUtil {
 
 			try {
 				log.info("TRY ACCESS SUPERCLASS");
-				return clazz.getSuperclass().getDeclaredField(fieldName);
-
+				
+				Field superClassField = clazz.getSuperclass().getDeclaredField(fieldName);
+				superClassField.setAccessible(true);
+				return superClassField;
 			} catch (Exception e) {
 				 
 				log.error("FAILED Getting FIELD: " + fieldName);
