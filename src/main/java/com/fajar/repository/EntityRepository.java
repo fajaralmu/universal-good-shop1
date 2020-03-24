@@ -52,6 +52,9 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 public class EntityRepository {
 
+	/**
+	 * Jpa Repositories
+	 */
 	@Autowired
 	private RegisteredRequestRepository registeredRequestRepository;
 	@Autowired
@@ -85,6 +88,12 @@ public class EntityRepository {
 	@Autowired
 	private CostFlowRepository costFlowRepository;
 
+	
+	/**
+	 * end jpa repos
+	 */
+	
+	
 	@Autowired
 	private CommonUpdateService commonUpdateService;
 	@Autowired
@@ -132,6 +141,12 @@ public class EntityRepository {
 		return new EntityManagementConfig(object, class1, commonUpdateService2);
 	}
 
+	/**
+	 * save entity
+	 * @param <T>
+	 * @param baseEntity
+	 * @return
+	 */
 	public <T> T save(BaseEntity baseEntity) {
 		log.info("execute method save");
 
@@ -203,6 +218,11 @@ public class EntityRepository {
 		return joinColumns;
 	}
 
+	/**
+	 * find suitable repository (declared in this class) for given entity object
+	 * @param entityClass
+	 * @return
+	 */
 	public JpaRepository findRepo(Class<? extends BaseEntity> entityClass) {
 
 		log.info("will find repo by class: {}", entityClass);
@@ -231,6 +251,11 @@ public class EntityRepository {
 		return null;
 	}
 
+	/**
+	 * find all entity
+	 * @param clazz
+	 * @return
+	 */
 	public List findAll(Class<? extends BaseEntity> clazz) {
 		JpaRepository repository = findRepo(clazz);
 		if (repository == null) {
@@ -266,6 +291,12 @@ public class EntityRepository {
 		return null;
 	}
 
+	/**
+	 * delete entity by id
+	 * @param id
+	 * @param class1
+	 * @return
+	 */
 	public boolean deleteById(Long id, Class<? extends BaseEntity> class1) {
 		log.info("Will delete entity: {}, id: {}", class1.getClass(), id);
 

@@ -8,11 +8,13 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
-import com.fajar.repository.EntityRepository;
 import com.fajar.service.FileService;
 import com.fajar.util.EntityUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class BaseEntityUpdateService {
 	
 	@Autowired
@@ -20,7 +22,7 @@ public class BaseEntityUpdateService {
 	
 	
 	public ShopApiResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
-		System.out.println("========> NOT IMPLEMENTED!!!!");
+		log.info("========> NOT IMPLEMENTED!!!!");
 		return new ShopApiResponse();
 		
 	};

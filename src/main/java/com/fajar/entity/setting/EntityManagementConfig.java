@@ -27,6 +27,9 @@ public class EntityManagementConfig implements Serializable {
 	public EntityManagementConfig(String fieldName, Class<? extends BaseEntity> entityClass, BaseEntityUpdateService service) {
 		this.entityClass = entityClass; 
 		this.entityUpdateService = service;
+		if(null == fieldName) {
+			fieldName = "entity";
+		}
 		this.fieldName = fieldName;
 	}
 

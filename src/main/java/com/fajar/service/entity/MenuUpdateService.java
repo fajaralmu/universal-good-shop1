@@ -15,8 +15,8 @@ import com.fajar.repository.MenuRepository;
 public class MenuUpdateService extends BaseEntityUpdateService{
 
 	@Autowired
-	private MenuRepository menuRepository;
-	
+	private MenuRepository menuRepository; 
+	 
 	@Override
 	public ShopApiResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
 		Menu menu = (Menu) copyNewElement(baseEntity, newRecord);
