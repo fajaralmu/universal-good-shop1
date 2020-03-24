@@ -5,9 +5,12 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.JoinColumn;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,22 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import com.fajar.entity.BaseEntity;
+import com.fajar.entity.Category;
+import com.fajar.entity.Cost;
+import com.fajar.entity.CostFlow;
+import com.fajar.entity.Customer;
+import com.fajar.entity.Menu;
+import com.fajar.entity.Message;
+import com.fajar.entity.Product;
+import com.fajar.entity.ProductFlow;
+import com.fajar.entity.RegisteredRequest;
+import com.fajar.entity.ShopProfile;
+import com.fajar.entity.Supplier;
+import com.fajar.entity.Transaction;
+import com.fajar.entity.Unit;
+import com.fajar.entity.User;
+import com.fajar.entity.UserRole;
+import com.fajar.entity.setting.EntityManagementConfig;
 import com.fajar.service.entity.BaseEntityUpdateService;
 import com.fajar.service.entity.CommonUpdateService;
 import com.fajar.service.entity.MenuUpdateService;
@@ -23,7 +42,9 @@ import com.fajar.service.entity.ShopProfileUpdateService;
 import com.fajar.service.entity.SupplierUpdateService;
 import com.fajar.service.entity.UserUpdateService;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -63,7 +84,7 @@ public class EntityRepository {
 	private UserRoleRepository userRoleRepository;
 	@Autowired
 	private CostFlowRepository costFlowRepository;
-	
+
 	@Autowired
 	private CommonUpdateService commonUpdateService;
 	@Autowired
@@ -78,6 +99,38 @@ public class EntityRepository {
 	private ShopProfileUpdateService shopProfileUpdateService;
 	@Autowired
 	private BaseEntityUpdateService baseEntityUpdateService;
+
+	@Setter(value = AccessLevel.NONE)
+	private final Map<String, EntityManagementConfig> entityConfiguration = new HashMap<String, EntityManagementConfig>();
+
+	@PostConstruct
+	public void init() {
+		entityConfiguration.put("unit", config("unit", Unit.class, commonUpdateService));
+		entityConfiguration.put("product", config("product", Product.class, productUpdateService));
+		entityConfiguration.put("customer", config("customer", Customer.class, commonUpdateService));
+		entityConfiguration.put("supplier", config("supplier", Supplier.class, supplierUpdateService));
+		entityConfiguration.put("user", config("user", User.class, userUpdateService));
+		entityConfiguration.put("menu", config("menu", Menu.class, menuUpdateService));
+		entityConfiguration.put("category", config("category", Category.class, commonUpdateService));
+		entityConfiguration.put("shopprofile", config("shopprofile", ShopProfile.class, shopProfileUpdateService));
+		entityConfiguration.put("userrole", config("userrole", UserRole.class, commonUpdateService));
+		entityConfiguration.put("registeredrequest", config("registeredRequest", RegisteredRequest.class, commonUpdateService));
+		entityConfiguration.put("cost", config("cost", Cost.class, commonUpdateService));
+		entityConfiguration.put("costflow", config("costflow", CostFlow.class, commonUpdateService));
+
+		/**
+		 * unable to update
+		 */
+		entityConfiguration.put("transaction", config(null, Transaction.class, baseEntityUpdateService));
+		entityConfiguration.put("productflow", config(null, ProductFlow.class, baseEntityUpdateService));
+		entityConfiguration.put("message", config(null, Message.class, commonUpdateService));
+	}
+
+	private EntityManagementConfig config(String object, Class<? extends BaseEntity> class1,
+			BaseEntityUpdateService commonUpdateService2) {
+		// TODO Auto-generated method stub
+		return new EntityManagementConfig(object, class1, commonUpdateService2);
+	}
 
 	public <T> T save(BaseEntity baseEntity) {
 		log.info("execute method save");
@@ -152,9 +205,8 @@ public class EntityRepository {
 
 	public JpaRepository findRepo(Class<? extends BaseEntity> entityClass) {
 
-		
 		log.info("will find repo by class: {}", entityClass);
-		
+
 		Class<?> clazz = this.getClass();
 		Field[] fields = clazz.getDeclaredFields();
 
@@ -194,17 +246,18 @@ public class EntityRepository {
 			log.info("interfaces is null");
 			return null;
 		}
-		
+
 		log.info("interfaces size: {}", interfaces.length);
-		
+
 		for (Type type : interfaces) {
 
 			boolean isJpaRepository = type.getTypeName().startsWith(JpaRepository.class.getCanonicalName());
-			
+
 			if (isJpaRepository) {
 				ParameterizedType parameterizedType = (ParameterizedType) type;
 
-				if (parameterizedType.getActualTypeArguments() != null && parameterizedType.getActualTypeArguments().length > 0) {
+				if (parameterizedType.getActualTypeArguments() != null
+						&& parameterizedType.getActualTypeArguments().length > 0) {
 					return (T) parameterizedType.getActualTypeArguments()[0];
 				}
 			}

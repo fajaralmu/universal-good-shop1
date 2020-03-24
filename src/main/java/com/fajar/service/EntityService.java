@@ -55,21 +55,9 @@ public class EntityService {
  
 	public static final String ORIGINAL_PREFFIX = "{ORIGINAL>>";
 	public static final String PRODUCT_IMG_PREFFIX = "PRD";
-	
+	  
 	@Autowired
-	private ProductRepository productRepository; 
-	@Autowired
-	private SupplierRepository supplierRepository;
-	@Autowired
-	private RepositoryCustomImpl repositoryCustom; 
-	@Autowired
-	private MenuRepository menuRepository;
-	@Autowired
-	private ShopProfileRepository shopProfileRepository;
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private FileService fileService;
+	private RepositoryCustomImpl repositoryCustom;   
 	@Autowired
 	private EntityRepository entityRepository;
 	 
@@ -83,26 +71,7 @@ public class EntityService {
 	}
 	
 	public void setEntityConfig() {
-		entityClasses.put(  "unit", new EntityManagementConfig("unit", Unit.class, entityRepository.getCommonUpdateService())); 
-		entityClasses.put( "product", new EntityManagementConfig("product",Product.class ,entityRepository.getProductUpdateService())); 
-		entityClasses.put( "customer", new EntityManagementConfig("customer",Customer.class,entityRepository.getCommonUpdateService())); 
-		entityClasses.put( "supplier", new EntityManagementConfig("supplier",Supplier.class,entityRepository.getSupplierUpdateService())); 
-		entityClasses.put( "user", new EntityManagementConfig("user",User.class,entityRepository.getUserUpdateService())); 
-		entityClasses.put( "menu", new EntityManagementConfig("menu",Menu.class,entityRepository.getMenuUpdateService())); 
-		entityClasses.put( "category", new EntityManagementConfig("category",Category.class,entityRepository.getCommonUpdateService()));
-		entityClasses.put( "shopprofile", new EntityManagementConfig("shopprofile",ShopProfile.class,entityRepository.getShopProfileUpdateService())); 
-		entityClasses.put( "userrole", new EntityManagementConfig("userrole",UserRole.class,entityRepository.getCommonUpdateService())); 
-		entityClasses.put( "registeredrequest", new EntityManagementConfig("registeredRequest",RegisteredRequest.class,entityRepository.getCommonUpdateService())); 
-		entityClasses.put( "cost", new EntityManagementConfig("cost",Cost.class,entityRepository.getCommonUpdateService()));
-		entityClasses.put( "costflow",new EntityManagementConfig("costflow",CostFlow.class,entityRepository.getCommonUpdateService())); 
-	
-		/**
-		 * unable to update
-		 */
-		entityClasses.put( "transaction", new EntityManagementConfig(null,Transaction.class,entityRepository.getBaseEntityUpdateService())); 
-		entityClasses.put( "productflow", new EntityManagementConfig(null,ProductFlow.class,entityRepository.getBaseEntityUpdateService())); 
-		entityClasses.put( "message", new EntityManagementConfig(null,Message.class,entityRepository.getCommonUpdateService()));
-		
+		entityClasses = entityRepository.getEntityConfiguration();
 	}
 
 	/**
@@ -121,10 +90,11 @@ public class EntityService {
 			BaseEntityUpdateService updateService = entityClasses.get(key).getEntityUpdateService();
 			String fieldName = entityClasses.get(key).getFieldName();
 			Object entityValue = null;
+			
 			try {
-				Field entityField = EntityUtil.getDeclaredField(ShopApiRequest.class, fieldName);
-//				entityField.setAccessible(true);
+				Field entityField = EntityUtil.getDeclaredField(ShopApiRequest.class, fieldName); 
 				entityValue = entityField.get(request);
+				
 			}catch (Exception e) {
 				e.printStackTrace();
 				return ShopApiResponse.failed();
@@ -133,47 +103,11 @@ public class EntityService {
 			if(entityValue != null)
 				return updateService.saveEntity((BaseEntity)entityValue, newRecord);
 			
-		}catch (Exception e) {
-			// TODO: handle exception
+		}catch (Exception e) { 
 			e.printStackTrace();
 		}
 		
-		/*switch (request.getEntity().toLowerCase()) {
-		
-
-		case "product":
-			return saveProduct(request.getProduct(), newRecord); 
-		case "supplier":
-			return saveSupplier(request.getSupplier(), newRecord); 
-		case "shopprofile": 
-			return saveProfile(request.getShopprofile(), newRecord);
-		case "user":
-			return saveUser(request.getUser(), newRecord); 
-		case "menu":
-			return saveMenu(request.getMenu(), newRecord);
-			
-		/**
-		 * ========================
-		 *     common entities
-		 * ========================
-		  
-		case "customer":
-			return saveCommonEntity(request.getCustomer(), newRecord); 
-		case "unit":
-			return saveCommonEntity(request.getUnit(), newRecord);
-		case "category":
-			return saveCommonEntity(request.getCategory(), newRecord); 
-		case "userrole":
-			return saveCommonEntity(request.getUserrole(), newRecord); 
-		case "registeredrequest":
-			return saveCommonEntity(request.getRegisteredRequest(), newRecord); 
-		case "cost":
-			return saveCommonEntity(request.getCost(), newRecord); 
-		case "costflow":
-			return saveCommonEntity(request.getCostflow(), newRecord);
-
-		}
-		*/
+		 
 		return ShopApiResponse.builder().code("01").message("failed").build();
 	}
 
