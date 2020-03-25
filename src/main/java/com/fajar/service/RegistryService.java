@@ -19,7 +19,10 @@ import com.fajar.controller.BaseController;
 import com.fajar.dto.RegistryModel;
 import com.fajar.dto.SessionData;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class RegistryService {
 
 	public static final String PAGE_REQUEST = "page_req_id";
@@ -47,13 +50,13 @@ public class RegistryService {
 	public <T> T getModel(String key) {
 		try {
 			T object = (T) registry.lookup(key);
-			System.out.println("==registry model: " + object);
+			log.info("==registry model: " + object);
 			return object;
 		} catch (RemoteException | NotBoundException e) {
-			System.out.println("key not bound");
+			log.info("key not bound");
 			return null;
 		} catch (Exception ex) {
-			System.out.println("Unexpected error");
+			log.info("Unexpected error");
 			ex.printStackTrace();
 			return null;
 		}
@@ -107,9 +110,12 @@ public class RegistryService {
 	 */
 	public String addPageRequest(String cookie) {
 		String pageRequestId = UUID.randomUUID().toString();
+		
 		if (getModel(PAGE_REQUEST) != null) {
+			
 			RegistryModel model = getModel(PAGE_REQUEST);
 			model.getTokens().put(pageRequestId, cookie);
+			
 			if (set(PAGE_REQUEST, model)) {
 				return pageRequestId;
 			}
@@ -117,8 +123,8 @@ public class RegistryService {
 		} else { 
 			try {
 				RegistryModel	model = new  RegistryModel();
-				model.setTokens(new HashMap<>()); 
-				model.getTokens().put(pageRequestId, cookie);
+				model.setTokens(new HashMap<String, Object>() {{put(pageRequestId, cookie);}});  
+				
 				if (set(PAGE_REQUEST, model)) {
 					return pageRequestId;
 				}
@@ -139,7 +145,7 @@ public class RegistryService {
 	 * @return
 	 */
 	public boolean validatePageRequest(HttpServletRequest req) {
-		System.out.println("Will validate page request");
+		log.info("Will validate page request");
 		try {
 			RegistryModel model = getModel(PAGE_REQUEST);
 
@@ -153,12 +159,12 @@ public class RegistryService {
 			if (exist) {
 				String reuqestIdValue = (String) model.getTokens().get(pageRequestId);
 
-				System.out.println(" . . . . . Request ID value: " + reuqestIdValue + " vs JSessionId: "
+				log.info(" . . . . . Request ID value: " + reuqestIdValue + " vs JSessionId: "
 						+ jsessionCookie.getValue());
 
 				return reuqestIdValue.equals(jsessionCookie.getValue());
 			} else {
-				System.out.println("x x x x Request ID not found x x x x");
+				log.info("x x x x Request ID not found x x x x");
 			}
 
 			return false;

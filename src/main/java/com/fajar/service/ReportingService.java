@@ -208,16 +208,18 @@ public class ReportingService {
 
 			final Date transactionDate = productFlow.getTransaction().getTransactionDate();
 
-			Calendar cal = Calendar.getInstance();
+			final Calendar cal = Calendar.getInstance();
 			cal.setTime(transactionDate);
 
-			int day = cal.get(Calendar.DAY_OF_MONTH) + 1;
-			long amount = productFlow.getCount() * productFlow.getPrice();
+			final int day 	  = cal.get(Calendar.DAY_OF_MONTH) + 1;
+			final long amount = productFlow.getCount() * productFlow.getPrice();
 
 			CashFlow currentCashflow = result.get(day);
+			
 			if(null == currentCashflow) {
 				currentCashflow = CashFlow.builder().amount(0L).count(0L).module(module).build();
 			}
+			
 			currentCashflow.setAmount(currentCashflow.getAmount() + amount);
 			currentCashflow.setCount(currentCashflow.getCount() + productFlow.getCount());
 
@@ -260,6 +262,12 @@ public class ReportingService {
 		return response;
 	}
 	
+	/**
+	 * get day of month count
+	 * @param year
+	 * @param month
+	 * @return
+	 */
 	private static int getMonthDayCount(int year, int month) {
 		
 		int day = 30;

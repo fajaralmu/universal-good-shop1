@@ -29,8 +29,8 @@ public class ProductInventoryService {
 	@Autowired
 	private ProgressService progressService; 
 	
-	static final String TYPE_OUT = "OUT";
-	static final String TYPE_IN = "IN";
+	public static final String TYPE_OUT = "OUT";
+	public static final String TYPE_IN = "IN";
 	
 	/**
 	 * create common transaction object

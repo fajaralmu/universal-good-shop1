@@ -18,6 +18,9 @@ import com.fajar.util.EntityUtil;
 
 @Service
 public class ComponentService {
+	private static final String MENU_PREFFIX_TRX = "TRX";
+	private static final String MENU_PREFFIX_PUBLIC = "PUBLIC";
+	
 	@Autowired
 	private MenuRepository menuRepository;
 	@Autowired
@@ -28,7 +31,7 @@ public class ComponentService {
 	public List<Menu> getDashboardMenus(HttpServletRequest request) {
 		List<Menu> menus = menuRepository.findByPageStartsWith("HOME");
 		List<BaseEntity> entities = new ArrayList<BaseEntity>();
-		menus = validateAccess(userSessionService.getUserFromSession(request), menus);
+		menus = getAvailableMenusForUser(userSessionService.getUserFromSession(request), menus);
 		for (Menu menu : menus) {
 			menu.setUrl(request.getContextPath() + menu.getUrl());
 			entities.add(menu);
@@ -40,7 +43,7 @@ public class ComponentService {
 		List<Menu> menus = menuRepository.findByPageStartsWith("MNGMNT");
 		List<BaseEntity> entities = new ArrayList<BaseEntity>();
 
-		menus = validateAccess(userSessionService.getUserFromSession(request), menus);
+		menus = getAvailableMenusForUser(userSessionService.getUserFromSession(request), menus);
 		for (Menu menu : menus) {
 			menu.setUrl(request.getContextPath() + menu.getUrl());
 			entities.add(menu);
@@ -50,6 +53,7 @@ public class ComponentService {
 
 	private boolean hasAccess(User user, String menuAccess) {
 		boolean hasAccess = false;
+		
 		for (String userAccess : user.getRole().getAccess().split(",")) {
 			if (userAccess.equals(menuAccess)) {
 				hasAccess = true;
@@ -60,8 +64,9 @@ public class ComponentService {
 		return hasAccess;
 	}
 
-	private List<Menu> validateAccess(User user, List<Menu> menus) {
+	private List<Menu> getAvailableMenusForUser(User user, List<Menu> menus) {
 		List<Menu> newMenus = new ArrayList<>();
+		
 		for (Menu menu : menus) {
 			String[] menuAccess = menu.getPage().split("-");
 			if (menuAccess.length <= 1) {
@@ -77,10 +82,21 @@ public class ComponentService {
 	}
 
 	public List<Menu> getTransactionMenus(HttpServletRequest request) {
-		List<Menu> menus 			= menuRepository.findByPageStartsWith("TRX");
-		menus = validateAccess(userSessionService.getUserFromSession(request), menus);
+		 
+		return getMenus(request, MENU_PREFFIX_TRX, true);
+	}
+	
+	public List<Menu> getPublicMenus(HttpServletRequest request) { 
 		
+		return getMenus(request, MENU_PREFFIX_PUBLIC, false);
+	}
+	
+	private List<Menu> getMenus(HttpServletRequest request, String preffix, boolean needAuth){
 		List<BaseEntity> entities 	= new ArrayList<BaseEntity>();
+		List<Menu> menus 			= menuRepository.findByPageStartsWith(preffix);
+		if(needAuth) {
+			menus = getAvailableMenusForUser(userSessionService.getUserFromSession(request), menus); 
+		}
 		
 		for (Menu menu : menus) {
 			menu.setUrl(request.getContextPath() + menu.getUrl());
@@ -89,17 +105,7 @@ public class ComponentService {
 		return EntityUtil.validateDefaultValue(entities);
 	}
 
-	public List<Menu> getPublicMenus(HttpServletRequest request) {
-		List<Menu> menus 			= menuRepository.findByPageStartsWith("PUBLIC");
-		List<BaseEntity> entities 	= new ArrayList<BaseEntity>();
-		
-		for (Menu menu : menus) {
-			menu.setUrl(request.getContextPath() + menu.getUrl());
-			entities.add(menu);
-		}
-		
-		return EntityUtil.validateDefaultValue(entities);
-	}
+	
 
 	public List<Category> getAllCategories() {
 		return categoryRepository.findByDeletedFalse();

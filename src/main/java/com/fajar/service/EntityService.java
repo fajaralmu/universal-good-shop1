@@ -60,8 +60,7 @@ public class EntityService {
 	 * @param newRecord
 	 * @return
 	 */
-	public ShopApiResponse addEntity(ShopApiRequest request, HttpServletRequest servletRequest, boolean newRecord) {
-
+	public ShopApiResponse addEntity(ShopApiRequest request, HttpServletRequest servletRequest, boolean newRecord) { 
 		
 		try {
 			
@@ -126,13 +125,10 @@ public class EntityService {
 			String sqlCount = sqlListAndCount[1];
 
 			List<BaseEntity> entities = repositoryCustom.filterAndSort(sql, entityClass);
-
-			Integer count = 0;
+ 
 			Object countResult = repositoryCustom.getSingleResult(sqlCount);
-
-			if (countResult != null) {
-				count = ((BigInteger) countResult).intValue();
-			}
+ 
+			int count = countResult == null? 0: ((BigInteger) countResult).intValue(); 
 			
 			return ShopApiResponse.builder().
 					entities(EntityUtil.validateDefaultValue(entities)).
@@ -158,14 +154,13 @@ public class EntityService {
 	 * @param request
 	 * @return
 	 */
-	public ShopApiResponse delete(ShopApiRequest request) {
-		
-		
+	public ShopApiResponse delete(ShopApiRequest request) { 
 		
 		try {
-			Map<String, Object> filter = request.getFilter().getFieldsFilter();
-			Long id = Long.parseLong(filter.get("id").toString()); 
-			String entityName = request.getEntity().toLowerCase();
+			Map<String, Object> filter 	= request.getFilter().getFieldsFilter();
+			Long id 					= Long.parseLong(filter.get("id").toString()); 
+			String entityName 			= request.getEntity().toLowerCase();
+			
 			Class<? extends BaseEntity> entityClass = entityClasses.get(entityName).getEntityClass();
 			
 			if(null == entityClass) {

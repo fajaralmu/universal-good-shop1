@@ -93,15 +93,15 @@ public class UserSessionService {
 
 			request.getSession().setAttribute("requestURI", request.getRequestURI());
 			log.info("---REQUESTED URI: " + request.getSession(false).getAttribute("requestURI"));
-		}
-
+		} 
+		
 		/**
 		 * handle FE
-		 */
-
+		 */ 
 		String remoteAddress = request.getRemoteAddr();
 		int remotePort = request.getRemotePort();
-		System.out.println("remoteAddress:" + remoteAddress + ":" + remotePort);
+		
+		log.info("remoteAddress:" + remoteAddress + ":" + remotePort);
 		if (request.getHeader("loginKey") != null) {
 			boolean registered = getUserFromRegistry(request) != null;
 			return registered;
@@ -110,14 +110,11 @@ public class UserSessionService {
 		/**
 		 * end handle FE
 		 */
-
-		if (request.getSession().getAttribute("user") == null) {
-			log.info("session user NULL");
-			return false;
-		}
+ 
 		Object sessionObj = request.getSession().getAttribute("user");
-		if (!(sessionObj instanceof User)) {
-			log.info("session user NOT USER OBJECT =" + sessionObj.getClass());
+		
+		if (sessionObj == null || !(sessionObj instanceof User)) {
+			log.info("invalid session object: {}", sessionObj);
 			return false;
 		}
 		User sessionUser = (User) request.getSession().getAttribute("user");
@@ -126,18 +123,18 @@ public class UserSessionService {
 			RegistryModel registryModel = registryService.getModel(sessionUser.getLoginKey().toString());
 
 			if (sessionUser == null || registryModel == null || !sessionUser.equals(registryModel.getUser())) {
-				System.out.println("==========USER NOT EQUALS==========");
+				log.error("==========USER NOT EQUALS==========");
 				throw new Exception();
 			}
 
 			User loggedUser = userRepository.findByUsernameAndPassword(sessionUser.getUsername(),
 					sessionUser.getPassword());
 
-			System.out.println("USER HAS SESSION");
+			log.info("USER HAS SESSION");
 			return loggedUser != null;
 
 		} catch (Exception ex) {
-			System.out.println("USER DOSE NOT HAVE SESSION");
+			log.info("USER DOSE NOT HAVE SESSION");
 			ex.printStackTrace();
 			return false;
 		}
@@ -147,16 +144,10 @@ public class UserSessionService {
 			throws IllegalAccessException {
 		RegistryModel registryModel = null;
 		try {
-			registryModel = new RegistryModel();
-		} catch (RemoteException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			throw new IllegalAccessException("Login Failed");
-		}
-		registryModel.setUser(dbUser);
-		registryModel.setUserToken(UUID.randomUUID().toString());
-
-		try {
+			registryModel = new RegistryModel(); 
+			registryModel.setUser(dbUser);
+			registryModel.setUserToken(UUID.randomUUID().toString()); 
+		 
 			String key = UUID.randomUUID().toString();
 			dbUser.setLoginKey(key);
 			boolean registryIsSet = registryService.set(key, registryModel);
@@ -167,24 +158,27 @@ public class UserSessionService {
 			httpResponse.addHeader("loginKey", key);
 			httpResponse.addHeader("Access-Control-Expose-Headers", "*");
 			httpRequest.getSession(true).setAttribute("user", dbUser);
-			System.out.println(" > > > SUCCESS LOGIN :");
+			log.info(" > > > SUCCESS LOGIN :");
 			return dbUser;
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println(" < < < FAILED LOGIN");
+			log.info(" < < < FAILED LOGIN");
 			throw new IllegalAccessException("Login Failed");
 		}
 	}
 
 	public boolean logout(HttpServletRequest request) {
 		User user = getUserFromSession(request);
-		if (user == null) {
-			user = getUserFromRegistry(request);
+		
+		try {
+			if (user == null) {
+				user = getUserFromRegistry(request); 
+			}
+			
 			if (user == null) {
 				return false;
 			}
-		}
-		try {
+			
 			boolean registryIsUnbound = registryService.unbind(user.getLoginKey().toString());
 
 			if (!registryIsUnbound) {
@@ -194,13 +188,15 @@ public class UserSessionService {
 			request.getSession(false).removeAttribute("user");
 			request.getSession(false).invalidate();
 
-			System.out.println(" > > > > > SUCCESS LOGOUT");
+			log.info(" > > > > > SUCCESS LOGOUT");
 			return true;
 		} catch (Exception e) {
-			System.out.println(" < < < < < FAILED LOGOUT");
+			
 			e.printStackTrace();
+			log.info(" < < < < < FAILED LOGOUT");
+			return false;
 		}
-		return false;
+		
 
 	}
 
@@ -215,24 +211,27 @@ public class UserSessionService {
 
 	public boolean validatePageRequest(HttpServletRequest req) {
 		final String requestId = req.getHeader(RegistryService.PAGE_REQUEST_ID);
-		System.out.println("Page request id: " + requestId);
+		log.info("Page request id: " + requestId);
+		
 		if(null == requestId) {
 			return false;
 		}
 		
 		// check from DB
 		RegisteredRequest registeredRequest = registeredRequestRepository.findTop1ByRequestId(requestId);
+		SessionData sessionData = null;
+		
 		if (null == registeredRequest) {
-			SessionData sessionData = registryService.getModel(SESSION_DATA);
-			if (null != sessionData) {
-				registeredRequest = sessionData.getRequest(requestId);
-			}
+			sessionData = registryService.getModel(SESSION_DATA);  
+		}
+		if (null != sessionData) {
+			registeredRequest = sessionData.getRequest(requestId);
 		}
 		if (registeredRequest != null) {
-			System.out.println("x x x Found Registered Request: " + registeredRequest);
+			log.info("x x x Found Registered Request: " + registeredRequest);
 			return true;
 		}
-		System.out.println("Reuqest not registered");
+		log.info("Reuqest not registered");
 
 		return registryService.validatePageRequest(req);
 	}
@@ -244,7 +243,7 @@ public class UserSessionService {
 				field.setAccessible(true);
 				field.set(object, null);
 			} catch (IllegalArgumentException | IllegalAccessException e) {
-				System.out.println("Error------- and catched");
+				log.info("Error------- and catched");
 				e.printStackTrace();
 			}
 		}
@@ -324,8 +323,12 @@ public class UserSessionService {
 		SessionData sessionData = registryService.getModel(SESSION_DATA);
 		
 		if (null == sessionData) {
-			if (!registryService.set(SESSION_DATA, new SessionData()))
+			
+			boolean successSettingRegistry = registryService.set(SESSION_DATA, new SessionData());
+			
+			if (!successSettingRegistry )
 				throw new InvalidRequestException("Error updating session data");
+			
 			sessionData  = registryService.getModel(SESSION_DATA);
 		}
 		List<BaseEntity> appSessions = CollectionUtil.mapToList(sessionData.getRegisteredApps());
