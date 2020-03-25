@@ -20,7 +20,7 @@ public class ProductSales extends BaseEntity implements Serializable {
 	*/
 	private static final long serialVersionUID = -1169438325218194178L;
 	private Product product;
-	private Integer sales;
+	private int sales;
 	private int month;
 	private int year;
 	private double percentage;

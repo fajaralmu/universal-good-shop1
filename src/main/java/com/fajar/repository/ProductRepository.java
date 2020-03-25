@@ -20,6 +20,14 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Reposit
 			+ " and product.id = ?3")
 	public Object findProductSales(int month, int year, Long productId);
 
+	/**
+	 * String sql = "select sum(product_flow.count) as productCount from product_flow  "
+				+ " left join `transaction` on transaction.id = product_flow.transaction_id "
+				+ " where transaction.`type` = 'OUT' and product_flow.product_id = " + productId
+				+ " and transaction.transaction_date >= '" + period1 + "' and " + " transaction.transaction_date <= '"
+				+ period2 + "' ";
+	 *  
+	 */
 	@Query(nativeQuery = true, 
 			value= "select sum(product_flow.count) as productCount from product_flow  "
 					+ " left join `transaction` on transaction.id = product_flow.transaction_id "

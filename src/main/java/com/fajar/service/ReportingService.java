@@ -251,6 +251,7 @@ public class ReportingService {
 			response.setMonthlyDetailIncome(parseCashflow("OUT", flowIncome));
 			response.setMonthlyDetailCost(parseCashflow("IN", flowCost));
 			response.setFilter(filter);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error: " + e);

@@ -52,7 +52,7 @@ public class RestAdminController {
 		if (!accountService.validateToken(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
-		ShopApiResponse response = userSessionService.getAppRequest();
+		ShopApiResponse response = userSessionService.generateAppRequest();
 		return response;
 	}
 

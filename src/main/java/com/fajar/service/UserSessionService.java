@@ -292,6 +292,7 @@ public class UserSessionService {
 		
 		String referrer =  servletRequest.getHeader("Referer");
 		String userAgent = servletRequest.getHeader("User-Agent");
+		
 		RegisteredRequest request = RegisteredRequest.builder().
 				ipAddress(ipAddress).
 				referrer(referrer).
@@ -305,7 +306,7 @@ public class UserSessionService {
 		if (!registryService.set(SESSION_DATA, sessionData))
 			throw new InvalidRequestException("Error generating request id");
 		
-		realtimeService.sendUpdateSession(getAppRequest());
+		realtimeService.sendUpdateSession(generateAppRequest());
 		return ShopApiResponse.builder().code("00").message(requestId).build();
 	}
 	
@@ -319,7 +320,7 @@ public class UserSessionService {
 		return registeredRequest;
 	}
 
-	public ShopApiResponse getAppRequest() {
+	public ShopApiResponse generateAppRequest() {
 		SessionData sessionData = registryService.getModel(SESSION_DATA);
 		
 		if (null == sessionData) {
@@ -354,7 +355,7 @@ public class UserSessionService {
 			throw new InvalidRequestException("Error updating session data");
 		sessionData  = registryService.getModel(SESSION_DATA);
 		
-		realtimeService.sendUpdateSession(getAppRequest());
+		realtimeService.sendUpdateSession(generateAppRequest());
 		return ShopApiResponse.builder().code("00").sessionData(sessionData).build();
 	}
 

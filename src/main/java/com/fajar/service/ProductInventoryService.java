@@ -28,27 +28,61 @@ public class ProductInventoryService {
 	private TransactionRepository transactionRepository;
 	@Autowired
 	private ProgressService progressService; 
+	
+	static final String TYPE_OUT = "OUT";
+	static final String TYPE_IN = "IN";
+	
+	/**
+	 * create common transaction object
+	 * @param type
+	 * @param user
+	 * @param customer
+	 * @param supplier
+	 * @param date
+	 * @return
+	 */
+	private Transaction buildTransactionObject (String type, User user, Customer customer, Supplier supplier, Date date) {
+		Transaction transaction = new Transaction();
+		transaction.setCode(StringUtil.generateRandomNumber(10));
+		transaction.setUser(user);
+		transaction.setType(type);
+		transaction.setTransactionDate(date);
+		
+		if(TYPE_IN.equals(type)) {
+			transaction.setSupplier(supplier);
+		}else if(TYPE_OUT.equals(type)) {
+			transaction.setCustomer(customer);
+		}
 
+		return transaction;
+	}
+
+	/**
+	 * adding product to the shop from supplier
+	 * @param productFlows
+	 * @param requestId
+	 * @param user
+	 * @param supplier
+	 * @param d
+	 * @return
+	 */
 	public Transaction saveSupplyTransaction(List<ProductFlow> productFlows, String requestId, User user,
 			Supplier supplier, Date d) {
 		try {
-			Transaction transaction = new Transaction();
-			transaction.setCode(StringUtil.generateRandomNumber(10));
-			transaction.setUser(user);
-			transaction.setType("IN");
-			transaction.setTransactionDate(d);
-			transaction.setSupplier(supplier);
-
-			Transaction dbTransaction = transactionRepository.save(transaction);
+			Transaction transaction = buildTransactionObject(TYPE_IN, user, null, supplier, d);  
+			Transaction newTransaction = transactionRepository.save(transaction);
 			progressService.sendProgress(1, 1, 10, false, requestId);
 
 			for (ProductFlow productFlow : productFlows) {
 
 				productFlow.setId(null);// never update
 				// IMPORTANT!!
-				productFlow.setTransaction(dbTransaction);
+				productFlow.setTransaction(newTransaction);
 				productFlow = productFlowRepository.save(productFlow);
 
+				/**
+				 * INSERT new inventory item row
+				 */
 				InventoryItem inventoryItem = new InventoryItem();
 				inventoryItem.setProduct(productFlow.getProduct());
 				inventoryItem.setCount(productFlow.getCount());
@@ -60,8 +94,8 @@ public class ProductInventoryService {
 				progressService.sendProgress(1, productFlows.size(), 40, false, requestId);
 			}
 
-			dbTransaction.setProductFlows(productFlows);
-			return dbTransaction;
+			newTransaction.setProductFlows(productFlows);
+			return newTransaction;
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw ex;
@@ -70,19 +104,23 @@ public class ProductInventoryService {
 		}
 	}
 
+	/**
+	 * customer buy product from shop
+	 * @param d
+	 * @param productFlows
+	 * @param requestId
+	 * @param user
+	 * @param customer
+	 * @return
+	 */
 	public synchronized Transaction savePurchaseTransaction(Date d, List<ProductFlow> productFlows, String requestId,
 			User user, Customer customer) {
 		if (productFlows == null || productFlows.size() == 0) {
 			throw new RuntimeException("INVALID PRODUCTS");
 		}
-
-		Transaction transaction = new Transaction();
-		transaction.setCode(StringUtil.generateRandomNumber(10));
-		transaction.setUser(user);
-		transaction.setTransactionDate(d);
-		transaction.setType("OUT");
-		transaction.setCustomer(customer);
+ 
 		try {
+			Transaction transaction = buildTransactionObject(TYPE_OUT,user,customer, null, d); 
 			Transaction newTransaction = transactionRepository.save(transaction);
 			progressService.sendProgress(1, 1, 10, false, requestId);
 			int purchasedProduct = 0;
@@ -93,6 +131,10 @@ public class ProductInventoryService {
 				productFlow.setTransaction(newTransaction);
 				productFlow.setPrice(productFlow.getProduct().getPrice());
 
+				
+				/**
+				 * UPDATE inventory item row
+				 */
 				InventoryItem inventoryItem = inventoryItemRepository
 						.findByIncomingFlowId(productFlow.getFlowReferenceId());
 				if (null == inventoryItem) {
@@ -102,9 +144,12 @@ public class ProductInventoryService {
 				 * update count
 				 */
 				inventoryItem.setCount(inventoryItem.getCount() - productFlow.getCount());
+				
 				if (inventoryItem.getCount() < 0) {
+					//SKIP
 					continue;
 				}
+				
 				inventoryItemRepository.save(inventoryItem);
 				productFlow = productFlowRepository.save(productFlow);
 				purchasedProduct++;

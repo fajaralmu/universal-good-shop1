@@ -51,7 +51,7 @@ public class MessagingService {
 		realtimeService.sendMessageChat(response);
 		return response;
 	}
-	
+	 
 	public ShopApiResponse sendMessage(ShopApiRequest request, HttpServletRequest httpRequest) { 
 		String content= request.getValue();
 		String reqId = httpRequest.getHeader("requestId");

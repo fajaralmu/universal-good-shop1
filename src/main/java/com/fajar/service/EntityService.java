@@ -1,13 +1,10 @@
 package com.fajar.service;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -19,31 +16,13 @@ import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
-import com.fajar.entity.Category;
 import com.fajar.entity.Cost;
-import com.fajar.entity.CostFlow;
-import com.fajar.entity.Customer;
-import com.fajar.entity.Menu;
-import com.fajar.entity.Message;
-import com.fajar.entity.Product;
-import com.fajar.entity.ProductFlow;
-import com.fajar.entity.RegisteredRequest;
-import com.fajar.entity.ShopProfile;
-import com.fajar.entity.Supplier;
-import com.fajar.entity.Transaction;
 import com.fajar.entity.Unit;
-import com.fajar.entity.User;
 import com.fajar.entity.UserRole;
 import com.fajar.entity.setting.EntityManagementConfig;
 import com.fajar.repository.EntityRepository;
-import com.fajar.repository.MenuRepository;
-import com.fajar.repository.ProductRepository;
 import com.fajar.repository.RepositoryCustomImpl;
-import com.fajar.repository.ShopProfileRepository;
-import com.fajar.repository.SupplierRepository;
-import com.fajar.repository.UserRepository;
 import com.fajar.service.entity.BaseEntityUpdateService;
-import com.fajar.util.CollectionUtil;
 import com.fajar.util.EntityUtil;
 import com.fajar.util.QueryUtil;
 

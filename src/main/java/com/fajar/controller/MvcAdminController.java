@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
-import com.fajar.dto.UniversalObject;
 import com.fajar.entity.Product;
 import com.fajar.service.ComponentService;
 import com.fajar.service.LogProxyFactory;
@@ -110,9 +109,9 @@ public class MvcAdminController extends BaseController {
 		Product product = (Product) productResponse.getEntities().get(0);
 
 		List<String> imageUrlList = CollectionUtil.arrayToList(product.getImageUrl().split("~"));
-		List<UniversalObject> imageUrlObjects = new ArrayList<>();
+		List<Map> imageUrlObjects = new ArrayList<>();
 		for (String string : imageUrlList) {
-			imageUrlObjects.add(UniversalObject.builder().value(string).build());
+			imageUrlObjects.add(new HashMap<String, Object>() {{put("value",string);}});
 		}
 		model.addAttribute("product", product);
 		model.addAttribute("contextPath", request.getContextPath());

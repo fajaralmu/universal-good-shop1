@@ -1,37 +1,16 @@
 package com.fajar.util;
 
 import java.lang.reflect.Field;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.fajar.annotation.Dto;
-import com.fajar.dto.Entity;
-import com.fajar.dto.RealtimeResponse;
 
 public class MyJsonUtil {
 
 	public static void main(String[] aaa) {
-		RealtimeResponse response = new RealtimeResponse();
-		response.setResponseCode("00");
-		response.setResponseMessage("OK");
-		Entity user = new Entity();
-		user.setId(1);
-		user.setName("FAJAR AM");
-		user.setJoinedDate(new Date());
-		response.setEntity(user);
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("val1", "1111");
-		map.put("val2", 2);
-		map.put("USERRR", user);
-		response.setInfo(map);
-		response.getEntities().add(user);
-		response.getEntities().add(user);
-		response.getInfos().add("AAAA");
-		response.getInfos().add("0000");
-		System.out.println(objectToJson(response));
+		 
 	}
 
 	public static String objectToJson(Object o) {

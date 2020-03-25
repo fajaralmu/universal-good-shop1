@@ -25,6 +25,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserAccountService {
 	
+	private static final String ATTR_REQUEST_URI = "requestURI";
+	private static final String HEADER_LOGIN_KEY = "loginKey";
+	private static final String HEADER_REQUEST_TOKEN = "requestToken";
+	
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -39,7 +43,11 @@ public class UserAccountService {
 		LogProxyFactory.setLoggers(this);
 	}
 	
-	
+	/**
+	 * add new user
+	 * @param request
+	 * @return
+	 */
 	public ShopApiResponse registerUser(ShopApiRequest request) { 
 		ShopApiResponse response  = new ShopApiResponse();
 		Optional<UserRole> regularRoleOpt = userRoleRepository.findById(2L);
@@ -83,18 +91,19 @@ public class UserAccountService {
 		
 		response.setEntity(clonedUser);
 		
-		if(httpRequest.getSession(false).getAttribute("requestURI")!=null) {
-			log.info("WILL REDIRECT TO REQUESTED URI: "+httpRequest.getSession(false).getAttribute("requestURI"));
-			response.setRedirectUrl(httpRequest.getSession(false).getAttribute("requestURI").toString());			
+		if(httpRequest.getSession(false).getAttribute(ATTR_REQUEST_URI)!=null) {
+			log.info("WILL REDIRECT TO REQUESTED URI: "+httpRequest.getSession(false).getAttribute(ATTR_REQUEST_URI));
+			response.setRedirectUrl(httpRequest.getSession(false).getAttribute(ATTR_REQUEST_URI).toString());			
 		}
 		return response;
 	}
 	
 	public boolean logout(HttpServletRequest httpRequest) {
 		User user = userSessionService.getUserFromSession(httpRequest);
+		
 		if(user == null) {
-			if(httpRequest.getHeader("loginKey")!=null) {
-				String apiKey = httpRequest.getHeader("loginKey");
+			if(httpRequest.getHeader(HEADER_LOGIN_KEY)!=null) {
+				String apiKey = httpRequest.getHeader(HEADER_LOGIN_KEY);
 				RegistryModel registryModel = registryService.getModel(apiKey);
 				if(registryModel == null) {
 					return false;
@@ -108,6 +117,11 @@ public class UserAccountService {
 		return true;
 	}
 	
+	/**
+	 * get token from session
+	 * @param httpRequest
+	 * @return
+	 */
 	public String getToken(HttpServletRequest httpRequest) {
 		User user = userSessionService.getUserFromSession(httpRequest);
 		System.out.println("==loggedUser: "+user);
@@ -116,8 +130,13 @@ public class UserAccountService {
 		return (String) userSessionService.getToken(user);
 	}
 
+	/**
+	 * validate session token & registry token
+	 * @param httpRequest
+	 * @return
+	 */
 	public boolean validateToken(HttpServletRequest httpRequest) {
-		String requestToken = httpRequest.getHeader("requestToken");
+		String requestToken = httpRequest.getHeader(HEADER_REQUEST_TOKEN);
 		/**
 		 * TESTING
 		 */
@@ -131,7 +150,9 @@ public class UserAccountService {
 		}
 		String existingToken = getToken(httpRequest);
 		System.out.println("_______REQ_TOKEN: "+requestToken+" vs EXISTING:"+existingToken);
-		return requestToken.equals(existingToken);
+		
+		boolean tokenEquals = requestToken.equals(existingToken); 
+		return tokenEquals;
 	}
  
 

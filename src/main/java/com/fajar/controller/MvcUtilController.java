@@ -1,12 +1,10 @@
 package com.fajar.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,10 +22,8 @@ import com.fajar.service.RealtimeService2;
 @RequestMapping("web")
 public class MvcUtilController {
 
-	Logger log = LoggerFactory.getLogger(MvcUtilController.class);
-	@Autowired
-	private RealtimeService2 realtimeService;
-
+	Logger log = LoggerFactory.getLogger(MvcUtilController.class); 
+	
 	public MvcUtilController() {
 		log.info("-----------------MvcUtilController------------------");
 	}
@@ -54,17 +50,17 @@ public class MvcUtilController {
 		return "error/notfound";
 	}
 
-	/**
-	 * Realtime
-	 */
-	@GetMapping(value = "test-chatv1")
-	public String testChat(Model model) {
-		return "websocket/chat";
-	}
-
-	@GetMapping(value = "test-chatv2")
-	public String testChat2(Model model) {
-		return "websocket/chat2";
-	}
+//	/**
+//	 * Realtime
+//	 */
+//	@GetMapping(value = "test-chatv1")
+//	public String testChat(Model model) {
+//		return "websocket/chat";
+//	}
+//
+//	@GetMapping(value = "test-chatv2")
+//	public String testChat2(Model model) {
+//		return "websocket/chat2";
+//	}
 
 }
