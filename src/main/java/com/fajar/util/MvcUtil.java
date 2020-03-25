@@ -25,10 +25,7 @@ public class MvcUtil {
 
 	public static Model constructCommonModel(HttpServletRequest request, EntityProperty entityProperty, Model model,
 			String title, String page, String option) {
-		model.addAttribute("title", "Management::" + title);
-		model.addAttribute("pageUrl", "shop/entity-management-page");
-		model.addAttribute("entityProperty", entityProperty);
-		model.addAttribute("page", page);
+		
 		boolean withOption = false;
 		String optionJson = "null";
 
@@ -50,6 +47,11 @@ public class MvcUtil {
 				System.out.println("=========OPTION_JSON: " + optionJson);
 			}
 		}
+		model.addAttribute("title", "Management::" + title);
+		model.addAttribute("pageUrl", "shop/entity-management-page");
+		model.addAttribute("entityProperty", entityProperty);
+		model.addAttribute("page", page);
+		
 		model.addAttribute("withOption", withOption);
 		model.addAttribute("options", optionJson);
 		model.addAttribute("singleRecord", false);

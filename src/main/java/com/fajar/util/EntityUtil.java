@@ -34,10 +34,11 @@ public class EntityUtil {
 		EntityProperty entityProperty = EntityProperty.builder().entityName(clazz.getSimpleName().toLowerCase()).build();
 		try {
 
-			List<Field> fieldList = getDeclaredFields(clazz);
-			List<EntityElement> entityElements = new ArrayList<>();
-			List<String> fieldNames = new ArrayList<>();
-			String fieldToShowDetail = "";
+			List<Field> fieldList 				= getDeclaredFields(clazz);
+			List<EntityElement> entityElements 	= new ArrayList<>();
+			List<String> fieldNames 			= new ArrayList<>();
+			List<String> dateElements 			= new ArrayList<>();
+			String fieldToShowDetail 			= "";
 			
 			for (Field field : fieldList) {
 
@@ -47,20 +48,20 @@ public class EntityUtil {
 					continue;
 				}
 
-				EntityElement entityElement = new EntityElement();
-				boolean isId = field.getAnnotation(Id.class) != null;
+				boolean isIdField = field.getAnnotation(Id.class) != null;
 				
-				if (isId) {
+				if (isIdField) {
 					entityProperty.setIdField(field.getName());
 				}
 				
 				String lableName = field.getName();
+				String fieldType = formField.type();
+				
 				if (!formField.lableName().equals("")) {
 					lableName = formField.lableName();
-				}
+				}  
 				
-				String fieldType = formField.type();
-				entityElement.setId(field.getName());
+				final String entityElementId = field.getName();
 				
 				if (fieldType.equals("") || fieldType.equals(FIELD_TYPE_TEXT)) {
 					if (isNumber(field)) {
@@ -68,19 +69,25 @@ public class EntityUtil {
 					}
 					
 				} else if (fieldType.equals(FIELD_TYPE_IMAGE)) {
-					entityProperty.getImageElements().add(entityElement.getId());
+					entityProperty.getImageElements().add(entityElementId);
 					
 				}else if (fieldType.equals(FIELD_TYPE_CURRENCY)) {
-					entityProperty.getCurrencyElements().add(entityElement.getId());
+					entityProperty.getCurrencyElements().add(entityElementId);
 					fieldType = FIELD_TYPE_NUMBER;
 				}
 
+				/**
+				 * add field names
+				 */
 				fieldNames.add(field.getName());
 				
-				entityElement.setIdentity(isId);
+				final EntityElement entityElement = new EntityElement();
+				
+				entityElement.setId(entityElementId );
+				entityElement.setIdentity(isIdField);
 				entityElement.setLableName(lableName.toUpperCase());
 				entityElement.setRequired(formField.required());
-				entityElement.setType(isId ? FIELD_TYPE_HIDDEN : fieldType);
+				entityElement.setType(isIdField ? FIELD_TYPE_HIDDEN : fieldType);
 				entityElement.setMultiple(formField.multiple());
 				entityElement.setClassName(field.getType().getCanonicalName());
 				entityElement.setShowDetail(formField.showDetail());
@@ -89,52 +96,57 @@ public class EntityUtil {
 					entityElement.setDetailFields(String.join("~", formField.detailFields()));
 				}
 				if (formField.showDetail()) {
-					entityElement.setOptionItemName(formField.optionItemName());
-				}
-				if (formField.showDetail()) {
+					entityElement.setOptionItemName(formField.optionItemName()); 
 					fieldToShowDetail = field.getName();
 				}
+				
+				boolean referenceNameExist = !formField.entityReferenceName().equals("");
 
-				if (!formField.entityReferenceName().equals("") && fieldType.equals(FIELD_TYPE_FIXED_LIST)
-						&& listObject != null) {
-
+				/**
+				 * IF has entity reference (JOIN COLUMN)
+				 */
+				if (referenceNameExist) {
+					
 					Class referenceEntityClass = field.getType();
 					Field idField = getIdField(referenceEntityClass);
 					
-					if(idField == null) continue;
+					if(idField == null) continue; 
 					
 					entityElement.setOptionValueName(idField.getName());
 					entityElement.setOptionItemName(formField.optionItemName());
-
-					List<BaseEntity> referenceEntityList = (List<BaseEntity>) listObject.get(formField.entityReferenceName());
+					 
 					
-					if (referenceEntityList != null) {
-						entityElement.setOptions(referenceEntityList);
-						entityElement.setJsonList(MyJsonUtil.listToJson(referenceEntityList));
+					if(fieldType.equals(FIELD_TYPE_FIXED_LIST) && listObject != null) {  
+	
+						List<BaseEntity> referenceEntityList = (List<BaseEntity>) listObject.get(formField.entityReferenceName());
+						
+						if (referenceEntityList != null) {
+							entityElement.setOptions(referenceEntityList);
+							entityElement.setJsonList(MyJsonUtil.listToJson(referenceEntityList));
+						}
+	
+					} else if (fieldType.equals(FIELD_TYPE_DYNAMIC_LIST)) {
+						 
+						entityElement.setEntityReferenceClass(referenceEntityClass.getSimpleName());
 					}
-
-				} else if (!formField.entityReferenceName().equals("") && fieldType.equals(FIELD_TYPE_DYNAMIC_LIST)) {
-					Class referenceEntityClass = field.getType();
-					Field idField = getIdField(referenceEntityClass);
 					
-					if(idField == null) continue;
-					
-					entityElement.setOptionValueName(idField.getName());
-					entityElement.setOptionItemName(formField.optionItemName());
-					entityElement.setEntityReferenceClass(referenceEntityClass.getSimpleName());
 				}
-
 				if (field.getType().equals(Date.class) && field.getAnnotation(JsonFormat.class) == null) {
-					entityProperty.getDateElements().add(entityElement.getId());
+					dateElements.add(entityElement.getId());
 				}
+				
 				entityElements.add(entityElement);
 			}
 			entityProperty.setElementJsonList();
 			entityProperty.setElements(entityElements);
 			entityProperty.setDetailFieldName(fieldToShowDetail);
+			entityProperty.setDateElements(dateElements);
+			entityProperty.setDateElementsJson(MyJsonUtil.listToJson(dateElements));
 			entityProperty.setFieldNames(MyJsonUtil.listToJson(fieldNames));
 			entityProperty.setFieldNameList(fieldNames);
+			
 			log.info("============ENTITY PROPERTY: {} ", entityProperty);
+			
 			return entityProperty;
 		} catch (Exception e) {
 			e.printStackTrace();
