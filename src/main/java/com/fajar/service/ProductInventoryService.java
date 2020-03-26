@@ -90,7 +90,23 @@ public class ProductInventoryService {
 				inventoryItem.setId(productFlow.getId());
 				inventoryItem.setIncomingFlowId(productFlow.getId());
 				inventoryItemRepository.save(inventoryItem);
+				
+				/**
+				 * inventory item NEW VERSION
+				 */				
+				InventoryItem inventoryItemV2 = inventoryItemRepository.findTop1ByProduct_IdAndNewVersion(productFlow.getProduct().getId(), true);
+				
+				if(null == inventoryItemV2) {
+					inventoryItemV2 = new InventoryItem();
+					inventoryItemV2.setCount(productFlow.getCount());
+				}else {
+					int currentCount = inventoryItemV2.getCount();
+					int finalCount	= currentCount + productFlow.getCount();
+					inventoryItemV2.setCount(finalCount);
+				}
 
+				inventoryItemRepository.save(inventoryItemV2);
+				
 				progressService.sendProgress(1, productFlows.size(), 40, false, requestId);
 			}
 
@@ -131,15 +147,19 @@ public class ProductInventoryService {
 				productFlow.setTransaction(newTransaction);
 				productFlow.setPrice(productFlow.getProduct().getPrice());
 
-				
 				/**
 				 * UPDATE inventory item row
 				 */
 				InventoryItem inventoryItem = inventoryItemRepository
 						.findByIncomingFlowId(productFlow.getFlowReferenceId());
+				InventoryItem inventoryItemV2 = inventoryItemRepository.findTop1ByProduct_IdAndNewVersion(productFlow.getProduct().getId(), true);
+				
 				if (null == inventoryItem) {
 					throw new RuntimeException("Inventory Item not found:" + productFlow.getFlowReferenceId());
-				}
+				} 
+				
+				productFlow = productFlowRepository.save(productFlow); 
+				
 				/**
 				 * update count
 				 */
@@ -151,7 +171,16 @@ public class ProductInventoryService {
 				}
 				
 				inventoryItemRepository.save(inventoryItem);
-				productFlow = productFlowRepository.save(productFlow);
+				
+				/**
+				 * inventory item NEW VERSION
+				 */				 
+				int currentCount = inventoryItemV2.getCount();
+				int finalCount	= currentCount - productFlow.getCount();
+				inventoryItemV2.setCount(finalCount); 
+
+				inventoryItemRepository.save(inventoryItemV2);
+				
 				purchasedProduct++;
 				progressService.sendProgress(1, productFlows.size(), 30, false, requestId);
 

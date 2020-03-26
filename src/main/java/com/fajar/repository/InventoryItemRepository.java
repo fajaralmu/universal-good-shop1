@@ -11,6 +11,8 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, Lo
 	InventoryItem  findByIncomingFlowId(Long flowReferenceId);
 
 	List<InventoryItem> findByCountGreaterThan(int i);
+
+	InventoryItem findTop1ByProduct_IdAndNewVersion(Long id, boolean newVersion);
  
 
 }

@@ -36,5 +36,10 @@ public class InventoryItem extends BaseEntity implements Serializable{
 	private Product product;
 	@Column(name="original_count",nullable = false)
 	private int originalCount;
+	/**
+	 * the newVersion will not determine poductFLow
+	 */
+	@Column
+	private boolean newVersion;
 
 }

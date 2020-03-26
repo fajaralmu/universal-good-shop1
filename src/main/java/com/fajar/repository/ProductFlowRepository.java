@@ -52,4 +52,6 @@ public interface ProductFlowRepository extends JpaRepository<ProductFlow, Long>,
 //	+ "left join product on product_flow.product_id = product.id where transaction.`type` = 'IN' "
 //	+ " and product." + key + " $CONDITION " + "having(used is null or flowCount-used>0) "
 //	+ (limit > 0 ? " limit " + limit : "");
+	
+	List<ProductFlow> findByTransaction_TypeAndProduct_Id(String type, long productId);
 }
