@@ -25,9 +25,9 @@ public class ProgressService {
 	
 	/**
 	 * 
-	 * @param progress
-	 * @param maxProgress
-	 * @param percent
+	 * @param progress    progressPoportion for current tax
+	 * @param maxProgress totalProportion for current tax
+	 * @param percent     tax Proportion for whole request
 	 * @param newProgress
 	 * @param requestId
 	 */

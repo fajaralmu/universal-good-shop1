@@ -47,6 +47,8 @@ public class ProductService {
 	private ProductRepository productRepository; 
 	@Autowired
 	private ProgressService progressService;
+	@Autowired
+	private ProductInventoryService productInventoryService;
 
 	@PostConstruct
 	public void init() {
@@ -80,28 +82,27 @@ public class ProductService {
 		}
 		
 		//get from db
-		List<Product> products = convertList(filteredProducts.getEntities());
-
-		//check if new product
-		if (withNewInfo) { 
-			for (Product product : products) {    
-				
+		List<Product> products = convertList(filteredProducts.getEntities()); 
+		
+		for (Product product : products) {    
+			
+			if (withNewInfo) { 
 				product.setNewProduct(isNewProduct(product.getId())); 
-				progressService.sendProgress(1, products.size(), 30, false, requestId);  
 			}
-		}
-		if (withStock) {
-			products = transactionService.populateProductWithStocks(products, true, requestId);
-		}
-
-		if (withSupplier) {
-			for (Product product : products) {
+			if (withStock) {
+				int remaining = productInventoryService.getProductInventory(product);
+				product.setCount(remaining);
+			}
+			if(withSupplier) {
 				List<Supplier> suppliers = transactionService.getProductSupplier(product.getId(), 5, 0);
 				product.setSuppliers(suppliers);
-				
-				progressService.sendProgress(1, products.size(), 20, false, requestId);
 			}
+			progressService.sendProgress(1, products.size(), 80, false, requestId);  
 		}
+		
+//		if (withStock) {
+//			products = transactionService.populateProductWithStocks(products, true, requestId);
+//		} 
 
 		progressService.sendComplete(requestId);
 		

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.entity.Customer;
 import com.fajar.entity.InventoryItem;
+import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Supplier;
 import com.fajar.entity.Transaction;
@@ -223,6 +224,22 @@ public class ProductInventoryService {
 		return inventoryItemRepository.filterAndSort(sql, InventoryItem.class);
 	}
 	
-	 
+	/**
+	 * get current product quantity
+	 * @param product
+	 * @return
+	 */
+	public int getProductInventory(Product product) {
+		int quantity = 0;
+		
+		InventoryItem inventoryItem = inventoryItemRepository.findTop1ByProduct_IdAndNewVersion(product.getId(), true);
+		
+		if(null != inventoryItem) {
+			quantity = inventoryItem.getCount();
+		}
+		
+		return quantity;
+	}
+	
 
 }
