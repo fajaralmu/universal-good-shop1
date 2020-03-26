@@ -39,7 +39,7 @@ public class InventoryItem extends BaseEntity implements Serializable{
 	/**
 	 * the newVersion will not determine poductFLow
 	 */
-	@Column
+	@Column(name="new_version")
 	private boolean newVersion;
 
 }
