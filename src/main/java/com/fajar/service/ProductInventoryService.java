@@ -202,7 +202,7 @@ public class ProductInventoryService {
 	}
 	
 	/**
-	 * get available inventories
+	 * get available quantity
 	 * @param field
 	 * @param value
 	 * @param match

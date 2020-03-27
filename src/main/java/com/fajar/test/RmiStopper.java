@@ -15,6 +15,7 @@ public class RmiStopper {
 	        try {
 				Registry reg = LocateRegistry.getRegistry(12345);
 				UnicastRemoteObject.unexportObject(reg, true);
+				System.out.println("- 0000 -");
 				RegistryModel model = (RegistryModel) (reg.lookup("page_req_id"));
 				System.out.println(model.getUserToken());
 			} catch (RemoteException e) {
