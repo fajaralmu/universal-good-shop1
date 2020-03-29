@@ -19,11 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
-import com.fajar.service.UserAccountService;
-import com.fajar.service.UserSessionService;
 import com.fajar.service.LogProxyFactory;
 import com.fajar.service.ProductService;
 import com.fajar.service.TransactionService;
+import com.fajar.service.UserSessionService;
 
 @CrossOrigin
 @RestController

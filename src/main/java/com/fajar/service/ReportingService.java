@@ -211,7 +211,7 @@ public class ReportingService {
 			final Calendar cal = Calendar.getInstance();
 			cal.setTime(transactionDate);
 
-			final int day 	  = cal.get(Calendar.DAY_OF_MONTH) + 1;
+			final int day 	  = cal.get(Calendar.DAY_OF_MONTH);
 			final long amount = productFlow.getCount() * productFlow.getPrice();
 
 			CashFlow currentCashflow = result.get(day);
@@ -246,6 +246,9 @@ public class ReportingService {
 			Filter filter = request.getFilter();
 			int month = filter.getMonth();
 			int year = filter.getYear();
+			
+			System.out.println("Report month : "+month);
+			System.out.println("Report year : "+year);
 
 			List<ProductFlow> flowIncome = productFlowRepository.findByTransactionTypeAndPeriod("OUT", month, year);
 			List<ProductFlow> flowCost = productFlowRepository.findByTransactionTypeAndPeriod("IN", month, year);

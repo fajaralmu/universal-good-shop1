@@ -1,7 +1,6 @@
 package com.fajar.service;
 
 import java.lang.reflect.Field;
-import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
