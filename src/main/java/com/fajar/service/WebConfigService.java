@@ -6,12 +6,14 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fajar.annotation.Dto;
 import com.fajar.entity.ShopProfile;
 import com.fajar.repository.ShopProfileRepository;
+import com.fajar.test.RmiStopper;
 import com.fajar.util.EntityUtil;
 
 import lombok.AllArgsConstructor;
@@ -39,6 +41,13 @@ public class WebConfigService {
 	private String uploadedImageRealPath;
 	private String uploadedImagePath;
 	private String martCode;  
+	
+	@PreDestroy
+	public void preDestroy() {
+		System.out.println("========= will destroy ========");
+		RmiStopper.main(new String[] {});
+	}
+	
 	public static String readFile(String path) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(path));
 		try {

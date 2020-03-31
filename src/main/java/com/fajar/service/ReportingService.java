@@ -32,6 +32,8 @@ public class ReportingService {
 	private TransactionRepository transactionRepository;
 	@Autowired
 	private ProgressService progressService;
+	@Autowired
+	private TransactionService transactionService;
 	
 	public ShopApiResponse getCashFlow(ShopApiRequest request) {
 
@@ -256,6 +258,7 @@ public class ReportingService {
 			response.setMonthlyDetailIncome(parseCashflow("OUT", flowIncome));
 			response.setMonthlyDetailCost(parseCashflow("IN", flowCost));
 			response.setFilter(filter);
+			response.setTransactionYears(new int[] {transactionService.getMinTransactionYear(), new Date().getYear()});
 			
 		} catch (Exception e) {
 			e.printStackTrace();
