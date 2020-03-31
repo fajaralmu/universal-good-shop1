@@ -258,7 +258,7 @@ public class ReportingService {
 			response.setMonthlyDetailIncome(parseCashflow("OUT", flowIncome));
 			response.setMonthlyDetailCost(parseCashflow("IN", flowCost));
 			response.setFilter(filter);
-			response.setTransactionYears(new int[] {transactionService.getMinTransactionYear(), new Date().getYear()});
+			response.setTransactionYears(new int[] { getMinTransactionYear(), Calendar.getInstance().get(Calendar.YEAR) });
 			
 		} catch (Exception e) {
 			e.printStackTrace();
