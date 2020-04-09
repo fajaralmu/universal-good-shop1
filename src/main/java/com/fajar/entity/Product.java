@@ -55,7 +55,7 @@ public class Product extends BaseEntity implements Serializable {
 	private Unit unit;
 	@JoinColumn(name = "category_id", nullable = true)
 	@ManyToOne
-	@FormField(entityReferenceName = "category", optionItemName = "name", type = "dynamiclist")
+	@FormField(entityReferenceName = "category", optionItemName = "name", type = FormField.FIELD_TYPE_DYNAMIC_LIST)
 	private Category category;
 
 	@Transient

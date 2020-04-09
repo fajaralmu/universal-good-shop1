@@ -32,9 +32,9 @@ public class ProductFlow extends BaseEntity implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 8994131360292840583L;
-	@JoinColumn(name="transaction_id")
+	@JoinColumn(name="transaction_id", nullable = false)
 	@ManyToOne 
-	@FormField (entityReferenceName="transaction",optionItemName="code",type="dynamiclist")
+	@FormField (entityReferenceName="transaction",optionItemName="code",type=FormField.FIELD_TYPE_DYNAMIC_LIST)
 	private Transaction transaction;
 	@Column(name="expiry_date")
 	@FormField (type="date")

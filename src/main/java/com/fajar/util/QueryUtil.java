@@ -5,6 +5,7 @@ import static com.fajar.util.StringUtil.buildString;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,8 @@ import com.fajar.annotation.CustomEntity;
 import com.fajar.annotation.FormField;
 import com.fajar.dto.Filter;
 import com.fajar.entity.BaseEntity;
+import com.fajar.entity.Product;
+import com.fajar.entity.ProductFlow;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -261,7 +264,7 @@ public class QueryUtil {
 
 			}
 
-			StringBuilder sqlItem = new StringBuilder(doubleQuoteMysql(tableName).concat(".").concat(columnName));
+			StringBuilder sqlItem = new StringBuilder(); 
 
 			if (field.getAnnotation(JoinColumn.class) != null || isMultiKey) {
 
@@ -282,11 +285,12 @@ public class QueryUtil {
 					if (fieldColumnName == null || fieldColumnName.equals("")) {
 						fieldColumnName = key;
 					}
-
+					 
 					sqlItem = sqlItem
 							.append(doubleQuoteMysql(joinTableName))
 							.append(".")
 							.append(doubleQuoteMysql(fieldColumnName));
+					 
 
 				} catch ( Exception e) {
 					
@@ -296,6 +300,8 @@ public class QueryUtil {
 					continue;
 				}
 
+			} else {
+				sqlItem = new StringBuilder(doubleQuoteMysql(tableName).concat(".").concat(columnName));
 			}
 			// rollback key to original key
 			/*
@@ -434,6 +440,19 @@ public class QueryUtil {
 			}
 		}
 		return entityClass.getSimpleName().toLowerCase();
+	}
+	
+	public static void main(String[] args) {
+		
+		Map<String, Object> fieldsFilter = new HashMap<String, Object>(){
+			{
+				put("unit", "1234");
+				put("name", "FAJaR");
+			}
+		};
+		String[] sql = generateSqlByFilter(Filter.builder().fieldsFilter(fieldsFilter).build(), Product.class);
+	
+		System.out.println("SQL: "+sql[0]);
 	}
 
 	public static String[] generateSqlByFilter(Filter filter, Class<? extends BaseEntity> entityClass ) {

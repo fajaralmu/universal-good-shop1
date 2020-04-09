@@ -247,8 +247,8 @@
 						<configuration>
 							<classifier>dto</classifier>
 							<includes>
-								<include>**/fajar/entity/*</include>
-								<include>**/fajar/entity/custom/*</include>
+								<include>**/fajar/entity/**</include> 
+								<include>**/fajar/annotation/**</include> 
 								<include>**/dto/*</include>
 							</includes>
 						</configuration>

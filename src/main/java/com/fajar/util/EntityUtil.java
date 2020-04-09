@@ -271,8 +271,8 @@ public class EntityUtil {
 
 			if (field.getAnnotation(Id.class) != null && !withId) {
 				continue;
-			}
-
+			} 
+			
 			Field currentField = getDeclaredField(targetClass, field.getName());
 
 			if (currentField == null)
