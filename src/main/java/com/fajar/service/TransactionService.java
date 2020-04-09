@@ -351,9 +351,9 @@ public class TransactionService {
 						flowStock = new ProductFlowStock();
 					}
 					
-					Integer remainingStock = flowStock.getRemainingStock();
-					
-					if (productFlow.getCount() > remainingStock) {
+					int remainingStock = flowStock.getRemainingStock();
+					int sellingQty = productFlow.getCount();
+					if (sellingQty > remainingStock) {
 						// continue;
 					} else {
 						productFlow.setProduct(refFlow.getProduct());
@@ -368,6 +368,93 @@ public class TransactionService {
 			 */
 		
 			Transaction newTransaction = productInventoryService.savePurchaseTransaction(new Date(), productFlows,
+					requestId, user, dbCustomer.get());
+			return ShopApiResponse.builder().transaction(newTransaction).build();
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return ShopApiResponse.builder().code("-1").message(ex.getMessage()).build();
+			
+		} finally {
+			progressService.sendComplete(requestId);
+		}
+	}
+	
+	public ShopApiResponse addPurchaseTransactionV2(ShopApiRequest request, HttpServletRequest httpRequest,
+			String requestId) {
+		
+		progressService.init(requestId);
+		
+		User user = validateUserBeforeTransaction(httpRequest); 
+		 
+		if(null == user) {
+			return ShopApiResponse.invalidSession();
+		}
+		
+		sendProgress(1, 1, 10, false, requestId);
+
+		try {
+		
+			/**
+			 * validate products and customer
+			 */
+			Optional<Customer> dbCustomer = customerRepository.findById(request.getCustomer().getId());
+			
+			if (dbCustomer.isPresent() == false) {
+				return ShopApiResponse.builder().code("01").message("invalid Customer").build();
+			}
+			
+			sendProgress(1, 1, 10, false, requestId);
+			
+			/**
+			 * validate product stock
+			 */
+			
+			List<ProductFlow> productFlows = request.getProductFlows();
+			
+			for (ProductFlow productFlow : productFlows) {
+//				Optional<ProductFlow> dbFlow = productFlowRepository.findById(productFlow.getFlowReferenceId());
+//	
+//				if (dbFlow.isPresent() == false) {
+//					// continue;
+//					/**
+//					 * skip
+//					 */
+//				} else {
+//					ProductFlow refFlow = dbFlow.get();
+					Optional<Product> dbProduct = productRepository.findById(productFlow.getProduct().getId());
+					
+					if (dbProduct.isPresent() == false) {
+						 continue;
+//						/**
+//						 * skip
+//						 */
+					}  
+					int remainingStock = productInventoryService.getProductInventory(dbProduct.get());
+					int sellingQty = productFlow.getCount();
+//					ProductFlowStock flowStock = getSingleStock(refFlow);
+//					
+//					if (null == flowStock) {
+//						flowStock = new ProductFlowStock();
+//					}
+//					
+//					Integer remainingStock = flowStock.getRemainingStock(); 
+					
+					if (sellingQty > remainingStock) {
+						 continue;
+					} else {
+						productFlow.setProduct(dbProduct.get() );
+					}
+//				}
+				sendProgress(1, productFlows.size(), 40, false, requestId);
+	
+			}
+	
+			/**
+			 * save to DB
+			 */
+		
+			Transaction newTransaction = productInventoryService.savePurchaseTransactionV2(new Date(), productFlows,
 					requestId, user, dbCustomer.get());
 			return ShopApiResponse.builder().transaction(newTransaction).build();
 			

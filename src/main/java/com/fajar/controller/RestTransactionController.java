@@ -66,6 +66,18 @@ public class RestTransactionController {
 		ShopApiResponse response = transactionService.addPurchaseTransaction(request, httpRequest,httpRequest.getHeader("requestId"));
 		return response;
 	}
+	
+	@PostMapping(value = "/purchasev2", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ShopApiResponse purchasev2(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+		log.info("purchase {}", request);
+		if(!userSessionService.hasSession(httpRequest)) {
+			return ShopApiResponse.failedResponse();
+		}
+		ShopApiResponse response = transactionService.addPurchaseTransactionV2(request, httpRequest,httpRequest.getHeader("requestId"));
+		return response;
+	}
+	
 	@PostMapping(value = "/stocks", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse stockinfo(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {

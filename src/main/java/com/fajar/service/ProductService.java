@@ -67,9 +67,9 @@ public class ProductService {
 		
 		Map<String, Object> filter = request.getFilter().getFieldsFilter();
 		
-		boolean withStock = (filter.get(OPTION_WITH_STOCK) != null && (Boolean) filter.get(OPTION_WITH_STOCK) == true);
-		boolean withSupplier = (filter.get(OPTION_WITH_NEW_INFO) != null && (Boolean) filter.get(OPTION_WITH_NEW_INFO) == true);
-		boolean withNewInfo = (filter.get(OPTION_WITH_SUPPLIER) != null && (Boolean) filter.get(OPTION_WITH_SUPPLIER) == true);
+		boolean withStock = (filter.get(OPTION_WITH_STOCK) != null && (Boolean.valueOf(filter.get(OPTION_WITH_STOCK).toString())) .equals(true));
+		boolean withSupplier = (filter.get(OPTION_WITH_SUPPLIER) != null && (Boolean.valueOf(filter.get(OPTION_WITH_SUPPLIER).toString())).equals(true));
+		boolean withNewInfo = (filter.get(OPTION_WITH_NEW_INFO) != null && (Boolean.valueOf(filter.get(OPTION_WITH_NEW_INFO).toString())).equals(true));
 
 		request.getFilter().getFieldsFilter().remove(OPTION_WITH_STOCK);
 		
