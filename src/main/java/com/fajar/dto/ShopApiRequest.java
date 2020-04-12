@@ -6,6 +6,8 @@ import java.util.List;
 
 import com.fajar.annotation.Dto;
 import com.fajar.entity.BaseEntity;
+import com.fajar.entity.Capital;
+import com.fajar.entity.CapitalFlow;
 import com.fajar.entity.Category;
 import com.fajar.entity.Cost;
 import com.fajar.entity.CostFlow;
@@ -43,7 +45,7 @@ public class ShopApiRequest implements Serializable {
 
 	
 	/**
-	 * CRUD use lowerCase!!!
+	 * ENTITY CRUD use lowerCase!!!
 	 */
 
 	private String entity;
@@ -61,7 +63,12 @@ public class ShopApiRequest implements Serializable {
 	private CostFlow costflow;
 	private Voucher voucher;
 	private CustomerVoucher customervoucher;
-	
+	private Capital capital;
+	private CapitalFlow capitalflow;
+
+	/**
+	 * ==========end entity============
+	 */
 
 	private Filter filter;
 	private ProductFlow productFlow;

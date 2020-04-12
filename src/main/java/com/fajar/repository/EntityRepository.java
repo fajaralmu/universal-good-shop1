@@ -11,13 +11,17 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
+import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import com.fajar.entity.BaseEntity;
+import com.fajar.entity.Capital;
+import com.fajar.entity.CapitalFlow;
 import com.fajar.entity.Category;
 import com.fajar.entity.Cost;
 import com.fajar.entity.CostFlow;
@@ -94,6 +98,10 @@ public class EntityRepository {
 	private VoucherRepository voucherRepository;
 	@Autowired
 	private CustomerVoucherRepository customerVoucherRepository;
+	@Autowired
+	private CapitalRepository capitalRepository;
+	@Autowired
+	private CapitalFlowRepository capitalFlowRepository;
 
 	
 	/**
@@ -117,6 +125,9 @@ public class EntityRepository {
 	private BaseEntityUpdateService baseEntityUpdateService;
 	@Autowired
 	private VoucherUpdateService voucherUpdateService;
+	
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Setter(value = AccessLevel.NONE)
 	private final Map<String, EntityManagementConfig> entityConfiguration = new HashMap<String, EntityManagementConfig>();
@@ -138,6 +149,8 @@ public class EntityRepository {
 		entityConfiguration.put("costflow", config("costflow", CostFlow.class, commonUpdateService));
 		entityConfiguration.put("voucher", config("voucher", Voucher.class, voucherUpdateService));
 		entityConfiguration.put("customervoucher", config("customervoucher", CustomerVoucher.class, commonUpdateService));
+		entityConfiguration.put("capital", config("capital", Capital.class, commonUpdateService));
+		entityConfiguration.put("capitalflow", config("capitalflow", CapitalFlow.class, commonUpdateService));
 
 		/**
 		 * unable to update
@@ -169,7 +182,7 @@ public class EntityRepository {
 			throw new InvalidParameterException("JOIN COLUMN INVALID");
 		}
 
-		try {
+		try { 
 			JpaRepository repository = findRepo(baseEntity.getClass());
 			log.info("found repo: " + repository);
 			return (T) repository.save(baseEntity);
