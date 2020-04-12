@@ -37,5 +37,6 @@ public class EntityElement implements Serializable{
 	private boolean multiple;
 	private boolean showDetail;
 	private String detailFields;
+	private String[] defaultValues;
 
 }

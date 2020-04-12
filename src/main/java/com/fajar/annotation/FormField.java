@@ -31,6 +31,7 @@ public @interface FormField {
 
 	public String[] detailFields() default {};
 
+	public String[] defaultValues() default {};
 	//the value is result of array of fields multiplication
 	public String[] multiply() default {};
 	

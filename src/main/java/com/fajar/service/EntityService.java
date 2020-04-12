@@ -52,6 +52,10 @@ public class EntityService {
 	public void setEntityConfig() {
 		entityClasses = entityRepository.getEntityConfiguration();
 	}
+	
+	private EntityManagementConfig getEntityManagementConfig(String key) {
+		return entityClasses.get(key);
+	}
 
 	/**
 	 * add & update entity
@@ -65,8 +69,8 @@ public class EntityService {
 		try {
 			
 			final String key = request.getEntity().toLowerCase();
-			BaseEntityUpdateService updateService = entityClasses.get(key).getEntityUpdateService();
-			String fieldName = entityClasses.get(key).getFieldName();
+			BaseEntityUpdateService updateService = getEntityManagementConfig(key).getEntityUpdateService();
+			String fieldName = getEntityManagementConfig(key).getFieldName();
 			Object entityValue = null;
 			
 			try {
@@ -110,7 +114,7 @@ public class EntityService {
 		try {
 			
 			String entityName = request.getEntity().toLowerCase();
-			entityClass = entityClasses.get(entityName).getEntityClass();
+			entityClass = getEntityManagementConfig(entityName).getEntityClass();
 			
 			if(null == entityClass) {
 				throw new Exception("Invalid entity");
@@ -141,14 +145,7 @@ public class EntityService {
 			return ShopApiResponse.failed();
 		}
 	}  
- 
-
-	public static void main(String[] sdfdf) {
-		String ss = "FAJAR [EXACTS]";
-		System.out.println(ss.split("\\[EXACTS\\]")[0]);
-
-	}  
-
+  
 	/**
 	 * delete entity
 	 * @param request
@@ -161,7 +158,7 @@ public class EntityService {
 			Long id 					= Long.parseLong(filter.get("id").toString()); 
 			String entityName 			= request.getEntity().toLowerCase();
 			
-			Class<? extends BaseEntity> entityClass = entityClasses.get(entityName).getEntityClass();
+			Class<? extends BaseEntity> entityClass = getEntityManagementConfig(entityName).getEntityClass();
 			
 			if(null == entityClass) {
 				throw new Exception("Invalid entity");

@@ -22,6 +22,7 @@ import com.fajar.entity.Category;
 import com.fajar.entity.Cost;
 import com.fajar.entity.CostFlow;
 import com.fajar.entity.Customer;
+import com.fajar.entity.CustomerVoucher;
 import com.fajar.entity.Menu;
 import com.fajar.entity.Message;
 import com.fajar.entity.Product;
@@ -33,6 +34,7 @@ import com.fajar.entity.Transaction;
 import com.fajar.entity.Unit;
 import com.fajar.entity.User;
 import com.fajar.entity.UserRole;
+import com.fajar.entity.Voucher;
 import com.fajar.entity.setting.EntityManagementConfig;
 import com.fajar.service.entity.BaseEntityUpdateService;
 import com.fajar.service.entity.CommonUpdateService;
@@ -41,6 +43,7 @@ import com.fajar.service.entity.ProductUpdateService;
 import com.fajar.service.entity.ShopProfileUpdateService;
 import com.fajar.service.entity.SupplierUpdateService;
 import com.fajar.service.entity.UserUpdateService;
+import com.fajar.service.entity.VoucherUpdateService;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -87,6 +90,10 @@ public class EntityRepository {
 	private UserRoleRepository userRoleRepository;
 	@Autowired
 	private CostFlowRepository costFlowRepository;
+	@Autowired
+	private VoucherRepository voucherRepository;
+	@Autowired
+	private CustomerVoucherRepository customerVoucherRepository;
 
 	
 	/**
@@ -108,12 +115,15 @@ public class EntityRepository {
 	private ShopProfileUpdateService shopProfileUpdateService;
 	@Autowired
 	private BaseEntityUpdateService baseEntityUpdateService;
+	@Autowired
+	private VoucherUpdateService voucherUpdateService;
 
 	@Setter(value = AccessLevel.NONE)
 	private final Map<String, EntityManagementConfig> entityConfiguration = new HashMap<String, EntityManagementConfig>();
 
 	@PostConstruct
 	public void init() {
+		entityConfiguration.clear();
 		entityConfiguration.put("unit", config("unit", Unit.class, commonUpdateService));
 		entityConfiguration.put("product", config("product", Product.class, productUpdateService));
 		entityConfiguration.put("customer", config("customer", Customer.class, commonUpdateService));
@@ -126,6 +136,8 @@ public class EntityRepository {
 		entityConfiguration.put("registeredrequest", config("registeredRequest", RegisteredRequest.class, commonUpdateService));
 		entityConfiguration.put("cost", config("cost", Cost.class, commonUpdateService));
 		entityConfiguration.put("costflow", config("costflow", CostFlow.class, commonUpdateService));
+		entityConfiguration.put("voucher", config("voucher", Voucher.class, voucherUpdateService));
+		entityConfiguration.put("customervoucher", config("customervoucher", CustomerVoucher.class, commonUpdateService));
 
 		/**
 		 * unable to update

@@ -10,6 +10,7 @@ import com.fajar.entity.Category;
 import com.fajar.entity.Cost;
 import com.fajar.entity.CostFlow;
 import com.fajar.entity.Customer;
+import com.fajar.entity.CustomerVoucher;
 import com.fajar.entity.Menu;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
@@ -20,6 +21,7 @@ import com.fajar.entity.Transaction;
 import com.fajar.entity.Unit;
 import com.fajar.entity.User;
 import com.fajar.entity.UserRole;
+import com.fajar.entity.Voucher;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,7 +43,7 @@ public class ShopApiRequest implements Serializable {
 
 	
 	/**
-	 * CRUD
+	 * CRUD use lowerCase!!!
 	 */
 
 	private String entity;
@@ -57,6 +59,8 @@ public class ShopApiRequest implements Serializable {
 	private RegisteredRequest registeredRequest; 
 	private Cost cost;
 	private CostFlow costflow;
+	private Voucher voucher;
+	private CustomerVoucher customervoucher;
 	
 
 	private Filter filter;
