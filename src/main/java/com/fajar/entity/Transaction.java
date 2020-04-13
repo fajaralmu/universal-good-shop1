@@ -14,6 +14,7 @@ import javax.persistence.Transient;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fajar.dto.TransactionType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;

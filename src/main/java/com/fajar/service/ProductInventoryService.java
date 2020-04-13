@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.dto.TransactionType;
 import com.fajar.entity.Customer;
 import com.fajar.entity.InventoryItem;
 import com.fajar.entity.Product;
@@ -30,8 +31,8 @@ public class ProductInventoryService {
 	@Autowired
 	private ProgressService progressService; 
 	
-	public static final String TYPE_OUT = "OUT";
-	public static final String TYPE_IN = "IN";
+	public static final String TYPE_OUT = TransactionType.OUT;
+	public static final String TYPE_IN = TransactionType.IN;
 	
 	/**
 	 * create common transaction object

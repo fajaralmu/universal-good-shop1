@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.TransactionType;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
@@ -252,8 +253,8 @@ public class ReportingService {
 			System.out.println("Report month : "+month);
 			System.out.println("Report year : "+year);
 
-			List<ProductFlow> flowIncome = productFlowRepository.findByTransactionTypeAndPeriod("OUT", month, year);
-			List<ProductFlow> flowCost = productFlowRepository.findByTransactionTypeAndPeriod("IN", month, year);
+			List<ProductFlow> flowIncome = productFlowRepository.findByTransactionTypeAndPeriod(TransactionType.OUT, month, year);
+			List<ProductFlow> flowCost = productFlowRepository.findByTransactionTypeAndPeriod(TransactionType.IN, month, year);
 
 			response.setMonthlyDetailIncome(parseCashflow("OUT", flowIncome));
 			response.setMonthlyDetailCost(parseCashflow("IN", flowCost));
@@ -377,7 +378,7 @@ public class ReportingService {
 			int day 		= filter.getDay();
 			int month 		= filter.getMonth();
 			int year		= filter.getYear(); 
-			String type		= "OUT";// filter.getModule();
+			String type		= TransactionType.OUT;// filter.getModule();
 			
 			List<ProductFlow> productSold = productFlowRepository.findByTransactionTypeAndPeriod(type, day, month, year);
 		//	List<ProductFlow> productSupp = productFlowRepository.findByTransactionTypeAndPeriod(type, day, month, year); 

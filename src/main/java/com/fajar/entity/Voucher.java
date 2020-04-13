@@ -1,5 +1,7 @@
 package com.fajar.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -14,8 +16,12 @@ import lombok.Data;
 @Entity
 @Dto
 @Table(name="voucher")
-public class Voucher extends BaseEntity{
+public class Voucher extends BaseEntity implements Serializable{
  
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8870003645847445058L;
 	@Column
 	@FormField(type=FormField.FIELD_TYPE_NUMBER)
 	private int month;

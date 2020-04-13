@@ -1,8 +1,12 @@
 package com.fajar.util;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class DateUtil {
+	
+	static final SimpleDateFormat SIMPLEDA_DATE_FORMAT = new SimpleDateFormat();
 	
 	static final Calendar cal() { return Calendar.getInstance(); }
 	
@@ -10,6 +14,11 @@ public class DateUtil {
 		return new Integer[] {
 			31,28,31,30,31,30,31,31,30,31,30,31
 		} ;
+	}
+	
+	public static String formatDate(Date date, String pattern) {
+		SIMPLEDA_DATE_FORMAT.applyPattern(pattern);
+		return SIMPLEDA_DATE_FORMAT.format(date);
 	}
 	
 	public static String getTimeGreeting() {

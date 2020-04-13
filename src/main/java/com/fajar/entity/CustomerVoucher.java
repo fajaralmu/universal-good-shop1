@@ -1,5 +1,7 @@
 package com.fajar.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -15,9 +17,13 @@ import lombok.Data;
 @Entity
 @Dto
 @Table(name = "member_voucher")
-public class CustomerVoucher extends BaseEntity{
+public class CustomerVoucher extends BaseEntity implements Serializable{
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9107899093587915646L;
 	@JoinColumn(name = "voucher_id", nullable = true)
 	@ManyToOne
 	@FormField(entityReferenceName = "voucher", optionItemName = "name", type = FormField.FIELD_TYPE_DYNAMIC_LIST)

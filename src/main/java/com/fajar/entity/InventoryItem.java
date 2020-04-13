@@ -41,5 +41,9 @@ public class InventoryItem extends BaseEntity implements Serializable{
 	 */
 	@Column(name="new_version")
 	private boolean newVersion;
+	
+	public void takeProduct(int count) {
+		this.count = this.count - count;
+	}
 
 }

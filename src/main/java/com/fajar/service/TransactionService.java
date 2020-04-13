@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.TransactionType;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Customer;
 import com.fajar.entity.InventoryItem;
@@ -133,7 +134,7 @@ public class TransactionService {
 		// validate product flow
 
 		Optional<ProductFlow> dbProductFlow = productFlowRepository.findByIdAndTransaction_Type(productFlow.getId(),
-				"IN");
+				TransactionType.IN);
 		if (dbProductFlow.isPresent() == false) {
 			return null;
 		}
@@ -196,9 +197,9 @@ public class TransactionService {
 			int totalCount = 0;
 			int used = 0;
 
-			Object resultUsedProduct = productFlowRepository.findFlowCount("OUT", product.getId());
+			Object resultUsedProduct = productFlowRepository.findFlowCount(TransactionType.OUT, product.getId());
 
-			Object resultTotalProduct = productFlowRepository.findFlowCount("IN", product.getId());
+			Object resultTotalProduct = productFlowRepository.findFlowCount(TransactionType.IN, product.getId());
 
 			int remainingCount = 0;
 			try {
