@@ -45,5 +45,9 @@ public class InventoryItem extends BaseEntity implements Serializable{
 	public void takeProduct(int count) {
 		this.count = this.count - count;
 	}
+	
+	public void addProduct(int count) {
+		this.count = this.count + count;
+	}
 
 }

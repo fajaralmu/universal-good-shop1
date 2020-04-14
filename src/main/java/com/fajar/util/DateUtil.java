@@ -10,6 +10,15 @@ public class DateUtil {
 	
 	static final Calendar cal() { return Calendar.getInstance(); }
 	
+	public static Date getDate(int year, int month, int day) {
+		
+		Calendar cal = cal();
+		cal.set(year, month, day);
+		
+		return cal.getTime();
+		
+	}
+	
 	public static Integer[] getMonths(){
 		return new Integer[] {
 			31,28,31,30,31,30,31,31,30,31,30,31

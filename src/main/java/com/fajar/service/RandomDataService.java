@@ -13,12 +13,17 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.entity.Customer;
 import com.fajar.entity.InventoryItem;
+import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
+import com.fajar.entity.Supplier;
 import com.fajar.entity.Transaction;
 import com.fajar.entity.User;
 import com.fajar.repository.InventoryItemRepository;
 import com.fajar.repository.ProductFlowRepository;
+import com.fajar.repository.ProductRepository;
+import com.fajar.repository.SupplierRepository;
 import com.fajar.repository.TransactionRepository;
+import com.fajar.util.DateUtil;
 import com.fajar.util.StringUtil;
 import com.fajar.util.ThreadUtil;
 
@@ -32,7 +37,13 @@ public class RandomDataService {
 	private TransactionRepository transactionRepository;
 	
 	@Autowired
+	private SupplierRepository supplierRepository;
+	
+	@Autowired
 	private InventoryItemRepository inventoryItemRepository;
+	
+	@Autowired
+	private ProductRepository productRepository;
 	
 	static final String insertTrx = "INSERT INTO goodshop.`transaction` "
 			+ "(id, created_date, deleted, transaction_date, `type`, customer_id, user_id, supplier_id,  code) "
@@ -51,12 +62,123 @@ public class RandomDataService {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				init();
+//				addSellingTransaction();
+//				validateInventory();
+//				updateProductFlow();
+//				checkProductFlow();
+				System.out.println("=========== end post construct random data service ===========");
 			}
+
+			
 		});
 	}
+	
+	private void checkProductFlow() {
 
-	public void init() {
+		List<Product> allProducts = productRepository.findAll();
+		List<ProductFlow> productFlows = new ArrayList<>();
+		
+		for (Product product : allProducts) {
+			
+			try {
+			int bought = productFlowRepository.getCount("IN", product.getId());
+			int sold = productFlowRepository.getCount("OUT", product.getId());
+			
+			if(sold > bought) {
+				int count = sold - bought;
+				System.out.println("SOLD:"+sold+", bought: "+bought);
+				
+				ProductFlow productFlow = new ProductFlow();
+				productFlow.setCount(count);
+				productFlow.setPrice(product.getPrice() * 2/ 3);
+				productFlow.setProduct(product);
+				
+				productFlows.add(productFlow );
+			}
+			}catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("SKIP PRODUCT: "+product.getId());
+				e.printStackTrace();
+			}
+			
+		}
+		
+		
+		
+	}
+	
+	private void addTransaction(List<ProductFlow> productFlows) {
+		Transaction transaction = new Transaction();
+		Calendar cal = Calendar.getInstance();
+		cal.set(2016, 0, 1);
+		
+		transaction.setTransactionDate(cal.getTime());
+		transaction.setCreatedDate(cal.getTime());
+		transaction.setCode("90000000002");
+		transaction.setType("IN");
+		
+		Supplier supplier = supplierRepository.findById(1L).get();
+		transaction.setSupplier(supplier );
+		
+		transactionRepository.save(transaction);
+		
+		for (ProductFlow pf : productFlows) {
+			pf.setExpiryDate(DateUtil.getDate(2022, 2, 23));
+			pf.setTransaction(transaction);
+			pf.setTransactionId(transaction.getId());
+			productFlowRepository.save(pf);
+		}
+	}
+	
+	private void updateProductFlow() {
+		List<ProductFlow> productFlows = productFlowRepository.findByTransaction_Id(66307L);
+		for (ProductFlow productFlow : productFlows) {
+			productFlow.setCreatedDate(productFlow.getTransaction().getTransactionDate()); 
+			
+			productFlowRepository.save(productFlow);
+		}
+	}
+	
+	private void validateInventory() {
+		System.out.println("============ validate inventory ============");
+		
+		List<InventoryItem> invntories = inventoryItemRepository.findAll();
+		Transaction transaction = new Transaction();
+		Calendar cal = Calendar.getInstance();
+		cal.set(2016, 0, 1);
+		
+		transaction.setTransactionDate(cal.getTime());
+		transaction.setCreatedDate(cal.getTime());
+		
+		Supplier supplier = supplierRepository.findById(1L).get();
+		transaction.setSupplier(supplier );
+		
+		transactionRepository.save(transaction);
+		
+		for (InventoryItem inventoryItem : invntories) {
+			if(inventoryItem.getCount() >= 0) {
+				continue;
+			}
+			int count = Math.abs(inventoryItem.getCount());
+			long price = inventoryItem.getProduct().getPrice() * 2/3;
+			ProductFlow pf = new ProductFlow();
+			pf.setProduct(inventoryItem.getProduct());
+			pf.setCount(count);
+			pf.setPrice(price);
+			pf.setExpiryDate(DateUtil.getDate(2022, 2, 23));
+			pf.setTransaction(transaction);
+			pf.setTransactionId(transaction.getId());
+			
+			inventoryItem.addProduct(count);
+			
+			inventoryItemRepository.save(inventoryItem); 
+			productFlowRepository.save(pf);
+			
+			System.out.println("COUNT:"+count);
+		}
+	}
+
+	public void addSellingTransaction() {
 		System.out.println("---------BEGIN Random Data Service---------");
 		Random rand = new Random();
 		List<ProductFlow> productFlows = productFlowRepository.findByTransaction_TypeAndTransaction_IdGreaterThan("IN", 645L );

@@ -68,7 +68,7 @@ public class MockDataService {
 			@Override
 			public void run() { 
 				System.out.println("*************@PostConstruct**************");
-//				writeCashBalance();
+				writeCashBalance();
 //				updateProductFlows();
 			}
 		});
@@ -99,22 +99,22 @@ public class MockDataService {
 		mainList.addAll(capitalFlows);
 		mainList.addAll(costFlows);
 		mainList.addAll(productFlows);
-		Comparator<? super BaseEntity> comparator = new Comparator<BaseEntity>() {
-
-			@Override
-			public int compare(BaseEntity o1, BaseEntity o2) {
-				// TODO Auto-generated method stub
-				int result = 0;
-				if(o1.getCreatedDate().compareTo(o2.getCreatedDate()) < 0) {
-					result = -1;
-				}else {
-					result = 1;
-				}
-				
-				return result;
-			}
-		};
-		mainList.sort(comparator );
+//		Comparator<? super BaseEntity> comparator = new Comparator<BaseEntity>() {
+//
+//			@Override
+//			public int compare(BaseEntity o1, BaseEntity o2) {
+//				// TODO Auto-generated method stub
+//				int result = 0;
+//				if(o1.getCreatedDate().compareTo(o2.getCreatedDate()) < 0) {
+//					result = -1;
+//				}else {
+//					result = 1;
+//				}
+//				
+//				return result;
+//			}
+//		};
+//		mainList.sort(comparator );
 		
 		CashBalance[] cashBalances = new CashBalance[mainList.size()];
 		BaseEntity[] sortedList = urutkanListObj(mainList);
@@ -136,13 +136,12 @@ public class MockDataService {
 				
 				ProductFlow productFlow = (ProductFlow) baseEntity;
 				Transaction transaction = productFlow.getTransaction();
-				
-				long totalPrice = productFlow.getCount() * productFlow.getPrice();
+				 
 				
 				if(transaction.getType().equals(TransactionType.IN)) {
-					debitAmount = totalPrice;
+					debitAmount = productFlow.getCount() * productFlow.getPrice();
 				}else {
-					creditAmount = totalPrice;
+					creditAmount = productFlow.getCount() * productFlow.getProduct().getPrice();
 				}
 				
 				info = "TRAN_"+transaction.getType();
@@ -335,7 +334,7 @@ public class MockDataService {
 		int key_map_urut = 0;
 		for (int i = 0; i < list_obj.size(); i++) {
 			map_obj.put(i, list_obj.get(i));
-			// System.out.print(list_int[i] + ",");
+			 System.out.print("moving list:"+i);
 		}
 
 		for (int i = 0; i < map_obj.size(); i++) {
@@ -351,7 +350,7 @@ public class MockDataService {
 					continue loop;
 				} 
 			}
-
+			System.out.println("key:"+ key + new Date().toString());
 			map_obj_urut_final.put(key_map_urut, min);
 			map_obj_urut.put(key, min);
 			key_map_urut++;

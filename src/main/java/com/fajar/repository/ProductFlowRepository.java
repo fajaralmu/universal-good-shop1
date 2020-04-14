@@ -54,4 +54,8 @@ public interface ProductFlowRepository extends JpaRepository<ProductFlow, Long>,
 //	+ (limit > 0 ? " limit " + limit : "");
 	
 	List<ProductFlow> findByTransaction_TypeAndProduct_Id(String type, long productId);
+	
+	@Query(value="select sum(count)  from product_flow left join `transaction` on transaction_id = transaction.id  " + 
+			"where transaction.`type` = ?1 and product_id = ?2 ",nativeQuery = true)
+	public int getCount(String trxType, long productId);
 }
