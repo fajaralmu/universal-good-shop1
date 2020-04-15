@@ -41,6 +41,7 @@ import com.fajar.entity.UserRole;
 import com.fajar.entity.Voucher;
 import com.fajar.entity.setting.EntityManagementConfig;
 import com.fajar.service.entity.BaseEntityUpdateService;
+import com.fajar.service.entity.CapitalFlowUpdateService;
 import com.fajar.service.entity.CommonUpdateService;
 import com.fajar.service.entity.MenuUpdateService;
 import com.fajar.service.entity.ProductUpdateService;
@@ -125,6 +126,10 @@ public class EntityRepository {
 	private BaseEntityUpdateService baseEntityUpdateService;
 	@Autowired
 	private VoucherUpdateService voucherUpdateService;
+	@Autowired
+	private CapitalFlowUpdateService capitalUpdateService;
+	@Autowired
+	private CapitalFlowUpdateService capitalFlowUpdateService;
 	
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -146,11 +151,11 @@ public class EntityRepository {
 		entityConfiguration.put("userrole", config("userrole", UserRole.class, commonUpdateService));
 		entityConfiguration.put("registeredrequest", config("registeredRequest", RegisteredRequest.class, commonUpdateService));
 		entityConfiguration.put("cost", config("cost", Cost.class, commonUpdateService));
-		entityConfiguration.put("costflow", config("costflow", CostFlow.class, commonUpdateService));
+		entityConfiguration.put("costflow", config("costflow", CostFlow.class, capitalFlowUpdateService));
 		entityConfiguration.put("voucher", config("voucher", Voucher.class, voucherUpdateService));
 		entityConfiguration.put("customervoucher", config("customervoucher", CustomerVoucher.class, commonUpdateService));
 		entityConfiguration.put("capital", config("capital", Capital.class, commonUpdateService));
-		entityConfiguration.put("capitalflow", config("capitalflow", CapitalFlow.class, commonUpdateService));
+		entityConfiguration.put("capitalflow", config("capitalflow", CapitalFlow.class, capitalUpdateService));
 
 		/**
 		 * unable to update

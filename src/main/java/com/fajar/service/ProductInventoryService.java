@@ -30,6 +30,8 @@ public class ProductInventoryService {
 	private TransactionRepository transactionRepository;
 	@Autowired
 	private ProgressService progressService; 
+	@Autowired
+	private CashBalanceService cashBalanceService;
 	
 	public static final String TYPE_OUT = TransactionType.OUT;
 	public static final String TYPE_IN = TransactionType.IN;
@@ -82,6 +84,11 @@ public class ProductInventoryService {
 				productFlow.setTransaction(newTransaction);
 				productFlow = productFlowRepository.save(productFlow);
 
+				/**
+				 * update cash balance
+				 */
+				cashBalanceService.update(productFlow);
+				
 				/**
 				 * INSERT new inventory item row
 				 */
@@ -169,6 +176,11 @@ public class ProductInventoryService {
 				productFlow = productFlowRepository.save(productFlow); 
 				
 				/**
+				 * update cash balance
+				 */
+				cashBalanceService.update(productFlow);
+				
+				/**
 				 * update count
 				 */
 				inventoryItem.setCount(inventoryItem.getCount() - productFlow.getCount());
@@ -244,6 +256,12 @@ public class ProductInventoryService {
 				 * save NEW productFlow record to database
 				 */
 				productFlow = productFlowRepository.save(productFlow); 
+				
+				/**
+				 * update cash balance
+				 * 
+				 */
+				cashBalanceService.update(productFlow);
 				
 //				/**
 //				 * update count

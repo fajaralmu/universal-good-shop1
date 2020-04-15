@@ -8,8 +8,8 @@ import com.fajar.entity.CashBalance;
 import com.fajar.entity.Category;
 import com.fajar.entity.Cost;
 
-public interface CashBalanceRepository extends JpaRepository<CashBalance		, Long>{
-
-	List<Category> findByDeletedFalse();
+public interface CashBalanceRepository extends JpaRepository<CashBalance		, Long>{ 
+	
+	public CashBalance findTop1OrderByIdDesc();
 
 }
