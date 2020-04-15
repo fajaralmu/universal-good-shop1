@@ -68,7 +68,7 @@ public class MockDataService {
 			@Override
 			public void run() { 
 				System.out.println("*************@PostConstruct**************");
-				writeCashBalance();
+//				writeCashBalance();
 //				updateProductFlows();
 			}
 		});

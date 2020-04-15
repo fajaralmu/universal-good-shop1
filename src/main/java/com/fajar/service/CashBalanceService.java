@@ -23,7 +23,7 @@ public class CashBalanceService {
 		if(baseEntity == null) {
 			return;
 		}
-		CashBalance latestCashbalance = cashBalanceRepository.findTop1OrderByIdDesc();
+		CashBalance latestCashbalance = cashBalanceRepository.findTop1ByOrderByIdDesc();
 		
 		long formerBalance = latestCashbalance == null? 0l : latestCashbalance.getActualBalance();
 		long creditAmount = 0l;
