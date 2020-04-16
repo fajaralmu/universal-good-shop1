@@ -124,6 +124,7 @@ public class MockDataService {
 
 			CashBalance cashBalance = new CashBalance();
 			cashBalance.setDate(baseEntity.getCreatedDate()); 
+			cashBalance.setReferenceId(baseEntity.getId().toString());
 			
 			long formerBalance = i == 0? 0l : cashBalances[i-1].getActualBalance();
 			long creditAmount = 0l;

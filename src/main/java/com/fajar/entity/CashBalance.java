@@ -27,13 +27,13 @@ public class CashBalance extends BaseEntity implements Serializable{/**
 	 */
 	private static final long serialVersionUID = -1586384158220885834L;
 
-	@FormField
+	@FormField(type = FormField.FIELD_TYPE_NUMBER)
 	private long formerBalance;
-	@FormField()
+	@FormField(type = FormField.FIELD_TYPE_NUMBER)
 	private long creditAmount;
-	@FormField
+	@FormField(type = FormField.FIELD_TYPE_NUMBER)
 	private long debitAmount;
-	@FormField
+	@FormField(type = FormField.FIELD_TYPE_NUMBER)
 	private long actualBalance;
 	@FormField
 	private CashType type;

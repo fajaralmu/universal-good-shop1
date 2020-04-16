@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Capital;
 import com.fajar.entity.CapitalFlow;
+import com.fajar.entity.CashBalance;
 import com.fajar.entity.Category;
 import com.fajar.entity.Cost;
 import com.fajar.entity.CostFlow;
@@ -160,6 +161,7 @@ public class EntityRepository {
 		/**
 		 * unable to update
 		 */
+		entityConfiguration.put("cashbalance", config("cashbalance", CashBalance.class, baseEntityUpdateService));
 		entityConfiguration.put("transaction", config(null, Transaction.class, baseEntityUpdateService));
 		entityConfiguration.put("productflow", config(null, ProductFlow.class, baseEntityUpdateService));
 		entityConfiguration.put("message", config(null, Message.class, commonUpdateService));

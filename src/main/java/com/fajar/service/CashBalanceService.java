@@ -1,5 +1,7 @@
 package com.fajar.service;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +22,7 @@ public class CashBalanceService {
 	
 	public synchronized void update(BaseEntity baseEntity) {
 		
-		if(baseEntity == null) {
+		if(baseEntity == null || baseEntity.getId() == null) {
 			return;
 		}
 		CashBalance latestCashbalance = cashBalanceRepository.findTop1ByOrderByIdDesc();
@@ -70,6 +72,8 @@ public class CashBalanceService {
 		cashBalance.setCreditAmount(creditAmount);
 		cashBalance.setActualBalance(formerBalance + creditAmount - debitAmount);
 		cashBalance.setReferenceInfo(info);
+		cashBalance.setReferenceId(baseEntity.getId().toString());
+		cashBalance.setDate(new Date()); 
 		
 		cashBalanceRepository.save(cashBalance);
 	}
