@@ -52,7 +52,7 @@ public class PrintedReportService {
 		Filter filter = request.getFilter();
 		CashBalance cashBalance = getBalance(filter);
 		int month = filter.getMonth();
-		int year = filter.getMonth() ;
+		int year = filter.getYear() ;
 		
 		Integer[] months = DateUtil.getMonths(year);
 		Integer dayCount = months[month - 1]; 
@@ -131,7 +131,7 @@ public class PrintedReportService {
 			}else {
 				creditAmount = productFlow.getCount() * productFlow.getPrice();
 			}
-			name  = transaction.getCode() + transaction.getType();
+			name  = transaction.getCode() + "_"+ transaction.getType();
 			
 		}else if(baseEntity instanceof CostFlow) { 
 			CostFlow costFlow = (CostFlow) baseEntity;

@@ -69,11 +69,27 @@ public class MockDataService {
 				System.out.println("*************@PostConstruct**************");
 //				writeCashBalance();
 //				updateProductFlows();
+				updateSoldProductFlowsPrice();
 			}
+
+			
 		});
 	}
-	
-	private void updateProductFlows() {
+	private void updateSoldProductFlowsPrice() {
+		List<ProductFlow> productFlows = productFlowRepository.findByTransaction_Type(TransactionType.OUT);
+		for (ProductFlow productFlow : productFlows) {
+			
+			System.out.println("Pre price: "+productFlow.getPrice());
+			Product product = productFlow.getProduct();
+			productFlow.setPrice(product.getPrice());
+			
+			System.out.println("Updated Price: "+productFlow.getPrice());
+			productFlowRepository.save(productFlow);
+			System.out.println("Saved: "+productFlow.getId());
+		}
+		
+	}
+	private void updateAllProductFlows() {
 		List<ProductFlow> productFlows = productFlowRepository.findAll();
 		for (ProductFlow productFlow : productFlows) {
 			Transaction transaction = productFlow.getTransaction();
