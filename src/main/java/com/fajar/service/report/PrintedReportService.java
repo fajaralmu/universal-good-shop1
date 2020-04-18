@@ -48,6 +48,9 @@ public class PrintedReportService {
 	@Autowired
 	private ExcelReportBuilder excelReportBuilder;
 	
+	private long debitAmount = 0;
+	private long count = 0;
+	
 	private Map<Integer, List<BaseEntity>> dailyTransactions = new HashMap<>();
 	private Map<ReportCategory, DailyReportRow> dailyReportSummary = new HashMap<>();
 	private List<DailyReportRow > dailyReportRows = new LinkedList<>();
@@ -74,6 +77,20 @@ public class PrintedReportService {
 			excelReportBuilder.writeDailyReport(month, year, cashBalance, 
 					dailyReportRows, dailyReportSummary, totalDailyReportRow);
 			
+			System.out.println("DEBIT AMOUNT: "+this.debitAmount);
+			System.out.println("COUNT ITEM: "+this.count);
+			count = 0l;
+			debitAmount = 0l;
+			
+			for (Integer i : dailyTransactions.keySet()){
+				if(dailyTransactions.get(i) != null) {
+					System.out.println("day: "+i+", items: "+ dailyTransactions.get(i).size());
+					for (BaseEntity integer : dailyTransactions.get(i)) {
+						System.out.println(integer.getId() +", "+ integer.getCreatedDate().toString());
+					}
+				}
+			}
+			
 			return ShopApiResponse.success();
 		}catch (Exception e) {
 			// TODO: handle exception
@@ -82,6 +99,11 @@ public class PrintedReportService {
 		}
 	} 
 	
+	/**
+	 * calculate summary
+	 * @param latestBalance
+	 * @return
+	 */
 	private DailyReportRow totalDailyReportRow(CashBalance latestBalance) { 
 		DailyReportRow dailyReportRow = new DailyReportRow();
 		long debitAmount = latestBalance.getActualBalance();
@@ -123,10 +145,16 @@ public class PrintedReportService {
 		return rawTransactions;
 	}
 	
+	/**
+	 * check if row data with given category and day is exist
+	 * @param reportCategory
+	 * @param day
+	 * @return
+	 */
 	private int isExistInDailyReportRow(ReportCategory reportCategory, int day) {
 		int i = 0;
 		for (DailyReportRow dailyReportRow : dailyReportRows) {
-			if(dailyReportRow.getDay() == day && dailyReportRow.getCode().equals(reportCategory)) {
+			if(dailyReportRow.getCode().equals(reportCategory) && dailyReportRow.getDay() == day ) {
 				return i;
 			}
 			i++;
@@ -134,14 +162,17 @@ public class PrintedReportService {
 		return -1;
 	}
 
+	/**
+	 * add row data to list
+	 * @param newDailyReportRow
+	 */
 	private void addDailyReportRow(DailyReportRow newDailyReportRow) { 
 		
 		if(newDailyReportRow.getCode().equals(ReportCategory.SHOP_ITEM)) {
 			int index = isExistInDailyReportRow(ReportCategory.SHOP_ITEM, newDailyReportRow.getDay());
-			if(index >= 0) {
-				DailyReportRow dailyReport = dailyReportRows.get(index);
-				dailyReportRows.get(index).setCreditAmount(dailyReport.getCreditAmount() + newDailyReportRow.getCreditAmount());
-				dailyReportRows.get(index).setDebitAmount(dailyReport.getDebitAmount() + newDailyReportRow.getDebitAmount());
+			if(index >= 0) { 
+				dailyReportRows.get(index).addCreditAmount( newDailyReportRow.getCreditAmount());
+				dailyReportRows.get(index).addDebitAmount( newDailyReportRow.getDebitAmount());
 				
 			}else {
 				dailyReportRows.add(newDailyReportRow);
@@ -151,6 +182,13 @@ public class PrintedReportService {
 		}
 	}
 	
+	/**
+	 * build row data
+	 * @param day
+	 * @param month
+	 * @param baseEntity
+	 * @return
+	 */
 	private DailyReportRow getDailyReportRow(int day, int month, BaseEntity baseEntity) { 
 		
 		DailyReportRow dailyReportRow = new DailyReportRow();
@@ -162,26 +200,26 @@ public class PrintedReportService {
 		ReportCategory reportCategory = ReportCategory.CAPITAL;
 		
 		if(baseEntity instanceof CapitalFlow) {
-			CapitalFlow capitalFlow = (CapitalFlow) baseEntity;
-			creditAmount = capitalFlow.getNominal();
+			final CapitalFlow capitalFlow = (CapitalFlow) baseEntity;
+			debitAmount = capitalFlow.getNominal();
 			reportCategory = ReportCategory.CAPITAL;
 			name = "Capital Flow";
 			
 		}else if(baseEntity instanceof ProductFlow) {
-			ProductFlow productFlow = (ProductFlow) baseEntity;
-			Transaction transaction = productFlow.getTransaction();
+			final ProductFlow productFlow = (ProductFlow) baseEntity;
+			final Transaction transaction = productFlow.getTransaction();
 			reportCategory = ReportCategory.SHOP_ITEM;
 			
 			if(transaction.getType().equals(TransactionType.IN)) {
-				debitAmount = productFlow.getCount() * productFlow.getPrice();
-			}else {
 				creditAmount = productFlow.getCount() * productFlow.getPrice();
+			}else if(transaction.getType().equals(TransactionType.OUT)) {
+				debitAmount = productFlow.getCount() * productFlow. getPrice();
 			}
-			name  = transaction.getCode() + "_"+ transaction.getType();
+			name  = "SELLING/PURCHASING";
 			
 		}else if(baseEntity instanceof CostFlow) { 
-			CostFlow costFlow = (CostFlow) baseEntity;
-			debitAmount = costFlow.getNominal();
+			final CostFlow costFlow = (CostFlow) baseEntity;
+			creditAmount = costFlow.getNominal();
 			name  = costFlow.getDescription();
 			reportCategory = ReportCategory.OPERATIONAL_COST;
 		} 
@@ -190,6 +228,8 @@ public class PrintedReportService {
 		dailyReportRow.setCreditAmount(creditAmount);
 		dailyReportRow.setDebitAmount(debitAmount);
 		dailyReportRow.setName(name);
+		this.count++;
+		this.debitAmount+=debitAmount;
 		
 		return dailyReportRow ;
 	}
@@ -238,31 +278,41 @@ public class PrintedReportService {
 		
 		List<BaseEntity> results = new ArrayList<BaseEntity>();
 		
-		results.addAll(costFlows);
-		results.addAll(transactionItems);
-		results.addAll(capitalFlows);
+		if(null != costFlows && costFlows.size() > 0)
+			results.addAll(costFlows);
+		if(null != transactionItems && transactionItems.size() > 0)
+			results.addAll(transactionItems);
+		if(null != capitalFlows && capitalFlows.size() > 0)
+			results.addAll(capitalFlows);
 		
-		log.info("results count: ",results.size());
+		log.info("results count: {}",results.size());
 		
 		for (BaseEntity baseEntity : results) {
 			
 			Date createdDate = baseEntity.getCreatedDate();
+			
+//			if(baseEntity instanceof ProductFlow) {
+//				createdDate = ((ProductFlow) baseEntity).getTransaction().getTransactionDate();
+//			}
+			
 			Calendar calendar = DateUtil.cal(createdDate);
 			int day = calendar.get(Calendar.DAY_OF_MONTH);
-			
+			 
 			putTransaction(day, baseEntity);
 		}
 		
 		return results ;
 	}
 
-
-
-
+	/**
+	 * get cash balance at given period filter
+	 * @param filter
+	 * @return
+	 */
 	private CashBalance getBalance(Filter filter) {
-		int month = filter.getMonth() - 1 < 0 ? 12 : filter.getMonth() - 1;
-		int year = filter.getMonth() - 1 < 0 ? filter.getYear() - 1 : filter.getYear();
-		CashBalance cashBalance = cashBalanceService.getBalanceAtTheEndOf(month, year);		
+		int prevMonth = filter.getMonth() - 1 < 1 ? 12 : filter.getMonth() - 1;
+		int year = filter.getMonth() - 1 < 1 ? filter.getYear() - 1 : filter.getYear();
+		CashBalance cashBalance = cashBalanceService.getBalanceAt (prevMonth, year);	 
 		return cashBalance;
 	}
 	 

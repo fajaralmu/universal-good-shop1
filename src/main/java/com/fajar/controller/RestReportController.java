@@ -43,9 +43,9 @@ public class RestReportController {
 	public ShopApiResponse daily(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("supply {}", request);
-		if(!userSessionService.hasSession(httpRequest)) {
-			return ShopApiResponse.failedResponse();
-		}
+//		if(!userSessionService.hasSession(httpRequest)) {
+//			return ShopApiResponse.failedResponse();
+//		}
 		  
 		return excelReportService.buildDailyReport(request) ;
 	}

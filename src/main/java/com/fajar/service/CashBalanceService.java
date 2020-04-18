@@ -15,6 +15,8 @@ import com.fajar.entity.Transaction;
 import com.fajar.repository.CashBalanceRepository;
 import com.fajar.util.DateUtil;
 
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Service
 public class CashBalanceService {
 	@Autowired
@@ -28,19 +30,13 @@ public class CashBalanceService {
 	
 	/**
 	 * get balance at the end of month
-	 * @param month
+	 * @param month starts at 1
 	 * @param year
 	 * @return
 	 */
-	public CashBalance getBalanceAtTheEndOf(int month, int year) {
+	public CashBalance getBalanceAt (int month, int year) { 
 		
-		int nextMonth = month + 1 > 12 ? 1 : month + 1;
-		int theYear = month + 1 > 12 ? year + 1 : year;
-		
-		Date date = DateUtil.getDate(theYear, nextMonth - 1, 1);
-		String dateString = DateUtil.formatDate(date, "yyyy-MM-dd");
-		
-		CashBalance CashBalance = cashBalanceRepository.getCashAtMonthAndYear(dateString );
+		CashBalance CashBalance = cashBalanceRepository.getCashBalanceAt(month, year );
 		
 		return CashBalance;
 	}
@@ -106,5 +102,6 @@ public class CashBalanceService {
 		
 		cashBalanceRepository.save(cashBalance);
 	}
+ 
 
 }

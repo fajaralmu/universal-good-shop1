@@ -46,6 +46,13 @@ public interface ProductFlowRepository extends JpaRepository<ProductFlow, Long>,
 			+ "	 WHERE  month(`transaction`.transaction_date) = ?1  "
 			+ "	 and year(`transaction`.transaction_date) = ?2 and `transaction`.deleted = false and `product_flow`.deleted = false")
 	public List<ProductFlow> findByTransactionPeriod( int month, int year);
+	
+	@Query(nativeQuery = true, value=
+			"select * from product_flow left join `transaction` on transaction_id = transaction.id " +  
+			"where day(product_flow.created_date) != day(`transaction`.transaction_date) " + 
+			"or month(product_flow.created_date) != month(`transaction`.transaction_date) " + 
+			"or year(product_flow.created_date) != year(`transaction`.transaction_date)")
+	public List<ProductFlow> FINDINCORRECTDATE();
 
 //	String sql = "select * from product_flow left join `transaction` on transaction_id = transaction.id "
 //	+ "left join product on product_id = product.id "

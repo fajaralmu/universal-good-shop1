@@ -23,4 +23,11 @@ public class DailyReportRow implements Serializable{/**
 	private int day;
 	private int month;
 	
+	public void addCreditAmount(long amt) {
+		this.creditAmount += amt;
+	}
+	public void addDebitAmount(long amt) {
+		this.debitAmount += amt;
+	}
+	
 }

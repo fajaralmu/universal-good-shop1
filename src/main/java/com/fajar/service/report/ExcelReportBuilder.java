@@ -45,7 +45,7 @@ public class ExcelReportBuilder {
 		
 		for (int i = 0; i < 7; i++) {
 			XSSFCell cell = headerRow.getCell(i);
-			cell.getCellStyle().setBorderTop(BorderStyle.DOUBLE);
+			cell.getCellStyle().setBorderBottom(BorderStyle.DOUBLE);
 		}
 		
 		row++;
@@ -127,8 +127,11 @@ public class ExcelReportBuilder {
 				cellValue = "";
 			}
 			columns[i] = parentRow.createCell(offsetIndex+i);
-			columns[i].setCellValue(cellValue.toString());
-			
+			try {
+				columns[i].setCellValue(Double.parseDouble(cellValue .toString()));
+			}catch (Exception e) { 
+				columns[i].setCellValue(cellValue.toString()); 
+			}
 			if(cellStyle != null)
 				columns[i].setCellStyle(cellStyle);
 		}

@@ -70,11 +70,32 @@ public class MockDataService {
 //				writeCashBalance();
 //				updateProductFlows();
 //				updateSoldProductFlowsPrice();
+//				fixIncorrectTransactionDate();
 			}
+
+			
 
 			
 		});
 	}
+	
+	private void fixIncorrectTransactionDate() {
+		// TODO Auto-generated method stub
+	
+		List<ProductFlow> incorrectFlows = productFlowRepository.FINDINCORRECTDATE();
+		int i = 0;
+		for (ProductFlow productFlow : incorrectFlows) {
+			Transaction transaction = productFlow.getTransaction();
+			
+			transaction.setTransactionDate(productFlow.getCreatedDate());
+			transaction.setCreatedDate(productFlow.getCreatedDate());
+			transaction.setModifiedDate(productFlow.getCreatedDate());
+			transactionRepository.save(transaction);
+			System.out.println("saved: "+transaction.getId()+"index:"+i+" of "+incorrectFlows.size());
+			i++;
+		}
+	}
+	
 	private void updateSoldProductFlowsPrice() {
 		List<ProductFlow> productFlows = productFlowRepository.findByTransaction_Type(TransactionType.OUT);
 		for (ProductFlow productFlow : productFlows) {
@@ -100,9 +121,7 @@ public class MockDataService {
 	}
 	
 	private void writeCashBalance() {
-		List<BaseEntity> mainList = new ArrayList<>();
-		
-		
+		List<BaseEntity> mainList = new ArrayList<>(); 
 		
 		List<ProductFlow> productFlows = productFlowRepository.findAll();
 		System.out.println("productFlows:"+productFlows.size());
@@ -157,7 +176,7 @@ public class MockDataService {
 				if(transaction.getType().equals(TransactionType.IN)) {
 					debitAmount = productFlow.getCount() * productFlow.getPrice();
 				}else {
-					creditAmount = productFlow.getCount() * productFlow.getProduct().getPrice();
+					creditAmount = productFlow.getCount() * productFlow.getPrice();
 				}
 				
 				info = "TRAN_"+transaction.getType();
@@ -350,7 +369,7 @@ public class MockDataService {
 		int key_map_urut = 0;
 		for (int i = 0; i < list_obj.size(); i++) {
 			map_obj.put(i, list_obj.get(i));
-			 System.out.print("moving list:"+i);
+			 System.out.println("moving list:"+i);
 		}
 
 		for (int i = 0; i < map_obj.size(); i++) {
