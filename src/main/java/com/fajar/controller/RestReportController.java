@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
-import com.fajar.service.ExcelReportService;
 import com.fajar.service.LogProxyFactory;
 import com.fajar.service.UserSessionService;
+import com.fajar.service.report.PrintedReportService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +32,7 @@ public class RestReportController {
 	@Autowired
 	private UserSessionService userSessionService;
 	@Autowired
-	private ExcelReportService excelReportService;
+	private PrintedReportService excelReportService;
 	
 	@PostConstruct
 	public void init() {

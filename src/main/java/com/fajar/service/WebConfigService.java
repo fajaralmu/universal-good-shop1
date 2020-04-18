@@ -16,10 +16,7 @@ import com.fajar.repository.ShopProfileRepository;
 import com.fajar.test.RmiStopper;
 import com.fajar.util.EntityUtil;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * this class is autowired via XML
@@ -28,10 +25,7 @@ import lombok.NoArgsConstructor;
  *
  */
 @Dto
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Data 
 public class WebConfigService {
 
 	@Autowired
@@ -39,7 +33,8 @@ public class WebConfigService {
 
 	private String basePage;
 	private String uploadedImageRealPath;
-	private String uploadedImagePath;
+	private String uploadedImagePath; 
+	private String reportPath;
 	private String martCode;  
 	
 	@PreDestroy
