@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
+import com.fajar.service.ExcelReportService;
 import com.fajar.service.LogProxyFactory;
 import com.fajar.service.UserSessionService;
 
@@ -30,6 +31,8 @@ public class RestReportController {
 	
 	@Autowired
 	private UserSessionService userSessionService;
+	@Autowired
+	private ExcelReportService excelReportService;
 	
 	@PostConstruct
 	public void init() {
@@ -43,9 +46,8 @@ public class RestReportController {
 		if(!userSessionService.hasSession(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
-		 
-		ShopApiResponse response = new ShopApiResponse();
-		return response ;
+		  
+		return excelReportService.buildDailyReport(request) ;
 	}
 	
 	@PostMapping(value = "/monthly", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
