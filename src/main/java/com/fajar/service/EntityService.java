@@ -38,23 +38,16 @@ public class EntityService {
 	@Autowired
 	private RepositoryCustomImpl repositoryCustom;   
 	@Autowired
-	private EntityRepository entityRepository;
-	 
-
-	private Map<String, EntityManagementConfig> entityClasses = new HashMap<>();
+	private EntityRepository entityRepository; 
 	
 	@PostConstruct
 	public void init() {
-		LogProxyFactory.setLoggers(this);
-		setEntityConfig();
+		LogProxyFactory.setLoggers(this); 
 	}
-	
-	public void setEntityConfig() {
-		entityClasses = entityRepository.getEntityConfiguration();
-	}
+	 
 	
 	private EntityManagementConfig getEntityManagementConfig(String key) {
-		return entityClasses.get(key);
+		return entityRepository.getConfiguration(key);
 	}
 
 	/**

@@ -2,7 +2,6 @@ package com.fajar.service.report;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +19,10 @@ import com.fajar.dto.ReportCategory;
 import com.fajar.entity.CashBalance;
 import com.fajar.service.WebConfigService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ExcelReportBuilder {
 	
 	@Autowired
@@ -35,17 +37,24 @@ public class ExcelReportBuilder {
 		
 		int row = 0;
 		int columnOffset = 0;
+		final int firstDate = 1;
 		
-		createRow(xsheet, row, columnOffset,
+		XSSFRow headerRow = createRow(xsheet, row, columnOffset,
 				 "No","Tgl","Uraian","Kode","Debet","Kredit","Saldo"  
 				);
+		
+		for (int i = 0; i < 7; i++) {
+			XSSFCell cell = headerRow.getCell(i);
+			cell.getCellStyle().setBorderTop(BorderStyle.DOUBLE);
+		}
+		
 		row++;
 		createRow(xsheet, row, columnOffset,
-				 "",1,"Saldo Awal",ReportCategory.CASH_BALANCE,initialBalane.getActualBalance(),0,initialBalane.getActualBalance() 
+				 "", firstDate,"Saldo Awal", ReportCategory.CASH_BALANCE,initialBalane.getActualBalance(),0,initialBalane.getActualBalance() 
 				);
 		row++;
 		
-		int currentDay = 0;
+		int currentDay = firstDate;
 		
 		for (int i = 0; i < dailyReportRows.size(); i++) {
 			DailyReportRow dailyReportRow = dailyReportRows.get(i);
@@ -57,12 +66,13 @@ public class ExcelReportBuilder {
 			currentDay = dailyReportRow.getDay(); 
 			
 			createRow(xsheet, row, columnOffset,
-					 "", sameDay ? " " : currentDay, dailyReportRow.getName(), dailyReportRow.getCode(),
+					 "", sameDay ? "" : currentDay, dailyReportRow.getName(), dailyReportRow.getCode(),
 					 dailyReportRow.getDebitAmount(),
 					 dailyReportRow.getCreditAmount(),
 					 0
 					);
-			
+
+			log.info("writing row: {} of {}", row, dailyReportRows.size());
 			row++;
 		}
 		
@@ -76,10 +86,10 @@ public class ExcelReportBuilder {
 		try {
 			xwb.write(new FileOutputStream(f));
 			if (f.canRead()) {
-				System.out.println("DONE");
+				System.out.println("DONE Writing Report: "+f.getAbsolutePath());
 //				return f.getName();
 			}
-		} catch (IOException e) {
+		} catch ( Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -91,8 +101,7 @@ public class ExcelReportBuilder {
 		XSSFRow row = sheet.createRow(rownum);
 		
 		XSSFCellStyle style = sheet.getWorkbook().createCellStyle();
-		setAllBorder(style, BorderStyle.THIN);
-//		style.setWrapText(true); 
+		setAllBorder(style, BorderStyle.THIN); 
 		fillRows(row, offsetIndex, style, values); 
 		 
 		for (int i = 0; i < values.length; i++) {
@@ -106,11 +115,11 @@ public class ExcelReportBuilder {
 		cellStyle.setBorderBottom(borderStyle);
 		cellStyle.setBorderTop(borderStyle);
 		cellStyle.setBorderRight(borderStyle);
-		cellStyle.setBorderLeft(borderStyle);
+		cellStyle.setBorderLeft(borderStyle); 
 	}
 	
 	public static synchronized void fillRows(XSSFRow parentRow, int offsetIndex, CellStyle cellStyle, Object ...values) {
-		
+		 
 		XSSFCell[] columns = new XSSFCell[values.length];
 		for (int i = 0; i < values.length; i++) {
 			Object cellValue = values[i];
@@ -124,5 +133,7 @@ public class ExcelReportBuilder {
 				columns[i].setCellStyle(cellStyle);
 		}
 	}
+	
+	
 
 }

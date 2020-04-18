@@ -83,10 +83,15 @@ public class LogProxyFactory {
 					System.out.println("[ERROR] logging "+methodName);
 				}
 				try {
-					Object retVal = invocation.proceed();
+					final Object retVal = invocation.proceed();
 					Date end = new Date();
+					String retValToLog = "";
 					
-					logger.info("[{} has return value] : {}", invocation.getMethod().getName(), retVal);
+					if(retVal != null && retVal.toString().length() > 500) {
+						retValToLog = retVal.toString().substring(0, 490).concat("... [*_*]");
+					}
+					
+					logger.info("[{} has return value] : {}", invocation.getMethod().getName(), retValToLog);
 					logger.info("<=========[Finish Execute Method: {}] with success in {}ms", invocation.getMethod().getName(),
 							 end.getTime() - start.getTime());
 					

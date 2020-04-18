@@ -6,6 +6,8 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
@@ -31,8 +33,9 @@ public class RegistryService {
 
 	public static final String JSESSSIONID = "JSESSIONID";
 
-	@Autowired
-	private Registry registry;
+//	@Autowired
+//	private Registry registry;
+	private final Map<String, Remote> registry = new LinkedHashMap<>();
 
 	@PostConstruct
 	public void init() {
@@ -49,12 +52,12 @@ public class RegistryService {
 	 */
 	public <T> T getModel(String key) {
 		try {
-			T object = (T) registry.lookup(key);
+			T object = (T) registry.get(key);
 			log.info("==registry model: " + object);
 			return object;
-		} catch (RemoteException | NotBoundException e) {
-			log.info("key not bound");
-			return null;
+//		} catch (RemoteException | NotBoundException e) {
+//			log.info("key not bound");
+//			return null;
 		} catch (Exception ex) {
 			log.info("Unexpected error");
 			ex.printStackTrace();
@@ -71,16 +74,18 @@ public class RegistryService {
 	 */
 	public boolean set(String key, Remote registryModel) {
 		try {
-			if (getModel(key) == null) {
-				registry.bind(key, registryModel);
-			} else {
-				registry.rebind(key, registryModel);
-			}
+//			if (getModel(key) == null) {
+				registry.put(key, registryModel);
+//			} else {
+//				registry.rebind(key, registryModel);
+//			}
 			return true;
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (AlreadyBoundException e) {
-			e.printStackTrace();
+//		} catch (RemoteException e) {
+//			e.printStackTrace();
+//		} catch (AlreadyBoundException e) {
+//			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 		return false;
 	}
@@ -93,10 +98,12 @@ public class RegistryService {
 	 */
 	public boolean unbind(String key) {
 		try {
-			registry.unbind(key);
+			registry.remove(key);
 			return true;
-		} catch (RemoteException | NotBoundException e) {
-			e.printStackTrace();
+//		} catch (RemoteException | NotBoundException e) {
+//			e.printStackTrace();
+		}catch (Exception e) {
+			// TODO: handle exception
 		}
 		return false;
 

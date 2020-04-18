@@ -69,7 +69,7 @@ public class MockDataService {
 				System.out.println("*************@PostConstruct**************");
 //				writeCashBalance();
 //				updateProductFlows();
-				updateSoldProductFlowsPrice();
+//				updateSoldProductFlowsPrice();
 			}
 
 			

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class GeneralConfiguration {
 	
 
-	@Bean
+//	@Bean
 	public Registry registryBro() throws RemoteException {
 		System.out.println("will creating registry");
 		

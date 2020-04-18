@@ -53,6 +53,7 @@ import com.fajar.service.entity.VoucherUpdateService;
 
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -136,6 +137,7 @@ public class EntityRepository {
 	private EntityManager entityManager;
 
 	@Setter(value = AccessLevel.NONE)
+	@Getter(value = AccessLevel.NONE)
 	private final Map<String, EntityManagementConfig> entityConfiguration = new HashMap<String, EntityManagementConfig>();
 
 	@PostConstruct
@@ -342,6 +344,10 @@ public class EntityRepository {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	public EntityManagementConfig getConfiguration(String key) {  
+		return  this.entityConfiguration.get(key);
 	}
 
 }

@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +28,13 @@ import com.fajar.repository.CapitalFlowRepository;
 import com.fajar.repository.CostFlowRepository;
 import com.fajar.repository.ProductFlowRepository;
 import com.fajar.service.CashBalanceService;
+import com.fajar.service.LogProxyFactory;
 import com.fajar.util.DateUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class PrintedReportService {
 	
 	@Autowired
@@ -46,24 +52,34 @@ public class PrintedReportService {
 	private Map<ReportCategory, DailyReportRow> dailyReportSummary = new HashMap<>();
 	private List<DailyReportRow > dailyReportRows = new LinkedList<>();
 	
+	@PostConstruct
+	public void init() {
+		LogProxyFactory.setLoggers(this);
+	}
 
 	public ShopApiResponse buildDailyReport(ShopApiRequest request) { 
 		
-		Filter filter = request.getFilter();
-		CashBalance cashBalance = getBalance(filter);
-		int month = filter.getMonth();
-		int year = filter.getYear() ;
-		
-		Integer[] months = DateUtil.getMonths(year);
-		Integer dayCount = months[month - 1]; 
-		getTransactions(month, year);
-		populateDailyReportRows(dayCount, month);
-		DailyReportRow totalDailyReportRow = totalDailyReportRow(cashBalance);
-		
-		excelReportBuilder.writeDailyReport(month, year, cashBalance, 
-				dailyReportRows, dailyReportSummary, totalDailyReportRow);
-		
-		return ShopApiResponse.success();
+		try {
+			Filter filter = request.getFilter();
+			CashBalance cashBalance = getBalance(filter);
+			int month = filter.getMonth();
+			int year = filter.getYear() ;
+			
+			Integer[] months = DateUtil.getMonths(year);
+			Integer dayCount = months[month - 1]; 
+			getTransactions(month, year);
+			populateDailyReportRows(dayCount, month);
+			DailyReportRow totalDailyReportRow = totalDailyReportRow(cashBalance);
+			
+			excelReportBuilder.writeDailyReport(month, year, cashBalance, 
+					dailyReportRows, dailyReportSummary, totalDailyReportRow);
+			
+			return ShopApiResponse.success();
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return ShopApiResponse.failed(e.getMessage());
+		}
 	} 
 	
 	private DailyReportRow totalDailyReportRow(CashBalance latestBalance) { 
@@ -89,7 +105,7 @@ public class PrintedReportService {
 		
 		for (int i = 1; i <= dayCount; i++) {
 			
-			List<BaseEntity> transactionItems = dailyTransactions.get(i);
+			List<BaseEntity> transactionItems = getDailyTransactions(i);
 			if(null == transactionItems) {
 				continue;
 			}
@@ -101,8 +117,38 @@ public class PrintedReportService {
 		}
 	}
 	
-	private void addDailyReportRow(DailyReportRow dailyReportRow) {
-		dailyReportRows.add(dailyReportRow);
+	private List<BaseEntity> getDailyTransactions(int day) { 
+		 
+		List<BaseEntity> rawTransactions = dailyTransactions.get(day); 
+		return rawTransactions;
+	}
+	
+	private int isExistInDailyReportRow(ReportCategory reportCategory, int day) {
+		int i = 0;
+		for (DailyReportRow dailyReportRow : dailyReportRows) {
+			if(dailyReportRow.getDay() == day && dailyReportRow.getCode().equals(reportCategory)) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+
+	private void addDailyReportRow(DailyReportRow newDailyReportRow) { 
+		
+		if(newDailyReportRow.getCode().equals(ReportCategory.SHOP_ITEM)) {
+			int index = isExistInDailyReportRow(ReportCategory.SHOP_ITEM, newDailyReportRow.getDay());
+			if(index >= 0) {
+				DailyReportRow dailyReport = dailyReportRows.get(index);
+				dailyReportRows.get(index).setCreditAmount(dailyReport.getCreditAmount() + newDailyReportRow.getCreditAmount());
+				dailyReportRows.get(index).setDebitAmount(dailyReport.getDebitAmount() + newDailyReportRow.getDebitAmount());
+				
+			}else {
+				dailyReportRows.add(newDailyReportRow);
+			}
+		}else {
+			dailyReportRows.add(newDailyReportRow);
+		}
 	}
 	
 	private DailyReportRow getDailyReportRow(int day, int month, BaseEntity baseEntity) { 
@@ -181,6 +227,8 @@ public class PrintedReportService {
 	 * @return
 	 */
 	private List<BaseEntity> getTransactions(int month, int year) {
+		
+		log.info("getTransactions, month: {}, year: {}", month, year);
 		dailyTransactions.clear();
 		
 		List<ProductFlow> transactionItems = productFlowRepository.findByTransactionPeriod(  month, year); 
@@ -193,6 +241,8 @@ public class PrintedReportService {
 		results.addAll(costFlows);
 		results.addAll(transactionItems);
 		results.addAll(capitalFlows);
+		
+		log.info("results count: ",results.size());
 		
 		for (BaseEntity baseEntity : results) {
 			
