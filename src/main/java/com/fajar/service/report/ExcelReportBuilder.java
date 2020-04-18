@@ -92,9 +92,13 @@ public class ExcelReportBuilder {
 		
 		XSSFCellStyle style = sheet.getWorkbook().createCellStyle();
 		setAllBorder(style, BorderStyle.THIN);
-		style.setWrapText(true);
+//		style.setWrapText(true); 
 		fillRows(row, offsetIndex, style, values); 
 		 
+		for (int i = 0; i < values.length; i++) {
+			sheet.autoSizeColumn(i);
+		}
+		
 		return row ;
 	}
 	
