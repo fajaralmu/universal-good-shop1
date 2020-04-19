@@ -20,12 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class CashBalanceService {
 	@Autowired
-	private CashBalanceRepository cashBalanceRepository;
-	
-//	public CashBalance getLatestCashBalance() {
-//		
-//		return cashBalanceRepository.findTop1ByOrderByIdDesc();
-//	}
+	private CashBalanceRepository cashBalanceRepository; 
 	
 	public CashBalance getBalanceByTransactionItem(BaseEntity baseEntity) {
 		
@@ -77,7 +72,12 @@ public class CashBalanceService {
 		return cashBalance;
 	}
 	
-	private static CashBalance mapCashBalance(BaseEntity baseEntity) {
+	/**
+	 * set values for cash balance based on given entity
+	 * @param baseEntity
+	 * @return
+	 */
+	public static CashBalance mapCashBalance(BaseEntity baseEntity) {
 		long creditAmount = 0l;
 		long debitAmount = 0l;
 		String info = "";

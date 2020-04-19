@@ -18,7 +18,7 @@ public interface CashBalanceRepository extends JpaRepository<CashBalance, Long> 
 	/**
 	 * 
 	 * @param dateString 'yyyy-MM-dd' pattern
-	 * @return
+	 * @return Object[]
 	 */
 	@Query(nativeQuery = true, value = "select "
 			+ " sum(creditAmount) as credit, sum(debitAmount) as debit, (sum(creditAmount) - sum(debitAmount)) as balance from cash_balance where "

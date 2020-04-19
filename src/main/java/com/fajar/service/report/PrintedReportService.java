@@ -199,6 +199,7 @@ public class PrintedReportService {
 		DailyReportRow dailyReportRow = new DailyReportRow();
 		dailyReportRow.setDay(day);
 		dailyReportRow.setMonth(month);
+		
 		long creditAmount = 0l;
 		long debitAmount = 0l;
 		String name = "N/A";
@@ -278,31 +279,29 @@ public class PrintedReportService {
 		
 		List<ProductFlow> transactionItems = productFlowRepository.findByTransactionPeriod(  month, year); 
 		List<CapitalFlow> capitalFlows = capitalFlowRepository.findByPeriod(month, year);
-		List<CostFlow> costFlows = costFlowRepository.findByPeriod(month, year);
-		 
+		List<CostFlow> costFlows = costFlowRepository.findByPeriod(month, year); 
 		
-		List<BaseEntity> results = new ArrayList<BaseEntity>();
+		final List<BaseEntity> results = new ArrayList<BaseEntity>() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -9006495340734852418L;
+
+			{
+				addAll(costFlows); 
+				addAll(transactionItems); 
+				addAll(capitalFlows);
+			}
+		};  
 		
-		if(null != costFlows && costFlows.size() > 0)
-			results.addAll(costFlows);
+		log.info("results count: {}", results.size());
 		
-		if(null != transactionItems && transactionItems.size() > 0)
-			results.addAll(transactionItems);
-		
-		if(null != capitalFlows && capitalFlows.size() > 0)
-			results.addAll(capitalFlows);
-		
-		log.info("results count: {}",results.size());
-		
-		for (BaseEntity baseEntity : results) {
+		for (BaseEntity baseEntity : results) { 
 			
-			Date createdDate = baseEntity.getCreatedDate();
+			//don't access the credit & debt value
+			Date transactionDate = CashBalanceService.mapCashBalance(baseEntity).getDate(); 
 			
-//			if(baseEntity instanceof ProductFlow) {
-//				createdDate = ((ProductFlow) baseEntity).getTransaction().getTransactionDate();
-//			}
-			
-			Calendar calendar = DateUtil.cal(createdDate);
+			Calendar calendar = DateUtil.cal(transactionDate);
 			int day = calendar.get(Calendar.DAY_OF_MONTH);
 			 
 			putTransaction(day, baseEntity);
