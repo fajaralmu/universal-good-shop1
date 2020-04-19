@@ -27,6 +27,29 @@ public class CashBalanceService {
 		return cashBalanceRepository.findTop1ByOrderByIdDesc();
 	}
 	
+	public CashBalance getBalanceByTransactionItem(BaseEntity baseEntity) {
+		
+		String reffInfo = "CAPITAL";
+		if(baseEntity instanceof ProductFlow) {
+			
+			ProductFlow productFlow = (ProductFlow) baseEntity;
+			Transaction transaction = productFlow.getTransaction(); 
+			
+			reffInfo = "TRAN_"+transaction.getType();
+			
+		}else if(baseEntity instanceof CostFlow) {
+			 
+			reffInfo = "COST";
+			
+		}else if(baseEntity instanceof CapitalFlow) { 
+			
+			reffInfo = "CAPITAL";
+		}
+		CashBalance balance = cashBalanceRepository.getByReferenceInfoAndReferenceId(reffInfo, 
+				String.valueOf(baseEntity.getId()));
+		
+		return balance;
+	}
 	
 	/**
 	 * get balance at the end of month
@@ -37,37 +60,24 @@ public class CashBalanceService {
 	public CashBalance getBalanceBefore (int month, int year) { 
 		
 		Date date = DateUtil.getDate(year, month-1, 1);
-		
 		String dateString = DateUtil.formatDate(date, "yyyy-MM-dd");
-		Object object = cashBalanceRepository.getBalanceBefore(dateString );
-
+		
+		Object object = cashBalanceRepository.getBalanceBefore(dateString ); 
 		Object[] result = (Object[]) object;
+		
 		CashBalance cashBalance = new CashBalance();
 		cashBalance.setCreditAmount(Long.valueOf(result[0].toString()));
 		cashBalance.setDebitAmount(Long.valueOf(result[1].toString()));
 		cashBalance.setActualBalance(Long.valueOf(result[2].toString()));
+		
 		return cashBalance;
 	}
 	
-	
-	
-	/**
-	 * update balance
-	 * @param baseEntity
-	 */
-	public synchronized void update(BaseEntity baseEntity) {
-		
-		if(baseEntity == null || baseEntity.getId() == null) {
-			return;
-		}
-		CashBalance latestCashbalance = cashBalanceRepository.findTop1ByOrderByIdDesc();
-		
-		long formerBalance = latestCashbalance == null? 0l : latestCashbalance.getActualBalance();
+	private static CashBalance mapCashBalance(BaseEntity baseEntity) {
 		long creditAmount = 0l;
 		long debitAmount = 0l;
-		String info = "-";
-		
-		CashBalance cashBalance = new CashBalance();
+		String info = "";
+		Date date = new Date();
 		
 		if(baseEntity instanceof ProductFlow) {
 			
@@ -81,6 +91,7 @@ public class CashBalanceService {
 			}
 			
 			info = "TRAN_"+transaction.getType();
+			date = productFlow.getTransaction().getTransactionDate();
 			
 		}else if(baseEntity instanceof CostFlow) {
 			
@@ -88,6 +99,7 @@ public class CashBalanceService {
 			debitAmount = costFlow.getNominal();
 			
 			info = "COST_"+costFlow.getCostType().getName();
+			date = costFlow.getDate();
 			
 		}else if(baseEntity instanceof CapitalFlow) {
 			
@@ -95,20 +107,38 @@ public class CashBalanceService {
 			creditAmount = capitalFlow.getNominal();
 			
 			info = "CAPITAL_"+capitalFlow.getCapitalType().getName();
-		}else {
-			return;
+			date = capitalFlow.getDate();
 		}
+		return CashBalance.builder().creditAmount(creditAmount).debitAmount(debitAmount).referenceInfo(info).build();
+	}
+	
+	/**
+	 * update balance
+	 * @param baseEntity
+	 */
+	public synchronized void updateCashBalance(BaseEntity baseEntity) {
 		
-		if(latestCashbalance == null) {
-			formerBalance = 0l;
-		}
-		cashBalance.setFormerBalance(formerBalance);
+		if(baseEntity == null || baseEntity.getId() == null) {
+			return;
+		} 
+		
+		CashBalance existingRecord = getBalanceByTransactionItem(baseEntity);
+		
+		CashBalance cashBalance = existingRecord == null ? new CashBalance() : existingRecord;
+		
+		final CashBalance mappedCashBalanceInfo = mapCashBalance(baseEntity);
+		final long creditAmount = mappedCashBalanceInfo.getCreditAmount();
+		final long debitAmount = mappedCashBalanceInfo.getDebitAmount();
+		final String info = mappedCashBalanceInfo.getReferenceInfo(); 
+		final Date date = mappedCashBalanceInfo.getDate();
+		
+//		cashBalance.setFormerBalance(formerBalance);
 		cashBalance.setDebitAmount(debitAmount);
 		cashBalance.setCreditAmount(creditAmount);
-		cashBalance.setActualBalance(formerBalance + creditAmount - debitAmount);
+//		cashBalance.setActualBalance(formerBalance + creditAmount - debitAmount);
 		cashBalance.setReferenceInfo(info);
-		cashBalance.setReferenceId(baseEntity.getId().toString());
-		cashBalance.setDate(new Date()); 
+		cashBalance.setReferenceId(String.valueOf(baseEntity.getId()));
+		cashBalance.setDate(date); 
 		
 		cashBalanceRepository.save(cashBalance);
 	}

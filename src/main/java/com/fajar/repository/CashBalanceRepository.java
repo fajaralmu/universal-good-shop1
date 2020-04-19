@@ -9,6 +9,9 @@ public interface CashBalanceRepository extends JpaRepository<CashBalance, Long> 
 
 	public CashBalance findTop1ByOrderByIdDesc();
 
+	@Query(value = "select * from cash_balance where referenceId = ?2 and referenceInfo like %?1% ", nativeQuery = true)
+	public CashBalance getByReferenceInfoAndReferenceId(String reffInfo, String reffId);
+
 //	@Query(nativeQuery = true, value = "select * from cash_balance where month(date) = ?1 and year(date) = ?2 order by id  desc limit 1")
 //	public CashBalance getCashBalanceAt(int month, int year);
 

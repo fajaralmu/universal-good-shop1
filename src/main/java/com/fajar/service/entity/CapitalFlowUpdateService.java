@@ -22,12 +22,12 @@ public class CapitalFlowUpdateService extends BaseEntityUpdateService{
 	public ShopApiResponse saveEntity(BaseEntity entity, boolean newRecord) {
 		CapitalFlow capital = (CapitalFlow) copyNewElement(entity, newRecord);
 		
-		if(newRecord) {
-			return ShopApiResponse.failed("Unable to update!");
-		}
+//		if(newRecord) {
+//			return ShopApiResponse.failed("Unable to update!");
+//		}
 		 
 		BaseEntity newEntity = entityRepository.save(capital); 
-		cashBalanceService.update(newEntity);
+		cashBalanceService.updateCashBalance(newEntity);
 		
 		return ShopApiResponse.builder().entity(newEntity).build();
 	}

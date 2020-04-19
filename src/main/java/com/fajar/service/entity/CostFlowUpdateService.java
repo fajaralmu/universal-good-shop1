@@ -25,7 +25,7 @@ public class CostFlowUpdateService extends BaseEntityUpdateService{
 			return ShopApiResponse.failed("Unable to update");
 		}
 		BaseEntity newEntity = entityRepository.save(costFlow);
-		cashBalanceService.update(newEntity);
+		cashBalanceService.updateCashBalance(newEntity);
 		
 		return ShopApiResponse.builder().entity(newEntity).build();
 	}

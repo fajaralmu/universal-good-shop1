@@ -285,8 +285,10 @@ public class PrintedReportService {
 		
 		if(null != costFlows && costFlows.size() > 0)
 			results.addAll(costFlows);
+		
 		if(null != transactionItems && transactionItems.size() > 0)
 			results.addAll(transactionItems);
+		
 		if(null != capitalFlows && capitalFlows.size() > 0)
 			results.addAll(capitalFlows);
 		

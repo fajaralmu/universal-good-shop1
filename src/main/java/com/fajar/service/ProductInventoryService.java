@@ -87,7 +87,7 @@ public class ProductInventoryService {
 				/**
 				 * update cash balance
 				 */
-				cashBalanceService.update(productFlow);
+				cashBalanceService.updateCashBalance(productFlow);
 				
 				/**
 				 * INSERT new inventory item row
@@ -178,7 +178,7 @@ public class ProductInventoryService {
 				/**
 				 * update cash balance
 				 */
-				cashBalanceService.update(productFlow);
+				cashBalanceService.updateCashBalance(productFlow);
 				
 				/**
 				 * update count
@@ -261,7 +261,7 @@ public class ProductInventoryService {
 				 * update cash balance
 				 * 
 				 */
-				cashBalanceService.update(productFlow);
+				cashBalanceService.updateCashBalance(productFlow);
 				
 //				/**
 //				 * update count
