@@ -1,5 +1,10 @@
 package com.fajar.service.report;
 
+import static com.fajar.util.ExcelReportUtil.addMergedRegion;
+import static com.fajar.util.ExcelReportUtil.autosizeColumn;
+import static com.fajar.util.ExcelReportUtil.createRow;
+import static com.fajar.util.ExcelReportUtil.removeBorder;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -8,12 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -26,13 +27,13 @@ import com.fajar.service.WebConfigService;
 import com.fajar.util.DateUtil;
 import com.fajar.util.ThreadUtil;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class ExcelReportBuilder {
 	
+	private static final String BLANK = "";
 	@Autowired
 	private WebConfigService webConfigService;
 	
@@ -98,32 +99,26 @@ public class ExcelReportBuilder {
 		 */ 
 		int dailyRow = row;
 		createRow(xsheet, dailyRow, columnOffset,
-				 	"", firstDate,"Saldo Awal", ReportCategory.CASH_BALANCE.code, 
-					 currency(initialBalane.getActualBalance()),
+				 	BLANK, firstDate,"Saldo Awal", ReportCategory.CASH_BALANCE.code, 
+					 curr(initialBalane.getActualBalance()),
 					 0,
-					 currency(initialBalane.getActualBalance()));
+					 curr(initialBalane.getActualBalance()));
 		dailyRow++;
 		
-		int currentDay = firstDate; 
-		List<Thread> threads = new ArrayList<Thread>();
+		int currentDay = firstDate;  
 		
 		for (int i = 0; i < dailyReportRows.size(); i++) {
 			DailyReportRow dailyReportRow = dailyReportRows.get(i);
 			
 			final boolean sameDay = dailyReportRow.getDay() == currentDay; 
-			currentDay = dailyReportRow.getDay(); 
-			final int rowNum  = dailyRow;
-			final int theDay =  dailyReportRow.getDay();
-			
-			threads.add(ThreadUtil.run( ()->{
-					createRow(xsheet, rowNum, columnOffset,
-					 		"", sameDay ? "" : theDay, dailyReportRow.getName(), dailyReportRow.getCategory().code,
-							 currency(dailyReportRow.getDebitAmount()),
-							 currency(dailyReportRow.getCreditAmount()),
-							 "-" ); 
-					}));
-			
-
+			currentDay = dailyReportRow.getDay();  
+			 
+			createRow(xsheet, dailyRow, columnOffset,
+			 		BLANK, sameDay ? BLANK : currentDay, dailyReportRow.getName(), dailyReportRow.getCategory().code,
+					 curr(dailyReportRow.getDebitAmount()),
+					 curr(dailyReportRow.getCreditAmount()),
+					 "-" );  
+			 
 			log.info("writing row: {} of {}", i, dailyReportRows.size());
 			dailyRow++;
 		}
@@ -132,10 +127,10 @@ public class ExcelReportBuilder {
 		 * Daily Summary
 		 */
 		createRow(xsheet, dailyRow, columnOffset,
-						"","","Jumlah","",
-						currency(totalDailyReportRow.getDebitAmount()),
-						currency(totalDailyReportRow.getCreditAmount()),
-						currency(totalDailyReportRow.getDebitAmount() - totalDailyReportRow.getCreditAmount()));
+						BLANK,BLANK,"Jumlah",BLANK,
+						curr(totalDailyReportRow.getDebitAmount()),
+						curr(totalDailyReportRow.getCreditAmount()),
+						curr(totalDailyReportRow.getDebitAmount() - totalDailyReportRow.getCreditAmount()));
 		
 		
 		/**
@@ -151,46 +146,25 @@ public class ExcelReportBuilder {
 			final DailyReportRow summary = dailyReportSummary.get(reportCategory) == null?
 					new DailyReportRow() : dailyReportSummary.get(reportCategory) ;
 			 
-			final int rowNum  = summaryRow;
-			final int _number = number;
+			final int rowNum  = summaryRow; 
+			 
+			createRow(xsheet, rowNum, 
+					columnOffset + 7, number, reportCategory.name, reportCategory.code,
+					curr(summary.getDebitAmount()), curr(summary.getCreditAmount())  );  
 			
-			threads.add(ThreadUtil.run( () ->{ 
-					createRow(xsheet, rowNum, 
-							columnOffset + 7,
-							_number,
-							reportCategory.name,
-							reportCategory.code,
-							currency(summary.getDebitAmount()),
-							currency(summary.getCreditAmount()) 
-							); 
-					}));
-			
-			log.info("summary record No. {}", _number);
+			log.info("summary record No. {}", number);
 			
 			summaryRow++;
 			number++;
 		}
-		
-		final int totalRow = summaryRow;
-		
-		threads.add(ThreadUtil.run(()->{
-			createRow(xsheet, totalRow, columnOffset + 7, "", "Jumlah", "", 
-					currency(totalDailyReportRow.getDebitAmount()),
-					currency(totalDailyReportRow.getCreditAmount())); 
-//					summaryRow++;
-			createRow(xsheet, totalRow + 1, columnOffset + 7, "", " Saldo Kas Bulan ini", "", "",
-					currency(totalDailyReportRow.getDebitAmount() -  totalDailyReportRow.getCreditAmount()));
-		})); 
-		
-		for(Thread thread:threads) {
-			log.info("Joining thread: {}", thread.getId());
-			try {
-				thread.join();
-			} catch (InterruptedException e) {
-				log.error("Error joining thread:{}", thread.getId());
-				e.printStackTrace();
-			}
-		}
+		 
+		createRow(xsheet, summaryRow, columnOffset + 7, BLANK, "Jumlah", BLANK, 
+				curr(totalDailyReportRow.getDebitAmount()),
+				curr(totalDailyReportRow.getCreditAmount())); 
+				summaryRow++;
+		createRow(xsheet, summaryRow , columnOffset + 7, BLANK, " Saldo Kas Bulan ini", BLANK, BLANK,
+				curr(totalDailyReportRow.getDebitAmount() -  totalDailyReportRow.getCreditAmount()));
+		  
 		
 		/**
 		 * auto size columns
@@ -214,106 +188,12 @@ public class ExcelReportBuilder {
 		
 	}
 	
-	/**
-	 * 
-	 * @param row
-	 * @param length
-	 * @param borderStyle Nullable
-	 * @param horizontalAlignment Nullable
-	 */
-	public static void autosizeColumn(XSSFRow row, int length, BorderStyle borderStyle, HorizontalAlignment horizontalAlignment) {
-		for(int i = 0; i < length; i++) {
-			XSSFCell cell = row.getCell(i);
-			if(borderStyle != null)
-				cell.getCellStyle().setBorderTop(borderStyle);
-			if(horizontalAlignment!=null)
-				cell.getCellStyle().setAlignment(horizontalAlignment);
-			row.getSheet().autoSizeColumn(i);
-		}
-	}
 	
-	public static void addMergedRegion(XSSFSheet sheet, CellRangeAddress...cellRangeAddresses) {
-		for (int i = 0; i < cellRangeAddresses.length; i++) {
-			sheet.addMergedRegion(cellRangeAddresses[i]);
-		}
-	}
 	
-	public static synchronized XSSFRow createRow(XSSFSheet sheet, int rownum, int offsetIndex, Object ...values) {
-		
-		final XSSFRow existingRow = sheet.getRow(rownum);
-		XSSFRow row = existingRow  == null ? sheet.createRow(rownum) : existingRow;
-		
-		XSSFCellStyle style = sheet.getWorkbook().createCellStyle();
-		setAllBorder(style, BorderStyle.THIN); 
-		fillRows(row, offsetIndex, style, values); 
-		 
-		for (int i = 0; i < values.length; i++) {
-			sheet.autoSizeColumn(i);
-		}
-		
-		return row ;
-	}
-	
-	public static void setAllBorder(XSSFCellStyle cellStyle, BorderStyle borderStyle) {
-		cellStyle.setBorderBottom(borderStyle);
-		cellStyle.setBorderTop(borderStyle);
-		cellStyle.setBorderRight(borderStyle);
-		cellStyle.setBorderLeft(borderStyle); 
-	}
-	
-	public static void removeBorder(XSSFCellStyle cellStyle) {
-		setAllBorder(cellStyle, BorderStyle.NONE);
-	}
-	
-	public static CellStyle createCellStyle(XSSFWorkbook workbook) {
-		return workbook.createCellStyle();
-	}
-	
-	public static synchronized void fillRows(XSSFRow parentRow, int offsetIndex, CellStyle sourceStyle, Object ...values) {
-		DataFormat fmt = parentRow.getSheet().getWorkbook().createDataFormat();
-		XSSFCell[] columns = new XSSFCell[values.length];
-		for (int i = 0; i < values.length; i++) {
-			Object cellValue = values[i];
-			if(cellValue == null) {
-				cellValue = "";
-			}
-			columns[i] = parentRow.createCell(offsetIndex+i);
-			
-			CellStyle cellStyle  =  createCellStyle(parentRow.getSheet().getWorkbook());
-			
-			if(sourceStyle != null) {
-				cellStyle.cloneStyleFrom(sourceStyle);
-				columns[i].setCellStyle(cellStyle);
-			}
-			
-			if(cellValue instanceof CurrencyCell) {
-				columns[i].setCellValue(Double.parseDouble(((CurrencyCell)cellValue).getValue().toString())); 
-				columns[i].getCellStyle().setDataFormat( fmt.getFormat("#,##0") );
-			}else {
-				try {
-					columns[i].setCellValue(Double.parseDouble(cellValue .toString()));  
-					 
-				}catch (Exception e) { 
-					columns[i].setCellValue(cellValue.toString()); 
-				}
-			}
-			
-		}
-	}
-	
-	public static CurrencyCell currency(long value) {
+	public static CurrencyCell curr(long value) {
 		return new CurrencyCell(value);
 	}
-	
-	@Data 
-	static class CurrencyCell{
-		
-		private final Long value;
-		public CurrencyCell(long value) {
-			this.value = value;
-		}
-		
-	}
+	 
 	
 	/**
 	 * 
