@@ -88,13 +88,7 @@ public class ExcelReportBuilder {
 		 */
 		XSSFRow headerRow = createRow(xsheet, row, columnOffset,
 				columnNames 
-				);
-		
-		for (int i = 0; i < columnNames.length; i++) {
-			XSSFCell cell = headerRow.getCell(i);
-			cell.getCellStyle().setBorderTop(BorderStyle.DOUBLE);
-			cell.getCellStyle().setAlignment(HorizontalAlignment.CENTER);
-		}
+				); 
 		
 		row++;
 		
@@ -181,9 +175,21 @@ public class ExcelReportBuilder {
 				summaryRow++;
 		createRow(xsheet, summaryRow, columnOffset + 7, "", " Saldo Kas Bulan ini", "", "",
 				currency(totalDailyReportRow.getDebitAmount() -  totalDailyReportRow.getCreditAmount()));
-				/**
-				 * Write file to disk
-				 */
+		
+		/**
+		 * auto size columns
+		 */
+		
+		for (int i = 0; i < columnNames.length; i++) {
+			XSSFCell cell = headerRow.getCell(i);
+			cell.getCellStyle().setBorderTop(BorderStyle.DOUBLE);
+			cell.getCellStyle().setAlignment(HorizontalAlignment.CENTER);
+			xsheet.autoSizeColumn(i);
+		}
+		
+		/**
+		 * Write file to disk
+		 */
 		
 		File f = new File(reportName);
 		try {
