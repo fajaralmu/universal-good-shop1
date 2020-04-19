@@ -38,7 +38,9 @@ public class ExcelReportBuilder {
 	public void writeDailyReport(int month, int year, CashBalance initialBalane, List<DailyReportRow> dailyReportRows,
 			Map<ReportCategory, DailyReportRow> dailyReportSummary, DailyReportRow totalDailyReportRow) {
 		
-		String reportName = webConfigService.getReportPath() + "/Daily-" + month + "-" + year + new Date().toString()+ ".xlsx";
+		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hmmss");
+		
+		String reportName = webConfigService.getReportPath() + "/Daily-" + month + "-" + year + "_"+ time+ ".xlsx";
 		XSSFWorkbook xwb  = new XSSFWorkbook();
 		XSSFSheet xsheet = xwb.createSheet("Daily "+month+"-"+year); 
 		
@@ -134,8 +136,8 @@ public class ExcelReportBuilder {
 		} catch ( Exception e) { 
 			e.printStackTrace();
 		}
-		System.out.println("FORMAT=============");
-		for(String s : BuiltinFormats.getAll()) {System.out.println(s);}
+//		System.out.println("FORMAT=============");
+//		for(String s : BuiltinFormats.getAll()) {System.out.println(s);}
 		
 	}
 	
@@ -161,7 +163,11 @@ public class ExcelReportBuilder {
 		cellStyle.setBorderLeft(borderStyle); 
 	}
 	
-	public static synchronized void fillRows(XSSFRow parentRow, int offsetIndex, CellStyle cellStyle, Object ...values) {
+	public static CellStyle createCellStyle(XSSFWorkbook workbook) {
+		return workbook.createCellStyle();
+	}
+	
+	public static synchronized void fillRows(XSSFRow parentRow, int offsetIndex, CellStyle sourceStyle, Object ...values) {
 		DataFormat fmt = parentRow.getSheet().getWorkbook().createDataFormat();
 		XSSFCell[] columns = new XSSFCell[values.length];
 		for (int i = 0; i < values.length; i++) {
@@ -170,15 +176,21 @@ public class ExcelReportBuilder {
 				cellValue = "";
 			}
 			columns[i] = parentRow.createCell(offsetIndex+i);
-			if(cellStyle != null)
+			
+			CellStyle cellStyle  =  createCellStyle(parentRow.getSheet().getWorkbook());
+			
+			if(sourceStyle != null) {
+				cellStyle.cloneStyleFrom(sourceStyle);
 				columns[i].setCellStyle(cellStyle);
+			}
 			
 			if(cellValue instanceof CurrencyCell) {
 				columns[i].setCellValue(Double.parseDouble(((CurrencyCell)cellValue).getValue().toString())); 
-				columns[i].getCellStyle().setDataFormat( fmt.getFormat("#,##0.00") );
+				columns[i].getCellStyle().setDataFormat( fmt.getFormat("#,##0") );
 			}else {
 				try {
 					columns[i].setCellValue(Double.parseDouble(cellValue .toString()));  
+					 
 				}catch (Exception e) { 
 					columns[i].setCellValue(cellValue.toString()); 
 				}
