@@ -101,7 +101,7 @@ public class ExcelReportBuilder {
 		 */ 
 		int dailyRow = row;
 		createRow(xsheet, dailyRow, columnOffset,
-				 	"", firstDate,"Saldo Awal", ReportCategory.CASH_BALANCE, 
+				 	"", firstDate,"Saldo Awal", ReportCategory.CASH_BALANCE.code, 
 					 currency(initialBalane.getActualBalance()),
 					 0,
 					 currency(initialBalane.getActualBalance()) 
@@ -120,7 +120,7 @@ public class ExcelReportBuilder {
 			currentDay = dailyReportRow.getDay(); 
 			
 			createRow(xsheet, dailyRow, columnOffset,
-					 		"", sameDay ? "" : currentDay, dailyReportRow.getName(), dailyReportRow.getCode(),
+					 		"", sameDay ? "" : currentDay, dailyReportRow.getName(), dailyReportRow.getCategory().code,
 							 currency(dailyReportRow.getDebitAmount()),
 							 currency(dailyReportRow.getCreditAmount()),
 							 "-"
@@ -160,7 +160,7 @@ public class ExcelReportBuilder {
 					columnOffset + 7,
 					number,
 					reportCategory.name,
-					reportCategory.toString(),
+					reportCategory.code,
 					currency(summary.getDebitAmount()),
 					currency(summary.getCreditAmount()) 
 					); 

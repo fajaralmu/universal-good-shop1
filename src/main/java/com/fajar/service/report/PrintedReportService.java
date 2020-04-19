@@ -139,6 +139,11 @@ public class PrintedReportService {
 		}
 	}
 	
+	/**
+	 * get transaction items in the given day
+	 * @param day
+	 * @return
+	 */
 	private List<BaseEntity> getDailyTransactions(int day) { 
 		 
 		List<BaseEntity> rawTransactions = dailyTransactions.get(day); 
@@ -154,7 +159,7 @@ public class PrintedReportService {
 	private int isExistInDailyReportRow(ReportCategory reportCategory, int day) {
 		int i = 0;
 		for (DailyReportRow dailyReportRow : dailyReportRows) {
-			if(dailyReportRow.getCode().equals(reportCategory) && dailyReportRow.getDay() == day ) {
+			if(dailyReportRow.getCategory().equals(reportCategory) && dailyReportRow.getDay() == day ) {
 				return i;
 			}
 			i++;
@@ -168,7 +173,7 @@ public class PrintedReportService {
 	 */
 	private void addDailyReportRow(DailyReportRow newDailyReportRow) { 
 		
-		if(newDailyReportRow.getCode().equals(ReportCategory.SHOP_ITEM)) {
+		if(newDailyReportRow.getCategory().equals(ReportCategory.SHOP_ITEM)) {
 			int index = isExistInDailyReportRow(ReportCategory.SHOP_ITEM, newDailyReportRow.getDay());
 			if(index >= 0) { 
 				dailyReportRows.get(index).addCreditAmount( newDailyReportRow.getCreditAmount());
@@ -224,7 +229,7 @@ public class PrintedReportService {
 			reportCategory = ReportCategory.OPERATIONAL_COST;
 		} 
 		
-		dailyReportRow.setCode(reportCategory);
+		dailyReportRow.setCategory(reportCategory);
 		dailyReportRow.setCreditAmount(creditAmount);
 		dailyReportRow.setDebitAmount(debitAmount);
 		dailyReportRow.setName(name);
@@ -235,7 +240,7 @@ public class PrintedReportService {
 	}
 	
 	private void updateSummary(DailyReportRow dailyReportRow) {
-		ReportCategory reportCategory = dailyReportRow.getCode();
+		ReportCategory reportCategory = dailyReportRow.getCategory();
 		
 		if(null == dailyReportSummary.get(reportCategory)) {
 			dailyReportSummary.put(reportCategory, new DailyReportRow());

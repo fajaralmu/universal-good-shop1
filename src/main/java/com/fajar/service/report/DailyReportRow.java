@@ -19,7 +19,7 @@ public class DailyReportRow implements Serializable{/**
 	private long debitAmount;
 	private long creditAmount;
 //	private long balance;
-	private ReportCategory code;
+	private ReportCategory category;
 	private int day;
 	private int month;
 	
