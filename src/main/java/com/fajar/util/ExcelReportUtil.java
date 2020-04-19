@@ -12,6 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.fajar.service.report.CurrencyCell;
+import com.fajar.service.report.CustomCell;
 
 public class ExcelReportUtil {
 	/**
@@ -54,11 +55,16 @@ public class ExcelReportUtil {
 		return row ;
 	}
 	
+	public static void setBorder(XSSFCellStyle cellStyle, BorderStyle top, BorderStyle bottom, BorderStyle right,
+			BorderStyle left) {
+		cellStyle.setBorderBottom(bottom);
+		cellStyle.setBorderTop(top);
+		cellStyle.setBorderRight(right);
+		cellStyle.setBorderLeft(left); 
+	}
+	
 	public static void setAllBorder(XSSFCellStyle cellStyle, BorderStyle borderStyle) {
-		cellStyle.setBorderBottom(borderStyle);
-		cellStyle.setBorderTop(borderStyle);
-		cellStyle.setBorderRight(borderStyle);
-		cellStyle.setBorderLeft(borderStyle); 
+		setBorder(cellStyle, borderStyle, borderStyle, borderStyle, borderStyle); 
 	}
 	
 	public static void removeBorder(XSSFCellStyle cellStyle) {
@@ -86,7 +92,7 @@ public class ExcelReportUtil {
 				columns[i].setCellStyle(cellStyle);
 			}
 			
-			if(cellValue instanceof CurrencyCell) {
+			if(cellValue instanceof CurrencyCell && ((CustomCell)cellValue).getValue() != null) {
 				columns[i].setCellValue(Double.parseDouble(((CurrencyCell)cellValue).getValue().toString())); 
 				columns[i].getCellStyle().setDataFormat( fmt.getFormat("#,##0") );
 			}else {

@@ -7,10 +7,11 @@ import static com.fajar.util.ExcelReportUtil.removeBorder;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -25,7 +26,6 @@ import com.fajar.dto.ReportCategory;
 import com.fajar.entity.CashBalance;
 import com.fajar.service.WebConfigService;
 import com.fajar.util.DateUtil;
-import com.fajar.util.ThreadUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,6 +37,12 @@ public class ExcelReportBuilder {
 	@Autowired
 	private WebConfigService webConfigService;
 	
+	private String reportPath;
+	
+	@PostConstruct
+	public void init() {
+		this.reportPath = webConfigService.getReportPath();
+	}
 	
 	/**
 	 * write daily report for one month
@@ -50,14 +56,15 @@ public class ExcelReportBuilder {
 	public void writeDailyReport(int month, int year, CashBalance initialBalane, List<DailyReportRow> dailyReportRows,
 			Map<ReportCategory, DailyReportRow> dailyReportSummary, DailyReportRow totalDailyReportRow) {
 		
-		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hmmss");
+		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hhmmss-a");
+		String sheetName = "Daily-"+month+"-"+year;
 		
-		String reportName = webConfigService.getReportPath() + "/Daily-" + month + "-" + year + "_"+ time+ ".xlsx";
+		String reportName = reportPath + "/" + sheetName + "_"+ time+ ".xlsx";
 		XSSFWorkbook xwb  = new XSSFWorkbook();
-		XSSFSheet xsheet = xwb.createSheet("Daily "+month+"-"+year); 
+		XSSFSheet xsheet = xwb.createSheet(sheetName ); 
 		
 		int row = 0;
-		int columnOffset = 0;
+		final int columnOffset = 0;
 		final int firstDate = 1;
 		
 		/**
@@ -100,9 +107,7 @@ public class ExcelReportBuilder {
 		int dailyRow = row;
 		createRow(xsheet, dailyRow, columnOffset,
 				 	BLANK, firstDate,"Saldo Awal", ReportCategory.CASH_BALANCE.code, 
-					 curr(initialBalane.getActualBalance()),
-					 0,
-					 curr(initialBalane.getActualBalance()));
+					 curr(initialBalane.getActualBalance()), 0, curr(initialBalane.getActualBalance()));
 		dailyRow++;
 		
 		int currentDay = firstDate;  
@@ -130,8 +135,7 @@ public class ExcelReportBuilder {
 						BLANK,BLANK,"Jumlah",BLANK,
 						curr(totalDailyReportRow.getDebitAmount()),
 						curr(totalDailyReportRow.getCreditAmount()),
-						curr(totalDailyReportRow.getDebitAmount() - totalDailyReportRow.getCreditAmount()));
-		
+						curr(totalDailyReportRow.getDebitAmount() - totalDailyReportRow.getCreditAmount())); 
 		
 		/**
 		 * ======================================================
@@ -174,7 +178,6 @@ public class ExcelReportBuilder {
 		/**
 		 * Write file to disk
 		 */
-		
 		File f = new File(reportName);
 		try {
 			xwb.write(new FileOutputStream(f));
@@ -186,9 +189,7 @@ public class ExcelReportBuilder {
 			e.printStackTrace();
 		} 
 		
-	}
-	
-	
+	}  
 	
 	public static CurrencyCell curr(long value) {
 		return new CurrencyCell(value);

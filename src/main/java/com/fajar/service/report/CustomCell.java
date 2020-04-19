@@ -4,5 +4,7 @@ import lombok.Data;
 
 @Data
 public class CustomCell {
+	
+	protected Object value;
 
 }
