@@ -315,9 +315,9 @@ public class PrintedReportService {
 	 * @return
 	 */
 	private CashBalance getBalance(Filter filter) {
-		int prevMonth = filter.getMonth() - 1 < 1 ? 12 : filter.getMonth() - 1;
-		int year = filter.getMonth() - 1 < 1 ? filter.getYear() - 1 : filter.getYear();
-		CashBalance cashBalance = cashBalanceService.getBalanceAt (prevMonth, year);	 
+		int prevMonth = filter.getMonth();// - 1 < 1 ? 12 : filter.getMonth() - 1;
+		int year = filter.getYear();// filter.getMonth() - 1 < 1 ? filter.getYear() - 1 : filter.getYear();
+		CashBalance cashBalance = cashBalanceService.getBalanceBefore (prevMonth, year);	 
 		return cashBalance;
 	}
 	 
