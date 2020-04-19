@@ -22,12 +22,14 @@ public class CashBalanceService {
 	@Autowired
 	private CashBalanceRepository cashBalanceRepository;
 	
-	public CashBalance getLatestCashBalance() {
-		
-		return cashBalanceRepository.findTop1ByOrderByIdDesc();
-	}
+//	public CashBalance getLatestCashBalance() {
+//		
+//		return cashBalanceRepository.findTop1ByOrderByIdDesc();
+//	}
 	
 	public CashBalance getBalanceByTransactionItem(BaseEntity baseEntity) {
+		
+		log.info("getBalanceByTransactionItem: {} {}", baseEntity.getId(), baseEntity.getClass());
 		
 		String reffInfo = "CAPITAL";
 		if(baseEntity instanceof ProductFlow) {
@@ -47,6 +49,8 @@ public class CashBalanceService {
 		}
 		CashBalance balance = cashBalanceRepository.getByReferenceInfoAndReferenceId(reffInfo, 
 				String.valueOf(baseEntity.getId()));
+		
+		log.info("existing balance:{}", balance);
 		
 		return balance;
 	}
@@ -109,7 +113,7 @@ public class CashBalanceService {
 			info = "CAPITAL_"+capitalFlow.getCapitalType().getName();
 			date = capitalFlow.getDate();
 		}
-		return CashBalance.builder().creditAmount(creditAmount).debitAmount(debitAmount).referenceInfo(info).build();
+		return CashBalance.builder().date(date).creditAmount(creditAmount).debitAmount(debitAmount).referenceInfo(info).build();
 	}
 	
 	/**
@@ -139,6 +143,7 @@ public class CashBalanceService {
 		cashBalance.setReferenceInfo(info);
 		cashBalance.setReferenceId(String.valueOf(baseEntity.getId()));
 		cashBalance.setDate(date); 
+		cashBalance.setModifiedDate(new Date()); 
 		
 		cashBalanceRepository.save(cashBalance);
 	}

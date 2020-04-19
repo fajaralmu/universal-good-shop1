@@ -12,21 +12,20 @@ import com.fajar.service.FileService;
 import com.fajar.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
- 
+
 @Service
 @Slf4j
-public   class BaseEntityUpdateService {
-	
+public class BaseEntityUpdateService {
+
 	@Autowired
 	protected FileService fileService;
-	
-	
+
 	public ShopApiResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
-		
+
 		return ShopApiResponse.failed("method not implemented");
-	} 
-	
-	protected Object copyNewElement(Object source, boolean newRecord) {
+	}
+
+	protected BaseEntity copyNewElement(BaseEntity source, boolean newRecord) {
 		return EntityUtil.copyFieldElementProperty(source, source.getClass(), !newRecord);
 	}
 

@@ -21,7 +21,7 @@ public interface CashBalanceRepository extends JpaRepository<CashBalance, Long> 
 	 * @return
 	 */
 	@Query(nativeQuery = true, value = "select "
-			+ " sum(creditAmount) as credit, sum(debitAmount) as debit, (sum(creditAmount) - sum(debitAmount)) as balance from cash_balance where  \r\n"
+			+ " sum(creditAmount) as credit, sum(debitAmount) as debit, (sum(creditAmount) - sum(debitAmount)) as balance from cash_balance where "
 			+ " date < ?1")
 	public Object getBalanceBefore(String dateString);
 
