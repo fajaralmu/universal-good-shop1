@@ -38,6 +38,21 @@ public class DateUtil {
 		boolean kabisat = year % 4 == 0;
 		return new Integer[] { 31, (kabisat ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 	}
+	
+	public static final String[] MONTH_NAMES = new String[] {
+		"Januari",
+		"Februari",
+		"Maret",
+		"April",
+		"Mei",
+		"Juni",
+		"Juli",
+		"Agustus",
+		"September",
+		"Oktober",
+		"November",
+		"Desember"
+	};
 
 	public static String formatDate(Date date, String pattern) {
 		SIMPLEDA_DATE_FORMAT.applyPattern(pattern);

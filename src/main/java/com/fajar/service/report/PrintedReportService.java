@@ -82,15 +82,15 @@ public class PrintedReportService {
 			count = 0l;
 			debitAmount = 0l;
 			
-			for (Integer i : dailyTransactions.keySet()){
-				if(dailyTransactions.get(i) != null) {
-					System.out.println("day: "+i+", items: "+ dailyTransactions.get(i).size());
-					for (BaseEntity integer : dailyTransactions.get(i)) {
-						System.out.println(integer.getId() +", "+ integer.getCreatedDate().toString());
-					}
-				}
-			}
-			
+//			for (Integer i : dailyTransactions.keySet()){
+//				if(dailyTransactions.get(i) != null) {
+//					System.out.println("day: "+i+", items: "+ dailyTransactions.get(i).size());
+//					for (BaseEntity integer : dailyTransactions.get(i)) {
+//						System.out.println(integer.getId() +", "+ integer.getCreatedDate().toString());
+//					}
+//				}
+//			}
+//			
 			return ShopApiResponse.success();
 		}catch (Exception e) {
 			// TODO: handle exception
@@ -203,7 +203,7 @@ public class PrintedReportService {
 			final CapitalFlow capitalFlow = (CapitalFlow) baseEntity;
 			debitAmount = capitalFlow.getNominal();
 			reportCategory = ReportCategory.CAPITAL;
-			name = "Capital Flow";
+			name = "Dana "+capitalFlow.getCapitalType().getName();
 			
 		}else if(baseEntity instanceof ProductFlow) {
 			final ProductFlow productFlow = (ProductFlow) baseEntity;
