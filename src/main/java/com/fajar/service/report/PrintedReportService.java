@@ -63,39 +63,31 @@ public class PrintedReportService {
 	public ShopApiResponse buildDailyReport(ShopApiRequest request) { 
 		
 		try {
+			clear();  
 			Filter filter = request.getFilter();
-			CashBalance cashBalance = getBalance(filter);
 			int month = filter.getMonth();
 			int year = filter.getYear() ;
 			
-			Integer[] months = DateUtil.getMonths(year);
+			CashBalance cashBalance = getBalance(filter); 
+			Integer[] months = DateUtil.getMonthsDay(year);
 			Integer dayCount = months[month - 1]; 
-			getTransactions(month, year);
+			
+			getTransactionsData(month, year);
 			populateDailyReportRows(dayCount, month);
 			DailyReportRow totalDailyReportRow = totalDailyReportRow(cashBalance);
 			
 			excelReportBuilder.writeDailyReport(month, year, cashBalance, 
 					dailyReportRows, dailyReportSummary, totalDailyReportRow);
 			
-			System.out.println("DEBIT AMOUNT: "+this.debitAmount);
-			System.out.println("COUNT ITEM: "+this.count);
-			count = 0l;
-			debitAmount = 0l;
 			
-//			for (Integer i : dailyTransactions.keySet()){
-//				if(dailyTransactions.get(i) != null) {
-//					System.out.println("day: "+i+", items: "+ dailyTransactions.get(i).size());
-//					for (BaseEntity integer : dailyTransactions.get(i)) {
-//						System.out.println(integer.getId() +", "+ integer.getCreatedDate().toString());
-//					}
-//				}
-//			}
-//			
 			return ShopApiResponse.success();
-		}catch (Exception e) {
-			// TODO: handle exception
+		}catch (Exception e) { 
 			e.printStackTrace();
 			return ShopApiResponse.failed(e.getMessage());
+		}finally {
+			clear(); 
+			System.out.println("DEBIT AMOUNT: "+this.debitAmount);
+			System.out.println("COUNT ITEM: "+this.count);
 		}
 	} 
 	
@@ -120,10 +112,12 @@ public class PrintedReportService {
 		return dailyReportRow ;
 	}
 	 
-	private void populateDailyReportRows( int dayCount, int month) { 
-		 
-		dailyReportRows.clear();
-		dailyReportSummary.clear();
+	/**
+	 * getting data for daily report row 
+	 * @param dayCount
+	 * @param month
+	 */
+	private void populateDailyReportRows( int dayCount, int month) {  
 		
 		for (int i = 1; i <= dayCount; i++) {
 			
@@ -139,6 +133,17 @@ public class PrintedReportService {
 		}
 	}
 	
+	/**
+	 * clear dailyReportRows and dailyReportSummary
+	 */
+	private void clear() { 
+
+		count = 0l;
+		debitAmount = 0l; 
+		dailyReportRows.clear();
+		dailyReportSummary.clear();
+	}
+
 	/**
 	 * get transaction items in the given day
 	 * @param day
@@ -240,18 +245,42 @@ public class PrintedReportService {
 		return dailyReportRow ;
 	}
 	
+	/**
+	 * set debit and credit in summary row
+	 * @param reportCategory
+	 * @param creditAmount
+	 * @param debitAmount
+	 */
+	public void updateCreditAndDebitSummary(ReportCategory reportCategory, long creditAmount, long debitAmount) {
+		dailyReportSummary.get(reportCategory).setCreditAmount(creditAmount);
+		dailyReportSummary.get(reportCategory).setDebitAmount(debitAmount);
+	}
+	
+	/**
+	 * update accumulation for debit and credit
+	 * @param dailyReportRow
+	 */
 	private void updateSummary(DailyReportRow dailyReportRow) {
 		ReportCategory reportCategory = dailyReportRow.getCategory();
+		DailyReportRow existingSummaryRow = getSummary(reportCategory); 
 		
+		long creditAmount = existingSummaryRow.getCreditAmount() + dailyReportRow.getCreditAmount();
+		long debitAmount = existingSummaryRow.getDebitAmount() + dailyReportRow.getDebitAmount();
+		
+		updateCreditAndDebitSummary(reportCategory, creditAmount, debitAmount); 
+	}
+
+	/**
+	 * get summary row from Map, if null then return new instance
+	 * @param reportCategory
+	 * @return
+	 */
+	private DailyReportRow getSummary(ReportCategory reportCategory) { 
 		if(null == dailyReportSummary.get(reportCategory)) {
 			dailyReportSummary.put(reportCategory, new DailyReportRow());
 		}
 		
-		long creditAmount = dailyReportSummary.get(reportCategory).getCreditAmount() + dailyReportRow.getCreditAmount();
-		long debitAmount = dailyReportSummary.get(reportCategory).getDebitAmount() + dailyReportRow.getDebitAmount();
-		
-		dailyReportSummary.get(reportCategory).setCreditAmount(creditAmount);
-		dailyReportSummary.get(reportCategory).setDebitAmount(debitAmount);
+		return this.dailyReportSummary.get(reportCategory);
 	}
 
 	/**
@@ -272,7 +301,7 @@ public class PrintedReportService {
 	 * @param year
 	 * @return
 	 */
-	private List<BaseEntity> getTransactions(int month, int year) {
+	private List<BaseEntity> getTransactionsData(int month, int year) {
 		
 		log.info("getTransactions, month: {}, year: {}", month, year);
 		dailyTransactions.clear();

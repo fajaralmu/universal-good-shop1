@@ -6,7 +6,7 @@ import java.util.Date;
 
 public class DateUtil {
 
-	static final SimpleDateFormat SIMPLEDA_DATE_FORMAT = new SimpleDateFormat();
+	static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat();
 
 	static final Calendar cal() {
 		return Calendar.getInstance();
@@ -34,7 +34,7 @@ public class DateUtil {
 		return calendar;
 	}
 
-	public static Integer[] getMonths(int year) {
+	public static Integer[] getMonthsDay(int year) {
 		boolean kabisat = year % 4 == 0;
 		return new Integer[] { 31, (kabisat ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 	}
@@ -55,8 +55,8 @@ public class DateUtil {
 	};
 
 	public static String formatDate(Date date, String pattern) {
-		SIMPLEDA_DATE_FORMAT.applyPattern(pattern);
-		return SIMPLEDA_DATE_FORMAT.format(date);
+		SIMPLE_DATE_FORMAT.applyPattern(pattern);
+		return SIMPLE_DATE_FORMAT.format(date);
 	}
 
 	public static String getTimeGreeting() {
@@ -79,7 +79,7 @@ public class DateUtil {
 
 	public static String getFullLastDate(int month, int year) {
 		String date = "";
-		Integer day = getMonths(year)[month - 1];
+		Integer day = getMonthsDay(year)[month - 1];
 		boolean kabisat = year % 4 == 0;
 		if (kabisat && month == 2) {
 			day = 29;
