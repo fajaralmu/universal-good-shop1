@@ -1,5 +1,8 @@
 package com.fajar.util;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
@@ -13,6 +16,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.fajar.service.report.CurrencyCell;
 import com.fajar.service.report.CustomCell;
+import com.fajar.service.report.NumericCell;
 
 public class ExcelReportUtil {
 	/**
@@ -39,7 +43,7 @@ public class ExcelReportUtil {
 		}
 	}
 	
-	public static XSSFRow createRow(XSSFSheet sheet, int rownum, int offsetIndex, Object ...values) {
+	public static XSSFRow createRow(final XSSFSheet sheet, final int rownum, final int offsetIndex, final Object ...values) {
 		
 		final XSSFRow existingRow = sheet.getRow(rownum);
 		XSSFRow row = existingRow  == null ? sheet.createRow(rownum) : existingRow;
@@ -56,11 +60,12 @@ public class ExcelReportUtil {
 	}
 	
 	public static void setBorder(XSSFCellStyle cellStyle, BorderStyle top, BorderStyle bottom, BorderStyle right,
-			BorderStyle left) {
-		cellStyle.setBorderBottom(bottom);
-		cellStyle.setBorderTop(top);
-		cellStyle.setBorderRight(right);
-		cellStyle.setBorderLeft(left); 
+			BorderStyle left) { 
+			cellStyle.setBorderBottom(bottom);
+			cellStyle.setBorderTop(top);
+			cellStyle.setBorderRight(right);
+			cellStyle.setBorderLeft(left); 
+	 
 	}
 	
 	public static void setAllBorder(XSSFCellStyle cellStyle, BorderStyle borderStyle) {
@@ -77,34 +82,67 @@ public class ExcelReportUtil {
 	
 	public static void fillRows(XSSFRow parentRow, int offsetIndex, CellStyle sourceStyle, Object ...values) {
 		DataFormat fmt = parentRow.getSheet().getWorkbook().createDataFormat();
-		XSSFCell[] columns = new XSSFCell[values.length];
+		XSSFCell[] cells = new XSSFCell[values.length];
 		for (int i = 0; i < values.length; i++) {
 			Object cellValue = values[i];
 			if(cellValue == null) {
 				cellValue = "";
 			}
-			columns[i] = parentRow.createCell(offsetIndex+i);
+			XSSFCell cell = parentRow.createCell(offsetIndex+i);
 			
 			CellStyle cellStyle  =  createCellStyle(parentRow.getSheet().getWorkbook());
 			
 			if(sourceStyle != null) {
 				cellStyle.cloneStyleFrom(sourceStyle);
-				columns[i].setCellStyle(cellStyle);
-			}
+				cell.setCellStyle(cellStyle);
+			} 
 			
-			if(cellValue instanceof CurrencyCell && ((CustomCell)cellValue).getValue() != null) {
-				columns[i].setCellValue(Double.parseDouble(((CurrencyCell)cellValue).getValue().toString())); 
-				columns[i].getCellStyle().setDataFormat( fmt.getFormat("#,##0") );
-			}else {
-				try {
-					columns[i].setCellValue(Double.parseDouble(cellValue .toString()));  
-					 
-				}catch (Exception e) { 
-					columns[i].setCellValue(cellValue.toString()); 
-				}
-			}
+			setCellValue(cell, cellValue, fmt);
 			
+			cells[i] = cell;
 		}
+	}
+	
+	public static void setCellValue(XSSFCell cell, Object value, DataFormat fmt) {
+		
+		if(null == value) {
+			return;
+		}
+		if(value.getClass().getSuperclass().equals(CustomCell.class) && ((CustomCell)value).getValue() != null) { 
+		 
+			if(value instanceof CurrencyCell) {
+			 	String stringValue = ((CurrencyCell)value).getValue().toString();
+				value = (Double.parseDouble(stringValue)); 
+				cell.setCellValue((Double) value);
+				
+				if(null != fmt)
+					cell.getCellStyle().setDataFormat( fmt.getFormat("#,##0") );
+			}else if(value instanceof NumericCell) {
+				value = (Double.parseDouble(((CustomCell)value).getValue().toString() )); 
+				cell.setCellValue((Double) value);
+			}
+			
+		}else if(value instanceof Double  ) {
+			cell.setCellValue((Double) value);
+			
+		}else if(value instanceof Date) {
+			cell.setCellValue((Date) value);
+			
+		}else if(value instanceof Boolean) {
+			cell.setCellValue((Boolean) value);
+			
+		}else if(value instanceof Calendar) {
+			cell.setCellValue((Calendar) value);
+			
+		}else {
+			try {
+				cell.setCellValue(Double.parseDouble(value .toString()));  
+				 
+			}catch (Exception e) { 
+				cell.setCellValue(value.toString()); 
+			} 
+		}
+		
 	}
 
 }
