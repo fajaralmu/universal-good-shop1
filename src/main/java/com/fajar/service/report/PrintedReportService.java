@@ -1,5 +1,6 @@
 package com.fajar.service.report;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 import com.fajar.dto.Filter;
 import com.fajar.dto.ReportCategory;
 import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
 import com.fajar.dto.TransactionType;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.CapitalFlow;
@@ -60,7 +60,7 @@ public class PrintedReportService {
 		LogProxyFactory.setLoggers(this);
 	}
 
-	public byte[] buildDailyReport(ShopApiRequest request) { 
+	public File buildDailyReport(ShopApiRequest request) { 
 		
 		try {
 			clear();  
@@ -76,7 +76,7 @@ public class PrintedReportService {
 			populateDailyReportRows(dayCount, month);
 			DailyReportRow totalDailyReportRow = totalDailyReportRow(cashBalance);
 			
-			byte[] result = excelReportBuilder.writeDailyReport(month, year, cashBalance, 
+			File result = excelReportBuilder.writeDailyReport(month, year, cashBalance, 
 					dailyReportRows, dailyReportSummary, totalDailyReportRow);
 			
 			

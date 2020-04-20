@@ -54,7 +54,7 @@ public class ExcelReportBuilder {
 	 * @param dailyReportSummary
 	 * @param totalDailyReportRow
 	 */
-	public byte[] writeDailyReport(int month, int year, CashBalance initialBalane, List<DailyReportRow> dailyReportRows,
+	public File writeDailyReport(int month, int year, CashBalance initialBalane, List<DailyReportRow> dailyReportRows,
 			Map<ReportCategory, DailyReportRow> dailyReportSummary, DailyReportRow totalDailyReportRow) {
 		
 		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hhmmss-a");
@@ -193,7 +193,7 @@ public class ExcelReportBuilder {
 			    bos.close();
 			}
 			byte[] bytes = bos.toByteArray();
-			return bytes;
+			return f;
 		} catch ( Exception e) { 
 			e.printStackTrace();
 			return null;

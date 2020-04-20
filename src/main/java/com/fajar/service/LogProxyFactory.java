@@ -63,22 +63,27 @@ public class LogProxyFactory {
 				Object methodName = invocation.getMethod().getName();
 				logger.info("=========>[Execute Method: {}]", methodName);  
 				try {
-				/**
-				 * prints parameters of the method
-				 */
-				String[] params = discoverer.getParameterNames(invocation.getMethod()); 
-				if(params == null) {
-					params = new String[] {"arg0"};
-				}
-				
-				Object[] arguments = invocation.getArguments();
-				if(null == arguments || arguments.length == 0) {
-					logger.info("[No Argument]");
-				}else
-					for (int i = 0; i < arguments.length; i++) {
-						String parameterName = params[i] == null ? "arg" + i : params[i];
-						logger.info("[argument{}] {}:{}",i, parameterName, arguments[i]);
+					/**
+					 * prints parameters of the method
+					 */
+					String[] params = null;
+					try {
+						params = discoverer.getParameterNames(invocation.getMethod()); 
+					}catch ( Exception e) {
+						// TODO: handle exception
 					}
+					if(params == null) {
+						params = new String[] {"arg0"};
+					}
+					
+					Object[] arguments = invocation.getArguments();
+					if(null == arguments || arguments.length == 0) {
+						logger.info("[No Argument]");
+					}else
+						for (int i = 0; i < arguments.length; i++) {
+							String parameterName = params[i] == null ? "arg" + i : params[i];
+							logger.info("[argument{}] {}:{}",i, parameterName, arguments[i]);
+						}
 				}catch(Exception ex) {
 					System.out.println("[ERROR] logging "+methodName);
 				}
