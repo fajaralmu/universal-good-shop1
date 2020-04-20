@@ -40,9 +40,9 @@ public class RestReportController {
 	}
 	
 	@PostMapping(value = "/daily", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse daily(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public byte[] daily(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("supply {}", request);
+		log.info("daily report {}", request);
 //		if(!userSessionService.hasSession(httpRequest)) {
 //			return ShopApiResponse.failedResponse();
 //		}
@@ -53,7 +53,7 @@ public class RestReportController {
 	@PostMapping(value = "/monthly", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ShopApiResponse monthly(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("supply {}", request);
+		log.info("monthly report {}", request);
 		if(!userSessionService.hasSession(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}

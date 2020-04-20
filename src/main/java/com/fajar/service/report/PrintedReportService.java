@@ -60,7 +60,7 @@ public class PrintedReportService {
 		LogProxyFactory.setLoggers(this);
 	}
 
-	public ShopApiResponse buildDailyReport(ShopApiRequest request) { 
+	public byte[] buildDailyReport(ShopApiRequest request) { 
 		
 		try {
 			clear();  
@@ -76,14 +76,14 @@ public class PrintedReportService {
 			populateDailyReportRows(dayCount, month);
 			DailyReportRow totalDailyReportRow = totalDailyReportRow(cashBalance);
 			
-			excelReportBuilder.writeDailyReport(month, year, cashBalance, 
+			byte[] result = excelReportBuilder.writeDailyReport(month, year, cashBalance, 
 					dailyReportRows, dailyReportSummary, totalDailyReportRow);
 			
 			
-			return ShopApiResponse.success();
+			return result;
 		}catch (Exception e) { 
 			e.printStackTrace();
-			return ShopApiResponse.failed(e.getMessage());
+			throw e;
 		}finally {
 			clear(); 
 			System.out.println("DEBIT AMOUNT: "+this.debitAmount);

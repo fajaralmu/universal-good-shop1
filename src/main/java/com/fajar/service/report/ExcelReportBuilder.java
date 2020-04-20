@@ -5,6 +5,7 @@ import static com.fajar.util.ExcelReportUtil.autosizeColumn;
 import static com.fajar.util.ExcelReportUtil.createRow;
 import static com.fajar.util.ExcelReportUtil.removeBorder;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
@@ -53,7 +54,7 @@ public class ExcelReportBuilder {
 	 * @param dailyReportSummary
 	 * @param totalDailyReportRow
 	 */
-	public void writeDailyReport(int month, int year, CashBalance initialBalane, List<DailyReportRow> dailyReportRows,
+	public byte[] writeDailyReport(int month, int year, CashBalance initialBalane, List<DailyReportRow> dailyReportRows,
 			Map<ReportCategory, DailyReportRow> dailyReportSummary, DailyReportRow totalDailyReportRow) {
 		
 		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hhmmss-a");
@@ -185,8 +186,17 @@ public class ExcelReportBuilder {
 				log.info("DONE Writing Report: "+f.getAbsolutePath());
 //				return f.getName();
 			}
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			try {
+				xwb.write(bos);
+			} finally {
+			    bos.close();
+			}
+			byte[] bytes = bos.toByteArray();
+			return bytes;
 		} catch ( Exception e) { 
 			e.printStackTrace();
+			return null;
 		} 
 		
 	}  

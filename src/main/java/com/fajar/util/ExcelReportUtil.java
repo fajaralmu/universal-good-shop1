@@ -80,6 +80,13 @@ public class ExcelReportUtil {
 		return workbook.createCellStyle();
 	}
 	
+	/**
+	 * fill row with values
+	 * @param parentRow
+	 * @param offsetIndex
+	 * @param sourceStyle
+	 * @param values
+	 */
 	public static void fillRows(XSSFRow parentRow, int offsetIndex, CellStyle sourceStyle, Object ...values) {
 		DataFormat fmt = parentRow.getSheet().getWorkbook().createDataFormat();
 		XSSFCell[] cells = new XSSFCell[values.length];
@@ -103,6 +110,12 @@ public class ExcelReportUtil {
 		}
 	}
 	
+	/**
+	 * set value for cell
+	 * @param cell
+	 * @param value
+	 * @param fmt
+	 */
 	public static void setCellValue(XSSFCell cell, Object value, DataFormat fmt) {
 		
 		if(null == value) {
