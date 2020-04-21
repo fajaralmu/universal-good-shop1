@@ -401,6 +401,7 @@ public class PrintedReportService {
 			getTransactionRecords(monthFilter); 
 			Map<ReportCategory, DailyReportRow> dailyReportSummaryCloned = (Map<ReportCategory, DailyReportRow>) SerializationUtils.clone((Serializable) dailyReportSummary);
 			monthyReportContent.put(i,  dailyReportSummaryCloned);
+			dailyReportSummary.clear();
 		}
 		
 		for(Integer key: monthyReportContent.keySet()) {
