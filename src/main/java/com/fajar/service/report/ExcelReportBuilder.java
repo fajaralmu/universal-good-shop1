@@ -28,6 +28,7 @@ import com.fajar.dto.ReportCategory;
 import com.fajar.entity.CashBalance;
 import com.fajar.service.WebConfigService;
 import com.fajar.util.DateUtil;
+import com.fajar.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,28 +62,9 @@ public class ExcelReportBuilder {
 		XSSFSheet xsheet = xwb.createSheet(sheetName ); 
 		
 		writeDailyReport(xsheet, reportRequest);
-		/**
-		 * Write file to disk
-		 */
-		File f = new File(reportName);
-		try {
-			xwb.write(new FileOutputStream(f));
-			if (f.canRead()) {
-				log.info("DONE Writing Report: "+f.getAbsolutePath());
-//				return f.getName();
-			}
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			try {
-				xwb.write(bos);
-			} finally {
-			    bos.close();
-			}
-			byte[] bytes = bos.toByteArray();
-			return f;
-		} catch ( Exception e) { 
-			e.printStackTrace();
-			return null;
-		} 
+		
+		File file = getFile(xwb, reportName);
+		return file;
 	}
 	
 	/**
@@ -223,6 +205,100 @@ public class ExcelReportBuilder {
 	
 	public static CurrencyCell curr(long value) {
 		return new CurrencyCell(value);
+	}
+	
+	/**
+	 * Monthly
+	 *  
+	 */
+	
+	public void getMonthyReport(ReportRequest reportRequest) { 
+		Filter filter = reportRequest.getFilter();
+		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hhmmss-a");
+		String sheetName = "Monthly-"+filter.getYear();
+		
+		String reportName = reportPath + "/" + sheetName + "_"+ time+ ".xlsx";
+		XSSFWorkbook xwb  = new XSSFWorkbook();
+		XSSFSheet xsheet = xwb.createSheet(sheetName ); 
+		
+		writeMonthlyReport(xsheet, reportRequest, reportName);
+		
+		getFile(xwb, reportName);
+	}
+	
+	public static void main(String[ ]aa) {
+		ExcelReportBuilder excelReportBuilder = new ExcelReportBuilder();
+		excelReportBuilder.reportPath = "D:\\Development\\Files\\Web\\Shop1\\Reports";
+		excelReportBuilder.getMonthyReport(ReportRequest.builder().filter(Filter.builder().year(2018).build()).build());
+	}
+	
+	private void writeMonthlyReport(XSSFSheet xsheet, ReportRequest reportRequest, String reportName) {
+		// TODO Auto-generated method stub
+		Map<Integer, Map<ReportCategory, DailyReportRow>> reportContent = reportRequest.getMonthyReportContent();
+		
+		/**
+		 * Static Label
+		 */
+		addMergedRegion(xsheet, new CellRangeAddress(1, 3, 0, 0), new CellRangeAddress(1, 3, 1, 1));
+		createRow(xsheet, 1, 0, "Kode Akun", "Nama Akun");
+		
+		ReportCategory[] reportCategories = ReportCategory.values();
+		int offsetRow = 4;
+		int offsetColumn = 1;
+		
+		for (int i = 0; i < reportCategories.length; i++) {
+			ReportCategory reportCategory = reportCategories[i];
+			createRow(xsheet, offsetRow + i, 0, reportCategory.code, reportCategory.name);
+		}
+		
+		/**
+		 * Month Names
+		 */
+		int triwulan = 0;
+		 for(int i = 1; i <= 12; i++) {
+			 String monthName = DateUtil.MONTH_NAMES[i - 1];
+			 addMergedRegion(xsheet, new CellRangeAddress(2, 2, i * 2, i * 2 + 1));
+			 
+			 createRow(xsheet, 2, i * 2, monthName);
+			 createRow(xsheet, 3, i * 2, "D (K)", "K (D)"); 
+			 
+			 if(i % 3 == 0) {
+				 addMergedRegion(xsheet, new CellRangeAddress(1, 1, (i - 2)*2 , i*2  + 1));
+				 createRow(xsheet, 1,(i - 2)*2, "Triwulan "+StringUtil.GREEK_NUMBER[triwulan]);
+				 triwulan++;
+			 }
+		 }
+	}
+	
+	/**
+	 * get file from XSSFWorkbook
+	 * @param xssfWorkbook
+	 * @param fileName
+	 * @return
+	 */
+	public static File getFile(XSSFWorkbook xssfWorkbook, String fileName) {
+		/**
+		 * Write file to disk
+		 */
+		File f = new File(fileName);
+		try {
+			xssfWorkbook.write(new FileOutputStream(f));
+			if (f.canRead()) {
+				log.info("DONE Writing Report: "+f.getAbsolutePath());
+//				return f.getName();
+			}
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			try {
+				xssfWorkbook.write(bos);
+			} finally {
+			    bos.close();
+			}
+			byte[] bytes = bos.toByteArray();
+			return f;
+		} catch ( Exception e) { 
+			e.printStackTrace();
+			return null;
+		} 
 	}
 	 
 	

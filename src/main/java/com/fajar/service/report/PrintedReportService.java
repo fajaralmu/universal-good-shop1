@@ -75,7 +75,7 @@ public class PrintedReportService {
 	public File buildDailyReport(ShopApiRequest request) { 
 		
 		try {
-			clear();  
+			
 			Filter filter = request.getFilter();   
 			
 			getTransactionRecords(filter);
@@ -120,7 +120,8 @@ public class PrintedReportService {
 		int year = filter.getYear() ;
 		
 		Integer[] months = DateUtil.getMonthsDay(year);
-		Integer dayCount = months[month - 1]; 
+		Integer dayCount = months[month - 1];
+		clear();
 		getInitialBalance(filter);  
 		getTransactionsData(month, year);
 		populateDailyReportRows(dayCount, month);
@@ -401,7 +402,7 @@ public class PrintedReportService {
 			getTransactionRecords(monthFilter); 
 			Map<ReportCategory, DailyReportRow> dailyReportSummaryCloned = (Map<ReportCategory, DailyReportRow>) SerializationUtils.clone((Serializable) dailyReportSummary);
 			monthyReportContent.put(i,  dailyReportSummaryCloned);
-			dailyReportSummary.clear();
+			 
 		}
 		
 		for(Integer key: monthyReportContent.keySet()) {
@@ -411,6 +412,8 @@ public class PrintedReportService {
 				System.out.println(reportCategory.toString()+". D: "+daily.get(reportCategory).getDebitAmount()+" | K: "+daily.get(reportCategory).getCreditAmount());
 			}
 		}
+		excelReportBuilder.getMonthyReport(ReportRequest.builder()
+				.filter(filter).monthyReportContent(monthyReportContent).build());
 	}
 	 
 	
