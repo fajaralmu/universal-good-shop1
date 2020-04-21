@@ -20,6 +20,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xwpf.usermodel.VerticalAlign;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -268,6 +269,33 @@ public class ExcelReportBuilder {
 				 triwulan++;
 			 }
 		 }
+		 
+		 /**
+		  * Values
+		  */
+		 for(int i = 1; i <= 12; i++) {
+			 
+			 Map<ReportCategory, DailyReportRow> monthData = reportContent.get(i);
+			 
+			 for (int j = 0; j< reportCategories.length; j++) {
+					ReportCategory reportCategory = reportCategories[j];
+					
+					DailyReportRow categoryData = monthData.get(reportCategory);
+					if(null != categoryData)
+					createRow(xsheet, offsetRow + j, i * 2, 
+							curr(categoryData.getCreditAmount()), 
+							curr(categoryData.getDebitAmount()));
+				}
+			 
+		 }
+		 
+		 
+		 int rows = offsetRow + reportCategories.length;
+		 for (int i = 0; i <= rows; i++) {
+			 XSSFRow xssfRow = xsheet.getRow(i);
+			 autosizeColumn(xssfRow, 2 + 12*2, BorderStyle.THIN, null);
+		}
+		
 	}
 	
 	/**

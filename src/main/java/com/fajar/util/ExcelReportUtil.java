@@ -22,12 +22,12 @@ public class ExcelReportUtil {
 	/**
 	 * 
 	 * @param row
-	 * @param length
+	 * @param countOfColumns
 	 * @param borderStyle @Nullable
 	 * @param horizontalAlignment @Nullable
 	 */
-	public static void autosizeColumn(XSSFRow row, int length, BorderStyle borderStyle, HorizontalAlignment horizontalAlignment) {
-		for(int i = 0; i < length; i++) {
+	public static void autosizeColumn(XSSFRow row, int countOfColumns, BorderStyle borderStyle, HorizontalAlignment horizontalAlignment) {
+		for(int i = 0; i < countOfColumns; i++) {
 			XSSFCell cell = row.getCell(i);
 			if(borderStyle != null)
 				cell.getCellStyle().setBorderTop(borderStyle);
