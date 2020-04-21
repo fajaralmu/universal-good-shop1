@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -282,9 +283,17 @@ public class ExcelReportBuilder {
 			 long totalDebit = 0L;
 			 long totalCredit = 0L;
 			 
+			 long totalDebitForCashBalance = totalExceptCashBalance(monthData, 0);
+			 long totalCreditForCashBalance = totalExceptCashBalance(monthData, 1);
+			 
 			 for (int j = 0; j< reportCategories.length; j++) {
 					ReportCategory reportCategory = reportCategories[j]; 
 					DailyReportRow categoryData = monthData.get(reportCategory);
+					if(reportCategory.equals(ReportCategory.CASH_BALANCE)) {
+						categoryData = new DailyReportRow();
+						categoryData.setDebitAmount(totalDebitForCashBalance);
+						categoryData.setCreditAmount(totalCreditForCashBalance);
+					}
 					
 					if(null == categoryData) {
 						categoryData = new DailyReportRow();
@@ -307,6 +316,29 @@ public class ExcelReportBuilder {
 			 autosizeColumn(xssfRow, 2 + 12*2, BorderStyle.THIN, HorizontalAlignment.CENTER);
 		}
 		
+	}
+	
+	/**
+	 * 
+	 * @param summary
+	 * @param mode 0 for debit, 1 for credit
+	 * @return
+	 */
+	public static long totalExceptCashBalance( Map<ReportCategory, DailyReportRow> summary, int mode) {
+		long total = 0L;
+		Set<ReportCategory> keys = summary.keySet();
+		for (ReportCategory reportCategory : keys) {
+			if(reportCategory.equals(ReportCategory.CASH_BALANCE))
+				continue;
+			DailyReportRow reportData = summary.get(reportCategory);
+			if(mode == 1) {
+				total+=reportData.getDebitAmount();
+			}else if(mode == 0) {
+				total+=reportData.getCreditAmount();
+			}
+		}
+		
+		return total;
 	}
 	
 	/**
