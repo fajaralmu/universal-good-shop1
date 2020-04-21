@@ -23,6 +23,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.dto.Filter;
 import com.fajar.dto.ReportCategory;
 import com.fajar.entity.CashBalance;
 import com.fajar.service.WebConfigService;
@@ -45,24 +46,55 @@ public class ExcelReportBuilder {
 		this.reportPath = webConfigService.getReportPath();
 	}
 	
-	/**
-	 * write daily report for one month
-	 * @param month
-	 * @param year
-	 * @param initialBalane
-	 * @param dailyReportRows
-	 * @param dailyReportSummary
-	 * @param totalDailyReportRow
-	 */
-	public File writeDailyReport(int month, int year, CashBalance initialBalane, List<DailyReportRow> dailyReportRows,
-			Map<ReportCategory, DailyReportRow> dailyReportSummary, DailyReportRow totalDailyReportRow) {
-		
+	public File getDailyReportFile (ReportRequest reportRequest) {
+
+		Filter filter = reportRequest.getFilter();
 		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hhmmss-a");
-		String sheetName = "Daily-"+month+"-"+year;
+		String sheetName = "Daily-"+filter.getMonth()+"-"+filter.getYear();
 		
 		String reportName = reportPath + "/" + sheetName + "_"+ time+ ".xlsx";
 		XSSFWorkbook xwb  = new XSSFWorkbook();
 		XSSFSheet xsheet = xwb.createSheet(sheetName ); 
+		
+		writeDailyReport(xsheet, reportRequest);
+		/**
+		 * Write file to disk
+		 */
+		File f = new File(reportName);
+		try {
+			xwb.write(new FileOutputStream(f));
+			if (f.canRead()) {
+				log.info("DONE Writing Report: "+f.getAbsolutePath());
+//				return f.getName();
+			}
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			try {
+				xwb.write(bos);
+			} finally {
+			    bos.close();
+			}
+			byte[] bytes = bos.toByteArray();
+			return f;
+		} catch ( Exception e) { 
+			e.printStackTrace();
+			return null;
+		} 
+	}
+	
+	/**
+	 * write daily report for one month
+	 *
+	 * 
+	 * @param xsheet
+	 * @param reportRequest
+	 */
+	private void writeDailyReport(XSSFSheet xsheet, ReportRequest reportRequest) {
+		
+		Filter filter = reportRequest.getFilter();
+		CashBalance initialBalance = reportRequest.getInitialBalance();
+		List<DailyReportRow> dailyReportRows = reportRequest.getDailyReportRows();
+		Map<ReportCategory, DailyReportRow> dailyReportSummary = reportRequest.getDailyReportSummary(); 
+		DailyReportRow totalDailyReportRow = reportRequest.getTotalDailyReportRow();
 		
 		int row = 0;
 		final int columnOffset = 0;
@@ -71,7 +103,7 @@ public class ExcelReportBuilder {
 		/**
 		 * Report title
 		 */
-		String period = DateUtil.MONTH_NAMES[month-1]+" "+year;
+		String period = DateUtil.MONTH_NAMES[filter.getMonth()-1] + " " + filter.getYear();
 		addMergedRegion(xsheet, new CellRangeAddress(row, row, 0, 6), new CellRangeAddress(row, row, 7, 11));
 		
 		XSSFRow reportTitleRow = createRow(xsheet, row, columnOffset,
@@ -108,7 +140,7 @@ public class ExcelReportBuilder {
 		int dailyRow = row;
 		createRow(xsheet, dailyRow, columnOffset,
 				 	BLANK, firstDate,"Saldo Awal", ReportCategory.CASH_BALANCE.code, 
-					 curr(initialBalane.getActualBalance()), 0, curr(initialBalane.getActualBalance()));
+					 curr(initialBalance.getActualBalance()), 0, curr(initialBalance.getActualBalance()));
 		dailyRow++;
 		
 		int currentDay = firstDate;  
@@ -152,10 +184,16 @@ public class ExcelReportBuilder {
 					new DailyReportRow() : dailyReportSummary.get(reportCategory) ;
 			 
 			final int rowNum  = summaryRow; 
+			long debitAmount = summary.getDebitAmount();
+			long creditAmount = summary.getCreditAmount();
 			 
+			if(reportCategory.equals(ReportCategory.CASH_BALANCE)) {
+				debitAmount = initialBalance.getActualBalance();
+			}
+			
 			createRow(xsheet, rowNum, 
 					columnOffset + 7, number, reportCategory.name, reportCategory.code,
-					curr(summary.getDebitAmount()), curr(summary.getCreditAmount())  );  
+					curr(debitAmount), curr(creditAmount)  );  
 			
 			log.info("summary record No. {}", number);
 			
@@ -176,28 +214,6 @@ public class ExcelReportBuilder {
 		 */ 
 		autosizeColumn(headerRow, columnNames.length, BorderStyle.DOUBLE, HorizontalAlignment.CENTER);
 		
-		/**
-		 * Write file to disk
-		 */
-		File f = new File(reportName);
-		try {
-			xwb.write(new FileOutputStream(f));
-			if (f.canRead()) {
-				log.info("DONE Writing Report: "+f.getAbsolutePath());
-//				return f.getName();
-			}
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			try {
-				xwb.write(bos);
-			} finally {
-			    bos.close();
-			}
-			byte[] bytes = bos.toByteArray();
-			return f;
-		} catch ( Exception e) { 
-			e.printStackTrace();
-			return null;
-		} 
 		
 	}  
 	

@@ -54,6 +54,7 @@ public class PrintedReportService {
 	private Map<Integer, List<BaseEntity>> dailyTransactions = new HashMap<>();
 	private Map<ReportCategory, DailyReportRow> dailyReportSummary = new HashMap<>();
 	private List<DailyReportRow > dailyReportRows = new LinkedList<>();
+	private DailyReportRow totalDailyReportRow = new DailyReportRow();
 	
 	@PostConstruct
 	public void init() {
@@ -74,10 +75,16 @@ public class PrintedReportService {
 			
 			getTransactionsData(month, year);
 			populateDailyReportRows(dayCount, month);
-			DailyReportRow totalDailyReportRow = totalDailyReportRow(cashBalance);
+			calculateTotalSummary(cashBalance);
 			
-			File result = excelReportBuilder.writeDailyReport(month, year, cashBalance, 
-					dailyReportRows, dailyReportSummary, totalDailyReportRow);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setFilter(filter);
+			reportRequest.setDailyReportRows(dailyReportRows);
+			reportRequest.setDailyReportSummary(dailyReportSummary);
+			reportRequest.setInitialBalance(cashBalance);
+			reportRequest.setTotalDailyReportRow(totalDailyReportRow);
+			
+			File result = excelReportBuilder.getDailyReportFile(reportRequest);
 			
 			
 			return result;
@@ -96,7 +103,7 @@ public class PrintedReportService {
 	 * @param latestBalance
 	 * @return
 	 */
-	private DailyReportRow totalDailyReportRow(CashBalance latestBalance) { 
+	private DailyReportRow calculateTotalSummary(CashBalance latestBalance) { 
 		DailyReportRow dailyReportRow = new DailyReportRow();
 		long debitAmount = latestBalance.getActualBalance();
 		long creditAmount = 0l;
@@ -108,8 +115,9 @@ public class PrintedReportService {
 		
 		dailyReportRow.setDebitAmount(debitAmount);
 		dailyReportRow.setCreditAmount(creditAmount);
-		
-		return dailyReportRow ;
+		 
+		totalDailyReportRow = dailyReportRow; 
+		return dailyReportRow;
 	}
 	 
 	/**
