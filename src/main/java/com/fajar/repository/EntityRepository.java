@@ -44,6 +44,7 @@ import com.fajar.entity.setting.EntityManagementConfig;
 import com.fajar.service.entity.BaseEntityUpdateService;
 import com.fajar.service.entity.CapitalFlowUpdateService;
 import com.fajar.service.entity.CommonUpdateService;
+import com.fajar.service.entity.CostFlowUpdateService;
 import com.fajar.service.entity.MenuUpdateService;
 import com.fajar.service.entity.ProductUpdateService;
 import com.fajar.service.entity.ShopProfileUpdateService;
@@ -131,7 +132,7 @@ public class EntityRepository {
 	@Autowired
 	private CapitalFlowUpdateService capitalUpdateService;
 	@Autowired
-	private CapitalFlowUpdateService capitalFlowUpdateService;
+	private CostFlowUpdateService costFlowUpdateService;
 	
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -154,7 +155,7 @@ public class EntityRepository {
 		entityConfiguration.put("userrole", config("userrole", UserRole.class, commonUpdateService));
 		entityConfiguration.put("registeredrequest", config("registeredRequest", RegisteredRequest.class, commonUpdateService));
 		entityConfiguration.put("cost", config("cost", Cost.class, commonUpdateService));
-		entityConfiguration.put("costflow", config("costflow", CostFlow.class, capitalFlowUpdateService));
+		entityConfiguration.put("costflow", config("costflow", CostFlow.class, costFlowUpdateService));
 		entityConfiguration.put("voucher", config("voucher", Voucher.class, voucherUpdateService));
 		entityConfiguration.put("customervoucher", config("customervoucher", CustomerVoucher.class, commonUpdateService));
 		entityConfiguration.put("capital", config("capital", Capital.class, commonUpdateService));

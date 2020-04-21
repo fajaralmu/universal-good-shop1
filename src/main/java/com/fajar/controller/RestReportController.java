@@ -75,10 +75,12 @@ public class RestReportController {
 	public ShopApiResponse monthly(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("monthly report {}", request);
-		if(!userSessionService.hasSession(httpRequest)) {
-			return ShopApiResponse.failedResponse();
-		}
-		 
+//		if(!userSessionService.hasSession(httpRequest)) {
+//			return ShopApiResponse.failedResponse();
+//		}
+		
+		excelReportService.buildMonthlyReport(request);
+		
 		ShopApiResponse response = new ShopApiResponse();
 		return response ;
 	}

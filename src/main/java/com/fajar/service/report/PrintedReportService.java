@@ -1,6 +1,7 @@
 package com.fajar.service.report;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,10 +53,19 @@ public class PrintedReportService {
 	private long debitAmount = 0;
 	private long count = 0;
 	
-	private Map<Integer, List<BaseEntity>> dailyTransactions = new HashMap<>();
-	private Map<ReportCategory, DailyReportRow> dailyReportSummary = new HashMap<>();
-	private List<DailyReportRow > dailyReportRows = new LinkedList<>();
-	private DailyReportRow totalDailyReportRow = new DailyReportRow();
+	/**
+	 * daily report
+	 */
+	private final Map<Integer, List<BaseEntity>> dailyTransactions = new HashMap<>();
+	private final Map<ReportCategory, DailyReportRow> dailyReportSummary = new HashMap<>();
+	private final List<DailyReportRow > dailyReportRows = new LinkedList<>();
+	private DailyReportRow dailyReportRowTotal = new DailyReportRow();
+	private CashBalance dailyReportInitialBalance = new CashBalance();
+	
+	/**
+	 * monthly report
+	 */
+	private final Map<Integer, Map<ReportCategory, DailyReportRow>> monthyReportContent = new HashMap<>();
 	
 	@PostConstruct
 	public void init() {
@@ -65,24 +76,11 @@ public class PrintedReportService {
 		
 		try {
 			clear();  
-			Filter filter = request.getFilter();
-			int month = filter.getMonth();
-			int year = filter.getYear() ;
+			Filter filter = request.getFilter();   
 			
-			CashBalance cashBalance = getBalance(filter); 
-			Integer[] months = DateUtil.getMonthsDay(year);
-			Integer dayCount = months[month - 1]; 
+			getTransactionRecords(filter);
 			
-			getTransactionsData(month, year);
-			populateDailyReportRows(dayCount, month);
-			calculateTotalSummary(cashBalance);
-			
-			ReportRequest reportRequest = new ReportRequest();
-			reportRequest.setFilter(filter);
-			reportRequest.setDailyReportRows(dailyReportRows);
-			reportRequest.setDailyReportSummary(dailyReportSummary);
-			reportRequest.setInitialBalance(cashBalance);
-			reportRequest.setTotalDailyReportRow(totalDailyReportRow);
+			ReportRequest reportRequest = generateDailyReportRequest(filter);
 			
 			File result = excelReportBuilder.getDailyReportFile(reportRequest);
 			
@@ -99,13 +97,45 @@ public class PrintedReportService {
 	} 
 	
 	/**
+	 * generate report request for daily report
+	 * @param filter
+	 * @return
+	 */
+	private ReportRequest generateDailyReportRequest(Filter filter) {
+		ReportRequest reportRequest = new ReportRequest();
+		reportRequest.setFilter(filter);
+		reportRequest.setDailyReportRows(dailyReportRows);
+		reportRequest.setDailyReportSummary(dailyReportSummary);
+		reportRequest.setInitialBalance(dailyReportInitialBalance);
+		reportRequest.setTotalDailyReportRow(dailyReportRowTotal);
+		return reportRequest;
+	}
+	
+	/**
+	 * gather required data from database
+	 * @param filter
+	 */
+	private void getTransactionRecords(Filter filter ) { 
+		int month = filter.getMonth();
+		int year = filter.getYear() ;
+		
+		Integer[] months = DateUtil.getMonthsDay(year);
+		Integer dayCount = months[month - 1]; 
+		getInitialBalance(filter);  
+		getTransactionsData(month, year);
+		populateDailyReportRows(dayCount, month);
+		calculateTotalSummary( );
+		
+	}
+
+	/**
 	 * calculate summary
 	 * @param latestBalance
 	 * @return
 	 */
-	private DailyReportRow calculateTotalSummary(CashBalance latestBalance) { 
+	private DailyReportRow calculateTotalSummary( ) { 
 		DailyReportRow dailyReportRow = new DailyReportRow();
-		long debitAmount = latestBalance.getActualBalance();
+		long debitAmount = dailyReportInitialBalance.getActualBalance();
 		long creditAmount = 0l;
 		
 		for (DailyReportRow dailyReportRow2 : dailyReportRows) {
@@ -116,7 +146,7 @@ public class PrintedReportService {
 		dailyReportRow.setDebitAmount(debitAmount);
 		dailyReportRow.setCreditAmount(creditAmount);
 		 
-		totalDailyReportRow = dailyReportRow; 
+		dailyReportRowTotal = dailyReportRow; 
 		return dailyReportRow;
 	}
 	 
@@ -352,11 +382,34 @@ public class PrintedReportService {
 	 * @param filter
 	 * @return
 	 */
-	private CashBalance getBalance(Filter filter) {
+	private CashBalance getInitialBalance(Filter filter) {
 		int prevMonth = filter.getMonth();// - 1 < 1 ? 12 : filter.getMonth() - 1;
 		int year = filter.getYear();// filter.getMonth() - 1 < 1 ? filter.getYear() - 1 : filter.getYear();
-		CashBalance cashBalance = cashBalanceService.getBalanceBefore (prevMonth, year);	 
+		CashBalance cashBalance = cashBalanceService.getBalanceBefore (prevMonth, year);
+		dailyReportInitialBalance = cashBalance;
 		return cashBalance;
+	}
+
+	public void buildMonthlyReport(ShopApiRequest request) {
+		
+		Filter filter = request.getFilter();
+		Integer year = filter.getYear();
+		monthyReportContent.clear();
+		
+		for(int i = 1; i <= 12; i++) {
+			Filter monthFilter = Filter.builder().month(i).year(year).build();
+			getTransactionRecords(monthFilter); 
+			Map<ReportCategory, DailyReportRow> dailyReportSummaryCloned = (Map<ReportCategory, DailyReportRow>) SerializationUtils.clone((Serializable) dailyReportSummary);
+			monthyReportContent.put(i,  dailyReportSummaryCloned);
+		}
+		
+		for(Integer key: monthyReportContent.keySet()) {
+			System.out.println("==================="+key);
+			Map<ReportCategory, DailyReportRow> daily = monthyReportContent.get(key);
+			for(ReportCategory reportCategory : daily.keySet()) {
+				System.out.println(reportCategory.toString()+". D: "+daily.get(reportCategory).getDebitAmount()+" | K: "+daily.get(reportCategory).getCreditAmount());
+			}
+		}
 	}
 	 
 	
