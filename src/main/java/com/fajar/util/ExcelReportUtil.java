@@ -27,8 +27,14 @@ public class ExcelReportUtil {
 	 * @param horizontalAlignment @Nullable
 	 */
 	public static void autosizeColumn(XSSFRow row, int countOfColumns, BorderStyle borderStyle, HorizontalAlignment horizontalAlignment) {
+		if(row == null) {
+			return;
+		}
 		for(int i = 0; i < countOfColumns; i++) {
 			XSSFCell cell = row.getCell(i);
+			if(cell == null) {
+				continue;
+			}
 			if(borderStyle != null)
 				cell.getCellStyle().setBorderTop(borderStyle);
 			if(horizontalAlignment!=null)

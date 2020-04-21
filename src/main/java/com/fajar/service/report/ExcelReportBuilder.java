@@ -252,6 +252,9 @@ public class ExcelReportBuilder {
 			createRow(xsheet, offsetRow + i, 0, reportCategory.code, reportCategory.name);
 		}
 		
+		int totalRowNum = offsetRow + reportCategories.length;
+		createRow(xsheet, totalRowNum, 0, "", "Jumlah");
+		
 		/**
 		 * Month Names
 		 */
@@ -276,16 +279,24 @@ public class ExcelReportBuilder {
 		 for(int i = 1; i <= 12; i++) {
 			 
 			 Map<ReportCategory, DailyReportRow> monthData = reportContent.get(i);
+			 long totalDebit = 0L;
+			 long totalCredit = 0L;
 			 
 			 for (int j = 0; j< reportCategories.length; j++) {
-					ReportCategory reportCategory = reportCategories[j];
-					
+					ReportCategory reportCategory = reportCategories[j]; 
 					DailyReportRow categoryData = monthData.get(reportCategory);
-					if(null != categoryData)
+					
+					if(null == categoryData) {
+						categoryData = new DailyReportRow();
+					}
 					createRow(xsheet, offsetRow + j, i * 2, 
 							curr(categoryData.getCreditAmount()), 
 							curr(categoryData.getDebitAmount()));
+					
+					totalDebit+= categoryData.getDebitAmount();
+					totalCredit+= categoryData.getCreditAmount();
 				}
+			 createRow(xsheet,  totalRowNum, i * 2, curr(totalCredit), curr(totalDebit));
 			 
 		 }
 		 
@@ -293,7 +304,7 @@ public class ExcelReportBuilder {
 		 int rows = offsetRow + reportCategories.length;
 		 for (int i = 0; i <= rows; i++) {
 			 XSSFRow xssfRow = xsheet.getRow(i);
-			 autosizeColumn(xssfRow, 2 + 12*2, BorderStyle.THIN, null);
+			 autosizeColumn(xssfRow, 2 + 12*2, BorderStyle.THIN, HorizontalAlignment.CENTER);
 		}
 		
 	}
