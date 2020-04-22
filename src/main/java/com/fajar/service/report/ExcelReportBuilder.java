@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,7 +22,6 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xwpf.usermodel.VerticalAlign;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +30,7 @@ import com.fajar.dto.ReportCategory;
 import com.fajar.entity.CashBalance;
 import com.fajar.service.WebConfigService;
 import com.fajar.util.DateUtil;
+import com.fajar.util.ExcelReportUtil;
 import com.fajar.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -237,7 +238,7 @@ public class ExcelReportBuilder {
 	private void writeMonthlyReport(XSSFSheet xsheet, ReportRequest reportRequest, String reportName) {
 		// TODO Auto-generated method stub
 		Map<Integer, Map<ReportCategory, DailyReportRow>> reportContent = reportRequest.getMonthyReportContent();
-		
+		Map<ReportCategory, DailyReportRow> totalEachCategory = new HashMap<>();		
 		/**
 		 * Static Label
 		 */
@@ -247,6 +248,14 @@ public class ExcelReportBuilder {
 		ReportCategory[] reportCategories = ReportCategory.values();
 		int offsetRow = 4;
 		int offsetColumn = 1;
+		long grandTotalDebit = 0L;
+		long grandTotalCredit = 0L;
+		
+		for(int i = 0; i < 4 + 12*2;i++) {
+			for(int j = 0; j < 3 + reportCategories.length; j++) {
+				createRow(xsheet, 1 +  j, i, ""); 
+			}
+		}
 		
 		for (int i = 0; i < reportCategories.length; i++) {
 			ReportCategory reportCategory = reportCategories[i];
@@ -304,17 +313,54 @@ public class ExcelReportBuilder {
 					
 					totalDebit+= categoryData.getDebitAmount();
 					totalCredit+= categoryData.getCreditAmount();
+					
+					grandTotalDebit+=categoryData.getDebitAmount();
+					grandTotalCredit+=categoryData.getCreditAmount();
+					
+					updateTotalEachCategory(reportCategory,  totalEachCategory, categoryData);
 				}
 			 createRow(xsheet,  totalRowNum, i * 2, curr(totalCredit), curr(totalDebit));
 			 
 		 }
 		 
 		 
+		 /**
+		  * Grand Total
+		  */
+		 int totalColumn = 2 + 2*12;
+		 addMergedRegion(xsheet, new CellRangeAddress(1, 2, totalColumn, 27));
+		 createRow(xsheet, 1, totalColumn, "Jumlah");
+		 createRow(xsheet, 3,totalColumn, "D (K)", "K (D)");
+		 
+		 for(int i = 0; i < reportCategories.length; i++) {
+			 ReportCategory reportCategory = reportCategories[i];
+			 DailyReportRow totalData = totalEachCategory.get(reportCategory);
+			 createRow(xsheet, offsetRow + i, totalColumn, 
+					 curr(totalData.getDebitAmount()), 
+					 curr(totalData.getCreditAmount()));
+		 }
+		 createRow(xsheet, totalRowNum, 26, curr(grandTotalDebit), curr(grandTotalCredit));
+		 
+		 /**
+		  * autosizes
+		  */
 		 int rows = offsetRow + reportCategories.length;
 		 for (int i = 0; i <= rows; i++) {
 			 XSSFRow xssfRow = xsheet.getRow(i);
-			 autosizeColumn(xssfRow, 2 + 12*2, BorderStyle.THIN, HorizontalAlignment.CENTER);
+			 autosizeColumn(xssfRow, 4 + 12*2, BorderStyle.THIN, HorizontalAlignment.CENTER);
 		}
+		
+	}
+	
+	public static void updateTotalEachCategory(ReportCategory reportCategory, Map<ReportCategory, DailyReportRow> totalEachCategory,
+			DailyReportRow categoryData) {
+		if(totalEachCategory.get(reportCategory) == null) {
+			totalEachCategory.put(reportCategory, new DailyReportRow());
+		}
+		DailyReportRow existingRowData = totalEachCategory.get(reportCategory);
+		existingRowData.setCreditAmount(existingRowData.getCreditAmount() + categoryData.getCreditAmount());
+		existingRowData.setDebitAmount(existingRowData.getDebitAmount() + categoryData.getDebitAmount());
+		totalEachCategory.put(reportCategory, existingRowData);
 		
 	}
 	
