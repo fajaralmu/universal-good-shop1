@@ -239,11 +239,7 @@ public class ExcelReportBuilder {
 		// TODO Auto-generated method stub
 		Map<Integer, Map<ReportCategory, DailyReportRow>> reportContent = reportRequest.getMonthyReportContent();
 		Map<ReportCategory, DailyReportRow> totalEachCategory = new HashMap<>();		
-		/**
-		 * Static Label
-		 */
-		addMergedRegion(xsheet, new CellRangeAddress(1, 3, 0, 0), new CellRangeAddress(1, 3, 1, 1));
-		createRow(xsheet, 1, 0, "Kode Akun", "Nama Akun");
+		
 		
 		ReportCategory[] reportCategories = ReportCategory.values();
 		int offsetRow = 4;
@@ -257,10 +253,19 @@ public class ExcelReportBuilder {
 			}
 		}
 		
+		/**
+		 * Report Categories 
+		 */
 		for (int i = 0; i < reportCategories.length; i++) {
 			ReportCategory reportCategory = reportCategories[i];
 			createRow(xsheet, offsetRow + i, 0, reportCategory.code, reportCategory.name);
 		}
+		
+		/**
+		 * Title Label
+		 */
+		addMergedRegion(xsheet, new CellRangeAddress(1, 3, 0, 0), new CellRangeAddress(1, 3, 1, 1));
+		createRow(xsheet, 1, 0, "Kode Akun", "Nama Akun");
 		
 		int totalRowNum = offsetRow + reportCategories.length;
 		createRow(xsheet, totalRowNum, 0, "", "Jumlah");
