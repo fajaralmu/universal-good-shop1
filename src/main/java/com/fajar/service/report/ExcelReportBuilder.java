@@ -215,7 +215,7 @@ public class ExcelReportBuilder {
 	 *  
 	 */
 	
-	public void getMonthyReport(ReportRequest reportRequest) { 
+	public File getMonthyReport(ReportRequest reportRequest) { 
 		Filter filter = reportRequest.getFilter();
 		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hhmmss-a");
 		String sheetName = "Monthly-"+filter.getYear();
@@ -226,7 +226,8 @@ public class ExcelReportBuilder {
 		
 		writeMonthlyReport(xsheet, reportRequest, reportName);
 		
-		getFile(xwb, reportName);
+		File file = getFile(xwb, reportName);
+		return file;
 	}
 	
 	public static void main(String[ ]aa) {

@@ -71,18 +71,17 @@ public class RestReportController {
 		out.close();
 	}
 	
-	@PostMapping(value = "/monthly", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse monthly(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
+	@PostMapping(value = "/monthly", consumes = MediaType.APPLICATION_JSON_VALUE )
+	public void monthly(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws Exception {
 		log.info("monthly report {}", request);
 //		if(!userSessionService.hasSession(httpRequest)) {
 //			return ShopApiResponse.failedResponse();
 //		}
 		
-		excelReportService.buildMonthlyReport(request);
+		File result = excelReportService.buildMonthlyReport(request);
 		
-		ShopApiResponse response = new ShopApiResponse();
-		return response ;
+		writeFileReponse(httpResponse, result);
 	}
 	
 	 

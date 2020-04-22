@@ -391,7 +391,12 @@ public class PrintedReportService {
 		return cashBalance;
 	}
 
-	public void buildMonthlyReport(ShopApiRequest request) {
+	/**
+	 * get one year report having each month debit & credit summary
+	 * @param request
+	 * @return
+	 */
+	public File buildMonthlyReport(ShopApiRequest request) {
 		
 		Filter filter = request.getFilter();
 		Integer year = filter.getYear();
@@ -412,8 +417,10 @@ public class PrintedReportService {
 				System.out.println(reportCategory.toString()+". D: "+daily.get(reportCategory).getDebitAmount()+" | K: "+daily.get(reportCategory).getCreditAmount());
 			}
 		}
-		excelReportBuilder.getMonthyReport(ReportRequest.builder()
+		File result = excelReportBuilder.getMonthyReport(ReportRequest.builder()
 				.filter(filter).monthyReportContent(monthyReportContent).build());
+		
+		return result;
 	}
 	 
 	
