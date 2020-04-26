@@ -11,21 +11,11 @@
 	var page = 0;
 	var limit = 5;
 	var totalData = 0;
-	var imgElements = ${
-		entityProperty.imageElementsJson
-	};
-	var currencyElements = ${
-		entityProperty.currencyElementsJson
-	};
-	var dateElements = ${
-		entityProperty.dateElementsJson
-	};
-	var fieldNames = ${
-		entityProperty.fieldNames
-	};
-	var optionElements = ${
-		options
-	};
+	var imgElements = ${entityProperty.imageElementsJson};
+	var currencyElements = ${entityProperty.currencyElementsJson};
+	var dateElements = ${entityProperty.dateElementsJson};
+	var fieldNames = ${entityProperty.fieldNames};
+	var optionElements = ${options};
 	var imagesData = {};
 	var idField = "${entityProperty.idField}";
 	var  editable = ${entityProperty.editable};

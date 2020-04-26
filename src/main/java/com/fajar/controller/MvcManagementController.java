@@ -32,6 +32,7 @@ import com.fajar.entity.User;
 import com.fajar.entity.UserRole;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.service.ComponentService;
+import com.fajar.service.EntityManagementPageService;
 import com.fajar.service.EntityService;
 import com.fajar.service.LogProxyFactory;
 import com.fajar.service.UserSessionService;
@@ -59,6 +60,8 @@ public class MvcManagementController extends BaseController {
 	private WebConfigService webAppConfiguration;
 	@Autowired
 	private ComponentService componentService;
+	@Autowired
+	private EntityManagementPageService entityManagementPageService;
 
 	private static String basePage;
 	private static final String ERROR_404_PAGE = "error/notfound";
@@ -72,23 +75,39 @@ public class MvcManagementController extends BaseController {
 		basePage = webAppConfiguration.getBasePage();
 		LogProxyFactory.setLoggers(this);
 	}
-
-	@RequestMapping(value = { "/unit" })
-	public String unit(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	
+	@RequestMapping(value = { "/common/{name}" })
+	public String unit(@PathVariable("name")String name, Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/account/login");
 			return basePage;
 		}
 		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/unit");
+			checkUserAccess(userService.getUserFromSession(request), "/management/common/"+name);
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
-		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(Unit.class, null); 
-		model = constructCommonModel(request, entityProperty, model, "Unit", "management");
+		} 
+		model = entityManagementPageService.setModel(request, model, name);
 		return basePage;
 	}
+
+//	@RequestMapping(value = { "/unit" })
+//	public String unit(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+//
+//		if (!userService.hasSession(request)) {
+//			response.sendRedirect(request.getContextPath() + "/account/login");
+//			return basePage;
+//		}
+//		try {
+//			checkUserAccess(userService.getUserFromSession(request), "/management/unit");
+//		} catch (Exception e) {
+//			return ERROR_404_PAGE;
+//		}
+//		EntityProperty entityProperty = EntityUtil.createEntityProperty(Unit.class, null); 
+//		model = constructCommonModel(request, entityProperty, model, "Unit", "management");
+//		return basePage;
+//	}
 
 	@RequestMapping(value = { "/profile" })
 	public String profile(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -111,109 +130,109 @@ public class MvcManagementController extends BaseController {
 		return basePage;
 	}
 
-	@RequestMapping(value = { "/supplier" })
-	public String supplier(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
-			return basePage;
-		}
-		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/supplier");
-		} catch (Exception e) {
-			return ERROR_404_PAGE;
-		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(Supplier.class, null);
-
-		model = constructCommonModel(request, entityProperty, model, "Supplier", "management");
-		return basePage;
-	}
+//	@RequestMapping(value = { "/supplier" })
+//	public String supplier(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+//
+//		if (!userService.hasSession(request)) {
+//			response.sendRedirect(request.getContextPath() + "/account/login");
+//			return basePage;
+//		}
+//		try {
+//			checkUserAccess(userService.getUserFromSession(request), "/management/supplier");
+//		} catch (Exception e) {
+//			return ERROR_404_PAGE;
+//		}
+//		EntityProperty entityProperty = EntityUtil.createEntityProperty(Supplier.class, null);
+//
+//		model = constructCommonModel(request, entityProperty, model, "Supplier", "management");
+//		return basePage;
+//	}
 	
-	@RequestMapping(value = { "/registeredrequest" })
-	public String registeredRequest(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+//	@RequestMapping(value = { "/registeredrequest" })
+//	public String registeredRequest(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+//
+//		if (!userService.hasSession(request)) {
+//			response.sendRedirect(request.getContextPath() + "/account/login");
+//			return basePage;
+//		}
+//		try {
+//			checkUserAccess(userService.getUserFromSession(request), "/management/registeredrequest");
+//		} catch (Exception e) {
+//			return ERROR_404_PAGE;
+//		}
+//		EntityProperty entityProperty = EntityUtil.createEntityProperty(RegisteredRequest.class, null);
+//
+//		model = constructCommonModel(request, entityProperty, model, "RegisteredRequest", "management");
+//		return basePage;
+//	}
 
-		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
-			return basePage;
-		}
-		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/registeredrequest");
-		} catch (Exception e) {
-			return ERROR_404_PAGE;
-		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(RegisteredRequest.class, null);
+//	@RequestMapping(value = { "/customer" })
+//	public String customer(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+//
+//		if (!userService.hasSession(request)) {
+//			response.sendRedirect(request.getContextPath() + "/account/login");
+//			return basePage;
+//		}
+//		try {
+//			checkUserAccess(userService.getUserFromSession(request), "/management/customer");
+//		} catch (Exception e) {
+//			return ERROR_404_PAGE;
+//		}
+//		EntityProperty entityProperty = EntityUtil.createEntityProperty(Customer.class, null); 
+//		model = constructCommonModel(request, entityProperty, model, "Customer", "management");
+//		return basePage;
+//	}
+//
+//	@RequestMapping(value = { "/product" })
+//	public String product(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+//
+//		if (!userService.hasSession(request)) {
+//			response.sendRedirect(request.getContextPath() + "/account/login");
+//			return basePage;
+//		}
+//		try {
+//			checkUserAccess(userService.getUserFromSession(request), "/management/product");
+//		} catch (Exception e) {
+//			return ERROR_404_PAGE;
+//		}
+//		EntityProperty entityProperty = EntityUtil.createEntityProperty(Product.class, null); 
+//		model = constructCommonModel(request, entityProperty, model, "Product", "management");
+//		return basePage;
+//	}
 
-		model = constructCommonModel(request, entityProperty, model, "RegisteredRequest", "management");
-		return basePage;
-	}
-
-	@RequestMapping(value = { "/customer" })
-	public String customer(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
-			return basePage;
-		}
-		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/customer");
-		} catch (Exception e) {
-			return ERROR_404_PAGE;
-		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(Customer.class, null); 
-		model = constructCommonModel(request, entityProperty, model, "Customer", "management");
-		return basePage;
-	}
-
-	@RequestMapping(value = { "/product" })
-	public String product(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
-			return basePage;
-		}
-		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/product");
-		} catch (Exception e) {
-			return ERROR_404_PAGE;
-		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(Product.class, null); 
-		model = constructCommonModel(request, entityProperty, model, "Product", "management");
-		return basePage;
-	}
-
-	@RequestMapping(value = { "/category" })
-	public String category(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
-			return basePage;
-		}
-		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/category");
-		} catch (Exception e) {
-			return ERROR_404_PAGE;
-		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(Category.class, null); 
-		model = constructCommonModel(request, entityProperty, model, "Category", "management");
-		return basePage;
-	}
+//	@RequestMapping(value = { "/category" })
+//	public String category(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+//
+//		if (!userService.hasSession(request)) {
+//			response.sendRedirect(request.getContextPath() + "/account/login");
+//			return basePage;
+//		}
+//		try {
+//			checkUserAccess(userService.getUserFromSession(request), "/management/category");
+//		} catch (Exception e) {
+//			return ERROR_404_PAGE;
+//		}
+//		EntityProperty entityProperty = EntityUtil.createEntityProperty(Category.class, null); 
+//		model = constructCommonModel(request, entityProperty, model, "Category", "management");
+//		return basePage;
+//	}
 	
-	@RequestMapping(value = { "/cost" })
-	public String cost(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
-			return basePage;
-		}
-		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/cost");
-		} catch (Exception e) {
-			return ERROR_404_PAGE;
-		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(Cost.class, null); 
-		model = constructCommonModel(request, entityProperty, model, "Cost", "management");
-		return basePage;
-	}
+//	@RequestMapping(value = { "/cost" })
+//	public String cost(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+//
+//		if (!userService.hasSession(request)) {
+//			response.sendRedirect(request.getContextPath() + "/account/login");
+//			return basePage;
+//		}
+//		try {
+//			checkUserAccess(userService.getUserFromSession(request), "/management/cost");
+//		} catch (Exception e) {
+//			return ERROR_404_PAGE;
+//		}
+//		EntityProperty entityProperty = EntityUtil.createEntityProperty(Cost.class, null); 
+//		model = constructCommonModel(request, entityProperty, model, "Cost", "management");
+//		return basePage;
+//	}
 	@RequestMapping(value = { "/costflow" })
 	public String costflow(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -233,22 +252,22 @@ public class MvcManagementController extends BaseController {
 		return basePage;
 	}
 
-	@RequestMapping(value = { "/userrole" })
-	public String userRole(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
-			return basePage;
-		}
-		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/userrole");
-		} catch (Exception e) {
-			return ERROR_404_PAGE;
-		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(UserRole.class, null); 
-		model = constructCommonModel(request, entityProperty, model, "UserRole", "management");
-		return basePage;
-	}
+//	@RequestMapping(value = { "/userrole" })
+//	public String userRole(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+//
+//		if (!userService.hasSession(request)) {
+//			response.sendRedirect(request.getContextPath() + "/account/login");
+//			return basePage;
+//		}
+//		try {
+//			checkUserAccess(userService.getUserFromSession(request), "/management/userrole");
+//		} catch (Exception e) {
+//			return ERROR_404_PAGE;
+//		}
+//		EntityProperty entityProperty = EntityUtil.createEntityProperty(UserRole.class, null); 
+//		model = constructCommonModel(request, entityProperty, model, "UserRole", "management");
+//		return basePage;
+//	}
 
 	/** RESTRICTED ACCESS **/
 
@@ -273,23 +292,23 @@ public class MvcManagementController extends BaseController {
 		return basePage;
 	}
 	
-	@RequestMapping(value = { "/productFlow" })
-	public String productflow(Model model, HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
-
-		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
-			return basePage;
-		}
-		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/productFlow");
-		} catch (Exception e) {
-			return ERROR_404_PAGE;
-		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(ProductFlow.class, null); 
-		model = constructCommonModel(request,entityProperty, model, "productFlow", "management");
-		return basePage;
-	}
+//	@RequestMapping(value = { "/productFlow" })
+//	public String productflow(Model model, HttpServletRequest request, HttpServletResponse response)
+//			throws IOException {
+//
+//		if (!userService.hasSession(request)) {
+//			response.sendRedirect(request.getContextPath() + "/account/login");
+//			return basePage;
+//		}
+//		try {
+//			checkUserAccess(userService.getUserFromSession(request), "/management/productFlow");
+//		} catch (Exception e) {
+//			return ERROR_404_PAGE;
+//		}
+//		EntityProperty entityProperty = EntityUtil.createEntityProperty(ProductFlow.class, null); 
+//		model = constructCommonModel(request,entityProperty, model, "productFlow", "management");
+//		return basePage;
+//	}
 
 	@RequestMapping(value = { "/transaction", "/transaction/{option}" })
 	public String transaction(@PathVariable(required = false) String option, Model model, HttpServletRequest request,
@@ -330,22 +349,22 @@ public class MvcManagementController extends BaseController {
 		return basePage;
 	}
 
-	@RequestMapping(value = { "/menu" })
-	public String menu(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
-			return basePage;
-		}
-		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/menu");
-		} catch (Exception e) {
-			return ERROR_404_PAGE;
-		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(Menu.class, null); 
-		model = constructCommonModel(request, entityProperty, model, "Menu", "management");
-		return basePage;
-	} 
+//	@RequestMapping(value = { "/menu" })
+//	public String menu(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+//
+//		if (!userService.hasSession(request)) {
+//			response.sendRedirect(request.getContextPath() + "/account/login");
+//			return basePage;
+//		}
+//		try {
+//			checkUserAccess(userService.getUserFromSession(request), "/management/menu");
+//		} catch (Exception e) {
+//			return ERROR_404_PAGE;
+//		}
+//		EntityProperty entityProperty = EntityUtil.createEntityProperty(Menu.class, null); 
+//		model = constructCommonModel(request, entityProperty, model, "Menu", "management");
+//		return basePage;
+//	} 
 	
 	/**
 	 * 
@@ -373,6 +392,10 @@ public class MvcManagementController extends BaseController {
 
 	private void checkUserAccess(User user, String url) throws Exception {
 		componentService.checkAccess(user, url);
+	}
+	
+	public static void main(String[] args) throws ClassNotFoundException {
+		Class.forName("com.fajar.entity.costflow");
 	}
 
 }

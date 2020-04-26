@@ -169,6 +169,10 @@ public class EntityRepository {
 		entityConfiguration.put("productflow", config(null, ProductFlow.class, baseEntityUpdateService));
 		entityConfiguration.put("message", config(null, Message.class, commonUpdateService));
 	}
+	
+	public EntityManagementConfig getConfig(String key) {
+		return entityConfiguration.get(key);
+	}
 
 	private EntityManagementConfig config(String object, Class<? extends BaseEntity> class1,
 			BaseEntityUpdateService commonUpdateService2) {
