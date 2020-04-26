@@ -48,7 +48,27 @@ function loadEntityList(url, requestObject, callback) {
 			});
 }
 
-/**ENTITY OPERATION**/
+function downloadFileFromResponse(xhr){
+	let contentDisposition = xhr.getResponseHeader("Content-disposition");
+	let fileName = contentDisposition.split("filename=")[1];
+	let rawSplit = fileName.split(".");
+	let extension = fileName.split(".")[rawSplit.length - 1];
+	let blob = new Blob([xhr.response], {type: extension}); 
+	let url = window.URL.createObjectURL(blob); 
+    let a = document.createElement("a"); 
+    
+    document.body.appendChild(a);  
+     
+    a.href = url;
+    a.style = "display: none";
+    a.download = fileName; 
+    a.click(); 
+      
+    window.URL.revokeObjectURL(url);
+}
+
+
+/**CRUD OPERATION**/
 function doDeleteEntity(url, entityName, idField, entityId, callback) {
 	if(!confirm(" Are you sure want to Delete: "+ entityId+"?")){
 		return;
