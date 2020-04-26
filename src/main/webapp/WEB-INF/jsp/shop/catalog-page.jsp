@@ -11,7 +11,7 @@
 </style>
 <div class="content">
 	<p></p>
-	<!-- DETAIL ELEMENT -->
+	<!-- Detail Product Supplier -->
 	<div class="modal fade" id="modal-product-suppliers" tabindex="-1"
 		role="dialog" aria-labelledby="Product Suppliers" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered modal-lg"
@@ -40,6 +40,7 @@
 		</div>
 	</div>
 
+	<!-- Detail Product -->
 	<div id="detail-content" class="row"
 		style="width: 95%; margin: auto; display: none">
 		<table class="table" style="layout: fixed;">
@@ -115,6 +116,8 @@
 		</table>
 	</div>
 	
+	<!-- Catalog of Products -->
+	
 	<div id="catalog-content">
 		<h2>Product Catalog</h2>
 		<p></p>
@@ -179,23 +182,23 @@
 	var defaultOption = "${defaultOption}";
 	
 	//filted
-	var selectOrder = document.getElementById("select-order");
+	var selectOrder = _byId("select-order");
 
 	//elements
-	var navigationPanel = document.getElementById("navigation-panel");
-	var catalogPanel = document.getElementById("catalog-panel");
-	var nameFilter = document.getElementById("search-name");
-	var chkBoxGetStock = document.getElementById("get-stock");
-	var categoryFilter = document.getElementById("select-category");
-	var tableSupplierList = document.getElementById("table-supplier-list");
+	var navigationPanel = _byId("navigation-panel");
+	var catalogPanel = _byId("catalog-panel");
+	var nameFilter = _byId("search-name");
+	var chkBoxGetStock = _byId("get-stock");
+	var categoryFilter = _byId("select-category");
+	var tableSupplierList = _byId("table-supplier-list");
 
 	//detail
-	var productTitle = document.getElementById("product-title");
-	var productUnit = document.getElementById("product-unit");
-	var productCategory = document.getElementById("product-category");
-	var productDescription = document.getElementById("product-description");
-	var carouselInner = document.getElementById("carousel-inner");
-	var carouselIndicator = document.getElementById("carousel-indicators");
+	var productTitle = _byId("product-title");
+	var productUnit = _byId("product-unit");
+	var productCategory = _byId("product-category");
+	var productDescription = _byId("product-description");
+	var carouselInner = _byId("carousel-inner");
+	var carouselIndicator = _byId("carousel-indicators");
 	var defaultLocation = window.location.href;
 	var supplierOffset = 0;
 	var selectedProductId = 0;
@@ -254,8 +257,8 @@
 
 		//title, count, price
 		productTitle.innerHTML = entity.name;
-		document.getElementById("product-stock").innerHTML = entity.count;
-		document.getElementById("product-price").innerHTML = beautifyNominal(entity.price);
+		_byId("product-stock").innerHTML = entity.count;
+		_byId("product-price").innerHTML = beautifyNominal(entity.price);
 		productUnit.innerHTML = entity.unit.name;
 		productCategory.innerHTML = entity.category.name;
 		productDescription.innerHTML = entity.description;
@@ -416,7 +419,7 @@
 	}
 
 	function loadEntity(page) {
-		this.limit = document.getElementById("select-limit").value;
+		this.limit = _byId("select-limit").value;
 		if(this.limit > 20 || this.limit < 0){
 			alert("Woooww.. our server will be confused with your choice");
 			this.limit = 10;

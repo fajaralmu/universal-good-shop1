@@ -33,6 +33,16 @@
 	var entityIdValue = "${entityId}";
 	
 </script>
+<style>
+
+	#entity-form{
+		layout: fixed;
+		display: grid;
+		grid-row-gap: 1em; 
+		grid-column-gap: 1em; 
+		grid-template-columns:  ${"auto ".repeat(entityProperty.formInputColumn)}
+	}
+</style>
 
 <!-- DETAIL ELEMENT -->
 	<jsp:include page="../entity-management-component/detail-element.jsp"></jsp:include>
@@ -52,17 +62,13 @@
 					</button>
 				</c:if>
 			</div>
-			<div class="modal-body" style="height: 400px; overflow: scroll;">
-				
-				<div>
-					<table style="layout: fixed">
-						<tr>
-							<td colspan="2"></td>
-						</tr>
+			<div class="modal-body" style="height: 400px; overflow: scroll;"> 
+					<div id= "entity-form"  >
+						<div></div><div></div>
 						<c:forEach var="element" items="${entityProperty.elements}">
-							<tr valign="top">
-								<td><label>${element.lableName }</label></td>
-								<td><c:choose>
+							 
+								<div><label>${element.lableName }</label></div>
+								<div><c:choose>
 										<c:when test="${  element.type == 'fixedlist'}">
 											<select class="input-field form-control" id="${element.id }"
 												required="${element.required }"
@@ -83,9 +89,8 @@
 													let option = document.createElement("option");
 													option.value = optionItem["${element.optionValueName}"];
 													option.innerHTML = optionItem["${element.optionItemName}"];
-													_byId(
-															"${element.id }")
-															.append(option);
+													
+													_byId("${element.id }").append(option);
 												}
 											</script>
 										</c:when>
@@ -119,6 +124,7 @@
 												showdetail="true" class="input-field" id="${element.id }"
 												type="hidden" name="${element.optionItemName}"
 												disabled="disabled" />
+												
 											<button id="btn-detail-${element.id }" class="btn btn-info"
 												onclick="showDetail('${element.id }','${element.optionItemName}' )">Detail</button>
 										</c:when>
@@ -127,9 +133,11 @@
 											<input class="input-field form-control" id="${element.id }"
 												type="file" ${element.required?'required':'' }
 												identity="${element.identity }" />
+												
 											<button id="${element.id }-file-ok-btn"
 												class="btn btn-primary btn-sm"
 												onclick="addImagesData('${element.id}')">ok</button>
+												
 											<button id="${element.id }-file-cancel-btn"
 												class="btn btn-warning btn-sm"
 												onclick="cancelImagesData('${element.id}')">cancel</button>
@@ -143,18 +151,23 @@
 												class="input-field">
 												<div id="${element.id }-0-input-item"
 													class="${element.id }-input-item">
+													
 													<input class="input-file" id="${element.id }-0" type="file"
 														${element.required?'required':'' }
 														identity="${element.identity }" />
+														
 													<button id="${element.id }-0-file-ok-btn "
 														class="btn btn-primary btn-sm"
 														onclick="addImagesData('${element.id}-0')">ok</button>
+														
 													<button id="${element.id }-0-file-cancel-btn"
 														class="btn btn-warning btn-sm"
 														onclick="cancelImagesData('${element.id}-0')">cancel</button>
+														
 													<button id="${element.id }-0-remove-list"
 														class="btn btn-danger btn-sm"
 														onclick="removeImageList('${element.id }-0')">Remove</button>
+														
 													<div>
 														<img id="${element.id }-0-display" width="50" height="50" />
 													</div>
@@ -174,11 +187,9 @@
 												type="${element.type }" ${element.required?'required':'' }
 												identity="${element.identity }" />
 										</c:otherwise>
-									</c:choose></td>
-							</tr>
-						</c:forEach>
-						 
-					</table>
+									</c:choose></div>
+							 
+						</c:forEach> 
 				</div>
 
 				<!-- </div> -->

@@ -55,7 +55,7 @@
 
 	function populateTable(entities) {
 
-		let table = document.getElementById("app-sessions");
+		let table = _byId("app-sessions");
 
 		table.innerHTML = "";
 
@@ -124,10 +124,9 @@
 	}
 
 	function updateMessage(response) {
-		/* 	console.log("WILL CONSTRUCT MESSAGES: ", response, "COMPONENT:",
-					document.getElementById(response.code)); */
-		if (document.getElementById(response.code)) {
-			document.getElementById(response.code).innerHTML = "<button class=\"btn btn-secondary\" id=\"do-toggle-msg"+response.code+"\" >Toggle Chat("
+		 
+		if (_byId(response.code)) {
+			_byId(response.code).innerHTML = "<button class=\"btn btn-secondary\" id=\"do-toggle-msg"+response.code+"\" >Toggle Chat("
 					+ response.entities.length + ")</button>";
 			let messages = response.entities;
 
@@ -159,21 +158,20 @@
 			tableMsg.style.width = "100%";
 			tableMsg.style.display = "block";
 			tableMsg.appendChild(rowReply);
-			document.getElementById(response.code).appendChild(tableMsg);
-			document.getElementById("do-reply-msg" + response.code).onclick = function(
+			_byId(response.code).appendChild(tableMsg);
+			_byId("do-reply-msg" + response.code).onclick = function(
 					e) {
-				let message = document.getElementById("reply-msg"
+				let message = _byId("reply-msg"
 						+ response.code).value;
 				sendReply(response.code, message);
 			}
 
-			document.getElementById("do-toggle-msg" + response.code).onclick = function(
-					e) {
+			_byId("do-toggle-msg" + response.code).onclick = function(e) {
 				let display = "block";
-				if (document.getElementById("chat-msg-" + response.code).style.display == "block") {
+				if (_byId("chat-msg-" + response.code).style.display == "block") {
 					display = "none";
 				}
-				document.getElementById("chat-msg-" + response.code).style.display = display;
+				_byId("chat-msg-" + response.code).style.display = display;
 			}
 
 		}

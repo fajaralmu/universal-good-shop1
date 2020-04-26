@@ -47,7 +47,7 @@ public class MvcUtil {
 				System.out.println("=========OPTION_JSON: " + optionJson);
 			}
 		}
-		model.addAttribute("title", "Management::" + title);
+		model.addAttribute("title", title);
 		model.addAttribute("pageUrl", "shop/entity-management-page");
 		model.addAttribute("entityProperty", entityProperty);
 		model.addAttribute("page", page);

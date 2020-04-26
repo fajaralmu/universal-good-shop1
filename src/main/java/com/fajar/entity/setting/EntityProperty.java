@@ -27,6 +27,7 @@ public class EntityProperty implements Serializable {
 	private String fieldNames;
 	private List<String> fieldNameList;
 	private String idField;
+	private int formInputColumn;
 	@Builder.Default
 	private boolean editable = true;
 	@Builder.Default

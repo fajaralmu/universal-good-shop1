@@ -12,13 +12,14 @@ import javax.persistence.Transient;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fajar.dto.FormInputColumn;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Dto
+@Dto(formInputColumn =  FormInputColumn.ONE_COLUMN)
 @Entity
 @Table(name = "product")
 @Data
@@ -32,7 +33,7 @@ public class Product extends BaseEntity implements Serializable {
 	*/
 	private static final long serialVersionUID = 3494963248002164943L;
 	@Column(unique = true)
-	@FormField
+	@FormField(lableName = "Product Code")
 	private String code;
 	@Column(unique = true)
 	@FormField

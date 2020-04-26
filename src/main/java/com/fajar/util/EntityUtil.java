@@ -31,6 +31,8 @@ public class EntityUtil {
 			return null;
 		}
 		
+		Dto dto = (Dto) clazz.getAnnotation(Dto.class);
+		
 		EntityProperty entityProperty = EntityProperty.builder().entityName(clazz.getSimpleName().toLowerCase()).build();
 		try {
 
@@ -144,6 +146,7 @@ public class EntityUtil {
 			entityProperty.setDateElementsJson(MyJsonUtil.listToJson(dateElements));
 			entityProperty.setFieldNames(MyJsonUtil.listToJson(fieldNames));
 			entityProperty.setFieldNameList(fieldNames);
+			entityProperty.setFormInputColumn(dto.formInputColumn().value);
 			
 			log.info("============ENTITY PROPERTY: {} ", entityProperty);
 			
