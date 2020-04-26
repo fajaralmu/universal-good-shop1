@@ -16,6 +16,7 @@ import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
+import com.fajar.entity.Capital;
 import com.fajar.entity.Cost;
 import com.fajar.entity.Unit;
 import com.fajar.entity.UserRole;
@@ -178,6 +179,11 @@ public class EntityService {
 	
 	public List<Unit> getAllUnit() { 
 		return entityRepository.findAll(Unit.class);
+	}
+
+
+	public List<Capital> getAllCapitalType() { 
+		return entityRepository.findAll(Capital.class);
 	}
 
 }
