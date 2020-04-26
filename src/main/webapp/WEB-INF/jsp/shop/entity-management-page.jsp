@@ -78,12 +78,12 @@
 													element.jsonList
 												};
 												for (let i = 0; i < options.length; i++) {
-													let option = document
-															.createElement("option");
+													
 													let optionItem = options[i];
+													let option = document.createElement("option");
 													option.value = optionItem["${element.optionValueName}"];
 													option.innerHTML = optionItem["${element.optionItemName}"];
-													document.getElementById(
+													_byId(
 															"${element.id }")
 															.append(option);
 												}
@@ -244,14 +244,14 @@
 	var fields = document.getElementsByClassName("input-field");
 	var filterFields = document.getElementsByClassName("filter-field");
 	
-	var entityTBody = document.getElementById("entity-tb");
-	var entityTHead = document.getElementById("entity-th");
-	var entitiesTable = document.getElementById("list-table");
+	var entityTBody = _byId("entity-tb");
+	var entityTHead = _byId("entity-th");
+	var entitiesTable = _byId("list-table");
 	
-	var filterField = document.getElementById("filter-field");
-	var filterValue = document.getElementById("filter-value");
+	var filterField = _byId("filter-field");
+	var filterValue = _byId("filter-value");
 	
-	var navigationPanel = document.getElementById("navigation-panel");
+	var navigationPanel = _byId("navigation-panel");
 	var orderBy = null;
 	var orderType = null;
 
@@ -259,13 +259,13 @@
 	var currentDetailEntityName = "";
 	var currentDetailFieldName = "";
 	var currentDetailOffset = 0;
-	var detailTable = document.getElementById("table-detail");
+	var detailTable = _byId("table-detail");
 	/*
 		add single image
 	*/
 	function addImagesData(id) {
-		let imageTag = document.getElementById(id + "-display");
-		toBase64(document.getElementById(id), function(result) {
+		let imageTag = _byId(id + "-display");
+		toBase64(_byId(id), function(result) {
 			let imageData = {
 				id : result
 			};
@@ -279,8 +279,8 @@
 		cancel single image
 	*/
 	function cancelImagesData(id) {
-		document.getElementById(id).value = null;
-		let imageTag = document.getElementById(id + "-display");
+		_byId(id).value = null;
+		let imageTag = _byId(id + "-display");
 		imageTag.src = imageTag.getAttribute("originaldata");
 		//remove from imagesData object
 		imagesData[id] = null;
@@ -289,7 +289,7 @@
 	//load dropdown list for multiple select
 	function loadList(inputElement) {
 
-		let element = document.getElementById(inputElement.name);
+		let element = _byId(inputElement.name);
 		element.innerHTML = "";
 		//converter field
 		let itemField = element.getAttribute("itemNameField");
@@ -340,7 +340,7 @@
 	}
 	
 	function setPage(){
-		this.page = document.getElementById("input-page").value;
+		this.page = _byId("input-page").value;
 		loadEntity(this.page);
 	}
 
@@ -364,7 +364,7 @@
 			if (filterField.value != "") {
 				let fieldName = filterField.getAttribute("field");
 				let filterValue = filterField.value;
-				let checkBoxExact = document.getElementById("checkbox-exact-"+fieldName);
+				let checkBoxExact = _byId("checkbox-exact-"+fieldName);
 				console.log("EXACT",checkBoxExact != null && checkBoxExact.checked);
 				console.log("CHECKBOX",checkBoxExact);
 				if(checkBoxExact != null && checkBoxExact.checked){
@@ -600,7 +600,7 @@
 			let entityValue = entity[fieldNames[j]];
 			let entityValueAsObject = entityValue;
 			//element
-			let elementField = document.getElementById(fieldNames[j]);
+			let elementField = _byId(fieldNames[j]);
 
 			let enableDetail = elementField.getAttribute("showdetail") == "true";
 			let isMultipleSelect = elementField.nodeName == "SELECT"
@@ -628,7 +628,7 @@
 					option.selected = true;
 					elementField.append(option);
 					//set input value same as converter field name
-					let inputField = document.getElementById("input-"
+					let inputField = _byId("input-"
 							+ fieldNames[j]);
 					inputField.value = entityValueAsObject[objectItemName];
 				}
@@ -639,11 +639,11 @@
 			} 
 			//handle image type value
 			else if (isImageField) {
-				let displayElement = document.getElementById(fieldNames[j]
+				let displayElement = _byId(fieldNames[j]
 						+ "-display");
 				let url = "${host}/${contextPath}/${imagePath}/";
 				if (displayElement == null && entityValue != null) {
-					document.getElementById(fieldNames[j]).innerHTML = "";
+					_byId(fieldNames[j]).innerHTML = "";
 					let entityValues = entityValue.split("~");
 					console.log(fieldNames[j], "values", entityValues);
 					for (let i = 0; i < entityValues.length; i++) {
@@ -684,11 +684,11 @@
 		fields = document.getElementsByClassName("input-field");
 		for (let i = 0; i < fields.length; i++) {
 			let id = fields[i].id;
-			let element = document.getElementById(id);
+			let element = _byId(id);
 			if (element.nodeName == "SELECT"
 					&& element.getAttribute("multiple") == "multiple") {
 				element.innerHTML = "";
-				document.getElementById("input-" + id).value = "";
+				_byId("input-" + id).value = "";
 			} else {
 				element.value = null;
 				element.value = "";
@@ -703,7 +703,7 @@
 
 	//add image to image list
 	function doAddImageList(id, src, originalvalue) {
-		let listParent = document.getElementById(id);//+"-input-list");
+		let listParent = _byId(id);//+"-input-list");
 		//current item list elements
 		let itemLists = document.getElementsByClassName(id + "-input-item");
 		let length = 0;
@@ -769,7 +769,7 @@
 	function removeImageList(id) {
 		if (!confirm("Are you sure want to remove this item?"))
 			return;
-		let element = document.getElementById(id);
+		let element = _byId(id);
 		element.parentNode.remove(element);
 	}
 	
@@ -790,7 +790,7 @@
 			};
 			requestObject.filter.fieldsFilter[entityName] = document
 					.getElementById(this.currentDetailEntityName).getAttribute(this.currentDetailFieldName);
-			let detailFields = document.getElementById(this.currentDetailEntityName).getAttribute(
+			let detailFields = _byId(this.currentDetailEntityName).getAttribute(
 					"detailfields").split("~");
 			console.log("request more detail", requestObject);
 		 
@@ -823,7 +823,7 @@
 		};
 		requestObject.filter.fieldsFilter[entityName] = document
 				.getElementById(elementId).getAttribute(field);
-		let detailFields = document.getElementById(elementId).getAttribute(
+		let detailFields = _byId(elementId).getAttribute(
 				"detailfields").split("~");
 		console.log("request", requestObject);
 		detailTable.innerHTML = "";
@@ -851,9 +851,9 @@
 			return;
 		}
 		for (let optionElement in optionElements) {
-			if(document.getElementById("filter-"+optionElement)==null)
+			if(_byId("filter-"+optionElement)==null)
 				continue;
-			document.getElementById("filter-"+optionElement).value = optionElements[optionElement];
+			_byId("filter-"+optionElement).value = optionElements[optionElement];
 		} 
 		
 	}
@@ -917,7 +917,7 @@
 						entity[fieldId] = "";
 						for (var j = 0; j < length; j++) {
 							let elmentIdAndIndex = fieldId + "-" + j;
-							let imgTag = document.getElementById(elmentIdAndIndex
+							let imgTag = _byId(elmentIdAndIndex
 									+ "-display");
 							
 							//check original image
