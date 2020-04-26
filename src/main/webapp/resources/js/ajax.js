@@ -1,4 +1,4 @@
-function postReq(url, requestObject, callback) {
+function postReq(url, requestObject, callback, blob) {
 	 infoLoading();
 	var request = new XMLHttpRequest();
 	var param = JSON.stringify(requestObject);
@@ -6,6 +6,9 @@ function postReq(url, requestObject, callback) {
 	request.setRequestHeader("Content-type", "application/json");
 	request.setRequestHeader("requestToken", document.getElementById("token-value").value);
 	request.setRequestHeader("requestId", document.getElementById("request-id").value);
+	if(blob == true){
+		request.responseType = "blob";
+	}
 	request.onreadystatechange = function() {
 		
 		if (this.readyState == this.DONE) {

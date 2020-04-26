@@ -24,8 +24,9 @@
 				</select>
 			</div>
 			<div class="input-group-append">
-				<button class="btn btn-outline-secondary" onclick="getCashflow()">OK</button>
-				<button class="btn btn-outline-secondary" onclick="getCashflowThisMonth()">Detail In This Month</button>
+				<button class="btn btn-outline-secondary" onclick="getCashflow()">Search</button> 
+				<button class="btn btn-outline-secondary" onclick="report('daily')">Report This Month</button>
+				<button class="btn btn-outline-secondary" onclick="report('monthly')">Report This Year</button>
 			</div>
 		</div>
 		<p></p>
@@ -139,7 +140,7 @@
 		fetchCashflow(selectMonth.value, selectYear.value, "OUT");
 	}
 	
-	function getCashflowThisMonth(){
+	function report(type){
 		infoLoading();
 		var requestObject = {
 				"filter":{
@@ -147,20 +148,28 @@
 					"month":selectMonth.value 
 				}
 		};
-		
-		console.log("get cashflow", requestObject);
-		postReq("<spring:url value="/api/transaction/monthlycashflow" />"  ,
+		postReq("<spring:url value="/api/report/" />" +type ,
 				requestObject, function(xhr) {
-					var response = (xhr.data);
-					if (response != null && response.code == "00") {
-						 
-					} else {
-						alert("Failed getting cashflow: "+module);
-					} 
+					  
+					 var blob = new Blob([xhr.response], {type: 'xlsx'});
+				      //Create a link element, hide it, direct 
+				      //it towards the blob, and then 'click' it programatically
+				      let a = document.createElement("a");
+				      a.style = "display: none";
+				      document.body.appendChild(a);
+				      //Create a DOMString representing the blob 
+				      //and point the link element towards it
+				      let url = window.URL.createObjectURL(blob);
+				      a.href = url;
+				      a.download = 'Report.xlsx';
+				      //programatically click the link to trigger the download
+				      a.click();
+				      //release the reference to the file by revoking the Object URL
+				      window.URL.revokeObjectURL(url);
+			
 					infoDone();
-				});
-	}
-	 
+				}, true);
+	} 
 
 	function populatePeriodFilter() {
 		populateSelectPeriod(selectMonth, selectYear);
