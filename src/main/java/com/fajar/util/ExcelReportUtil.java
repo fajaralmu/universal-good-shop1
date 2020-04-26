@@ -1,5 +1,7 @@
 package com.fajar.util;
 
+import static org.apache.poi.ss.usermodel.BorderStyle.THIN;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -47,9 +49,56 @@ public class ExcelReportUtil {
 	}
 	
 	public static void addMergedRegion(XSSFSheet sheet, CellRangeAddress...cellRangeAddresses) {
-		for (int i = 0; i < cellRangeAddresses.length; i++) {
+		for (int i = 0; i < cellRangeAddresses.length; i++) { 
 			sheet.addMergedRegion(cellRangeAddresses[i]);
 		}
+	}
+	
+	public static void setBorderTop(XSSFRow row, BorderStyle borderStyle) {
+		short first = row.getFirstCellNum();
+		short last = row.getLastCellNum();
+		for(short i = first; i< last; i++) {
+			XSSFCell cell = row.getCell(i);
+			if(cell.getCellStyle() == null) {
+				cell.setCellStyle(row.getSheet().getWorkbook().createCellStyle());
+			}
+			try {
+				setBorder(cell.getCellStyle(), borderStyle, THIN, THIN, THIN);
+			}catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+	}
+	
+	public static void validateCellRange(XSSFSheet sheet, CellRangeAddress cellRangeAddress) {
+		int firstRow = cellRangeAddress.getFirstRow();
+		int lastRow = cellRangeAddress.getLastRow();
+		int firstColumn = cellRangeAddress.getFirstColumn();
+		int lastColumn = cellRangeAddress.getLastColumn();
+		for(int row = firstRow; row<=lastRow; row++) {
+			XSSFRow xssfRow = createRow(sheet, row);
+			for(int col = firstColumn; col <= lastColumn; col++) {
+				XSSFCell cell = createCell(xssfRow, col);
+				setAllBorder(cell.getCellStyle(), THIN);
+			}
+		}
+	}
+	
+	public static XSSFCell createCell(XSSFRow row, int col) {
+		
+		XSSFCell cell = row.getCell(col);
+		if(cell == null) {
+			cell = row.createCell(col);
+		}
+		return cell ;
+	}
+	
+	public static XSSFRow createRow(XSSFSheet sheet, int row) {
+		XSSFRow xssfRow = sheet.getRow(row);
+		if(null == xssfRow) {
+			xssfRow = sheet.createRow(row);
+		}
+		return xssfRow;
 	}
 	
 	public static XSSFRow createRow(final XSSFSheet sheet, final int rownum, final int offsetIndex, final Object ...values) {
@@ -58,7 +107,7 @@ public class ExcelReportUtil {
 		XSSFRow row = existingRow  == null ? sheet.createRow(rownum) : existingRow;
 		
 		XSSFCellStyle style = sheet.getWorkbook().createCellStyle();
-		setAllBorder(style, BorderStyle.THIN); 
+		setAllBorder(style, THIN); 
 		fillRows(row, offsetIndex, style, values); 
 		 
 		for (int i = 0; i < values.length; i++) {

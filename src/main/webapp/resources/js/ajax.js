@@ -48,11 +48,16 @@ function loadEntityList(url, requestObject, callback) {
 			});
 }
 
+/**
+ * extract file from xhrResponse
+ * @param xhr
+ * @returns
+ */
 function downloadFileFromResponse(xhr){
 	let contentDisposition = xhr.getResponseHeader("Content-disposition");
 	let fileName = contentDisposition.split("filename=")[1];
 	let rawSplit = fileName.split(".");
-	let extension = fileName.split(".")[rawSplit.length - 1];
+	let extension = rawSplit[rawSplit.length - 1];
 	let blob = new Blob([xhr.response], {type: extension}); 
 	let url = window.URL.createObjectURL(blob); 
     let a = document.createElement("a"); 

@@ -4,6 +4,7 @@ import static com.fajar.util.ExcelReportUtil.addMergedRegion;
 import static com.fajar.util.ExcelReportUtil.autosizeColumn;
 import static com.fajar.util.ExcelReportUtil.createRow;
 import static com.fajar.util.ExcelReportUtil.removeBorder;
+import static com.fajar.util.ExcelReportUtil.setBorderTop;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,7 +31,6 @@ import com.fajar.dto.ReportCategory;
 import com.fajar.entity.CashBalance;
 import com.fajar.service.WebConfigService;
 import com.fajar.util.DateUtil;
-import com.fajar.util.ExcelReportUtil;
 import com.fajar.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -230,12 +230,6 @@ public class ExcelReportBuilder {
 		return file;
 	}
 	
-	public static void main(String[ ]aa) {
-		ExcelReportBuilder excelReportBuilder = new ExcelReportBuilder();
-		excelReportBuilder.reportPath = "D:\\Development\\Files\\Web\\Shop1\\Reports";
-		excelReportBuilder.getMonthyReport(ReportRequest.builder().filter(Filter.builder().year(2018).build()).build());
-	}
-	
 	private void writeMonthlyReport(XSSFSheet xsheet, ReportRequest reportRequest, String reportName) {
 		// TODO Auto-generated method stub
 		Map<Integer, Map<ReportCategory, DailyReportRow>> reportContent = reportRequest.getMonthyReportContent();
@@ -284,11 +278,12 @@ public class ExcelReportBuilder {
 			 
 			 if(i % 3 == 0) {
 				 addMergedRegion(xsheet, new CellRangeAddress(1, 1, (i - 2)*2 , i*2  + 1));
-				 createRow(xsheet, 1,(i - 2)*2, "Triwulan "+StringUtil.GREEK_NUMBER[triwulan]);
+				 XSSFRow row = createRow(xsheet, 1,(i - 2)*2, "Triwulan "+StringUtil.GREEK_NUMBER[triwulan]);
+				 
 				 triwulan++;
 			 }
 		 }
-		 
+		
 		 /**
 		  * Values
 		  */
@@ -355,6 +350,8 @@ public class ExcelReportBuilder {
 			 XSSFRow xssfRow = xsheet.getRow(i);
 			 autosizeColumn(xssfRow, 4 + 12*2, BorderStyle.THIN, HorizontalAlignment.CENTER);
 		}
+		 
+		 setBorderTop(xsheet.getRow(1), BorderStyle.DOUBLE);
 		
 	}
 	
