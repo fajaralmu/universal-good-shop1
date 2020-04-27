@@ -110,7 +110,8 @@ public class ExcelReportUtil {
 			List<Object> valueList = tableContent.get(integer); 
 //			System.out.println(integer+"."+valueList);
 			Object[] rowValues = valueList.toArray();
-			createRow(sheet, integer + yOffset, xOffset, rowValues);
+			XSSFRow row = createRow(sheet, integer + yOffset, xOffset, rowValues);
+			autosizeColumn(row, rowValues.length, BorderStyle.THIN, null);
 		}
 	} 
 	
@@ -142,15 +143,25 @@ public class ExcelReportUtil {
 	public static Object[] getEntitiesTableValues(List<BaseEntity> entities, EntityProperty entityProperty) {
 
 		List<EntityElement> entityElements = entityProperty.getElements();
-		Object[] values = new Object[entities.size() * (entityElements.size() + 1)];
+		Object[] values = new Object[(entities.size()+1) * (entityElements.size() + 1)];
 		int seqNum = 0;
+		
+		/**
+		 * column header
+		 */
+		values[seqNum] = "No";
+		seqNum++;
+		for (int i = 0; i < entityElements.size(); i++) {
+			values[seqNum] = entityElements.get(i).getLableName();
+			seqNum++;
+		}
+		
+		/**
+		 * table content
+		 */
 		for (int e = 0; e< entities.size(); e++) {  
 			
-			BaseEntity entity = entities.get(e);
-			
-			String idFieldName = "";
-			Object idValue = "";
-			boolean idExist = false;
+			BaseEntity entity = entities.get(e); 
 			values[seqNum] =  e+1 ; //numbering
 			seqNum++;
 			
@@ -159,59 +170,9 @@ public class ExcelReportUtil {
 			 */
 			elementLoop: for(int i = 0; i< entityElements.size();i++) {
 				
-				final EntityElement element = entityElements.get(i); 
-				final Field field = getDeclaredField(entity.getClass(), element.getId());
-				final String fieldType = element.getType();
-				Object value;
-				
-				try {
-					value = field.get(entity);
-					
-					if(null != value) {
-						
-						if( objectEquals(fieldType, FormField.FIELD_TYPE_DYNAMIC_LIST, FormField.FIELD_TYPE_FIXED_LIST)){
-							
-							String optionItemName = element.getOptionItemName();
-							
-							if(null != optionItemName && StringUtils.isEmpty(optionItemName) == false) {
-								
-								Field converterField = getDeclaredField(field.getType(), optionItemName);
-								Object converterValue = converterField.get(value);
-								value = converterValue;
-								
-							}else {
-								value = value.toString(); 
-							}
-							
-						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_IMAGE)) {
-						
-							value = value.toString().split("~")[0];
-//							values[seqNum] = ComponentBuilder.imageLabel(UrlConstants.URL_IMAGE+value, 100, 100);
-//							continue elementLoop;
-							
-						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_DATE)) {
-							
-							value = DateUtil.formatDate((Date)value, DATE_PATTERN);
-							
-						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_NUMBER)) {
-							
-							value = Double.parseDouble(value.toString());
-							
-						} 
-						
-						if(element.isIdentity()) {
-							idExist  = true;
-							idFieldName = element.getId();
-							idValue = value;
-						}
-					}  
-					
-					values[seqNum] =  value ;
-				} catch (IllegalArgumentException | IllegalAccessException ex) { 
-					ex.printStackTrace();
-				}finally {
-					seqNum++;
-				}
+				Object value = mapEntityValue(entity, entityElements.get(i));
+				values[seqNum] = value;
+				seqNum++;
 				 
 			} 
 		}
@@ -219,6 +180,53 @@ public class ExcelReportUtil {
 		return values;
 	}
 	
+	private static Object mapEntityValue(BaseEntity entity, EntityElement element ) { 
+		final Field field = getDeclaredField(entity.getClass(), element.getId());
+		final String fieldType = element.getType();
+		Object value;
+		
+		try {
+			value = field.get(entity);
+			
+			if(null != value) {
+				
+				if( objectEquals(fieldType, FormField.FIELD_TYPE_DYNAMIC_LIST, FormField.FIELD_TYPE_FIXED_LIST)){
+					
+					String optionItemName = element.getOptionItemName();
+					
+					if(null != optionItemName && StringUtils.isEmpty(optionItemName) == false) {
+						
+						Field converterField = getDeclaredField(field.getType(), optionItemName);
+						Object converterValue = converterField.get(value);
+						value = converterValue;
+						
+					}else {
+						value = value.toString(); 
+					}
+					
+				}else if(objectEquals(fieldType, FormField.FIELD_TYPE_IMAGE)) {
+				
+					value = value.toString().split("~")[0];
+//					values[seqNum] = ComponentBuilder.imageLabel(UrlConstants.URL_IMAGE+value, 100, 100);
+//					continue elementLoop;
+					
+				}else if(objectEquals(fieldType, FormField.FIELD_TYPE_DATE)) {
+					
+					value = DateUtil.formatDate((Date)value, DATE_PATTERN);
+					
+				}else if(objectEquals(fieldType, FormField.FIELD_TYPE_NUMBER)) {
+					
+					value = Double.parseDouble(value.toString()); 
+				}   
+			}  
+			
+			return  value ;
+		} catch ( Exception ex) { 
+			ex.printStackTrace();
+			return null;
+		} 
+	}
+
 	public static XSSFRow createRow(XSSFSheet sheet, int row) {
 		XSSFRow xssfRow = sheet.getRow(row);
 		if(null == xssfRow) {

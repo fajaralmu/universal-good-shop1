@@ -454,7 +454,7 @@ public class ExcelReportBuilder {
 		XSSFSheet xsheet = xwb.createSheet(sheetName ); 
 		
 		Object[] entityValues = ExcelReportUtil.getEntitiesTableValues(entities, entityProperty);
-		ExcelReportUtil.createTable(xsheet, entityProperty.getElements().size(), 2, 2, entityValues);
+		ExcelReportUtil.createTable(xsheet, entityProperty.getElements().size() + 1, 2, 2, entityValues);
 		
 		File file = getFile(xwb, reportName);
 		return file;

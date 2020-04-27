@@ -442,7 +442,7 @@ public class PrintedReportService {
 	}
 
 	public File buildEntityReport(ShopApiRequest request) { 
-		request.getFilter().setLimit(0);
+//		request.getFilter().setLimit(0);
 		ShopApiResponse response = entityService.filter(request);
 		
 		File file = getEntityReport(response.getEntities(), response.getEntityClass());
