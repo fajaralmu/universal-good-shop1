@@ -83,6 +83,18 @@ public class RestReportController {
 		
 		writeFileReponse(httpResponse, result);
 	}
+	@PostMapping(value = "/entity", consumes = MediaType.APPLICATION_JSON_VALUE )
+	public void entityreport(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws Exception {
+		log.info("entityreport {}", request);
+//		if(!userSessionService.hasSession(httpRequest)) {
+//			return ShopApiResponse.failedResponse();
+//		}
+		
+		File result = excelReportService.buildEntityReport(request);
+		
+		writeFileReponse(httpResponse, result);
+	}
 	
 	 
 

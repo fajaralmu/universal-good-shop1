@@ -28,9 +28,12 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.dto.Filter;
 import com.fajar.dto.ReportCategory;
+import com.fajar.entity.BaseEntity;
 import com.fajar.entity.CashBalance;
+import com.fajar.entity.setting.EntityProperty;
 import com.fajar.service.WebConfigService;
 import com.fajar.util.DateUtil;
+import com.fajar.util.ExcelReportUtil;
 import com.fajar.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +52,15 @@ public class ExcelReportBuilder {
 	public void init() {
 		this.reportPath = webConfigService.getReportPath();
 	}
+	
+	
+	/**
+	 * ====================================
+	 * 				Daily Report
+	 * ====================================
+	 * 
+	 */
+	
 	/**
 	 * get daily report file
 	 * @param reportRequest
@@ -211,10 +223,15 @@ public class ExcelReportBuilder {
 	}
 	
 	/**
-	 * Monthly
-	 *  
+	 * ============================================
+	 * 				Montly Report
+	 * ============================================
+	 */ 
+	/**
+	 * 
+	 * @param reportRequest
+	 * @return
 	 */
-	
 	public File getMonthyReport(ReportRequest reportRequest) { 
 		Filter filter = reportRequest.getFilter();
 		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hhmmss-a");
@@ -230,6 +247,12 @@ public class ExcelReportBuilder {
 		return file;
 	}
 	
+	/**
+	 * 
+	 * @param xsheet
+	 * @param reportRequest
+	 * @param reportName
+	 */
 	private void writeMonthlyReport(XSSFSheet xsheet, ReportRequest reportRequest, String reportName) {
 		// TODO Auto-generated method stub
 		Map<Integer, Map<ReportCategory, DailyReportRow>> reportContent = reportRequest.getMonthyReportContent();
@@ -419,6 +442,22 @@ public class ExcelReportBuilder {
 			e.printStackTrace();
 			return null;
 		} 
+	}
+
+
+	public File getEntityReport(List<BaseEntity> entities, EntityProperty entityProperty) { 
+		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hhmmss-a");
+		String sheetName = entityProperty.getEntityName();
+		
+		String reportName = reportPath + "/" + sheetName + "_"+ time+ ".xlsx";
+		XSSFWorkbook xwb  = new XSSFWorkbook();
+		XSSFSheet xsheet = xwb.createSheet(sheetName ); 
+		
+		Object[] entityValues = ExcelReportUtil.getEntitiesTableValues(entities, entityProperty);
+		ExcelReportUtil.createTable(xsheet, entityProperty.getElements().size(), 2, 2, entityValues);
+		
+		File file = getFile(xwb, reportName);
+		return file;
 	}
 	 
 	

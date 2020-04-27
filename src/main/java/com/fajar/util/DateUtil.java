@@ -33,6 +33,17 @@ public class DateUtil {
 		calendar.setTime(date);
 		return calendar;
 	}
+	
+	/**
+	 * 
+	 * @param date
+	 * @param type
+	 * @return
+	 */
+	public static int getCalendarItem(Date date, int type) {
+		Calendar cal = cal(date);
+		return cal.get(type);
+	}
 
 	public static Integer[] getMonthsDay(int year) {
 		boolean kabisat = year % 4 == 0;

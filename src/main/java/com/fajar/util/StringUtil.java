@@ -52,4 +52,9 @@ public class StringUtil {
 		return " `".concat(str).concat("` ");
 	}
 
+	public static Object beautifyNominal(Long valueOf) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

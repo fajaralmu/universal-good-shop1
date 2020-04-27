@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.fajar.dto.Filter;
 import com.fajar.dto.ReportCategory;
 import com.fajar.dto.ShopApiRequest;
+import com.fajar.dto.ShopApiResponse;
 import com.fajar.dto.TransactionType;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.CapitalFlow;
@@ -26,12 +27,15 @@ import com.fajar.entity.CashBalance;
 import com.fajar.entity.CostFlow;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Transaction;
+import com.fajar.entity.setting.EntityProperty;
 import com.fajar.repository.CapitalFlowRepository;
 import com.fajar.repository.CostFlowRepository;
 import com.fajar.repository.ProductFlowRepository;
 import com.fajar.service.CashBalanceService;
+import com.fajar.service.EntityService;
 import com.fajar.service.LogProxyFactory;
 import com.fajar.util.DateUtil;
+import com.fajar.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,6 +53,8 @@ public class PrintedReportService {
 	private ProductFlowRepository productFlowRepository;
 	@Autowired
 	private ExcelReportBuilder excelReportBuilder;
+	@Autowired
+	private EntityService entityService;
 	
 	private long debitAmount = 0;
 	private long count = 0;
@@ -90,7 +96,7 @@ public class PrintedReportService {
 			e.printStackTrace();
 			throw e;
 		}finally {
-			clear(); 
+			clearDailyReport(); 
 			System.out.println("DEBIT AMOUNT: "+this.debitAmount);
 			System.out.println("COUNT ITEM: "+this.count);
 		}
@@ -121,7 +127,7 @@ public class PrintedReportService {
 		
 		Integer[] months = DateUtil.getMonthsDay(year);
 		Integer dayCount = months[month - 1];
-		clear();
+		clearDailyReport();
 		getInitialBalance(filter);  
 		getTransactionsData(month, year);
 		populateDailyReportRows(dayCount, month);
@@ -165,7 +171,7 @@ public class PrintedReportService {
 				continue;
 			}
 			for (BaseEntity baseEntity : transactionItems) {
-				DailyReportRow dailyReportRow = getDailyReportRow(i, month, baseEntity);
+				DailyReportRow dailyReportRow = mapDailyReportRow(i, month, baseEntity);
 				addDailyReportRow(dailyReportRow);
 				updateSummary(dailyReportRow);
 			}
@@ -175,12 +181,17 @@ public class PrintedReportService {
 	/**
 	 * clear dailyReportRows and dailyReportSummary
 	 */
-	private void clear() { 
+	private void clearDailyReport() { 
 
 		count = 0l;
 		debitAmount = 0l; 
 		dailyReportRows.clear();
 		dailyReportSummary.clear();
+	}
+	
+	private void clearMontlyReport() {
+
+		monthyReportContent.clear();
 	}
 
 	/**
@@ -238,7 +249,7 @@ public class PrintedReportService {
 	 * @param baseEntity
 	 * @return
 	 */
-	private DailyReportRow getDailyReportRow(int day, int month, BaseEntity baseEntity) { 
+	private static DailyReportRow mapDailyReportRow(int day, int month, BaseEntity baseEntity) { 
 		
 		DailyReportRow dailyReportRow = new DailyReportRow();
 		dailyReportRow.setDay(day);
@@ -277,10 +288,7 @@ public class PrintedReportService {
 		dailyReportRow.setCategory(reportCategory);
 		dailyReportRow.setCreditAmount(creditAmount);
 		dailyReportRow.setDebitAmount(debitAmount);
-		dailyReportRow.setName(name);
-		this.count++;
-		this.debitAmount+=debitAmount;
-		
+		dailyReportRow.setName(name); 
 		return dailyReportRow ;
 	}
 	
@@ -349,10 +357,7 @@ public class PrintedReportService {
 		List<CapitalFlow> capitalFlows = capitalFlowRepository.findByPeriod(month, year);
 		List<CostFlow> costFlows = costFlowRepository.findByPeriod(month, year); 
 		
-		final List<BaseEntity> results = new ArrayList<BaseEntity>() {
-			/**
-			 * 
-			 */
+		final List<BaseEntity> results = new ArrayList<BaseEntity>() { 
 			private static final long serialVersionUID = -9006495340734852418L;
 
 			{
@@ -364,14 +369,10 @@ public class PrintedReportService {
 		
 		log.info("results count: {}", results.size());
 		
-		for (BaseEntity baseEntity : results) { 
-			
+		for (BaseEntity baseEntity : results) {  
 			//don't access the credit & debt value
 			Date transactionDate = CashBalanceService.mapCashBalance(baseEntity).getDate(); 
-			
-			Calendar calendar = DateUtil.cal(transactionDate);
-			int day = calendar.get(Calendar.DAY_OF_MONTH);
-			 
+			int day = DateUtil.getCalendarItem(transactionDate, Calendar.DAY_OF_MONTH);  
 			putTransaction(day, baseEntity);
 		}
 		
@@ -400,8 +401,11 @@ public class PrintedReportService {
 		
 		Filter filter = request.getFilter();
 		Integer year = filter.getYear();
-		monthyReportContent.clear();
+		clearMontlyReport();
 		
+		/**
+		 * Get daily report for 12 months
+		 */
 		for(int i = 1; i <= 12; i++) {
 			Filter monthFilter = Filter.builder().month(i).year(year).build();
 			getTransactionRecords(monthFilter); 
@@ -423,6 +427,26 @@ public class PrintedReportService {
 		return result;
 	}
 	 
+	/**
+	 * ===========================
+	 * 		Entity Report
+	 * ===========================
+	 */
 	
+	public File getEntityReport(List<BaseEntity> entities, Class<? extends BaseEntity> entityClass) {
+		log.info("entities count: {}", entities.size());
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(entityClass, null);
+		
+		File result = excelReportBuilder.getEntityReport(entities, entityProperty);
+		return result;
+	}
+
+	public File buildEntityReport(ShopApiRequest request) { 
+		request.getFilter().setLimit(0);
+		ShopApiResponse response = entityService.filter(request);
+		
+		File file = getEntityReport(response.getEntities(), response.getEntityClass());
+		return file ;
+	}
 	
 }

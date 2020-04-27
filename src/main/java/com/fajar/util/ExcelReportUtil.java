@@ -1,9 +1,16 @@
 package com.fajar.util;
 
+import static com.fajar.util.EntityUtil.getDeclaredField;
+import static com.fajar.util.MapUtil.objectEquals;
 import static org.apache.poi.ss.usermodel.BorderStyle.THIN;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -16,12 +23,22 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.util.StringUtils;
 
+import com.fajar.annotation.FormField;
+import com.fajar.entity.BaseEntity;
+import com.fajar.entity.setting.EntityElement;
+import com.fajar.entity.setting.EntityProperty;
 import com.fajar.service.report.CurrencyCell;
 import com.fajar.service.report.CustomCell;
 import com.fajar.service.report.NumericCell;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class ExcelReportUtil {
+	private static final String DATE_PATTERN = "dd-MM-yyyy' 'hh:mm:ss";
+
 	/**
 	 * 
 	 * @param row
@@ -84,6 +101,35 @@ public class ExcelReportUtil {
 		}
 	}
 	
+	public static void createTable(XSSFSheet sheet, int columCount, int xOffset, int yOffset, Object ...values){
+		Map<Integer, List<Object>> tableContent = getTableContent(columCount, values);
+		 
+		for (Integer integer : tableContent.keySet()) {
+			log.info("row: {} of {}", integer, tableContent.keySet().size()-1);
+			
+			List<Object> valueList = tableContent.get(integer); 
+//			System.out.println(integer+"."+valueList);
+			Object[] rowValues = valueList.toArray();
+			createRow(sheet, integer + yOffset, xOffset, rowValues);
+		}
+	} 
+	
+	private static Map<Integer, List<Object>> getTableContent(int columCount, Object... values) {
+		Map<Integer, List<Object>> tableContent  = new HashMap<>();
+		int rowNum = 0;
+		for (int i = 0; i < values.length; i++) {
+		 
+			if(tableContent.get(rowNum) == null) {
+				tableContent.put(rowNum, new ArrayList<>());
+			}
+			tableContent.get(rowNum).add(values[i]);
+			if((i + 1) % columCount == 0) {
+				rowNum++;  
+			}
+		}
+		return tableContent;
+	}
+
 	public static XSSFCell createCell(XSSFRow row, int col) {
 		
 		XSSFCell cell = row.getCell(col);
@@ -91,6 +137,86 @@ public class ExcelReportUtil {
 			cell = row.createCell(col);
 		}
 		return cell ;
+	}
+	
+	public static Object[] getEntitiesTableValues(List<BaseEntity> entities, EntityProperty entityProperty) {
+
+		List<EntityElement> entityElements = entityProperty.getElements();
+		Object[] values = new Object[entities.size() * (entityElements.size() + 1)];
+		int seqNum = 0;
+		for (int e = 0; e< entities.size(); e++) {  
+			
+			BaseEntity entity = entities.get(e);
+			
+			String idFieldName = "";
+			Object idValue = "";
+			boolean idExist = false;
+			values[seqNum] =  e+1 ; //numbering
+			seqNum++;
+			
+			/**
+			 * checking the value type
+			 */
+			elementLoop: for(int i = 0; i< entityElements.size();i++) {
+				
+				final EntityElement element = entityElements.get(i); 
+				final Field field = getDeclaredField(entity.getClass(), element.getId());
+				final String fieldType = element.getType();
+				Object value;
+				
+				try {
+					value = field.get(entity);
+					
+					if(null != value) {
+						
+						if( objectEquals(fieldType, FormField.FIELD_TYPE_DYNAMIC_LIST, FormField.FIELD_TYPE_FIXED_LIST)){
+							
+							String optionItemName = element.getOptionItemName();
+							
+							if(null != optionItemName && StringUtils.isEmpty(optionItemName) == false) {
+								
+								Field converterField = getDeclaredField(field.getType(), optionItemName);
+								Object converterValue = converterField.get(value);
+								value = converterValue;
+								
+							}else {
+								value = value.toString(); 
+							}
+							
+						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_IMAGE)) {
+						
+							value = value.toString().split("~")[0];
+//							values[seqNum] = ComponentBuilder.imageLabel(UrlConstants.URL_IMAGE+value, 100, 100);
+//							continue elementLoop;
+							
+						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_DATE)) {
+							
+							value = DateUtil.formatDate((Date)value, DATE_PATTERN);
+							
+						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_NUMBER)) {
+							
+							value = Double.parseDouble(value.toString());
+							
+						} 
+						
+						if(element.isIdentity()) {
+							idExist  = true;
+							idFieldName = element.getId();
+							idValue = value;
+						}
+					}  
+					
+					values[seqNum] =  value ;
+				} catch (IllegalArgumentException | IllegalAccessException ex) { 
+					ex.printStackTrace();
+				}finally {
+					seqNum++;
+				}
+				 
+			} 
+		}
+		
+		return values;
 	}
 	
 	public static XSSFRow createRow(XSSFSheet sheet, int row) {

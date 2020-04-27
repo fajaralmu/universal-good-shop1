@@ -12,6 +12,7 @@ import com.fajar.entity.ProductFlowStock;
 import com.fajar.entity.Transaction;
 import com.fajar.entity.User;
 import com.fajar.entity.custom.CashFlow;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,6 +55,8 @@ public class ShopApiResponse implements Serializable {
 	private String requestId;
 	private int[] transactionYears;
 	private SessionData sessionData;
+	@JsonIgnore
+	private Class<? extends BaseEntity> entityClass;
 	
 	private Map<Integer, CashFlow> monthlyDetailIncome;
 	private Map<Integer, CashFlow> monthlyDetailCost;

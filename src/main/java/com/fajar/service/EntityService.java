@@ -131,7 +131,7 @@ public class EntityService {
 			return ShopApiResponse.builder().
 					entities(EntityUtil.validateDefaultValue(entities)).
 					totalData(count).
-					filter(filter).
+					filter(filter).entityClass(entityClass).
 					build();
 			
 		} catch (Exception ex) {
