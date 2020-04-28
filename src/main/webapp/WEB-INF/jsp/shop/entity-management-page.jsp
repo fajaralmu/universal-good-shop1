@@ -223,6 +223,8 @@
 		<input class="form-control" value="Page" disabled="disabled">
 		<input class="form-control" type="number" id="input-page" />
 		<button class="btn btn-primary" id="btn-filter-ok" onclick="setPage()">Ok</button>
+		<button class="btn btn-primary" id="btn-filter-ok" onclick="printExcel()">Print Excel</button>
+
 	</div>
 	<nav>
 		<ul class="pagination" id="navigation-panel"></ul>
@@ -349,31 +351,7 @@
 		if (page < 0) {
 			page = this.page;
 		}
-		var requestObject = {
-			"entity" : this.entityName,
-			"filter" : {
-				"limit" : this.limit,
-				"page" : page,
-				"orderBy" : this.orderBy,
-				"orderType" : this.orderType
-
-			}
-		};
-		requestObject.filter.fieldsFilter = {};
-		for (let i = 0; i < filterFields.length; i++) {
-			let filterField = filterFields[i];
-			if (filterField.value != "") {
-				let fieldName = filterField.getAttribute("field");
-				let filterValue = filterField.value;
-				let checkBoxExact = _byId("checkbox-exact-"+fieldName);
-				console.log("EXACT",checkBoxExact != null && checkBoxExact.checked);
-				console.log("CHECKBOX",checkBoxExact);
-				if(checkBoxExact != null && checkBoxExact.checked){
-					fieldName = fieldName+"[EXACTS]";
-				}
-				requestObject.filter.fieldsFilter[fieldName] = filterValue;
-			}
-		}
+		var requestObject = buildRequestObject(page);
 		doLoadEntities("<spring:url value="/api/entity/get" />", requestObject, function(response){
 			
 			var entities = response.entities;
@@ -387,6 +365,46 @@
 			updateNavigationButtons();
 		});
 		
+	}
+	
+	function printExcel(){
+		var requestObject = buildRequestObject(this.page);
+		postReq("<spring:url value="/api/report/entity" />" ,
+				requestObject, function(xhr) {
+			
+			downloadFileFromResponse(xhr);
+			
+				infoDone();
+				}, true);
+	}
+	
+	function buildRequestObject(page){
+		var requestObject = {
+				"entity" : this.entityName,
+				"filter" : {
+					"limit" : this.limit,
+					"page" : page,
+					"orderBy" : this.orderBy,
+					"orderType" : this.orderType
+
+				}
+			};
+			requestObject.filter.fieldsFilter = {};
+			for (let i = 0; i < filterFields.length; i++) {
+				let filterField = filterFields[i];
+				if (filterField.value != "") {
+					let fieldName = filterField.getAttribute("field");
+					let filterValue = filterField.value;
+					let checkBoxExact = _byId("checkbox-exact-"+fieldName);
+					console.log("EXACT",checkBoxExact != null && checkBoxExact.checked);
+					console.log("CHECKBOX",checkBoxExact);
+					if(checkBoxExact != null && checkBoxExact.checked){
+						fieldName = fieldName+"[EXACTS]";
+					}
+					requestObject.filter.fieldsFilter[fieldName] = filterValue;
+				}
+			}
+			return requestObject;
 	}
 
 	function updateNavigationButtons() {
