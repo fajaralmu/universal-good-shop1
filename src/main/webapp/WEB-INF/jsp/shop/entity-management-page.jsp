@@ -368,7 +368,11 @@
 	}
 	
 	function printExcel(){
-		var requestObject = buildRequestObject(this.page);
+		var requestObject = buildRequestObject(this.page); 
+		
+		var limit = prompt("input row count", this.limit);
+		requestObject.filter.limit = limit;
+		
 		postReq("<spring:url value="/api/report/entity" />" ,
 				requestObject, function(xhr) {
 			
