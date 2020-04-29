@@ -55,7 +55,7 @@ public class MvcPagesController extends BaseController{
 			sendRedirect(response, request.getContextPath() + "/account/login");
 			return basePage;
 		}
-		
+		setActivePage(page.getCode());
 		model.addAttribute("pageUrl", "shop/master-common-page");
 		model.addAttribute("page", page); 
 		return basePage;

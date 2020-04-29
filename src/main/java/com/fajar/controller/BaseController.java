@@ -22,7 +22,10 @@ import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
 import com.fajar.util.DateUtil;
 import com.fajar.util.MvcUtil;
+
+import lombok.Data;
 @Controller
+@Data
 public class BaseController {
 	
 	@Autowired
@@ -35,6 +38,8 @@ public class BaseController {
 	private RegistryService registryService;
 	@Autowired
 	private ComponentService componentService;
+	
+	private String activePage;
 
 	@ModelAttribute("shopProfile")
 	public ShopProfile getProfile(HttpServletRequest request) {
@@ -96,7 +101,7 @@ public class BaseController {
 	
 	@ModelAttribute("activePage")
 	public String activePage(HttpServletRequest request) {
-		return "management";
+		return activePage;
 	}
 	
 	public static Cookie getCookie(String name, Cookie[] cookies) {

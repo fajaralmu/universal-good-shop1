@@ -10,13 +10,14 @@ import javax.persistence.Transient;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fajar.dto.FormInputColumn;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Dto
+@Dto(formInputColumn = FormInputColumn.ONE_COLUMN)
 @Entity
 @Table(name="page")
 @Data
@@ -37,9 +38,12 @@ public class Page extends BaseEntity implements Serializable {/**
 	@FormField(lableName = "Authorized (1 or 0)",type = FormField.FIELD_TYPE_NUMBER)
 	@Column(nullable = false)
 	private int authorized; 
-//	@FormField
-//	@Column
-//	private String link;
+	@FormField(lableName = "Is nonMenu Page(1 or 0)",type = FormField.FIELD_TYPE_NUMBER)
+	@Column(name = "is_non_menu_page")
+	private int nonMenuPage;
+	@FormField(lableName = "Link for non menu page")
+	@Column
+	private String link;
 	@FormField(type = FormField.FIELD_TYPE_TEXTAREA)
 	@Column
 	private String description;
