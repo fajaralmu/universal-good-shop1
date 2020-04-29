@@ -7,11 +7,31 @@
 	style="padding: 10px; display: none; width: 40%; margin-right: 0px; position: fixed; background-color: white; height: auto">
 	<h3>Filter</h3>
 	<p>From</p>
-	Month <select id="select-month-from"></select> Year <select
-		id="select-year-from"></select>
+	<label>Month</label>
+	<select id="select-month-from">
+		<c:forEach var="month" items="${months}">
+			<option value="${month.value }">${month.key }</option>
+		</c:forEach>
+	</select> 
+	<label>Year</label> 
+	<select id="select-year-from">
+		<c:forEach var="year" items="${years}">
+			<option value="${year.value }">${year.key }</option>
+		</c:forEach>
+	</select>
 	<p>To</p>
-	Month <select id="select-month-to"></select> Year <select
-		id="select-year-to"></select>
+	<label>Month</label>
+	<select id="select-month-to">
+		<c:forEach var="month" items="${months}">
+			<option value="${month.value }">${month.key }</option>
+		</c:forEach>
+	</select>
+	<label>Year</label>
+	<select id="select-year-to">
+		<c:forEach var="year" items="${years}">
+			<option value="${year.value }">${year.key }</option>
+		</c:forEach>
+	</select>
 
 	<button id="btn-ok-filter-detail" class="btn btn-primary btn-sm">Ok</button>
 	<button class="btn btn-secondary  btn-sm"

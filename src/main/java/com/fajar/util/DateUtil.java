@@ -80,7 +80,7 @@ public class DateUtil {
 
 			{
 				for (int i = 1; i <=12; i++) {
-					add(new KeyValue(MONTH_NAMES[i - 1], i));
+					add(new KeyValue(MONTH_NAMES[i - 1] + "("+i+")", i));
 				}
 			}
 		};

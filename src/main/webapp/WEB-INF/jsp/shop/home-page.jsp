@@ -16,15 +16,14 @@
 		<p>Good ${timeGreeting}, ${loggedUser.displayName}. Have a great day!</p>
 		<div class="input-group mb-3">
 			<div class="input-group-prepend">
-				<span class="input-group-text">Month</span> <select
-					class="form-control" id="select-month">
+				<span class="input-group-text">Month</span> 
+				<select class="form-control" id="select-month">
 					<c:forEach var="month" items="${months}">
 						<option value="${month.value }">${month.key }</option>
 					</c:forEach>
-					
-					</select> <span
-					class="input-group-text">Year</span> <select class="form-control"
-					id="select-year">
+				</select> 
+				<span class="input-group-text">Year</span> 
+				<select class="form-control" id="select-year">
 					 <c:forEach var="year" items="${years}">
 						<option value="${year.value }">${year.key }</option>
 					</c:forEach>
@@ -164,27 +163,7 @@
 				}, true);
 	} 
 	 
-	function populatePeriodFilter() {
-		//populateSelectPeriod(selectMonth, selectYear);
-		populateSelectPeriod(selectMonthFrom, selectYearFrom);
-		populateSelectPeriod(selectMonthTo, selectYearTo);
-		selectMonthFrom.value = "1";
-		selectMonthTo.value = "12";
-	}
 	
-	function populateSelectPeriod(selectMonth, selectYear){
-		selectMonth.innerHTML = "";
-		for (var i = 1; i <= 12; i++) {
-			selectMonth.append(createOption(i,i));
-		}
-		selectMonth.value = ${currentMonth};
-		for(var y=${minYear};y<=${maxYear};y++){
-			selectYear.append(createOption(y,y));
-		}
-		selectYear.value = ${currentYear};
-	}
-	
-	populatePeriodFilter();
 	
 	fetchCashflow(${currentMonth}, ${currentYear}, "IN");
 	fetchCashflow(${currentMonth}, ${currentYear}, "OUT");
