@@ -85,7 +85,7 @@ public class MvcManagementController extends BaseController {
 	public String unit(@PathVariable("name")String name, Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 		try {
@@ -104,7 +104,7 @@ public class MvcManagementController extends BaseController {
 	public String profile(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 		try {
@@ -125,7 +125,7 @@ public class MvcManagementController extends BaseController {
 	public String menu(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 		try {
@@ -134,7 +134,7 @@ public class MvcManagementController extends BaseController {
 			return ERROR_404_PAGE;
 		}
 		HashMap<String, List<BaseEntity>> listObject = new HashMap<>();
-		listObject.put("page", CollectionUtil.convertList(componentService.getPages()));
+		listObject.put("page", CollectionUtil.convertList(componentService.getAllPages()));
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(Menu.class, listObject); 
 		model = constructCommonModel(request, entityProperty, model, "Menu", "management");
 		return basePage;
@@ -144,7 +144,7 @@ public class MvcManagementController extends BaseController {
 	public String costflow(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 		try {
@@ -163,7 +163,7 @@ public class MvcManagementController extends BaseController {
 	public String capitalflow(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 		try {
@@ -189,7 +189,7 @@ public class MvcManagementController extends BaseController {
 			throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 		try {
@@ -210,7 +210,7 @@ public class MvcManagementController extends BaseController {
 //			throws IOException {
 //
 //		if (!userService.hasSession(request)) {
-//			response.sendRedirect(request.getContextPath() + "/account/login");
+//			sendRedirectLogin(request, response);
 //			return basePage;
 //		}
 //		try {
@@ -228,7 +228,7 @@ public class MvcManagementController extends BaseController {
 			HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 		try {
@@ -247,7 +247,7 @@ public class MvcManagementController extends BaseController {
 	public String user(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 		try {
@@ -266,7 +266,7 @@ public class MvcManagementController extends BaseController {
 //	public String menu(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 //
 //		if (!userService.hasSession(request)) {
-//			response.sendRedirect(request.getContextPath() + "/account/login");
+//			sendRedirectLogin(request, response);
 //			return basePage;
 //		}
 //		try {
@@ -289,7 +289,7 @@ public class MvcManagementController extends BaseController {
 	public String appsession(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 		try {

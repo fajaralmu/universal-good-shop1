@@ -71,7 +71,7 @@ public class MvcAdminController extends BaseController {
 		Calendar cal = Calendar.getInstance();
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 
@@ -96,7 +96,7 @@ public class MvcAdminController extends BaseController {
 		Calendar cal = Calendar.getInstance();
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 
@@ -140,7 +140,7 @@ public class MvcAdminController extends BaseController {
 			throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 		model.addAttribute("menus", componentService.getManagementMenus(request));
@@ -156,7 +156,7 @@ public class MvcAdminController extends BaseController {
 			throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 		model.addAttribute("menus", componentService.getTransactionMenus(request));
@@ -172,7 +172,7 @@ public class MvcAdminController extends BaseController {
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 		if (null != transactionCode) {
@@ -189,7 +189,7 @@ public class MvcAdminController extends BaseController {
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
-			response.sendRedirect(request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 		if (null != transactionCode) {

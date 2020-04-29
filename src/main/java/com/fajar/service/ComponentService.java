@@ -32,9 +32,18 @@ public class ComponentService {
 	@Autowired
 	private PageRepository pageRepository;
 
-	public List<Page> getPages(){
+	public List<Page> getPages(HttpServletRequest request){
 		
-		return pageRepository.findAll();
+		boolean hasSession = userSessionService.hasSession(request);
+		
+		if(hasSession)
+			return pageRepository.findAll();
+		else
+			return pageRepository.findByAuthorized(0);
+	}
+	
+	public List<Page> getAllPages() { 
+		return pageRepository.findAll(); 
 	}
 	
 	public List<Menu> getDashboardMenus(HttpServletRequest request) {
@@ -158,5 +167,7 @@ public class ComponentService {
 		}
 
 	}
+
+	
 
 }

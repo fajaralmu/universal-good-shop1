@@ -91,7 +91,7 @@ public class BaseController {
 	@ModelAttribute("pages")
 	public List<Page> pages(HttpServletRequest request){
 		
-		return componentService.getPages();
+		return componentService.getPages(request);
 	}
 	
 	@ModelAttribute("activePage")
@@ -108,7 +108,16 @@ public class BaseController {
 		return null;
 	}
 	
-	public static void sendRedirect(HttpServletResponse response ,String url) throws IOException {
-		response.sendRedirect(url);
+	public static void sendRedirectLogin(HttpServletRequest request, HttpServletResponse response) {
+		sendRedirect(response, request.getContextPath() + "/account/login");
+	}
+	
+	public static void sendRedirect(HttpServletResponse response ,String url)  {
+		try {
+			response.sendRedirect(url);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
