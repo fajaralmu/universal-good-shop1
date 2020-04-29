@@ -1,7 +1,12 @@
 package com.fajar.dto;
 
-public enum VoucherType {
+public enum VoucherType  {
 	
-	PRIMARY, SERVICE
+	PRIMARY("Primary"), SERVICE("Service");
+	
+	public final String value;
+	private VoucherType(String value) {
+		this.value = value;
+	}
 
 }

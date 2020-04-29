@@ -25,6 +25,12 @@
 <script src="<c:url value="/res/js/websocket-util.js"></c:url >"></script>  
 <script src="<c:url value="/res/js/ajax.js?v=1"></c:url >"></script>
 <script src="<c:url value="/res/js/util.js?v=1"></c:url >"></script> 
+<style>
+	.container{
+		display: grid;
+		grid-template-columns: 20% 80%
+	}
+</style>
 </head>
 <body>
 	<div id="progress-bar-wrapper" 
@@ -41,6 +47,7 @@
 	<div class="container">
 		<jsp:include page="include/head.jsp"></jsp:include>
 		<jsp:include page="${pageUrl == null? 'error/notfound': pageUrl}.jsp"></jsp:include>
+		<div></div>
 		<jsp:include page="include/foot.jsp"></jsp:include>
 		
 	</div>
