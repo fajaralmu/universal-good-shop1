@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fajar.annotation.Dto;
@@ -39,9 +41,14 @@ public class Menu extends BaseEntity implements Serializable {
 	@FormField
 	@Column
 	private String url;
+	//TODO: remove
 	@FormField
 	@Column
 	private String page;
+	@JoinColumn(name="page_id", nullable = false)
+	@ManyToOne
+	@FormField(lableName="Page", entityReferenceName="page", type=FormField.FIELD_TYPE_FIXED_LIST, optionItemName="name")
+	private Page menuPage;
 	@FormField(type = FormField.FIELD_TYPE_IMAGE, required = false, defaultValue = "DefaultIcon.BMP")
 	@Column(name = "icon_url")
 	private String iconUrl;

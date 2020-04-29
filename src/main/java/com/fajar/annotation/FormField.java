@@ -12,7 +12,7 @@ public @interface FormField {
 	public static final String FIELD_TYPE_TEXTAREA = "textarea";
 	public static final String FIELD_TYPE_DATE = "date";
 	
-	public String type() default "text";
+	public String type() default FIELD_TYPE_TEXT;
 	
 	public boolean showDetail() default false;
 	
@@ -40,6 +40,7 @@ public @interface FormField {
 	public static final String FIELD_TYPE_CURRENCY = "currency";
 	public static final String FIELD_TYPE_NUMBER = "number";
 	public static final String FIELD_TYPE_HIDDEN = "hidden";
+	public static final String FIELD_TYPE_COLOR = "color";
 	public static final String FIELD_TYPE_FIXED_LIST ="fixedlist";
 	public static final String FIELD_TYPE_DYNAMIC_LIST = "dynamiclist";
 

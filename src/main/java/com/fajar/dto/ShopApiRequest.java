@@ -14,6 +14,7 @@ import com.fajar.entity.CostFlow;
 import com.fajar.entity.Customer;
 import com.fajar.entity.CustomerVoucher;
 import com.fajar.entity.Menu;
+import com.fajar.entity.Page;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.RegisteredRequest;
@@ -65,6 +66,7 @@ public class ShopApiRequest implements Serializable {
 	private CustomerVoucher customervoucher;
 	private Capital capital;
 	private CapitalFlow capitalflow;
+	private Page page;
 
 	/**
 	 * ==========end entity============

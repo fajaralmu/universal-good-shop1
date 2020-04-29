@@ -30,6 +30,7 @@ import com.fajar.entity.Customer;
 import com.fajar.entity.CustomerVoucher;
 import com.fajar.entity.Menu;
 import com.fajar.entity.Message;
+import com.fajar.entity.Page;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.RegisteredRequest;
@@ -106,7 +107,8 @@ public class EntityRepository {
 	private CapitalRepository capitalRepository;
 	@Autowired
 	private CapitalFlowRepository capitalFlowRepository;
-
+	@Autowired
+	private PageRepository pageRepository;
 	
 	/**
 	 * end jpa repos
@@ -144,23 +146,31 @@ public class EntityRepository {
 	@PostConstruct
 	public void init() {
 		entityConfiguration.clear();
+		
+		/**
+		 * commons
+		 */
 		entityConfiguration.put("unit", config("unit", Unit.class, commonUpdateService));
-		entityConfiguration.put("product", config("product", Product.class, productUpdateService));
 		entityConfiguration.put("customer", config("customer", Customer.class, commonUpdateService));
+		entityConfiguration.put("category", config("category", Category.class, commonUpdateService));
+		entityConfiguration.put("registeredrequest", config("registeredRequest", RegisteredRequest.class, commonUpdateService));
+		entityConfiguration.put("customervoucher", config("customervoucher", CustomerVoucher.class, commonUpdateService));
+		entityConfiguration.put("userrole", config("userrole", UserRole.class, commonUpdateService));
+		entityConfiguration.put("capital", config("capital", Capital.class, commonUpdateService));
+		entityConfiguration.put("cost", config("cost", Cost.class, commonUpdateService));
+		entityConfiguration.put("page", config("page", Page.class, commonUpdateService));
+		
+		/**
+		 * special
+		 */
+		entityConfiguration.put("product", config("product", Product.class, productUpdateService)); 
 		entityConfiguration.put("supplier", config("supplier", Supplier.class, supplierUpdateService));
 		entityConfiguration.put("user", config("user", User.class, userUpdateService));
 		entityConfiguration.put("menu", config("menu", Menu.class, menuUpdateService));
-		entityConfiguration.put("category", config("category", Category.class, commonUpdateService));
 		entityConfiguration.put("shopprofile", config("shopprofile", ShopProfile.class, shopProfileUpdateService));
-		entityConfiguration.put("userrole", config("userrole", UserRole.class, commonUpdateService));
-		entityConfiguration.put("registeredrequest", config("registeredRequest", RegisteredRequest.class, commonUpdateService));
-		entityConfiguration.put("cost", config("cost", Cost.class, commonUpdateService));
 		entityConfiguration.put("costflow", config("costflow", CostFlow.class, costFlowUpdateService));
 		entityConfiguration.put("voucher", config("voucher", Voucher.class, voucherUpdateService));
-		entityConfiguration.put("customervoucher", config("customervoucher", CustomerVoucher.class, commonUpdateService));
-		entityConfiguration.put("capital", config("capital", Capital.class, commonUpdateService));
 		entityConfiguration.put("capitalflow", config("capitalflow", CapitalFlow.class, capitalUpdateService));
-
 		/**
 		 * unable to update
 		 */
@@ -176,7 +186,7 @@ public class EntityRepository {
 
 	private EntityManagementConfig config(String object, Class<? extends BaseEntity> class1,
 			BaseEntityUpdateService commonUpdateService2) {
-		// TODO Auto-generated method stub
+
 		return new EntityManagementConfig(object, class1, commonUpdateService2);
 	}
 

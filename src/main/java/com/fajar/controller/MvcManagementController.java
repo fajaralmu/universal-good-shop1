@@ -97,6 +97,7 @@ public class MvcManagementController extends BaseController {
 		return basePage;
 	}
 
+	
  
 
 	@RequestMapping(value = { "/profile" })
@@ -120,7 +121,25 @@ public class MvcManagementController extends BaseController {
 		return basePage;
 	}
 
- 
+	@RequestMapping(value = { "/menu" })
+	public String menu(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		if (!userService.hasSession(request)) {
+			response.sendRedirect(request.getContextPath() + "/account/login");
+			return basePage;
+		}
+		try {
+			checkUserAccess(userService.getUserFromSession(request), "/management/menu");
+		} catch (Exception e) {
+			return ERROR_404_PAGE;
+		}
+		HashMap<String, List<BaseEntity>> listObject = new HashMap<>();
+		listObject.put("page", CollectionUtil.convertList(componentService.getPages()));
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(Menu.class, listObject); 
+		model = constructCommonModel(request, entityProperty, model, "Menu", "management");
+		return basePage;
+	}
+	
 	@RequestMapping(value = { "/costflow" })
 	public String costflow(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 

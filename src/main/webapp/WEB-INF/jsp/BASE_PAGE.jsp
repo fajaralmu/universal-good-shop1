@@ -30,6 +30,12 @@
 		display: grid;
 		grid-template-columns: 20% 80%
 	}
+	/**
+		active menu when using vertical aligment
+	**/
+	.active{
+		font-weight: bold;
+	}
 </style>
 </head>
 <body>

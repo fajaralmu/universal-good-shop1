@@ -1,18 +1,23 @@
 package com.fajar.controller;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import com.fajar.entity.Page;
 import com.fajar.entity.ShopProfile;
 import com.fajar.entity.User;
-import com.fajar.service.UserAccountService;
+import com.fajar.service.ComponentService;
 import com.fajar.service.RegistryService;
+import com.fajar.service.UserAccountService;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
 import com.fajar.util.DateUtil;
@@ -28,6 +33,8 @@ public class BaseController {
 	private UserAccountService accountService;
 	@Autowired
 	private RegistryService registryService;
+	@Autowired
+	private ComponentService componentService;
 
 	@ModelAttribute("shopProfile")
 	public ShopProfile getProfile(HttpServletRequest request) {
@@ -81,6 +88,17 @@ public class BaseController {
 		 
 	}
 	
+	@ModelAttribute("pages")
+	public List<Page> pages(HttpServletRequest request){
+		
+		return componentService.getPages();
+	}
+	
+	@ModelAttribute("activePage")
+	public String activePage(HttpServletRequest request) {
+		return "management";
+	}
+	
 	public static Cookie getCookie(String name, Cookie[] cookies) {
 		try {
 			for (Cookie cookie : cookies) {
@@ -88,5 +106,9 @@ public class BaseController {
 			}
 		}catch(Exception ex) { ex.printStackTrace(); }
 		return null;
+	}
+	
+	public static void sendRedirect(HttpServletResponse response ,String url) throws IOException {
+		response.sendRedirect(url);
 	}
 }

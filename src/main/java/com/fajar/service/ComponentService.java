@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Category;
 import com.fajar.entity.Menu;
+import com.fajar.entity.Page;
 import com.fajar.entity.User;
 import com.fajar.repository.CategoryRepository;
 import com.fajar.repository.MenuRepository;
+import com.fajar.repository.PageRepository;
 import com.fajar.util.EntityUtil;
 
 @Service
@@ -27,7 +29,14 @@ public class ComponentService {
 	private CategoryRepository categoryRepository;
 	@Autowired
 	private UserSessionService userSessionService;
+	@Autowired
+	private PageRepository pageRepository;
 
+	public List<Page> getPages(){
+		
+		return pageRepository.findAll();
+	}
+	
 	public List<Menu> getDashboardMenus(HttpServletRequest request) {
 		List<Menu> menus = menuRepository.findByPageStartsWith("HOME");
 		List<BaseEntity> entities = new ArrayList<BaseEntity>();
@@ -38,7 +47,28 @@ public class ComponentService {
 		}
 		return EntityUtil.validateDefaultValue(entities);
 	}
+	
+	public Page getPage(String code, HttpServletRequest request) {
+		
+		
+		
+		Page page = pageRepository.findByCode(code); 
+		
+		if (page.getAuthorized() == 1 && !userSessionService.hasSession(request)) {
+			
+			return null;
+		}
+		
+		List<Menu> menus = getMenuByPageCode(code);
+		page.setMenus(menus );
+		return page;
+	}
 
+	public List<Menu > getMenuByPageCode(String pageCode){
+		
+		return menuRepository.findByMenuPage_code(pageCode);
+	}
+	
 	public List<Menu> getManagementMenus(HttpServletRequest request) {
 		List<Menu> menus = menuRepository.findByPageStartsWith("MNGMNT");
 		List<BaseEntity> entities = new ArrayList<BaseEntity>();

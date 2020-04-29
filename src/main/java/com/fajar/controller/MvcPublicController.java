@@ -20,7 +20,6 @@ import com.fajar.service.LogProxyFactory;
 import com.fajar.service.ProductService;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
-import com.fajar.util.MvcUtil;
 
 @Controller
 public class MvcPublicController extends BaseController{

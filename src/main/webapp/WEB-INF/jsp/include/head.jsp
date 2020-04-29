@@ -52,7 +52,10 @@
 			<li class="nav-item"><a
 				class="nav-link ${page == 'about' ? 'active':'' }"
 				href="<spring:url value="/public/about"/>">About Us</a></li>
-			
+			<c:forEach var="pageItem" items="${pages}">
+				<li class="nav-item"><a class="nav-link ${pageItem.code == activePage ? 'active':'' }"
+					href="<spring:url value="/webmart/page/${pageItem.code }"/>">${pageItem.name }</a></li>
+			</c:forEach>
 
 		</ul>
 	</div>
