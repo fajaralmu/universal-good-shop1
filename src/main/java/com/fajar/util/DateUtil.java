@@ -1,8 +1,14 @@
 package com.fajar.util;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.fajar.dto.KeyValue;
 
 public class DateUtil {
 
@@ -64,6 +70,29 @@ public class DateUtil {
 		"November",
 		"Desember"
 	};
+	
+	public static List<KeyValue> months(){
+		return new ArrayList<KeyValue>() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			{
+				for (int i = 1; i <=12; i++) {
+					add(new KeyValue(MONTH_NAMES[i - 1], i));
+				}
+			}
+		};
+	}
+	
+	public static Map map(Object key, Object value) {
+		return new HashMap() {
+			{
+				put(key, value);
+			}
+		};
+	}
 
 	public static String formatDate(Date date, String pattern) {
 		SIMPLE_DATE_FORMAT.applyPattern(pattern);

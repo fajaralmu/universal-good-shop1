@@ -17,10 +17,17 @@
 		<div class="input-group mb-3">
 			<div class="input-group-prepend">
 				<span class="input-group-text">Month</span> <select
-					class="form-control" id="select-month"></select> <span
+					class="form-control" id="select-month">
+					<c:forEach var="month" items="${months}">
+						<option value="${month.value }">${month.key }</option>
+					</c:forEach>
+					
+					</select> <span
 					class="input-group-text">Year</span> <select class="form-control"
 					id="select-year">
-					 
+					 <c:forEach var="year" items="${years}">
+						<option value="${year.value }">${year.key }</option>
+					</c:forEach>
 				</select>
 			</div>
 			<div class="input-group-append">
@@ -158,7 +165,7 @@
 	} 
 	 
 	function populatePeriodFilter() {
-		populateSelectPeriod(selectMonth, selectYear);
+		//populateSelectPeriod(selectMonth, selectYear);
 		populateSelectPeriod(selectMonthFrom, selectYearFrom);
 		populateSelectPeriod(selectMonthTo, selectYearTo);
 		selectMonthFrom.value = "1";

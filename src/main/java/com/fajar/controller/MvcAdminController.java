@@ -28,6 +28,7 @@ import com.fajar.service.TransactionService;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
 import com.fajar.util.CollectionUtil;
+import com.fajar.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -84,6 +85,8 @@ public class MvcAdminController extends BaseController {
 		int minYear = transactionService.getMinTransactionYear();
 		model.addAttribute("minYear", minYear);
 		model.addAttribute("maxYear", cal.get(Calendar.YEAR));
+		model.addAttribute("months", DateUtil.months());
+		model.addAttribute("years", CollectionUtil.yearArray(minYear, cal.get(Calendar.YEAR)));
 		return basePage;
 	}
 

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.fajar.dto.KeyValue;
 import com.fajar.entity.BaseEntity;
 
 public class CollectionUtil {
@@ -49,5 +50,16 @@ public class CollectionUtil {
 		}
 		return array;
 	}
+	
+	public static List<KeyValue> yearArray(int min, int max){
+		List<KeyValue> years = new ArrayList<>();
+		for(int i = min; i <= max; i++) {
+			years.add(new KeyValue(i, i));
+		}
+		
+		return years ;
+	}
+	
+	
 
 }
