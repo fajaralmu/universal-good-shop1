@@ -35,23 +35,13 @@
 				</div>
 			</c:if>
 			 
-			<li class="nav-item"><a
-				class="nav-link ${page == 'main' ? 'active':'' }"
-				href="<spring:url value="/index"/>">Main Page</a></li>
+			<%--  
 			<c:if test="${loggedUser != null }">
 				<li class="nav-item"><a
 					class="nav-link ${page == 'dashboard' ? 'active':'' }"
-					href="<spring:url value="/admin/home"/>">Dashboard</a></li>
-				<li class="nav-item"><a
-					class="nav-link ${page == 'management' ? 'active':'' }"
-					href="<spring:url value="/admin/management"/>">Management</a></li>
-				<li class="nav-item"><a
-					class="nav-link ${page == 'transaction' ? 'active':'' }"
-					href="<spring:url value="/admin/transaction"/>">Transaction</a></li>
-			</c:if>
-			<li class="nav-item"><a
-				class="nav-link ${page == 'about' ? 'active':'' }"
-				href="<spring:url value="/public/about"/>">About Us</a></li>
+					href="<spring:url value="/admin/home"/>">Dashboard</a></li> 
+			</c:if> --%>
+		 
 			<c:forEach var="pageItem" items="${pages}">
 				<c:if test="${pageItem.nonMenuPage == 0 }">
 					<li class="nav-item"><a class="nav-link ${pageItem.code == activePage ? 'active':'' }"
