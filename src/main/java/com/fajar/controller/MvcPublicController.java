@@ -38,7 +38,7 @@ public class MvcPublicController extends BaseController{
 	@RequestMapping(value = { "/", "index" })
 	public String index(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String imagebasePath = getFullImagePath(request);
-		model.addAttribute("menus", componentService.getPublicMenus(request));
+//		model.addAttribute("menus", componentService.getPublicMenus(request));
 		model.addAttribute("title", "Shop Application");
 		model.addAttribute("pageUrl", "index");
 		List<String> randomImages = productService.getRandomProductImages(imagebasePath); 

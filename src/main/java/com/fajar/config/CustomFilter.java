@@ -1,7 +1,6 @@
 package com.fajar.config;
 
 import java.io.IOException;
-import java.util.Date;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;

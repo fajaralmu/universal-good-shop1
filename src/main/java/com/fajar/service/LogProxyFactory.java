@@ -20,6 +20,7 @@ public class LogProxyFactory {
 	private static final DefaultParameterNameDiscoverer discoverer = new DefaultParameterNameDiscoverer();
 	
 	public static void setLoggers(Object obj) {
+		log.info("set logger to object: {}", obj.getClass());
 		
 		Field[] fields = obj.getClass().getDeclaredFields();
 		for (Field field : fields) {

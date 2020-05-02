@@ -4,7 +4,6 @@ import static com.fajar.util.StringUtil.buildString;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,6 @@ import com.fajar.annotation.FormField;
 import com.fajar.dto.Filter;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Product;
-import com.fajar.entity.ProductFlow;
 
 import lombok.extern.slf4j.Slf4j;
 

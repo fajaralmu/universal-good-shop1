@@ -2,8 +2,6 @@ package com.fajar.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.annotation.PostConstruct;
@@ -19,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
 import com.fajar.service.LogProxyFactory;
-import com.fajar.service.UserSessionService;
 import com.fajar.service.report.PrintedReportService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RestReportController {
 	
-	
-	@Autowired
-	private UserSessionService userSessionService;
 	@Autowired
 	private PrintedReportService excelReportService;
 	

@@ -22,9 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class ComponentService {
-	private static final String MENU_PREFFIX_TRX = "TRX";
-	private static final String MENU_PREFFIX_PUBLIC = "PUBLIC";
+public class ComponentService { 
 	
 	@Autowired
 	private MenuRepository menuRepository;
@@ -81,10 +79,7 @@ public class ComponentService {
 		return EntityUtil.validateDefaultValue(entities);
 	}
 	
-	public Page getPage(String code, HttpServletRequest request) {
-		
-		
-		
+	public Page getPage(String code, HttpServletRequest request) { 
 		Page page = pageRepository.findByCode(code); 
 		
 		if (page.getAuthorized() == 1 && !userSessionService.hasSession(request)) {
@@ -104,18 +99,7 @@ public class ComponentService {
 		return menus;
 	}
 	
-	public List<Menu> getManagementMenus(HttpServletRequest request) {
-		List<Menu> menus = menuRepository.findByPageStartsWith("MNGMNT");
-		List<BaseEntity> entities = new ArrayList<BaseEntity>();
-
-		menus = getAvailableMenusForUser(userSessionService.getUserFromSession(request), menus);
-		for (Menu menu : menus) {
-			menu.setUrl(request.getContextPath() + menu.getUrl());
-			entities.add(menu);
-		}
-		return EntityUtil.validateDefaultValue(entities);
-	}
-
+	 
 	private boolean hasAccess(User user, String menuAccess) {
 		boolean hasAccess = false;
 		
@@ -146,31 +130,7 @@ public class ComponentService {
 		return newMenus;
 	}
 
-	public List<Menu> getTransactionMenus(HttpServletRequest request) {
-		 
-		return getMenus(request, MENU_PREFFIX_TRX, true);
-	}
-	
-	public List<Menu> getPublicMenus(HttpServletRequest request) { 
-		
-		return getMenus(request, MENU_PREFFIX_PUBLIC, false);
-	}
-	
-	private List<Menu> getMenus(HttpServletRequest request, String preffix, boolean needAuth){
-		List<BaseEntity> entities 	= new ArrayList<BaseEntity>();
-		List<Menu> menus 			= menuRepository.findByPageStartsWith(preffix);
-		if(needAuth) {
-			menus = getAvailableMenusForUser(userSessionService.getUserFromSession(request), menus); 
-		}
-		
-		for (Menu menu : menus) {
-			menu.setUrl(request.getContextPath() + menu.getUrl());
-			entities.add(menu);
-		}
-		return EntityUtil.validateDefaultValue(entities);
-	}
-
-	
+	 
 
 	public List<Category> getAllCategories() {
 		return categoryRepository.findByDeletedFalse();

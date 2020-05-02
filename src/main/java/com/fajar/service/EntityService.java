@@ -58,7 +58,7 @@ public class EntityService {
 	 * @param newRecord
 	 * @return
 	 */
-	public ShopApiResponse addEntity(ShopApiRequest request, HttpServletRequest servletRequest, boolean newRecord) { 
+	public ShopApiResponse saveEntity(ShopApiRequest request, HttpServletRequest servletRequest, boolean newRecord) { 
 		
 		try {
 			
@@ -70,6 +70,9 @@ public class EntityService {
 			try {
 				Field entityField = EntityUtil.getDeclaredField(ShopApiRequest.class, fieldName); 
 				entityValue = entityField.get(request);
+				
+				log.info("save {}: {}", entityField.getName(), entityValue);
+				log.info("newRecord: {}", newRecord);
 				
 			}catch (Exception e) {
 				e.printStackTrace();

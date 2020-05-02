@@ -1,5 +1,13 @@
 package com.fajar.util;
 
+import static com.fajar.annotation.FormField.FIELD_TYPE_CURRENCY;
+import static com.fajar.annotation.FormField.FIELD_TYPE_DYNAMIC_LIST;
+import static com.fajar.annotation.FormField.FIELD_TYPE_FIXED_LIST;
+import static com.fajar.annotation.FormField.FIELD_TYPE_HIDDEN;
+import static com.fajar.annotation.FormField.FIELD_TYPE_IMAGE;
+import static com.fajar.annotation.FormField.FIELD_TYPE_NUMBER;
+import static com.fajar.annotation.FormField.FIELD_TYPE_TEXT;
+
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -17,7 +25,6 @@ import com.fajar.annotation.FormField;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
-import static com.fajar.annotation.FormField.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.extern.slf4j.Slf4j;

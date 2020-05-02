@@ -97,7 +97,12 @@ public class MvcAdminController extends BaseController {
 		List<String> imageUrlList = CollectionUtil.arrayToList(product.getImageUrl().split("~"));
 		List<Map> imageUrlObjects = new ArrayList<>();
 		for (String string : imageUrlList) {
-			imageUrlObjects.add(new HashMap<String, Object>() {{put("value",string);}});
+			imageUrlObjects.add(new HashMap<String, Object>() {/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1055027585947531920L;
+
+			{put("value",string);}});
 		}
 		model.addAttribute("product", product);
 		model.addAttribute("contextPath", request.getContextPath());
@@ -118,37 +123,37 @@ public class MvcAdminController extends BaseController {
 
 	}
 
-	@RequestMapping(value = { "/management" })
-	public String menuManagement(Model model, HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
+//	@RequestMapping(value = { "/management" })
+//	public String menuManagement(Model model, HttpServletRequest request, HttpServletResponse response)
+//			throws IOException {
+//
+//		if (!userService.hasSession(request)) {
+//			sendRedirectLogin(request, response);
+//			return basePage;
+//		}
+//		model.addAttribute("menus", componentService.getManagementMenus(request));
+//		model.addAttribute("contextPath", request.getContextPath());
+//		model.addAttribute("title", "Shop::Management");
+//		model.addAttribute("pageUrl", "shop/management-page");
+//		model.addAttribute("page", "management");
+//		return basePage;
+//	}
 
-		if (!userService.hasSession(request)) {
-			sendRedirectLogin(request, response);
-			return basePage;
-		}
-		model.addAttribute("menus", componentService.getManagementMenus(request));
-		model.addAttribute("contextPath", request.getContextPath());
-		model.addAttribute("title", "Shop::Management");
-		model.addAttribute("pageUrl", "shop/management-page");
-		model.addAttribute("page", "management");
-		return basePage;
-	}
-
-	@RequestMapping(value = { "/transaction" })
-	public String transaction(Model model, HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
-
-		if (!userService.hasSession(request)) {
-			sendRedirectLogin(request, response);
-			return basePage;
-		}
-		model.addAttribute("menus", componentService.getTransactionMenus(request));
-		model.addAttribute("imagePath", webAppConfiguration.getUploadedImagePath());
-		model.addAttribute("title", "Shop::Transaction");
-		model.addAttribute("pageUrl", "shop/transaction-page");
-		model.addAttribute("page", "transaction");
-		return basePage;
-	}
+//	@RequestMapping(value = { "/transaction" })
+//	public String transaction(Model model, HttpServletRequest request, HttpServletResponse response)
+//			throws IOException {
+//
+//		if (!userService.hasSession(request)) {
+//			sendRedirectLogin(request, response);
+//			return basePage;
+//		}
+//		model.addAttribute("menus", componentService.getTransactionMenus(request));
+//		model.addAttribute("imagePath", webAppConfiguration.getUploadedImagePath());
+//		model.addAttribute("title", "Shop::Transaction");
+//		model.addAttribute("pageUrl", "shop/transaction-page");
+//		model.addAttribute("page", "transaction");
+//		return basePage;
+//	}
 
 	@RequestMapping(value = { "/transaction/in", "/transaction/in/", "/transaction/in/{transactionCode}" })
 	public String incomingTransaction(@PathVariable(required = false) String transactionCode, Model model,

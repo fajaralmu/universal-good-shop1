@@ -18,10 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
-import com.fajar.service.UserAccountService;
 import com.fajar.service.EntityService;
 import com.fajar.service.LogProxyFactory;
-import com.fajar.service.UserSessionService;
+import com.fajar.service.UserAccountService;
 
 @CrossOrigin
 @RestController
@@ -50,7 +49,7 @@ public class RestEntityController {
 		if(!accountService.validateToken(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
-		return entityService.addEntity(request,httpRequest, true); 
+		return entityService.saveEntity(request,httpRequest, true); 
 	}
 	
 	@PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -60,7 +59,7 @@ public class RestEntityController {
 		if(!accountService.validateToken(httpRequest)) {
 			return ShopApiResponse.failedResponse();
 		}
-		return entityService.addEntity(request,httpRequest, false);
+		return entityService.saveEntity(request,httpRequest, false);
 		 
 	}
 	

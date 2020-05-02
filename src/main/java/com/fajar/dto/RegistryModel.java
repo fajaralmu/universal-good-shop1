@@ -6,12 +6,6 @@ import java.util.HashMap;
 
 import com.fajar.entity.User;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-
  
 public class RegistryModel extends UnicastRemoteObject   {
 	public RegistryModel() throws RemoteException {

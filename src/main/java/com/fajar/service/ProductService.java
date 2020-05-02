@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
-import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductSales;
 import com.fajar.entity.Supplier;

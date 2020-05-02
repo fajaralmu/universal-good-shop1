@@ -32,9 +32,7 @@ public class ReportingService {
 	@Autowired
 	private TransactionRepository transactionRepository;
 	@Autowired
-	private ProgressService progressService;
-	@Autowired
-	private TransactionService transactionService;
+	private ProgressService progressService; 
 	
 	public ShopApiResponse getCashFlow(ShopApiRequest request) {
 
@@ -114,7 +112,7 @@ public class ReportingService {
 	}
 
 	public static List reverse(List arrayList) {
-		List reversedArrayList = new ArrayList<>();
+		List reversedArrayList = new ArrayList();
 		for (int i = arrayList.size() - 1; i >= 0; i--) {
 
 			// Append the elements in reverse order

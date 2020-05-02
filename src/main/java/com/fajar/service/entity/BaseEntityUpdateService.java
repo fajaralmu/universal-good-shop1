@@ -21,7 +21,7 @@ public class BaseEntityUpdateService {
 	protected FileService fileService;
 
 	public ShopApiResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
-
+		log.error("saveEntity Method not implemented");
 		return ShopApiResponse.failed("method not implemented");
 	}
 

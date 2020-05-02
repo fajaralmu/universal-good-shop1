@@ -1,13 +1,5 @@
 package com.fajar.test;
 
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
-
-import com.fajar.dto.RegistryModel;
-
 public class RmiStopper {
 
 	public static void main(String[] args) {

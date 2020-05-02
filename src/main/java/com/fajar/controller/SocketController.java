@@ -5,7 +5,6 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,8 +15,8 @@ import com.fajar.service.RealtimeService2;
 @RestController
 public class SocketController {
 	Logger log = LoggerFactory.getLogger(SocketController.class);
-	@Autowired
-	private SimpMessagingTemplate webSocket;
+//	@Autowired
+//	private SimpMessagingTemplate webSocket;
 	@Autowired
 	RealtimeService2 realtimeUserService;
 	
