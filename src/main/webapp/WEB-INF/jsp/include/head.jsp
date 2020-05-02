@@ -44,11 +44,11 @@
 		 
 			<c:forEach var="pageItem" items="${pages}">
 				<c:if test="${pageItem.nonMenuPage == 0 }">
-					<li class="nav-item"><a class="nav-link ${pageItem.code == activePage ? 'active':'' }"
+					<li class="nav-item"><a id="${pageItem.code }" class="nav-link"
 						href="<spring:url value="/webmart/page/${pageItem.code }"/>">${pageItem.name }</a></li>
 				</c:if>
 				<c:if test="${pageItem.nonMenuPage == 1 }">
-					<li class="nav-item"><a class="nav-link ${pageItem.code == activePage ? 'active':'' }"
+					<li class="nav-item"><a class="nav-link" id="${pageItem.code }"
 						href="<spring:url value="/${pageItem.link }"/>">${pageItem.name }</a></li>
 				</c:if>
 			</c:forEach>
@@ -75,4 +75,19 @@
 					}
 				});
 	}
+	
+	function getCurrentPageCode(){
+		postReq(
+				"<spring:url value="/api/public/pagecode" />",
+				{},
+				function(xhr) {
+					infoDone();
+					var response = (xhr.data);
+					var pageCode = response.code;
+					_byId(pageCode).setAttribute("class", "nav-link active");
+				}
+		);
+	}
+	
+	getCurrentPageCode();
 </script>

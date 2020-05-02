@@ -20,7 +20,6 @@ import com.fajar.exception.InvalidRequestException;
 import com.fajar.service.LogProxyFactory;
 import com.fajar.service.ProductService;
 import com.fajar.service.UserSessionService;
-import com.fajar.service.WebConfigService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,12 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin
 @RestController
 @RequestMapping("/api/public")
-public class RestPublicController {
+public class RestPublicController extends BaseController{
 	
 	@Autowired
 	private ProductService productService;
-	@Autowired
-	private WebConfigService webConfigService;
 	@Autowired
 	private UserSessionService userSessionService;
 
@@ -66,6 +63,12 @@ public class RestPublicController {
 		log.info("register {}", request);
 		ShopApiResponse response = userSessionService.requestId(httpRequest, httpResponse);
 		return response;
+	}
+	
+	@PostMapping(value = "/pagecode")
+	public ShopApiResponse getCurrentPageCode(HttpServletRequest request, HttpServletResponse response) {
+		validatePageRequest(request);
+		return ShopApiResponse.builder().code(super.activePage(request)).build();
 	}
 	
 	public void validatePageRequest(HttpServletRequest req) { 

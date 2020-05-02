@@ -74,6 +74,8 @@ public class MvcAdminController extends BaseController {
 			sendRedirectLogin(request, response);
 			return basePage;
 		}
+		
+		setActivePage(request, "home");
 
 		model.addAttribute("menus", componentService.getDashboardMenus(request));
 		model.addAttribute("imagePath", webAppConfiguration.getUploadedImagePath());

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fajar.dto.RegistryModel;
+import com.fajar.dto.SessionData;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
@@ -25,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserAccountService {
 	
-	private static final String ATTR_REQUEST_URI = "requestURI";
+	private static final String ATTR_REQUEST_URI = SessionData.ATTR_REQUEST_URI;
 	private static final String HEADER_LOGIN_KEY = "loginKey";
 	private static final String HEADER_REQUEST_TOKEN = "requestToken";
 	
@@ -56,12 +57,14 @@ public class UserAccountService {
 			throw new RuntimeException("invalid role");
 		}
 		UserRole regularRole = regularRoleOpt.get();
+		
 		User user = new User();
 		user.setDisplayName(request.getUser().getDisplayName());
 		user.setDeleted(false);
 		user.setRole(regularRole);
 		user.setPassword(request.getUser().getPassword());
 		user.setUsername(request.getUser().getUsername());
+		
 		try {
 			User newUser = userRepository.save(user);
 			response.setUser(newUser);
@@ -78,10 +81,10 @@ public class UserAccountService {
 		 
 		if(dbUser == null) {
 			return new ShopApiResponse("01","invalid credential");
-		}
+		} 
 		 
 		User loggedUser = userSessionService.addUserSession(dbUser,httpRequest,httpResponse);
-		log.info("--------LOGIN SUCCESS");
+		log.info("LOGIN SUCCESS");
 		
 		ShopApiResponse response = new ShopApiResponse("00","success");
 		 
@@ -91,7 +94,7 @@ public class UserAccountService {
 		
 		response.setEntity(clonedUser);
 		
-		if(httpRequest.getSession(false).getAttribute(ATTR_REQUEST_URI)!=null) {
+		if(httpRequest.getSession(false).getAttribute(ATTR_REQUEST_URI) != null) {
 			log.info("WILL REDIRECT TO REQUESTED URI: "+httpRequest.getSession(false).getAttribute(ATTR_REQUEST_URI));
 			response.setRedirectUrl(httpRequest.getSession(false).getAttribute(ATTR_REQUEST_URI).toString());			
 		}
@@ -124,7 +127,8 @@ public class UserAccountService {
 	 */
 	public String getToken(HttpServletRequest httpRequest) {
 		User user = userSessionService.getUserFromSession(httpRequest);
-		System.out.println("==loggedUser: "+user);
+		log.info("==loggedUser: "+user);
+		
 		if(user == null)
 			return null;
 		return (String) userSessionService.getToken(user);
@@ -145,11 +149,11 @@ public class UserAccountService {
 			return true;
 		}
 		if(requestToken == null) {
-			System.out.println("NULL TOKEN");
+			log.info("NULL TOKEN");
 			return false;
 		}
 		String existingToken = getToken(httpRequest);
-		System.out.println("_______REQ_TOKEN: "+requestToken+" vs EXISTING:"+existingToken);
+		log.info("|| REQ_TOKEN: "+requestToken+" vs EXISTING:"+existingToken+"||");
 		
 		boolean tokenEquals = requestToken.equals(existingToken); 
 		return tokenEquals;

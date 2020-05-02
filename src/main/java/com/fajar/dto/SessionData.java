@@ -2,9 +2,7 @@ package com.fajar.dto;
 
 import java.io.Serializable;
 import java.rmi.Remote;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.fajar.entity.RegisteredRequest;
@@ -24,6 +22,7 @@ public class SessionData implements Remote, Serializable{
 	 */
 	private static final long serialVersionUID = -1210492423406561769L;
 	private Map<String, RegisteredRequest> registeredApps;
+	public static final String ATTR_REQUEST_URI = "requestURI";
 	
 	public void addNewApp(RegisteredRequest registeredRequest) {
 		if(registeredApps == null) {

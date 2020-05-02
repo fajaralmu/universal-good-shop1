@@ -48,6 +48,9 @@ public class MvcAccountController extends BaseController {
 		if (userSessionService.hasSession(request, false)) {
 			response.sendRedirect(request.getContextPath() + "/admin/home");
 		}
+		
+		setActivePage(request, "login");
+		
 		model.addAttribute("pageUrl", "shop/login-page");
 		model.addAttribute("title", "Login");
 		model.addAttribute("page", "login");

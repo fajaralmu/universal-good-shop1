@@ -1,5 +1,7 @@
 package com.fajar.service;
 
+import static com.fajar.dto.SessionData.ATTR_REQUEST_URI;
+
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
@@ -47,6 +49,8 @@ public class UserSessionService {
 	
 	@Autowired
 	private MessagingService messagingService;
+	
+	public static final String PAGE_CODE = "page-code";
 
 	@PostConstruct
 	public void init() {
@@ -88,26 +92,26 @@ public class UserSessionService {
 	}
 
 	public boolean hasSession(HttpServletRequest request, boolean setRequestURI) {
-		if (setRequestURI) {
+		if (setRequestURI && request.getMethod().toLowerCase().equals("get")) {
 
-			request.getSession().setAttribute("requestURI", request.getRequestURI());
-			log.info("---REQUESTED URI: " + request.getSession(false).getAttribute("requestURI"));
+			request.getSession().setAttribute(ATTR_REQUEST_URI, request.getRequestURI());
+			log.info("REQUESTED URI: " + request.getSession(false).getAttribute(ATTR_REQUEST_URI));
 		} 
 		
 		/**
-		 * handle FE
+		 * handle Client
 		 */ 
-		String remoteAddress = request.getRemoteAddr();
-		int remotePort = request.getRemotePort();
-		
-		log.info("remoteAddress:" + remoteAddress + ":" + remotePort);
+		 
 		if (request.getHeader("loginKey") != null) {
+			String remoteAddress = request.getRemoteAddr();
+			int remotePort = request.getRemotePort(); 
+			log.info("remoteAddress:" + remoteAddress + ":" + remotePort);
 			boolean registered = getUserFromRegistry(request) != null;
 			return registered;
 		}
 
 		/**
-		 * end handle FE
+		 * end handle Client
 		 */
  
 		Object sessionObj = request.getSession().getAttribute("user");
@@ -318,6 +322,10 @@ public class UserSessionService {
 		return registeredRequest;
 	}
 
+	/**
+	 * key for client app
+	 * @return
+	 */
 	public ShopApiResponse generateAppRequest() {
 		SessionData sessionData = registryService.getModel(SESSION_DATA);
 		
@@ -359,6 +367,28 @@ public class UserSessionService {
 		
 		realtimeService.sendUpdateSession(generateAppRequest());
 		return ShopApiResponse.builder().code("00").sessionData(sessionData).build();
+	}
+	
+	public String getPageCode(HttpServletRequest request) {
+		log.info("getPageCode");
+		try {
+			String pageCode = request.getSession().getAttribute(PAGE_CODE).toString();
+			log.info("pageCode: {}", pageCode);
+			return pageCode;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public void setActivePage(HttpServletRequest request, String pageCode) {
+		log.info("setActivePage: {}", pageCode);
+		try {
+			request.getSession(false).setAttribute(PAGE_CODE, pageCode);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 }

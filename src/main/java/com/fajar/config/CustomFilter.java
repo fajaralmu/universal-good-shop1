@@ -18,8 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class CustomFilter implements javax.servlet.Filter {
- 
-	
+  
 	
     @Override
     public void doFilter(
@@ -30,22 +29,21 @@ public class CustomFilter implements javax.servlet.Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         
-        boolean isRestEndpoint = req.getRequestURI().contains("universal-good-shop/api");
+        boolean isRestEndpoint = req.getMethod().toLowerCase().equals("post");
         
         if(isRestEndpoint) {
-	        System.out.println("=====================BEGIN API==================");
-	        System.out.println(new Date());
-	        System.out.println(req.getMethod()) ;
-	        System.out.println(req.getRequestURI());
+	        log.info("=====================BEGIN API==================");
+	        log.info("Content Type: {}", req.getContentType());
+	        log.info("Method: {} Uri: {}",req.getMethod(), req.getRequestURI());
 	         
         } 
         	
         chain.doFilter(request, response);
         
         if(isRestEndpoint) {
-	        System.out.println(res.getStatus());
-	        System.out.println(res.getContentType());
-	        System.out.println("================END API=================");
+	        log.info("Status: {}", res.getStatus());
+	        log.info("Content Type: {}", res.getContentType());
+	        log.info("================END API=================");
         }
     }
 

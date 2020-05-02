@@ -74,7 +74,8 @@ public class MvcPublicController extends BaseController{
 	
 	@RequestMapping(value = { "/public/about" })
 	public String about(  Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+		
+		setActivePage(request, "about");
 		 
 		model.addAttribute("title", "About Us");
 		model.addAttribute("pageUrl", "shop/about-page");
