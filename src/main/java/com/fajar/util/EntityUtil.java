@@ -304,6 +304,12 @@ public class EntityUtil {
 		return targetObject;
 	}
 
+	public static void validateDefaultValues(List<? extends BaseEntity> entities) {
+		for (int i = 0; i < entities.size(); i++) {
+			validateDefaultValue(entities.get(i));
+		}
+	}
+	
 	public static <T extends BaseEntity> T validateDefaultValue(BaseEntity baseEntity) {
 		List<Field> fields = EntityUtil.getDeclaredFields(baseEntity.getClass());
 		

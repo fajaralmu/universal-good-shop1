@@ -99,7 +99,9 @@ public class ComponentService {
 
 	public List<Menu > getMenuByPageCode(String pageCode){
 		
-		return menuRepository.findByMenuPage_code(pageCode);
+		List<Menu> menus = menuRepository.findByMenuPage_code(pageCode);
+		EntityUtil.validateDefaultValues(menus);
+		return menus;
 	}
 	
 	public List<Menu> getManagementMenus(HttpServletRequest request) {
