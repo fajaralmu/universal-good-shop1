@@ -12,8 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.service.LogProxyFactory;
-import com.fajar.service.UserSessionService;
-import com.fajar.service.WebConfigService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,19 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("account")
 public class MvcAccountController extends BaseController { 
-	
-	private final UserSessionService userSessionService;
-	private final WebConfigService webAppConfiguration;
-
-	private String basePage;
-	
-	
+	 
 
 	@Autowired
-	public MvcAccountController(UserSessionService userSessionService, WebConfigService webAppConfiguration) {
-		super();
-		this.userSessionService = userSessionService;
-		this.webAppConfiguration = webAppConfiguration;
+	public MvcAccountController() { 
 		log.info("----------------Mvc Account Controller---------------");
 	}
 
@@ -49,7 +38,7 @@ public class MvcAccountController extends BaseController {
 			response.sendRedirect(request.getContextPath() + "/admin/home");
 		}
 		
-		setActivePage(request, "login");
+		setActivePage(request );
 		
 		model.addAttribute("pageUrl", "shop/login-page");
 		model.addAttribute("title", "Login");

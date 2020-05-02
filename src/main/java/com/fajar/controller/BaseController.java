@@ -16,27 +16,37 @@ import com.fajar.entity.Page;
 import com.fajar.entity.ShopProfile;
 import com.fajar.entity.User;
 import com.fajar.service.ComponentService;
+import com.fajar.service.ProductService;
 import com.fajar.service.RegistryService;
+import com.fajar.service.TransactionService;
 import com.fajar.service.UserAccountService;
 import com.fajar.service.UserSessionService;
 import com.fajar.service.WebConfigService;
 import com.fajar.util.DateUtil;
 import com.fajar.util.MvcUtil;
-
-import lombok.Data;
 @Controller 
 public class BaseController {
 	
+	protected String basePage;
+	
 	@Autowired
-	private WebConfigService webAppConfiguration;
+	protected WebConfigService webAppConfiguration;
 	@Autowired
-	private UserSessionService userSessionService;
+	protected UserSessionService userSessionService;
 	@Autowired
-	private UserAccountService accountService;
+	protected UserAccountService accountService;
 	@Autowired
-	private RegistryService registryService;
+	protected RegistryService registryService; 
 	@Autowired
-	private ComponentService componentService; 
+	protected UserSessionService userService;
+	@Autowired
+	protected TransactionService transactionService;
+	@Autowired
+	protected ProductService productService;
+	@Autowired
+	protected ComponentService componentService; 
+ 
+
 
 	@ModelAttribute("shopProfile")
 	public ShopProfile getProfile(HttpServletRequest request) {
@@ -100,9 +110,18 @@ public class BaseController {
 		return userSessionService.getPageCode(request);
 	}
 	
-	public void setActivePage(HttpServletRequest request, String pageCode) {
+	public void setActivePage(HttpServletRequest request ) {
+		
+		String pageCode = componentService.getPageCode(request);
 		userSessionService.setActivePage(request, pageCode);
 	}
+	
+	/**
+	 * ======================================================
+	 * 				     	Statics
+	 * ======================================================
+	 * 
+	 */
 	
 	public static Cookie getCookie(String name, Cookie[] cookies) {
 		try {
@@ -113,10 +132,20 @@ public class BaseController {
 		return null;
 	}
 	
+	/**
+	 * send to login page URL
+	 * @param request
+	 * @param response
+	 */
 	public static void sendRedirectLogin(HttpServletRequest request, HttpServletResponse response) {
 		sendRedirect(response, request.getContextPath() + "/account/login");
 	}
 	
+	/**
+	 * send to specified URL
+	 * @param response
+	 * @param url
+	 */
 	public static void sendRedirect(HttpServletResponse response ,String url)  {
 		try {
 			response.sendRedirect(url);

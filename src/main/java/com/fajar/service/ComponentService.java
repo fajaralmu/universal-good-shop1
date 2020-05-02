@@ -18,7 +18,10 @@ import com.fajar.repository.MenuRepository;
 import com.fajar.repository.PageRepository;
 import com.fajar.util.EntityUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ComponentService {
 	private static final String MENU_PREFFIX_TRX = "TRX";
 	private static final String MENU_PREFFIX_PUBLIC = "PUBLIC";
@@ -40,6 +43,27 @@ public class ComponentService {
 			return pageRepository.findAll();
 		else
 			return pageRepository.findByAuthorized(0);
+	}
+	
+	/**
+	 * get page code
+	 * @param request
+	 * @return
+	 */
+	public String getPageCode(HttpServletRequest request) {
+		String uri = request.getRequestURI();
+		String link = uri.replace(request.getContextPath(), "");
+		
+		log.info("link: {}", link);
+		Page page = pageRepository.findTop1ByLink(link);
+		
+		log.info("page from db : {}", page);
+		if(null == page) {
+			return "";
+		}
+		
+		log.info("page code found: {}", page.getCode());
+		return page.getCode();
 	}
 	
 	public List<Page> getAllPages() { 

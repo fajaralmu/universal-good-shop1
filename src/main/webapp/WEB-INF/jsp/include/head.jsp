@@ -42,15 +42,10 @@
 					href="<spring:url value="/admin/home"/>">Dashboard</a></li> 
 			</c:if> --%>
 		 
-			<c:forEach var="pageItem" items="${pages}">
-				<c:if test="${pageItem.nonMenuPage == 0 }">
-					<li class="nav-item"><a id="${pageItem.code }" class="nav-link"
-						href="<spring:url value="/webmart/page/${pageItem.code }"/>">${pageItem.name }</a></li>
-				</c:if>
-				<c:if test="${pageItem.nonMenuPage == 1 }">
+			<c:forEach var="pageItem" items="${pages}"> 
 					<li class="nav-item"><a class="nav-link" id="${pageItem.code }"
-						href="<spring:url value="/${pageItem.link }"/>">${pageItem.name }</a></li>
-				</c:if>
+						href="<spring:url value="${pageItem.link }"/>">${pageItem.name }</a></li>
+				 
 			</c:forEach>
 
 		</ul>

@@ -57,18 +57,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("management")
 public class MvcManagementController extends BaseController {
 
-	@Autowired
-	private UserSessionService userService;
-	@Autowired
-	private EntityService entityService;
-	@Autowired
-	private WebConfigService webAppConfiguration;
-	@Autowired
-	private ComponentService componentService;
-	@Autowired
-	private EntityManagementPageService entityManagementPageService;
 
-	private static String basePage;
+	@Autowired
+	private EntityService entityService;  
+	@Autowired
+	private EntityManagementPageService entityManagementPageService; 
+	
 	private static final String ERROR_404_PAGE = "error/notfound";
 
 	public MvcManagementController() {

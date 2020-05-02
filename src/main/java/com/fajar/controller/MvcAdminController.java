@@ -11,7 +11,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,12 +20,7 @@ import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.Product;
-import com.fajar.service.ComponentService;
 import com.fajar.service.LogProxyFactory;
-import com.fajar.service.ProductService;
-import com.fajar.service.TransactionService;
-import com.fajar.service.UserSessionService;
-import com.fajar.service.WebConfigService;
 import com.fajar.util.CollectionUtil;
 import com.fajar.util.DateUtil;
 
@@ -40,20 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Controller
 @RequestMapping("admin")
-public class MvcAdminController extends BaseController {
-
-	@Autowired
-	private UserSessionService userService;
-	@Autowired
-	private TransactionService transactionService;
-	@Autowired
-	private ProductService productService;
-	@Autowired
-	private ComponentService componentService;
-	@Autowired
-	private WebConfigService webAppConfiguration;
-
-	private String basePage;
+public class MvcAdminController extends BaseController { 
 
 	public MvcAdminController() {
 		log.info("-----------------Mvc Admin Controller------------------");
@@ -69,13 +50,13 @@ public class MvcAdminController extends BaseController {
 	public String menuDashboard(Model model, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 		Calendar cal = Calendar.getInstance();
-
+		
 		if (!userService.hasSession(request)) {
 			sendRedirectLogin(request, response);
 			return basePage;
 		}
 		
-		setActivePage(request, "home");
+		setActivePage(request );
 
 		model.addAttribute("menus", componentService.getDashboardMenus(request));
 		model.addAttribute("imagePath", webAppConfiguration.getUploadedImagePath());

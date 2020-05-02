@@ -19,7 +19,7 @@
 						</h5>
 						<a class="badge badge-primary"
 							data-toggle="tooltip" data-placement="bottom"
-							title="${menu.description }" href="<spring:url value="/"/>${menu.url }">Detail</a>
+							title="${menu.description }" href="<spring:url value= "${menu.url }" />">Detail</a>
 					</div>
 				</div>
 			</div>

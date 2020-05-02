@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.service.RealtimeService2;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * @author fajar
@@ -20,9 +22,9 @@ import com.fajar.service.RealtimeService2;
  */
 @Controller
 @RequestMapping("web")
+@Slf4j
 public class MvcUtilController {
-
-	Logger log = LoggerFactory.getLogger(MvcUtilController.class); 
+ 
 	
 	public MvcUtilController() {
 		log.info("-----------------MvcUtilController------------------");
