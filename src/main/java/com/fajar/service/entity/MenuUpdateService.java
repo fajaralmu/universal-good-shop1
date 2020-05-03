@@ -23,7 +23,7 @@ public class MenuUpdateService extends BaseEntityUpdateService{
 		String base64Image = menu.getIconUrl();
 		if (base64Image != null && !base64Image.equals("")) {
 			try {
-				String imageName = fileService.writeImage("MN", base64Image);
+				String imageName = fileService.writeImage(baseEntity.getClass().getSimpleName(), base64Image);
 				menu.setIconUrl(imageName);
 			} catch (IOException e) {
 

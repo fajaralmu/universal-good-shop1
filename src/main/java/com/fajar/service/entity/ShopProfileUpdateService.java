@@ -23,7 +23,7 @@ public class ShopProfileUpdateService extends BaseEntityUpdateService{
 		String base64Image = shopProfile.getIconUrl();
 		if (base64Image != null && !base64Image.equals("")) {
 			try {
-				String imageName = fileService.writeImage("PROFILE", base64Image);
+				String imageName = fileService.writeImage(baseEntity.getClass().getSimpleName(), base64Image);
 				shopProfile.setIconUrl(imageName);
 			} catch (IOException e) {
 

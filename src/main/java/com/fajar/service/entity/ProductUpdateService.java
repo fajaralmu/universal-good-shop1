@@ -53,7 +53,7 @@ public class ProductUpdateService extends BaseEntityUpdateService{
 							}
 						}
 						if (updated) {
-							imageName = fileService.writeImage(PRODUCT_IMG_PREFFIX, base64Image);
+							imageName = fileService.writeImage(baseEntity.getClass().getSimpleName(), base64Image);
 						}
 						if (null != imageName)
 							imageUrls[i] = (imageName);

@@ -1,4 +1,4 @@
-package com.fajar.service;
+package com.fajar.service.mock;
 
 import java.util.ArrayList;
 import java.util.Calendar;

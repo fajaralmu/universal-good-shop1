@@ -262,19 +262,7 @@ public class ProductInventoryService {
 				 * 
 				 */
 				cashBalanceService.updateCashBalance(productFlow);
-				
-//				/**
-//				 * update count
-//				 */
-//				inventoryItem.setCount(inventoryItem.getCount() - productFlow.getCount());
-//				
-//				if (inventoryItem.getCount() < 0) {
-//					//SKIP
-//					continue;
-//				}
-//				
-//				inventoryItemRepository.save(inventoryItem);
-				
+				 
 				/**
 				 * inventory item NEW VERSION
 				 */				 

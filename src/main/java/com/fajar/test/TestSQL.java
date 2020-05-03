@@ -1,3 +1,4 @@
+package com.fajar.test;
 //package com.fajar.stat;
 //
 //import java.util.Random;

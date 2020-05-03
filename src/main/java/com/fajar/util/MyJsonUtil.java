@@ -61,7 +61,7 @@ public class MyJsonUtil {
 		return json;
 	}
 	
-	private static Boolean isNotString(Class clazz) {
+	private static Boolean isNotString(Class<?> clazz) {
 		//System.out.println("00000000000 "+clazz.getCanonicalName());
 		Class[] classes = new Class[] {
 				Integer.class,Double.class,Long.class,Boolean.class
