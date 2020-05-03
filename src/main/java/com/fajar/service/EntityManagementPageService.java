@@ -28,7 +28,7 @@ public class EntityManagementPageService {
 		}
 		
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(entityConfig.getEntityClass(), null); 
-		model = constructCommonModel(request, entityProperty, model, entityConfig.getClass().getSimpleName(), "management");
+		model = constructCommonModel(request, entityProperty, model, entityConfig.getEntityClass().getSimpleName(), "management");
 		
 		return model;
 	}
