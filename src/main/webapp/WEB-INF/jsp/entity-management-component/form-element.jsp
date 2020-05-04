@@ -43,8 +43,8 @@
 
 											</select>
 											<script>
-												window["valueField_${element.id}"] = "${element.optionValueName}";
-												window["itemField_${element.id}"] = "${element.optionItemName}";
+												managedEntity["valueField_${element.id}"] = "${element.optionValueName}";
+												managedEntity["itemField_${element.id}"] = "${element.optionItemName}";
 												let options = ${
 													element.jsonList
 												};
@@ -73,8 +73,8 @@
 
 											</select>
 											<script>
-												window["valueField_${element.id}"] = "${element.optionValueName}";
-												window["itemField_${element.id}"] = "${element.optionItemName}";
+												managedEntity["valueField_${element.id}"] = "${element.optionValueName}";
+												managedEntity["itemField_${element.id}"] = "${element.optionItemName}";
 											</script>
 										</c:when>
 										<c:when test="${  element.type == 'textarea'}">

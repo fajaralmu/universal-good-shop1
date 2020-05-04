@@ -21,6 +21,7 @@
 	var  editable = ${entityProperty.editable};
 	var singleRecord = ${singleRecord == null ||singleRecord == false ? false:true}
 	var entityIdValue = "${entityId}";
+	var managedEntity = {};
 	
 </script> 
 
@@ -34,7 +35,6 @@
 <div class="content">
 	<h2>${entityProperty.entityName.toUpperCase()}-Management</h2>
 	<p></p>
-	<a role="button" class="btn btn-secondary" href="<spring:url value="/admin/management" />">Back</a>
 	<c:if test="${entityProperty.editable == true }">
 		<button type="btn-show-form" class="btn btn-primary"
 			data-toggle="modal" data-target="#modal-entity-form">Show
@@ -292,7 +292,7 @@
 				//handle object type value
 				if (typeof (entityValue) == "object" && entityValue != null) {
 					console.log("TYPE ", typeof (entityValue), fieldNames[j]);
-					let objectFieldName = window["itemField_" + fieldNames[j]];
+					let objectFieldName = managedEntity["itemField_" + fieldNames[j]];
 					entityValue = entityValue[objectFieldName];
 				}
 				
@@ -461,7 +461,7 @@
 			if (typeof (entityValue) == "object" && entityValue != null) {
 
 
-				let objectValueName = window["valueField_" + fieldNames[j]]
+				let objectValueName = managedEntity["valueField_" + fieldNames[j]]
 				entityValue = entityValueAsObject[objectValueName];
 				//handle multiple select
 				if (isMultipleSelect) {
