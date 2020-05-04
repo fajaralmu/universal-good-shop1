@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Menu;
 import com.fajar.repository.MenuRepository;
@@ -18,7 +18,7 @@ public class MenuUpdateService extends BaseEntityUpdateService{
 	private MenuRepository menuRepository; 
 	 
 	@Override
-	public ShopApiResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
+	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
 		Menu menu = (Menu) copyNewElement(baseEntity, newRecord);
 		String base64Image = menu.getIconUrl();
 		if (base64Image != null && !base64Image.equals("")) {
@@ -39,6 +39,6 @@ public class MenuUpdateService extends BaseEntityUpdateService{
 			}
 		}
 		Menu newMenu = menuRepository.save(menu);
-		return ShopApiResponse.builder().entity(newMenu).build();
+		return WebResponse.builder().entity(newMenu).build();
 	}
 }

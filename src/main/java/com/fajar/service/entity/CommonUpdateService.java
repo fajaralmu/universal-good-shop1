@@ -3,7 +3,7 @@ package com.fajar.service.entity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.repository.EntityRepository;
 
@@ -14,9 +14,9 @@ public class CommonUpdateService extends BaseEntityUpdateService{
 	protected EntityRepository entityRepository;
 	
 	@Override
-	public ShopApiResponse saveEntity(BaseEntity entity, boolean newRecord) {
+	public WebResponse saveEntity(BaseEntity entity, boolean newRecord) {
 		entity = (BaseEntity) copyNewElement(entity, newRecord);
 		BaseEntity newEntity = entityRepository.save(entity);
-		return ShopApiResponse.builder().entity(newEntity).build();
+		return WebResponse.builder().entity(newEntity).build();
 	}
 }

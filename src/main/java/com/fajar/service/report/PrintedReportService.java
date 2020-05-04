@@ -18,8 +18,8 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.dto.Filter;
 import com.fajar.dto.ReportCategory;
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.dto.TransactionType;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.CapitalFlow;
@@ -78,7 +78,7 @@ public class PrintedReportService {
 		LogProxyFactory.setLoggers(this);
 	}
 
-	public File buildDailyReport(ShopApiRequest request) { 
+	public File buildDailyReport(WebRequest request) { 
 		
 		try {
 			
@@ -397,7 +397,7 @@ public class PrintedReportService {
 	 * @param request
 	 * @return
 	 */
-	public File buildMonthlyReport(ShopApiRequest request) {
+	public File buildMonthlyReport(WebRequest request) {
 		
 		Filter filter = request.getFilter();
 		Integer year = filter.getYear();
@@ -441,9 +441,9 @@ public class PrintedReportService {
 		return result;
 	}
 
-	public File buildEntityReport(ShopApiRequest request) { 
+	public File buildEntityReport(WebRequest request) { 
 //		request.getFilter().setLimit(0);
-		ShopApiResponse response = entityService.filter(request);
+		WebResponse response = entityService.filter(request);
 		
 		File file = getEntityReport(response.getEntities(), response.getEntityClass());
 		return file ;

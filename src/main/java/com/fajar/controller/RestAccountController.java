@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.service.LogProxyFactory;
 import com.fajar.service.UserAccountService;
 import com.fajar.service.UserSessionService;
@@ -43,22 +43,22 @@ public class RestAccountController {
 	}
 
 	@PostMapping(value =  "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse register(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse register(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("register {}", request);
-		ShopApiResponse response = accountService.registerUser(request);
+		WebResponse response = accountService.registerUser(request);
 		return response;
 	}
 	
 	@PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse login(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse login(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException, IllegalAccessException {
 		log.info("login {}", request);
-		ShopApiResponse response = accountService.login(request, httpRequest,httpResponse);
+		WebResponse response = accountService.login(request, httpRequest,httpResponse);
 		return response;
 	}
 	@PostMapping(value = "/logout", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse logout(  HttpServletRequest httpRequest,
+	public WebResponse logout(  HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		 
 		boolean success = false;
@@ -66,14 +66,14 @@ public class RestAccountController {
 			success = accountService.logout(httpRequest);
 		}
 		 
-		return ShopApiResponse.builder().code(success?"00":"01").message("SUCCESS LOGOUT: "+success).build();
+		return WebResponse.builder().code(success?"00":"01").message("SUCCESS LOGOUT: "+success).build();
 	}
 	@PostMapping(value = "/getprofile", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse getprpfile(  HttpServletRequest httpRequest,
+	public WebResponse getprpfile(  HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		 
 		if (!userSessionService.hasSession(httpRequest, false)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
 		 
 		return userSessionService.getProfile(httpRequest);

@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.dto.TransactionType;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Customer;
@@ -65,14 +65,14 @@ public class TransactionService {
 	 * @param httpRequest
 	 * @return
 	 */
-	public ShopApiResponse supplyProduct(ShopApiRequest request, HttpServletRequest httpRequest, String requestId) {
+	public WebResponse supplyProduct(WebRequest request, HttpServletRequest httpRequest, String requestId) {
 		
 		progressService.init(requestId);
 		
 		User user = validateUserBeforeTransaction(httpRequest); 
 		 
 		if(null == user) {
-			return ShopApiResponse.invalidSession();
+			return WebResponse.invalidSession();
 		}
 		
 		/**
@@ -81,7 +81,7 @@ public class TransactionService {
 		
 		if (request.getProductFlows() == null || request.getProductFlows().isEmpty()  ) {
 			
-			return ShopApiResponse.builder().code("01").message("product is empty").build();
+			return WebResponse.builder().code("01").message("product is empty").build();
 		}
 
 		try {
@@ -92,7 +92,7 @@ public class TransactionService {
 			 */
 			Optional<Supplier> supplier = supplierRepository.findById(request.getSupplier().getId()); 
 			if (supplier.isPresent() == false) {
-				return ShopApiResponse.builder().code("01").message("supplier is empty").build();
+				return WebResponse.builder().code("01").message("supplier is empty").build();
 			}
 			
 			sendProgress(1, 1, 10, false, requestId);
@@ -103,7 +103,7 @@ public class TransactionService {
 				Optional<Product> product = productRepository.findById(productFlow.getProduct().getId());
 				sendProgress(1, productFlows.size(), 40, false, requestId);
 				if (!product.isPresent()) {
-					return ShopApiResponse.failedResponse();
+					return WebResponse.failedResponse();
 				}
 				productFlow.setProduct(product.get());
 			} 
@@ -111,11 +111,11 @@ public class TransactionService {
 			Transaction savedTransaction = productInventoryService.saveSupplyTransaction(productFlows, requestId, user,
 					supplier.get(), new Date());
 			
-			return ShopApiResponse.builder().transaction(savedTransaction).build();
+			return WebResponse.builder().transaction(savedTransaction).build();
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			return ShopApiResponse.builder().code("01").message(ex.getMessage()).build();
+			return WebResponse.builder().code("01").message(ex.getMessage()).build();
 			
 		} finally {
 			progressService.sendComplete(requestId);
@@ -169,11 +169,11 @@ public class TransactionService {
 	 * @param request
 	 * @return
 	 */
-	public ShopApiResponse stockInfo(ShopApiRequest request) {
+	public WebResponse stockInfo(WebRequest request) {
 		ProductFlowStock productFlowStock = getSingleStock(request.getProductFlow());
 		
 		if (productFlowStock == null) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
 
 		Product product = productFlowStock.getProductFlow().getProduct();
@@ -181,7 +181,7 @@ public class TransactionService {
 		productFlowStock.getProductFlow().getTransaction().setUser(null);
 		productFlowStock.getProductFlow().setProduct(EntityUtil.validateDefaultValue(product));
 		
-		return ShopApiResponse.builder().productFlowStock(productFlowStock).build();
+		return WebResponse.builder().productFlowStock(productFlowStock).build();
 	}
 
 	/**
@@ -227,7 +227,7 @@ public class TransactionService {
 		return products;
 	}
 
-	public ShopApiResponse getStocksByProductName(ShopApiRequest request, boolean withCount, String requestId) {
+	public WebResponse getStocksByProductName(WebRequest request, boolean withCount, String requestId) {
 		progressService.init(requestId);
 
 		List<BaseEntity> productFlows = getProductFlowsByProduct("name", request.getProduct().getName(), withCount, 20,
@@ -235,11 +235,11 @@ public class TransactionService {
 
 		if (productFlows == null) {
 			progressService.sendComplete(requestId);
-			return ShopApiResponse.builder().code("01").message("Fetching error").build();
+			return WebResponse.builder().code("01").message("Fetching error").build();
 		}
 
 		progressService.sendComplete(requestId);
-		return ShopApiResponse.builder().entities(productFlows).build();
+		return WebResponse.builder().entities(productFlows).build();
 	}
 
 	private List<BaseEntity> getProductFlowsByProduct(String key, Object value, boolean withCount, int limit,
@@ -304,7 +304,7 @@ public class TransactionService {
 	 * @param httpRequest
 	 * @return
 	 */
-	public ShopApiResponse addPurchaseTransaction(ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse addPurchaseTransaction(WebRequest request, HttpServletRequest httpRequest,
 			String requestId) {
 		
 		progressService.init(requestId);
@@ -312,7 +312,7 @@ public class TransactionService {
 		User user = validateUserBeforeTransaction(httpRequest); 
 		 
 		if(null == user) {
-			return ShopApiResponse.invalidSession();
+			return WebResponse.invalidSession();
 		}
 		
 		sendProgress(1, 1, 10, false, requestId);
@@ -325,7 +325,7 @@ public class TransactionService {
 			Optional<Customer> dbCustomer = customerRepository.findById(request.getCustomer().getId());
 			
 			if (dbCustomer.isPresent() == false) {
-				return ShopApiResponse.builder().code("01").message("invalid Customer").build();
+				return WebResponse.builder().code("01").message("invalid Customer").build();
 			}
 			
 			sendProgress(1, 1, 10, false, requestId);
@@ -370,18 +370,18 @@ public class TransactionService {
 		
 			Transaction newTransaction = productInventoryService.savePurchaseTransaction(new Date(), productFlows,
 					requestId, user, dbCustomer.get());
-			return ShopApiResponse.builder().transaction(newTransaction).build();
+			return WebResponse.builder().transaction(newTransaction).build();
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			return ShopApiResponse.builder().code("-1").message(ex.getMessage()).build();
+			return WebResponse.builder().code("-1").message(ex.getMessage()).build();
 			
 		} finally {
 			progressService.sendComplete(requestId);
 		}
 	}
 	
-	public ShopApiResponse addPurchaseTransactionV2(ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse addPurchaseTransactionV2(WebRequest request, HttpServletRequest httpRequest,
 			String requestId) {
 		
 		progressService.init(requestId);
@@ -389,7 +389,7 @@ public class TransactionService {
 		User user = validateUserBeforeTransaction(httpRequest); 
 		 
 		if(null == user) {
-			return ShopApiResponse.invalidSession();
+			return WebResponse.invalidSession();
 		}
 		
 		sendProgress(1, 1, 10, false, requestId);
@@ -402,7 +402,7 @@ public class TransactionService {
 			Optional<Customer> dbCustomer = customerRepository.findById(request.getCustomer().getId());
 			
 			if (dbCustomer.isPresent() == false) {
-				return ShopApiResponse.builder().code("01").message("invalid Customer").build();
+				return WebResponse.builder().code("01").message("invalid Customer").build();
 			}
 			
 			sendProgress(1, 1, 10, false, requestId);
@@ -457,11 +457,11 @@ public class TransactionService {
 		
 			Transaction newTransaction = productInventoryService.savePurchaseTransactionV2(new Date(), productFlows,
 					requestId, user, dbCustomer.get());
-			return ShopApiResponse.builder().transaction(newTransaction).build();
+			return WebResponse.builder().transaction(newTransaction).build();
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			return ShopApiResponse.builder().code("-1").message(ex.getMessage()).build();
+			return WebResponse.builder().code("-1").message(ex.getMessage()).build();
 			
 		} finally {
 			progressService.sendComplete(requestId);
@@ -493,19 +493,19 @@ public class TransactionService {
 		return reportingService.getMinTransactionYear();
 	}
 
-	public ShopApiResponse getCashFlow(ShopApiRequest request) { 
+	public WebResponse getCashFlow(WebRequest request) { 
 		return reportingService.getCashFlow(request);
 	}
 
-	public ShopApiResponse getCashflowDetail(ShopApiRequest request, String requestId) { 
+	public WebResponse getCashflowDetail(WebRequest request, String requestId) { 
 		return reportingService.getCashflowDetail(request, requestId);
 	}
 
-	public ShopApiResponse getCashflowMonthly(ShopApiRequest request, String requestId) { 
+	public WebResponse getCashflowMonthly(WebRequest request, String requestId) { 
 		return reportingService.getCashflowMonthly(request, requestId);
 	} 
 	
-	public ShopApiResponse getCashflowDaily(ShopApiRequest request, String requestId) {
+	public WebResponse getCashflowDaily(WebRequest request, String requestId) {
 		return reportingService.getCashflowDaily(request, requestId);
 	}
 	

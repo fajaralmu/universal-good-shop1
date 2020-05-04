@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.ShopProfile;
 import com.fajar.repository.ShopProfileRepository;
@@ -18,7 +18,7 @@ public class ShopProfileUpdateService extends BaseEntityUpdateService{
 	private ShopProfileRepository shopProfileRepository;
 	
 	@Override
-	public ShopApiResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
+	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
 		ShopProfile shopProfile = (ShopProfile) copyNewElement(baseEntity, newRecord);
 		String base64Image = shopProfile.getIconUrl();
 		if (base64Image != null && !base64Image.equals("")) {
@@ -39,7 +39,7 @@ public class ShopProfileUpdateService extends BaseEntityUpdateService{
 			}
 		}
 		ShopProfile newShopProfile = shopProfileRepository.save(shopProfile);
-		return ShopApiResponse.builder().entity(newShopProfile).build();
+		return WebResponse.builder().entity(newShopProfile).build();
 	}
 	
 }

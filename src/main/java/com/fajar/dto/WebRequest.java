@@ -36,7 +36,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShopApiRequest implements Serializable {
+public class WebRequest implements Serializable {
 
 	/**
 	 * 

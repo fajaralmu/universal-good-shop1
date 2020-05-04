@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.dto.Filter;
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.Product;
 import com.fajar.service.LogProxyFactory;
 import com.fajar.util.CollectionUtil;
@@ -88,8 +88,8 @@ public class MvcAdminController extends BaseController {
 		fieldsFilter.put("withStock", true);
 		fieldsFilter.put("withSupplier", true);
 		Filter filter = Filter.builder().exacts(true).limit(1).contains(false).fieldsFilter(fieldsFilter).build();
-		ShopApiRequest requestObject = ShopApiRequest.builder().entity("product").filter(filter).build();
-		ShopApiResponse productResponse = productService.getProductsCatalog(requestObject,
+		WebRequest requestObject = WebRequest.builder().entity("product").filter(filter).build();
+		WebResponse productResponse = productService.getProductsCatalog(requestObject,
 				request.getHeader("requestId"));
 
 		Product product = (Product) productResponse.getEntities().get(0);

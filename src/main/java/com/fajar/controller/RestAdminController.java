@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.service.LogProxyFactory;
 import com.fajar.service.MessagingService;
 import com.fajar.service.UserAccountService;
@@ -47,58 +47,58 @@ public class RestAdminController {
 	}
 
 	@PostMapping(value = "/appsessions", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse appsessions(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse appsessions(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		if (!accountService.validateToken(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
-		ShopApiResponse response = userSessionService.generateAppRequest();
+		WebResponse response = userSessionService.generateAppRequest();
 		return response;
 	}
 
 	@PostMapping(value = "/deletesession", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse deletesession(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse deletesession(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		if (!accountService.validateToken(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
-		ShopApiResponse response = userSessionService.deleteSession(request);
+		WebResponse response = userSessionService.deleteSession(request);
 		return response;
 	}
 
 	@PostMapping(value =  "/sendmessage", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse sendMessage(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse sendMessage(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		 restPublicController.validatePageRequest(httpRequest);
-		ShopApiResponse response = messagingService.sendMessage(request,httpRequest);
+		WebResponse response = messagingService.sendMessage(request,httpRequest);
 		return response;
 	}
 	
 	@PostMapping(value =  "/getmessages", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse getmessages(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse getmessages(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		 restPublicController.validatePageRequest(httpRequest);
-		ShopApiResponse response = messagingService.getMessages(httpRequest);
+		WebResponse response = messagingService.getMessages(httpRequest);
 		return response;
 	}
 	
 	@PostMapping(value =  "/replymessage", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse replyMessage(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse replyMessage(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		if (!accountService.validateToken(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
-		ShopApiResponse response = messagingService.replyMessage(request,httpRequest);
+		WebResponse response = messagingService.replyMessage(request,httpRequest);
 		return response;
 	}
 	
 	@PostMapping(value =  "/clearsession", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse clearsessions(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse clearsessions(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		if (!accountService.validateToken(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
-		ShopApiResponse response = userSessionService.clearSessions();
+		WebResponse response = userSessionService.clearSessions();
 		return response;
 	}
 

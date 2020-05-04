@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.dto.RegistryModel;
 import com.fajar.dto.SessionData;
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.User;
 import com.fajar.entity.UserRole;
@@ -49,8 +49,8 @@ public class UserAccountService {
 	 * @param request
 	 * @return
 	 */
-	public ShopApiResponse registerUser(ShopApiRequest request) { 
-		ShopApiResponse response  = new ShopApiResponse();
+	public WebResponse registerUser(WebRequest request) { 
+		WebResponse response  = new WebResponse();
 		Optional<UserRole> regularRoleOpt = userRoleRepository.findById(2L);
 		
 		if(regularRoleOpt.isPresent() == false) {
@@ -76,17 +76,17 @@ public class UserAccountService {
 		}
 	}
 
-	public ShopApiResponse login(ShopApiRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IllegalAccessException {
+	public WebResponse login(WebRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IllegalAccessException {
 		User dbUser = userRepository.findByUsernameAndPassword(request.getUser().getUsername(), request.getUser().getPassword());
 		 
 		if(dbUser == null) {
-			return new ShopApiResponse("01","invalid credential");
+			return new WebResponse("01","invalid credential");
 		} 
 		 
 		User loggedUser = userSessionService.addUserSession(dbUser,httpRequest,httpResponse);
 		log.info("LOGIN SUCCESS");
 		
-		ShopApiResponse response = new ShopApiResponse("00","success");
+		WebResponse response = new WebResponse("00","success");
 		 
 		BaseEntity registeredUser = userSessionService.getUserFromRegistry(loggedUser.getLoginKey());
 		BaseEntity clonedUser = new User();

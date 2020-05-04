@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.service.FileService;
 import com.fajar.util.EntityUtil;
@@ -20,9 +20,9 @@ public class BaseEntityUpdateService {
 	@Autowired
 	protected FileService fileService;
 
-	public ShopApiResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
+	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
 		log.error("saveEntity Method not implemented");
-		return ShopApiResponse.failed("method not implemented");
+		return WebResponse.failed("method not implemented");
 	}
 
 	protected BaseEntity copyNewElement(BaseEntity source, boolean newRecord) {

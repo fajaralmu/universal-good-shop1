@@ -16,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fajar.dto.Filter;
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductSales;
 import com.fajar.entity.Supplier;
@@ -60,7 +60,7 @@ public class ProductService {
 	 * @param requestId
 	 * @return
 	 */
-	public ShopApiResponse getProductsCatalog(ShopApiRequest request, String requestId) {
+	public WebResponse getProductsCatalog(WebRequest request, String requestId) {
 		
 		progressService.init(requestId); 
 		
@@ -72,12 +72,12 @@ public class ProductService {
 
 		request.getFilter().getFieldsFilter().remove(OPTION_WITH_STOCK);
 		
-		ShopApiResponse filteredProducts = entityService.filter(request);
+		WebResponse filteredProducts = entityService.filter(request);
 		
 		progressService.sendProgress(1, 1, 20.0, true, requestId);
 		
 		if (filteredProducts == null || filteredProducts.getEntities() == null || filteredProducts.getEntities().size() == 0) {
-			return new ShopApiResponse("01", "Data Not Found"); 
+			return new WebResponse("01", "Data Not Found"); 
 		}
 		
 		//get from db
@@ -190,11 +190,11 @@ public class ProductService {
 	 * @param requestId
 	 * @return
 	 */
-	public ShopApiResponse getProductSales(ShopApiRequest request, String requestId) {
+	public WebResponse getProductSales(WebRequest request, String requestId) {
 		
 		progressService.init(requestId);
 		
-		ShopApiResponse response = new ShopApiResponse();
+		WebResponse response = new WebResponse();
 		Filter filter = request.getFilter();
 		String periodFrom = DateUtil.getFullFirstDate(filter.getMonth(), filter.getYear());
 		String periodTo = DateUtil.getFullFirstDate(filter.getMonthTo(), filter.getYearTo());
@@ -245,10 +245,10 @@ public class ProductService {
 	 * @param request
 	 * @return
 	 */
-	public ShopApiResponse getMoreProductSupplier(ShopApiRequest request) {
+	public WebResponse getMoreProductSupplier(WebRequest request) {
 		
 		try {
-			ShopApiResponse response 	= new ShopApiResponse();
+			WebResponse response 	= new WebResponse();
 			Filter filter 				= request.getFilter();
 			Integer productId 			= (Integer) filter.getFieldsFilter().get(FIELD_PRODUCT_ID); 
 			List<Supplier> suppliers 	= getProductSupplier(productId.longValue(),   filter.getPage()); 
@@ -259,7 +259,7 @@ public class ProductService {
 		}catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			return ShopApiResponse.failed(e.getMessage());
+			return WebResponse.failed(e.getMessage());
 		}
 	}
 
@@ -274,7 +274,7 @@ public class ProductService {
 	 * @param requestId
 	 * @return
 	 */
-	public ShopApiResponse getProductSalesDetail(ShopApiRequest request, Long productId, String requestId) {
+	public WebResponse getProductSalesDetail(WebRequest request, Long productId, String requestId) {
 
 		progressService.init(requestId);
 
@@ -285,7 +285,7 @@ public class ProductService {
 			product = productOpt.get();
 
 		} else {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
 		Filter filter = request.getFilter();
 		int monthFromReq = filter.getMonth();
@@ -339,7 +339,7 @@ public class ProductService {
 			sales.setPercentage(percentage);
 		}
 
-		ShopApiResponse response = new ShopApiResponse();
+		WebResponse response = new WebResponse();
 		response.setEntity(product);
 		response.setMaxValue(maxValue.longValue());
 		response.setEntities(convertList(salesList));
@@ -408,7 +408,7 @@ public class ProductService {
 	 * @param requestId
 	 * @return
 	 */
-	public ShopApiResponse getPublicEntities(ShopApiRequest request, String requestId) {
+	public WebResponse getPublicEntities(WebRequest request, String requestId) {
 
 		if (request.getEntity().equals("product")) {
 			return getProductsCatalog(request, requestId);
@@ -416,6 +416,6 @@ public class ProductService {
 		} else if (request.getEntity().equals("supplier")) {
 			return entityService.filter(request);
 		}
-		return ShopApiResponse.failed("invalid option");
+		return WebResponse.failed("invalid option");
 	}
 }

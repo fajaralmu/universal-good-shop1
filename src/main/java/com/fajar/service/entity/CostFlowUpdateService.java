@@ -3,7 +3,7 @@ package com.fajar.service.entity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.CostFlow;
 import com.fajar.repository.EntityRepository;
@@ -18,7 +18,7 @@ public class CostFlowUpdateService extends BaseEntityUpdateService{
 	private CashBalanceService cashBalanceService;
 	
 	@Override
-	public ShopApiResponse saveEntity(BaseEntity entity, boolean newRecord) {
+	public WebResponse saveEntity(BaseEntity entity, boolean newRecord) {
 		CostFlow costFlow = (CostFlow) copyNewElement(entity, newRecord); 
 		
 //		if(newRecord) {
@@ -27,6 +27,6 @@ public class CostFlowUpdateService extends BaseEntityUpdateService{
 		BaseEntity newEntity = entityRepository.save(costFlow);
 		cashBalanceService.updateCashBalance(newEntity);
 		
-		return ShopApiResponse.builder().entity(newEntity).build();
+		return WebResponse.builder().entity(newEntity).build();
 	}
 }

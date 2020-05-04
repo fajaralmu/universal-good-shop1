@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fajar.dto.Filter;
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Capital;
 import com.fajar.entity.Cost;
@@ -58,7 +58,7 @@ public class EntityService {
 	 * @param newRecord
 	 * @return
 	 */
-	public ShopApiResponse saveEntity(ShopApiRequest request, HttpServletRequest servletRequest, boolean newRecord) { 
+	public WebResponse saveEntity(WebRequest request, HttpServletRequest servletRequest, boolean newRecord) { 
 		
 		try {
 			
@@ -68,7 +68,7 @@ public class EntityService {
 			Object entityValue = null;
 			
 			try {
-				Field entityField = EntityUtil.getDeclaredField(ShopApiRequest.class, fieldName); 
+				Field entityField = EntityUtil.getDeclaredField(WebRequest.class, fieldName); 
 				entityValue = entityField.get(request);
 				
 				log.info("save {}: {}", entityField.getName(), entityValue);
@@ -76,7 +76,7 @@ public class EntityService {
 				
 			}catch (Exception e) {
 				e.printStackTrace();
-				return ShopApiResponse.failed();
+				return WebResponse.failed();
 			} 
 			
 			if(entityValue != null)
@@ -87,7 +87,7 @@ public class EntityService {
 		}
 		
 		 
-		return ShopApiResponse.builder().code("01").message("failed").build();
+		return WebResponse.builder().code("01").message("failed").build();
 	}
 
 	 
@@ -96,7 +96,7 @@ public class EntityService {
 	 * @param request
 	 * @return
 	 */
-	public ShopApiResponse filter(ShopApiRequest request) {
+	public WebResponse filter(WebRequest request) {
 		Class<? extends BaseEntity> entityClass = null;
 		
 		Filter filter = request.getFilter();
@@ -131,7 +131,7 @@ public class EntityService {
  
 			int count = countResult == null? 0: ((BigInteger) countResult).intValue(); 
 			
-			return ShopApiResponse.builder().
+			return WebResponse.builder().
 					entities(EntityUtil.validateDefaultValue(entities)).
 					totalData(count).
 					filter(filter).entityClass(entityClass).
@@ -139,7 +139,7 @@ public class EntityService {
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			return ShopApiResponse.failed();
+			return WebResponse.failed();
 		}
 	}  
   
@@ -148,7 +148,7 @@ public class EntityService {
 	 * @param request
 	 * @return
 	 */
-	public ShopApiResponse delete(ShopApiRequest request) { 
+	public WebResponse delete(WebRequest request) { 
 		
 		try {
 			Map<String, Object> filter 	= request.getFilter().getFieldsFilter();
@@ -163,12 +163,12 @@ public class EntityService {
 			
 			entityRepository.deleteById(id,entityClass); 
 			 
-			return ShopApiResponse.builder().code("00").message("deleted successfully").build();
+			return WebResponse.builder().code("00").message("deleted successfully").build();
 			
 		} catch (Exception ex) {
 			
 			ex.printStackTrace();
-			return ShopApiResponse.builder().code("01").message("failed: "+ex.getMessage()).build();
+			return WebResponse.builder().code("01").message("failed: "+ex.getMessage()).build();
 		}
 	}
 

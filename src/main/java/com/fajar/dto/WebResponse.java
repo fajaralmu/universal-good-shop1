@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShopApiResponse implements Serializable {
+public class WebResponse implements Serializable {
 
 	/**
 	 * 
@@ -63,26 +63,26 @@ public class ShopApiResponse implements Serializable {
 	 
 	private Map<String, CashFlow> dailyCashflow;
 	
-	public static ShopApiResponse failedResponse() {
-		return new ShopApiResponse("01","INVALID REQUEST");
+	public static WebResponse failedResponse() {
+		return new WebResponse("01","INVALID REQUEST");
 	}
-	public ShopApiResponse(String code, String message) {
+	public WebResponse(String code, String message) {
 		this.code = code;
 		this.message = message;
 		this.date = new Date();
 	}
-	public static ShopApiResponse failed() {
+	public static WebResponse failed() {
 		return   failed("INVALID REQUEST");
 	}
 	
-	public static ShopApiResponse failed(String msg) {
-		return new ShopApiResponse("01", msg);
+	public static WebResponse failed(String msg) {
+		return new WebResponse("01", msg);
 	} 
 
-	public static ShopApiResponse success() {
-		return new ShopApiResponse("00", "SUCCESS");
+	public static WebResponse success() {
+		return new WebResponse("00", "SUCCESS");
 	}
-	public static ShopApiResponse invalidSession() { 
-		return new ShopApiResponse("02","Invalid Session");
+	public static WebResponse invalidSession() { 
+		return new WebResponse("02","Invalid Session");
 	}
 }

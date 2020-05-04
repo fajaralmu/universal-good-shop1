@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.fajar.dto.ShopApiRequest;
+import com.fajar.dto.WebRequest;
 import com.fajar.service.LogProxyFactory;
 import com.fajar.service.report.PrintedReportService;
 
@@ -37,7 +37,7 @@ public class RestReportController {
 	}
 	
 	@PostMapping(value = "/daily", consumes = MediaType.APPLICATION_JSON_VALUE )
-	public void daily(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public void daily(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws Exception {
 		log.info("daily report {}", request);
 //		if(!userSessionService.hasSession(httpRequest)) {
@@ -65,7 +65,7 @@ public class RestReportController {
 	}
 	
 	@PostMapping(value = "/monthly", consumes = MediaType.APPLICATION_JSON_VALUE )
-	public void monthly(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public void monthly(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws Exception {
 		log.info("monthly report {}", request);
 //		if(!userSessionService.hasSession(httpRequest)) {
@@ -77,7 +77,7 @@ public class RestReportController {
 		writeFileReponse(httpResponse, result);
 	}
 	@PostMapping(value = "/entity", consumes = MediaType.APPLICATION_JSON_VALUE )
-	public void entityreport(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public void entityreport(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws Exception {
 		log.info("entityreport {}", request);
 //		if(!userSessionService.hasSession(httpRequest)) {

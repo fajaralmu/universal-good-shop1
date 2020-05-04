@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Customer;
 import com.fajar.entity.CustomerVoucher;
@@ -29,7 +29,7 @@ public class VoucherUpdateService extends BaseEntityUpdateService{
 	private CustomerVoucherRepository CustomerVoucherRepository;
 	 
 	@Override
-	public ShopApiResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
+	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
 		
 		Voucher voucher = (Voucher) baseEntity;
 		if(newRecord) {
@@ -48,7 +48,7 @@ public class VoucherUpdateService extends BaseEntityUpdateService{
 			updateCustomerVouchers ( newVoucher);
 		}
 		
-		return ShopApiResponse.builder().entity(newVoucher).build();
+		return WebResponse.builder().entity(newVoucher).build();
 	}
 	
 	private void updateCustomerVouchers(final Voucher newVoucher) {

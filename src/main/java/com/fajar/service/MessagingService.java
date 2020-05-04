@@ -12,8 +12,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Message;
 import com.fajar.entity.RegisteredRequest;
@@ -44,15 +44,15 @@ public class MessagingService {
 		return messages.get(requestId);
 	}
 	
-	public ShopApiResponse getMessages( HttpServletRequest httpRequest) { 
+	public WebResponse getMessages( HttpServletRequest httpRequest) { 
 		 
 		String reqId = httpRequest.getHeader("requestId"); 
-		ShopApiResponse response = ShopApiResponse.builder().code(reqId).entities(messages.get(reqId)).build();
+		WebResponse response = WebResponse.builder().code(reqId).entities(messages.get(reqId)).build();
 		realtimeService.sendMessageChat(response);
 		return response;
 	}
 	 
-	public ShopApiResponse sendMessage(ShopApiRequest request, HttpServletRequest httpRequest) { 
+	public WebResponse sendMessage(WebRequest request, HttpServletRequest httpRequest) { 
 		String content= request.getValue();
 		String reqId = httpRequest.getHeader("requestId");
 		
@@ -64,12 +64,12 @@ public class MessagingService {
 		message.setIpAddress(registeredRequest.getIpAddress());
 		putMessage(reqId, message);
 		
-		ShopApiResponse response = ShopApiResponse.builder().code(reqId).entities(messages.get(reqId)).build();
+		WebResponse response = WebResponse.builder().code(reqId).entities(messages.get(reqId)).build();
 		realtimeService.sendMessageChat(response);
 		return response;
 	}
 	
-	public ShopApiResponse replyMessage(ShopApiRequest request, HttpServletRequest httpRequest) { 
+	public WebResponse replyMessage(WebRequest request, HttpServletRequest httpRequest) { 
 		String content= request.getValue(); 
 		
 		RegisteredRequest registeredRequest = userSessionService.getRegisteredRequest(request.getDestination());
@@ -80,9 +80,9 @@ public class MessagingService {
 		message.setUserAgent(registeredRequest.getUserAgent());
 		message.setIpAddress(registeredRequest.getIpAddress());
 		
-		ShopApiResponse response = ShopApiResponse.builder().code(request.getDestination()).entities(messages.get(request.getDestination())).build();
+		WebResponse response = WebResponse.builder().code(request.getDestination()).entities(messages.get(request.getDestination())).build();
 		realtimeService.sendMessageChat(response);
-		ShopApiResponse responseAPI = new ShopApiResponse();
+		WebResponse responseAPI = new WebResponse();
 		BeanUtils.copyProperties(response, responseAPI);
 		responseAPI.setCode("00");
 		return responseAPI;

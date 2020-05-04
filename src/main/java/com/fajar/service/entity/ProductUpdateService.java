@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Product;
 import com.fajar.repository.ProductRepository;
@@ -27,7 +27,7 @@ public class ProductUpdateService extends BaseEntityUpdateService{
 	 * @return
 	 */
 	@Override
-	public ShopApiResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
+	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
 
 		Product product = (Product) copyNewElement(baseEntity, newRecord);
 
@@ -81,6 +81,6 @@ public class ProductUpdateService extends BaseEntityUpdateService{
 			}
 		}
 		Product newProduct = productRepository.save(product);
-		return ShopApiResponse.builder().entity(newProduct).build();
+		return WebResponse.builder().entity(newProduct).build();
 	}
 }

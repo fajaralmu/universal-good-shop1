@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fajar.dto.Filter;
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.dto.TransactionType;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Product;
@@ -34,9 +34,9 @@ public class ReportingService {
 	@Autowired
 	private ProgressService progressService; 
 	
-	public ShopApiResponse getCashFlow(ShopApiRequest request) {
+	public WebResponse getCashFlow(WebRequest request) {
 
-		ShopApiResponse response = new ShopApiResponse();
+		WebResponse response = new WebResponse();
 
 		// getTransaction
 		int month = request.getFilter().getMonth();
@@ -238,9 +238,9 @@ public class ReportingService {
 	 * @param requestId
 	 * @return
 	 */
-	public ShopApiResponse getCashflowMonthly(ShopApiRequest request, String requestId) {
+	public WebResponse getCashflowMonthly(WebRequest request, String requestId) {
 
-		ShopApiResponse response = new ShopApiResponse();
+		WebResponse response = new WebResponse();
 
 		try {
 
@@ -262,7 +262,7 @@ public class ReportingService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error: " + e);
-			return ShopApiResponse.failed(e.toString());
+			return WebResponse.failed(e.toString());
 		}
 		return response;
 	}
@@ -298,7 +298,7 @@ public class ReportingService {
 	 * @param requestId
 	 * @return
 	 */
-	public ShopApiResponse getCashflowDetail(ShopApiRequest request, String requestId) {
+	public WebResponse getCashflowDetail(WebRequest request, String requestId) {
 
 		progressService.init(requestId);
 
@@ -344,7 +344,7 @@ public class ReportingService {
 			progressService.sendProgress(1, periods.size(), 100, false, requestId);
 
 		}
-		ShopApiResponse response = new ShopApiResponse();
+		WebResponse response = new WebResponse();
 
 		response.setMaxValue(maxValue);
 		response.setSupplies(supplies);
@@ -361,9 +361,9 @@ public class ReportingService {
 	 * @param requestId
 	 * @return
 	 */
-	public ShopApiResponse getCashflowDaily(ShopApiRequest shopApiRequest, String requestId) {
+	public WebResponse getCashflowDaily(WebRequest shopApiRequest, String requestId) {
 		
-		ShopApiResponse response = new ShopApiResponse();
+		WebResponse response = new WebResponse();
 		
 		try {
 			
@@ -388,7 +388,7 @@ public class ReportingService {
 		}catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			return ShopApiResponse.failed(e.getMessage());
+			return WebResponse.failed(e.getMessage());
 		}
 	}
 	

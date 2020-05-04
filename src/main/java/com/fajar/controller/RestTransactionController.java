@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.service.LogProxyFactory;
 import com.fajar.service.ProductService;
 import com.fajar.service.TransactionService;
@@ -46,123 +46,123 @@ public class RestTransactionController {
 	}
 	
 	@PostMapping(value = "/supply", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse addSupply(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse addSupply(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("supply {}", request);
 		if(!userSessionService.hasSession(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
-		ShopApiResponse response = transactionService.supplyProduct(request, httpRequest,httpRequest.getHeader("requestId"));
+		WebResponse response = transactionService.supplyProduct(request, httpRequest,httpRequest.getHeader("requestId"));
 		return response;
 	}
 	
 	@PostMapping(value = "/purchase", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse purchase(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse purchase(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("purchase {}", request);
 		if(!userSessionService.hasSession(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
-		ShopApiResponse response = transactionService.addPurchaseTransaction(request, httpRequest,httpRequest.getHeader("requestId"));
+		WebResponse response = transactionService.addPurchaseTransaction(request, httpRequest,httpRequest.getHeader("requestId"));
 		return response;
 	}
 	
 	@PostMapping(value = "/purchasev2", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse purchasev2(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse purchasev2(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("purchase {}", request);
 		if(!userSessionService.hasSession(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
-		ShopApiResponse response = transactionService.addPurchaseTransactionV2(request, httpRequest,httpRequest.getHeader("requestId"));
+		WebResponse response = transactionService.addPurchaseTransactionV2(request, httpRequest,httpRequest.getHeader("requestId"));
 		return response;
 	}
 	
 	@PostMapping(value = "/stocks", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse stockinfo(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse stockinfo(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("stocks {}", request);
 		if(!userSessionService.hasSession(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
-		ShopApiResponse response = transactionService.getStocksByProductName(request, false, httpRequest.getHeader("requestId"));
+		WebResponse response = transactionService.getStocksByProductName(request, false, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	
 	@PostMapping(value = "/stockinfo", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse stockInfo(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse stockInfo(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("stockinfo {}", request);
 		if(!userSessionService.hasSession(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
-		ShopApiResponse response = transactionService.stockInfo(request);
+		WebResponse response = transactionService.stockInfo(request);
 		return response;
 	}
 	
 	@PostMapping(value = "/cashflowinfo", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse cashflowinfo(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse cashflowinfo(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("cashflowinfo {}", request);
 		if(!userSessionService.hasSession(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
-		ShopApiResponse response = transactionService.getCashFlow(request);
+		WebResponse response = transactionService.getCashFlow(request);
 		return response;
 	}
 	
 	@PostMapping(value = "/cashflowdetail", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse detailcashflow(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse detailcashflow(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("cashflowdetail {}", request);
 		if(!userSessionService.hasSession(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
-		ShopApiResponse response = transactionService.getCashflowDetail(request, httpRequest.getHeader("requestId"));
+		WebResponse response = transactionService.getCashflowDetail(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	
 	@PostMapping(value = "/monthlycashflow", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse monthlyDetailCasflow(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse monthlyDetailCasflow(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("monthlycashflow {}", request);
 		if(!userSessionService.hasSession(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
-		ShopApiResponse response = transactionService.getCashflowMonthly(request, httpRequest.getHeader("requestId"));
+		WebResponse response = transactionService.getCashflowMonthly(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	
 	@PostMapping(value = "/dailycashflow", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse dailycashflow(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse dailycashflow(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("monthlycashflow {}", request);
 		if(!userSessionService.hasSession(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
-		ShopApiResponse response = transactionService.getCashflowDaily(request, httpRequest.getHeader("requestId"));
+		WebResponse response = transactionService.getCashflowDaily(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	
 	@PostMapping(value = "/productsales", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse productsales(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse productsales(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("productsales {}", request);
 		if(!userSessionService.hasSession(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
-		ShopApiResponse response = productService.getProductSales(request, httpRequest.getHeader("requestId"));
+		WebResponse response = productService.getProductSales(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	
 	@PostMapping(value = "/productsalesdetail/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse productsalesdetail(@PathVariable(required = true, name="id") Long productId,@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse productsalesdetail(@PathVariable(required = true, name="id") Long productId,@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("productsales {}", request);
 		if(!userSessionService.hasSession(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
-		ShopApiResponse response = productService.getProductSalesDetail(request,productId, httpRequest.getHeader("requestId"));
+		WebResponse response = productService.getProductSalesDetail(request,productId, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	

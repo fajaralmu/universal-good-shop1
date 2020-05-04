@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.service.EntityService;
 import com.fajar.service.LogProxyFactory;
 import com.fajar.service.UserAccountService;
@@ -43,43 +43,43 @@ public class RestEntityController {
 	}
 
 	@PostMapping(value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse add(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse add(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("add entity {}", request);
 		if(!accountService.validateToken(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
 		return entityService.saveEntity(request,httpRequest, true); 
 	}
 	
 	@PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse update(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse update(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("register update {}", request);
 		if(!accountService.validateToken(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
 		return entityService.saveEntity(request,httpRequest, false);
 		 
 	}
 	
 	@PostMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse get(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse get(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("get entity {}", request);
 		if(!accountService.validateToken(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
 		return entityService.filter(request );
 		 
 	}
 	
 	@PostMapping(value = "/delete", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse delete(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse delete(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("delete entity {}", request);
 		if(!accountService.validateToken(httpRequest)) {
-			return ShopApiResponse.failedResponse();
+			return WebResponse.failedResponse();
 		}
 		return entityService.delete(request ); 
 	}

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 
 @Service
 public class RealtimeService2 {
@@ -30,15 +30,15 @@ public class RealtimeService2 {
 
 	public void sendProgress(double progress, String requestId) {
 		System.out.println(">>>>>>>>>>SEND PROGRESS:" + progress + " (" + requestId + ")");
-		sendProgress(ShopApiResponse.builder().requestId(requestId).percentage(progress).build());
+		sendProgress(WebResponse.builder().requestId(requestId).percentage(progress).build());
 	}
 
-	public void sendProgress(ShopApiResponse shopApiResponse) {
+	public void sendProgress(WebResponse shopApiResponse) {
 		webSocket.convertAndSend("/wsResp/progress/"+shopApiResponse.getRequestId(), shopApiResponse);
 	}
 
 
-	public void sendMessageChat(ShopApiResponse response) {
+	public void sendMessageChat(WebResponse response) {
 		webSocket.convertAndSend("/wsResp/messages", response);
 		
 	}

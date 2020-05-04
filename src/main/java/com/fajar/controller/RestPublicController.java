@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.exception.InvalidRequestException;
 import com.fajar.service.LogProxyFactory;
 import com.fajar.service.ProductService;
@@ -40,35 +40,35 @@ public class RestPublicController extends BaseController{
 	}
 	
 	@PostMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse get(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse get(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		validatePageRequest(httpRequest);
 		log.info("register {}", request);
-		ShopApiResponse response = productService.getPublicEntities(request, httpRequest.getHeader("requestId"));
+		WebResponse response = productService.getPublicEntities(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	
 	@PostMapping(value = "/moresupplier", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse moresupplier(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse moresupplier(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		validatePageRequest(httpRequest);
 		log.info("more supplier {}", request);
-		ShopApiResponse response = productService.getMoreProductSupplier(request);
+		WebResponse response = productService.getMoreProductSupplier(request);
 		return response;
 	}
 	
 	@PostMapping(value = "/requestid", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ShopApiResponse getRequestId(@RequestBody ShopApiRequest request, HttpServletRequest httpRequest,
+	public WebResponse getRequestId(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException { 
 		log.info("register {}", request);
-		ShopApiResponse response = userSessionService.requestId(httpRequest, httpResponse);
+		WebResponse response = userSessionService.requestId(httpRequest, httpResponse);
 		return response;
 	}
 	
 	@PostMapping(value = "/pagecode")
-	public ShopApiResponse getCurrentPageCode(HttpServletRequest request, HttpServletResponse response) {
+	public WebResponse getCurrentPageCode(HttpServletRequest request, HttpServletResponse response) {
 		validatePageRequest(request);
-		return ShopApiResponse.builder().code(super.activePage(request)).build();
+		return WebResponse.builder().code(super.activePage(request)).build();
 	}
 	
 	public void validatePageRequest(HttpServletRequest req) { 

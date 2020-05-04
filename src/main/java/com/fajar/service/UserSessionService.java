@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.dto.RegistryModel;
 import com.fajar.dto.SessionData;
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.RegisteredRequest;
 import com.fajar.entity.User;
@@ -252,13 +252,13 @@ public class UserSessionService {
 		}
 	}
 
-	public ShopApiResponse getProfile(HttpServletRequest httpRequest) {
+	public WebResponse getProfile(HttpServletRequest httpRequest) {
 
 		User user = getUserFromRegistry(httpRequest);
 		if (user != null) {
 			removeAttribute(user, "role", "password");
 		}
-		return ShopApiResponse.builder().code("00").entity(user).build();
+		return WebResponse.builder().code("00").entity(user).build();
 	}
 	
 	/**
@@ -266,7 +266,7 @@ public class UserSessionService {
 	 * 
 	 */
 
-	public ShopApiResponse requestId(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
+	public WebResponse requestId(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
 		if(validatePageRequest(servletRequest)) {
 			 String requestId = servletRequest.getHeader(RegistryService.PAGE_REQUEST_ID);
 			 
@@ -274,7 +274,7 @@ public class UserSessionService {
 				 servletResponse.addHeader("loginKey",servletRequest.getHeader("loginKey"));
 			 }
 			 
-			 return ShopApiResponse.builder().code("00").message(requestId).build();
+			 return WebResponse.builder().code("00").message(requestId).build();
 		}
 		
 		String requestId = UUID.randomUUID().toString();
@@ -309,7 +309,7 @@ public class UserSessionService {
 			throw new InvalidRequestException("Error generating request id");
 		
 		realtimeService.sendUpdateSession(generateAppRequest());
-		return ShopApiResponse.builder().code("00").message(requestId).build();
+		return WebResponse.builder().code("00").message(requestId).build();
 	}
 	
 	public RegisteredRequest getRegisteredRequest(String requestId) {
@@ -326,7 +326,7 @@ public class UserSessionService {
 	 * key for client app
 	 * @return
 	 */
-	public ShopApiResponse generateAppRequest() {
+	public WebResponse generateAppRequest() {
 		SessionData sessionData = registryService.getModel(SESSION_DATA);
 		
 		if (null == sessionData) {
@@ -344,20 +344,20 @@ public class UserSessionService {
 			List<BaseEntity> messages = messagingService.getMessages(((RegisteredRequest)appSession).getRequestId());
 			((RegisteredRequest)appSession).setMessages(messages);
 		}
-		return ShopApiResponse.builder().code("00").entities(appSessions).build();
+		return WebResponse.builder().code("00").entities(appSessions).build();
 	}
 
-	public ShopApiResponse deleteSession(ShopApiRequest request) {
+	public WebResponse deleteSession(WebRequest request) {
 		SessionData sessionData = registryService.getModel(SESSION_DATA);
 		sessionData.remove(request.getRegisteredRequest().getRequestId());
 		
 		if (!registryService.set(SESSION_DATA, sessionData))
 			throw new InvalidRequestException("Error updating session data");
 
-		return ShopApiResponse.builder().code("00").sessionData(sessionData).build();
+		return WebResponse.builder().code("00").sessionData(sessionData).build();
 	}
 
-	public ShopApiResponse clearSessions() {
+	public WebResponse clearSessions() {
 		SessionData sessionData = registryService.getModel(SESSION_DATA);
 		sessionData.clear();
 		
@@ -366,7 +366,7 @@ public class UserSessionService {
 		sessionData  = registryService.getModel(SESSION_DATA);
 		
 		realtimeService.sendUpdateSession(generateAppRequest());
-		return ShopApiResponse.builder().code("00").sessionData(sessionData).build();
+		return WebResponse.builder().code("00").sessionData(sessionData).build();
 	}
 	
 	public String getPageCode(HttpServletRequest request) {
