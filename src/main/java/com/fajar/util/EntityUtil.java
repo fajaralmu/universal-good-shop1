@@ -83,6 +83,9 @@ public class EntityUtil {
 				}else if (fieldType.equals(FIELD_TYPE_CURRENCY)) {
 					entityProperty.getCurrencyElements().add(entityElementId);
 					fieldType = FIELD_TYPE_NUMBER;
+					
+				} else if(field.getType().equals(Date.class)) {
+					fieldType = FormField.FIELD_TYPE_DATE;
 				}
 
 				/**
