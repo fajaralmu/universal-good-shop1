@@ -18,7 +18,7 @@ public class CostFlowUpdateService extends BaseEntityUpdateService{
 	private CashBalanceService cashBalanceService;
 	
 	@Override
-	public WebResponse saveEntity(BaseEntity entity, boolean newRecord) {
+	public WebResponse saveEntity(BaseEntity entity, boolean newRecord,EntityUpdateInterceptor entityUpdateInterceptor) {
 		CostFlow costFlow = (CostFlow) copyNewElement(entity, newRecord); 
 		
 //		if(newRecord) {

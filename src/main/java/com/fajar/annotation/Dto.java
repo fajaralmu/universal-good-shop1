@@ -12,4 +12,7 @@ import com.fajar.dto.FormInputColumn;
 public @interface Dto {
 
 	FormInputColumn formInputColumn() default FormInputColumn.TWO_COLUMN;
+	boolean ignoreBaseField() default true;
+	boolean editable() default true;
+	String value() default "";
 }

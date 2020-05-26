@@ -27,7 +27,7 @@ public class ProductUpdateService extends BaseEntityUpdateService{
 	 * @return
 	 */
 	@Override
-	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
+	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord,EntityUpdateInterceptor entityUpdateInterceptor) {
 
 		Product product = (Product) copyNewElement(baseEntity, newRecord);
 

@@ -10,15 +10,16 @@ import javax.persistence.Table;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fajar.dto.FieldType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Dto
+@Dto(ignoreBaseField = false)
 @Entity
-@Table(name="menu")
+@Table(name = "menu")
 @Data
 @Builder
 @AllArgsConstructor
@@ -35,23 +36,22 @@ public class Menu extends BaseEntity implements Serializable {
 	@FormField
 	@Column
 	private String name;
-	@FormField(type = FormField.FIELD_TYPE_TEXTAREA)
+	@FormField(type = FieldType.FIELD_TYPE_TEXTAREA)
 	@Column
 	private String description;
 	@FormField
 	@Column
 	private String url;
-	//TODO: remove
+	// TODO: remove
 	@FormField
 	@Column
 	private String page;
-	@JoinColumn(name="page_id", nullable = false)
+	@JoinColumn(name = "page_id", nullable = false)
 	@ManyToOne
-	@FormField(lableName="Page", entityReferenceName="page", type=FormField.FIELD_TYPE_FIXED_LIST, optionItemName="name")
+	@FormField(lableName = "Page", type = FieldType.FIELD_TYPE_FIXED_LIST, optionItemName = "name")
 	private Page menuPage;
-	@FormField(type = FormField.FIELD_TYPE_IMAGE, required = false, defaultValue = "DefaultIcon.BMP")
+	@FormField(type = FieldType.FIELD_TYPE_IMAGE, required = false, defaultValue = "DefaultIcon.BMP")
 	@Column(name = "icon_url")
 	private String iconUrl;
-	 
 
 }

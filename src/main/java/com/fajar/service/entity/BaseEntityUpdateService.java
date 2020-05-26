@@ -20,7 +20,7 @@ public class BaseEntityUpdateService {
 	@Autowired
 	protected FileService fileService;
 
-	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
+	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord, EntityUpdateInterceptor updateInterceptor) {
 		log.error("saveEntity Method not implemented");
 		return WebResponse.failed("method not implemented");
 	}

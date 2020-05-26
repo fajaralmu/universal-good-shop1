@@ -44,12 +44,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("management")
 public class MvcManagementController extends BaseController {
 
+	@Autowired
+	private EntityService entityService;
+	@Autowired
+	private EntityManagementPageService entityManagementPageService;
 
-	@Autowired
-	private EntityService entityService;  
-	@Autowired
-	private EntityManagementPageService entityManagementPageService; 
-	
 	private static final String ERROR_404_PAGE = "error/notfound";
 
 	public MvcManagementController() {
@@ -61,25 +60,23 @@ public class MvcManagementController extends BaseController {
 		basePage = webAppConfiguration.getBasePage();
 		LogProxyFactory.setLoggers(this);
 	}
-	
+
 	@RequestMapping(value = { "/common/{name}" })
-	public String unit(@PathVariable("name")String name, Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String unit(@PathVariable("name") String name, Model model, HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
 			sendRedirectLogin(request, response);
 			return basePage;
 		}
 		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/common/"+name);
+			checkUserAccess(userService.getUserFromSession(request), "/management/common/" + name);
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
-		} 
+		}
 		model = entityManagementPageService.setModel(request, model, name);
 		return basePage;
 	}
-
-	
- 
 
 	@RequestMapping(value = { "/profile" })
 	public String profile(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -93,8 +90,8 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(ShopProfile.class, null); 
-		
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(ShopProfile.class, null);
+
 		model = constructCommonModel(request, entityProperty, model, "shopProfile", "management");
 		// override singleObject
 		model.addAttribute("entityId", webAppConfiguration.getProfile().getId());
@@ -114,13 +111,13 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		HashMap<String, List<BaseEntity>> listObject = new HashMap<>();
+		HashMap<String, List> listObject = new HashMap<>();
 		listObject.put("page", CollectionUtil.convertList(componentService.getAllPages()));
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(Menu.class, listObject); 
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(Menu.class, listObject);
 		model = constructCommonModel(request, entityProperty, model, "Menu", "management");
 		return basePage;
 	}
-	
+
 	@RequestMapping(value = { "/costflow" })
 	public String costflow(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -133,15 +130,16 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		HashMap<String, List<BaseEntity>> listObject = new HashMap<>();
+		HashMap<String, List> listObject = new HashMap<>();
 		listObject.put("cost", CollectionUtil.convertList(entityService.getAllCostType()));
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(CostFlow.class, listObject); 
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(CostFlow.class, listObject);
 		model = constructCommonModel(request, entityProperty, model, "CostFlow", "management");
 		return basePage;
 	}
 
 	@RequestMapping(value = { "/capitalflow" })
-	public String capitalflow(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String capitalflow(Model model, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
 
 		if (!userService.hasSession(request)) {
 			sendRedirectLogin(request, response);
@@ -152,13 +150,13 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		HashMap<String, List<BaseEntity>> listObject = new HashMap<String, List<BaseEntity>>() {
+		HashMap<String, List> listObject = new HashMap<String, List>() {
 			{
-				 put("capital", CollectionUtil.convertList(entityService.getAllCapitalType()));
+				put("capital", CollectionUtil.convertList(entityService.getAllCapitalType()));
 			}
-		}; 
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(CapitalFlow.class, listObject); 
-		
+		};
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(CapitalFlow.class, listObject);
+
 		model = constructCommonModel(request, entityProperty, model, "CapitalFlow", "management");
 		return basePage;
 	}
@@ -166,8 +164,7 @@ public class MvcManagementController extends BaseController {
 	/** RESTRICTED ACCESS **/
 
 	@RequestMapping(value = { "/messages" })
-	public String messages(Model model, HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
+	public String messages(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
 			sendRedirectLogin(request, response);
@@ -178,14 +175,14 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(Message.class, null); 
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(Message.class, null);
 		entityProperty.setEditable(false);
 		entityProperty.removeElements("color", "fontColor");
-		System.out.println("================ELEMENTS:"+MyJsonUtil.listToJson(entityProperty.getElements()));
-		model = constructCommonModel(request,entityProperty, model, "message", "management");
+		System.out.println("================ELEMENTS:" + MyJsonUtil.listToJson(entityProperty.getElements()));
+		model = constructCommonModel(request, entityProperty, model, "message", "management");
 		return basePage;
 	}
-	
+
 //	@RequestMapping(value = { "/productFlow" })
 //	public String productflow(Model model, HttpServletRequest request, HttpServletResponse response)
 //			throws IOException {
@@ -236,9 +233,9 @@ public class MvcManagementController extends BaseController {
 		} catch (Exception e) {
 			return ERROR_404_PAGE;
 		}
-		HashMap<String, List<BaseEntity>> listObject = new HashMap<>();
+		HashMap<String, List> listObject = new HashMap<>();
 		listObject.put("userRole", CollectionUtil.convertList(entityService.getAllUserRole()));
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(User.class, listObject); 
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(User.class, listObject);
 		model = constructCommonModel(request, entityProperty, model, "User", "management");
 		return basePage;
 	}
@@ -259,13 +256,13 @@ public class MvcManagementController extends BaseController {
 //		model = constructCommonModel(request, entityProperty, model, "Menu", "management");
 //		return basePage;
 //	} 
-	
+
 	/**
 	 * 
-						NON ENTITY
-
+	 * NON ENTITY
+	 * 
 	 */
-	
+
 	@RequestMapping(value = { "/appsession" })
 	public String appsession(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -279,15 +276,15 @@ public class MvcManagementController extends BaseController {
 			return ERROR_404_PAGE;
 		}
 		model.addAttribute("title", "Apps Sessions");
-		model.addAttribute("pageUrl", "shop/app-session"); 
+		model.addAttribute("pageUrl", "shop/app-session");
 		model.addAttribute("page", "management");
 		return basePage;
-	} 
+	}
 
 	private void checkUserAccess(User user, String url) throws Exception {
 		componentService.checkAccess(user, url);
 	}
-	
+
 	public static void main(String[] args) throws ClassNotFoundException {
 		Class.forName("com.fajar.entity.costflow");
 	}

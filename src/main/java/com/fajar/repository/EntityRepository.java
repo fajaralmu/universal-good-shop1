@@ -23,7 +23,6 @@ import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Capital;
 import com.fajar.entity.CapitalFlow;
 import com.fajar.entity.CashBalance;
-import com.fajar.entity.Category;
 import com.fajar.entity.Cost;
 import com.fajar.entity.CostFlow;
 import com.fajar.entity.Customer;
@@ -46,10 +45,9 @@ import com.fajar.service.entity.BaseEntityUpdateService;
 import com.fajar.service.entity.CapitalFlowUpdateService;
 import com.fajar.service.entity.CommonUpdateService;
 import com.fajar.service.entity.CostFlowUpdateService;
-import com.fajar.service.entity.MenuUpdateService;
+import com.fajar.service.entity.EntityUpdateInterceptor;
 import com.fajar.service.entity.ProductUpdateService;
 import com.fajar.service.entity.ShopProfileUpdateService;
-import com.fajar.service.entity.SupplierUpdateService;
 import com.fajar.service.entity.UserUpdateService;
 import com.fajar.service.entity.VoucherUpdateService;
 
@@ -109,20 +107,15 @@ public class EntityRepository {
 	private CapitalFlowRepository capitalFlowRepository;
 	@Autowired
 	private PageRepository pageRepository;
-	
+
 	/**
 	 * end jpa repos
 	 */
-	
-	
+
 	@Autowired
 	private CommonUpdateService commonUpdateService;
 	@Autowired
-	private MenuUpdateService menuUpdateService;
-	@Autowired
 	private ProductUpdateService productUpdateService;
-	@Autowired
-	private SupplierUpdateService supplierUpdateService;
 	@Autowired
 	private UserUpdateService userUpdateService;
 	@Autowired
@@ -135,7 +128,7 @@ public class EntityRepository {
 	private CapitalFlowUpdateService capitalUpdateService;
 	@Autowired
 	private CostFlowUpdateService costFlowUpdateService;
-	
+
 	@PersistenceContext
 	private EntityManager entityManager;
 
@@ -146,52 +139,88 @@ public class EntityRepository {
 	@PostConstruct
 	public void init() {
 		entityConfiguration.clear();
-		
+
 		/**
 		 * commons
 		 */
-		entityConfiguration.put("unit", config("unit", Unit.class, commonUpdateService));
-		entityConfiguration.put("customer", config("customer", Customer.class, commonUpdateService));
-		entityConfiguration.put("category", config("category", Category.class, commonUpdateService));
-		entityConfiguration.put("registeredrequest", config("registeredRequest", RegisteredRequest.class, commonUpdateService));
-		entityConfiguration.put("customervoucher", config("customervoucher", CustomerVoucher.class, commonUpdateService));
-		entityConfiguration.put("userrole", config("userrole", UserRole.class, commonUpdateService));
-		entityConfiguration.put("capital", config("capital", Capital.class, commonUpdateService));
-		entityConfiguration.put("cost", config("cost", Cost.class, commonUpdateService));
-		entityConfiguration.put("page", config("page", Page.class, commonUpdateService));
-		
+		toCommonUpdateService(Unit.class, Customer.class, RegisteredRequest.class, CustomerVoucher.class,
+				UserRole.class, Capital.class, Cost.class, Page.class, Supplier.class);
+
 		/**
 		 * special
 		 */
-		entityConfiguration.put("product", config("product", Product.class, productUpdateService)); 
-		entityConfiguration.put("supplier", config("supplier", Supplier.class, supplierUpdateService));
-		entityConfiguration.put("user", config("user", User.class, userUpdateService));
-		entityConfiguration.put("menu", config("menu", Menu.class, menuUpdateService));
-		entityConfiguration.put("shopprofile", config("shopprofile", ShopProfile.class, shopProfileUpdateService));
-		entityConfiguration.put("costflow", config("costflow", CostFlow.class, costFlowUpdateService));
-		entityConfiguration.put("voucher", config("voucher", Voucher.class, voucherUpdateService));
-		entityConfiguration.put("capitalflow", config("capitalflow", CapitalFlow.class, capitalUpdateService));
+		putConfig(Menu.class, commonUpdateService, EntityUpdateInterceptor.menuInterceptor());
+		putConfig(Product.class, productUpdateService);
+		putConfig(User.class, userUpdateService);
+		putConfig(ShopProfile.class, shopProfileUpdateService);
+		putConfig(CostFlow.class, costFlowUpdateService);
+		putConfig(Voucher.class, voucherUpdateService);
+		putConfig(CapitalFlow.class, capitalUpdateService);
 		/**
 		 * unable to update
 		 */
-		entityConfiguration.put("cashbalance", config("cashbalance", CashBalance.class, baseEntityUpdateService));
-		entityConfiguration.put("transaction", config(null, Transaction.class, baseEntityUpdateService));
-		entityConfiguration.put("productflow", config(null, ProductFlow.class, baseEntityUpdateService));
-		entityConfiguration.put("message", config(null, Message.class, commonUpdateService));
+		putConfig(CashBalance.class, baseEntityUpdateService);
+		putConfig(Transaction.class, baseEntityUpdateService);
+		putConfig(ProductFlow.class, baseEntityUpdateService);
+		putConfig(Message.class, commonUpdateService);
 	}
-	
+
+	/**
+	 * put configuration to entityConfiguration without entityUpdateInterceptor
+	 * 
+	 * @param class1
+	 * @param commonUpdateService2
+	 */
+	private void putConfig(Class<? extends BaseEntity> class1, BaseEntityUpdateService commonUpdateService2) {
+		putConfig(class1, commonUpdateService2, null);
+
+	}
+
+	/**
+	 * put configuration to entityConfiguration map
+	 * 
+	 * @param _class
+	 * @param updateService
+	 * @param updateInterceptor
+	 */
+	private void putConfig(Class<? extends BaseEntity> _class, BaseEntityUpdateService updateService,
+			EntityUpdateInterceptor updateInterceptor) {
+		String key = _class.getSimpleName().toLowerCase();
+		entityConfiguration.put(key, config(key, _class, updateService, updateInterceptor));
+	}
+
+	/**
+	 * set update service to commonUpdateService and NO update interceptor
+	 * 
+	 * @param classes
+	 */
+	private void toCommonUpdateService(Class<? extends BaseEntity>... classes) {
+		for (int i = 0; i < classes.length; i++) {
+			putConfig(classes[i], commonUpdateService);
+		}
+	}
+
 	public EntityManagementConfig getConfig(String key) {
 		return entityConfiguration.get(key);
 	}
 
+	/**
+	 * construct EntityManagementConfig object
+	 * 
+	 * @param object
+	 * @param class1
+	 * @param commonUpdateService2
+	 * @param updateInterceptor
+	 * @return
+	 */
 	private EntityManagementConfig config(String object, Class<? extends BaseEntity> class1,
-			BaseEntityUpdateService commonUpdateService2) {
-
-		return new EntityManagementConfig(object, class1, commonUpdateService2);
+			BaseEntityUpdateService commonUpdateService2, EntityUpdateInterceptor updateInterceptor) {
+		return new EntityManagementConfig(object, class1, commonUpdateService2, updateInterceptor);
 	}
 
 	/**
 	 * save entity
+	 * 
 	 * @param <T>
 	 * @param baseEntity
 	 * @return
@@ -206,7 +235,7 @@ public class EntityRepository {
 			throw new InvalidParameterException("JOIN COLUMN INVALID");
 		}
 
-		try { 
+		try {
 			JpaRepository repository = findRepo(baseEntity.getClass());
 			log.info("found repo: " + repository);
 			return (T) repository.save(baseEntity);
@@ -269,6 +298,7 @@ public class EntityRepository {
 
 	/**
 	 * find suitable repository (declared in this class) for given entity object
+	 * 
 	 * @param entityClass
 	 * @return
 	 */
@@ -302,6 +332,7 @@ public class EntityRepository {
 
 	/**
 	 * find all entity
+	 * 
 	 * @param clazz
 	 * @return
 	 */
@@ -311,6 +342,23 @@ public class EntityRepository {
 			return new ArrayList<>();
 		}
 		return repository.findAll();
+	}
+
+	/**
+	 * find by id
+	 * 
+	 * @param clazz
+	 * @param ID
+	 * @return
+	 */
+	public Object findById(Class<? extends BaseEntity> clazz, Object ID) {
+		JpaRepository repository = findRepo(clazz);
+
+		Optional result = repository.findById(ID);
+		if (result.isPresent()) {
+			return result.get();
+		}
+		return null;
 	}
 
 	public static <T> T getGenericClassIndexZero(Class clazz) {
@@ -342,6 +390,7 @@ public class EntityRepository {
 
 	/**
 	 * delete entity by id
+	 * 
 	 * @param id
 	 * @param class1
 	 * @return
@@ -361,8 +410,8 @@ public class EntityRepository {
 		}
 	}
 
-	public EntityManagementConfig getConfiguration(String key) {  
-		return  this.entityConfiguration.get(key);
+	public EntityManagementConfig getConfiguration(String key) {
+		return this.entityConfiguration.get(key);
 	}
 
 }

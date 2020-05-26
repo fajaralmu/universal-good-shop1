@@ -9,41 +9,40 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 
+import com.fajar.annotation.BaseField;
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fajar.dto.FieldType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Dto
-@MappedSuperclass 
+@MappedSuperclass
 public class BaseEntity {
-	
-	
-	
-	@Column(name="created_date")
+
+	@Column(name = "created_date")
 	@JsonIgnore
 //	@FormField
 	private Date createdDate;
-	@Column(name="modified_date")
+	@Column(name = "modified_date")
 	@JsonIgnore
 	private Date modifiedDate;
-	@Column(name="deleted")
+	@Column(name = "deleted")
 	@JsonIgnore
 	private boolean deleted;
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@FormField
 	@Column
+	@BaseField
 	private Long id;
-	@Column(name="general_color")
-	@FormField(type="color", defaultValue = "green")
+	@Column(name = "general_color")
+	@FormField(type = FieldType.FIELD_TYPE_COLOR, defaultValue = "green")
 	private String color;
-	@Column(name="font_color")
-	@FormField(type="color", defaultValue = "yellow")
+	@BaseField
+	@Column(name = "font_color")
+	@FormField(type = FieldType.FIELD_TYPE_COLOR, defaultValue = "yellow")
 	private String fontColor;
-	
-	
-	
-	
+
 	public String getFontColor() {
 		return fontColor;
 	}
@@ -92,13 +91,12 @@ public class BaseEntity {
 		this.id = id;
 	}
 
-
 	@PrePersist
 	private void prePersist() {
-		if(this.createdDate == null) {
+		if (this.createdDate == null) {
 			this.createdDate = new Date();
 		}
 		this.modifiedDate = new Date();
 	}
-	
+
 }

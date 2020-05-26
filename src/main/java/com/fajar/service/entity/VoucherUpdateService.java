@@ -29,7 +29,7 @@ public class VoucherUpdateService extends BaseEntityUpdateService{
 	private CustomerVoucherRepository CustomerVoucherRepository;
 	 
 	@Override
-	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
+	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord,EntityUpdateInterceptor entityUpdateInterceptor) {
 		
 		Voucher voucher = (Voucher) baseEntity;
 		if(newRecord) {

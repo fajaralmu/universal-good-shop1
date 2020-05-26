@@ -11,6 +11,7 @@ import javax.persistence.Table;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fajar.dto.FieldType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -20,12 +21,12 @@ import lombok.NoArgsConstructor;
 
 @Dto
 @Entity
-@Table(name="user")
+@Table(name = "user")
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User extends BaseEntity implements Remote, Serializable{
+public class User extends BaseEntity implements Remote, Serializable {
 
 	/**
 	 * 
@@ -34,20 +35,20 @@ public class User extends BaseEntity implements Remote, Serializable{
 	@Column(unique = true)
 	@FormField
 	private String username;
-	@Column(name="display_name")
+	@Column(name = "display_name")
 	@FormField
 	private String displayName;
 	@Column
 	@FormField
 //	@JsonIgnore
 	private String password;
-	@JoinColumn(name="role_id")
+	@JoinColumn(name = "role_id")
 	@ManyToOne
-	@FormField(entityReferenceName="userRole",type="fixedlist",optionItemName="name")
+	@FormField(type = FieldType.FIELD_TYPE_FIXED_LIST, optionItemName = "name")
 	private UserRole role;
-	
+
 	@javax.persistence.Transient
 	@JsonIgnore
 	private String loginKey;
-	 
+
 }

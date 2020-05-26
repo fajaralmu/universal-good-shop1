@@ -18,5 +18,8 @@ public class KeyValue implements Serializable{/**
 
 	private Object key;
 	private Object value;
+	@Builder.Default
+	private boolean valid = true;
 	
 }
+

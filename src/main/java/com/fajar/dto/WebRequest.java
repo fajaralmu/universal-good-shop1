@@ -82,6 +82,8 @@ public class WebRequest implements Serializable {
 	private String username;
 	private String value;
 	
+	private List<Page> pages;
+	
 	@Builder.Default
 	private List<ProductFlow> productFlows = new ArrayList<ProductFlow>();
 

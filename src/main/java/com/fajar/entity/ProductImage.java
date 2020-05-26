@@ -10,6 +10,7 @@ import javax.persistence.Table;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fajar.dto.FieldType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,13 +19,13 @@ import lombok.NoArgsConstructor;
 
 @Dto
 @Entity
-@Table(name="product_image")
+@Table(name = "product_image")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductImage extends BaseEntity implements Serializable {
-	 
+
 	/**
 	 * 
 	 */
@@ -40,8 +41,7 @@ public class ProductImage extends BaseEntity implements Serializable {
 	private String url;
 	@JoinColumn(name = "category_id", nullable = true)
 	@ManyToOne
-	@FormField (entityReferenceName="category",optionItemName="name",type="dynamiclist")
+	@FormField(optionItemName = "name", type = FieldType.FIELD_TYPE_DYNAMIC_LIST)
 	private Product product;
-	
 
 }

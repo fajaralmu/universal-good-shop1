@@ -8,6 +8,7 @@ import javax.persistence.Table;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fajar.dto.FieldType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,15 +32,15 @@ public class Supplier extends BaseEntity implements Serializable{
 	@FormField 
 	private String name;
 	@Column
-	@FormField (type="textarea")
+	@FormField (type=FieldType.FIELD_TYPE_TEXTAREA)
 	private String address;
 	@Column
-	@FormField (type="textarea")
+	@FormField (type=FieldType.FIELD_TYPE_TEXTAREA)
 	private String contact;
 	@Column
 	@FormField
 	private String website;
-	@FormField(type = "img", required = false, defaultValue = "DefaultIcon.BMP")
+	@FormField(type = FieldType.FIELD_TYPE_IMAGE, required = false, defaultValue = "DefaultIcon.BMP")
 	@Column(name = "icon_url")
 	private String iconUrl;
 	

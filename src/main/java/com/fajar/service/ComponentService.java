@@ -2,12 +2,15 @@ package com.fajar.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Category;
 import com.fajar.entity.Menu;
@@ -16,6 +19,7 @@ import com.fajar.entity.User;
 import com.fajar.repository.CategoryRepository;
 import com.fajar.repository.MenuRepository;
 import com.fajar.repository.PageRepository;
+import com.fajar.util.CollectionUtil;
 import com.fajar.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ComponentService { 
 	
+	private static final String SETTING = "setting";
 	@Autowired
 	private MenuRepository menuRepository;
 	@Autowired
@@ -87,18 +92,50 @@ public class ComponentService {
 			return null;
 		}
 		
-		List<Menu> menus = getMenuByPageCode(code);
+		List<Menu> menus = getMenuListByPageCode(code);
 		page.setMenus(menus );
 		return page;
-	}
+	} 
+	
+	public WebResponse getMenuByPageCode(String pageCode) {
 
-	public List<Menu > getMenuByPageCode(String pageCode){
-		
+		List<Menu> menus = getMenuListByPageCode(pageCode);
+
+		return WebResponse.builder().entities(CollectionUtil.convertList(menus)).build();
+	}
+	
+	private Menu defaultMenu() {
+		Menu menu = new Menu();
+		menu.setCode("000");
+		menu.setName("Menu Management");
+		menu.setUrl("/management/menu");
+		Page menuPage = pageRepository.findByCode(SETTING);
+		menu.setMenuPage(menuPage);
+		return menu;
+	}
+	
+	public List<Menu> getMenuListByPageCode(String pageCode) {
+
 		List<Menu> menus = menuRepository.findByMenuPage_code(pageCode);
+
+		if (menus == null || menus.size() == 0) {
+
+			if (pageCode.equals(SETTING)) {
+				Menu menu = defaultMenu();
+				final Menu savedMenu = menuRepository.save(menu);
+				return new ArrayList<Menu>() {
+					private static final long serialVersionUID = -6867018433722897471L;
+
+					{
+						add(savedMenu);
+					}
+				};
+			}
+		}
+
 		EntityUtil.validateDefaultValues(menus);
 		return menus;
 	}
-	
 	 
 	private boolean hasAccess(User user, String menuAccess) {
 		boolean hasAccess = false;
@@ -152,6 +189,37 @@ public class ComponentService {
 			}
 		}
 
+	}
+
+	public WebResponse savePageSequence(WebRequest request) {
+
+		List<Page> pages = request.getPages();
+
+		try {
+
+			for (int i = 0; i < pages.size(); i++) {
+				Page page = pages.get(i);
+				updateSequence(i, page.getId());
+			}
+
+			WebResponse response = WebResponse.success();
+			return response;
+
+		} catch (Exception e) {
+			log.error("Error saving page sequence");
+			e.printStackTrace();
+			return WebResponse.failed(e.getMessage());
+		}
+	}
+
+	private void updateSequence(int sequence, Long id) {
+
+		Optional<Page> pageDB = pageRepository.findById(id);
+		if (pageDB.isPresent()) {
+			Page page = pageDB.get();
+			page.setSequence(sequence);
+			pageRepository.save(page);
+		}
 	}
 
 	

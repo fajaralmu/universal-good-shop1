@@ -53,7 +53,7 @@ public class CollectionUtil {
 	public static List<KeyValue> yearArray(int min, int max){
 		List<KeyValue> years = new ArrayList<>();
 		for(int i = min; i <= max; i++) {
-			years.add(new KeyValue(i, i));
+			years.add(new KeyValue(i, i, true));
 		}
 		
 		return years ;

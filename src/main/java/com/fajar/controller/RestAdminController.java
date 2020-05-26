@@ -26,12 +26,9 @@ import com.fajar.service.UserSessionService;
 @CrossOrigin
 @RestController
 @RequestMapping("/api/admin")
-public class RestAdminController {
+public class RestAdminController extends BaseController {
 	Logger log = LoggerFactory.getLogger(RestAdminController.class);
-	@Autowired
-	private UserAccountService accountService;
-	@Autowired
-	private UserSessionService userSessionService;
+	 
 	@Autowired
 	private MessagingService messagingService;
 	@Autowired
@@ -99,6 +96,16 @@ public class RestAdminController {
 			return WebResponse.failedResponse();
 		}
 		WebResponse response = userSessionService.clearSessions();
+		return response;
+	}
+	
+	@PostMapping(value =  "/savepagesequence", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public WebResponse savePageSequence(@RequestBody WebRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+		if (!accountService.validateToken(httpRequest)) {
+			return WebResponse.failedResponse();
+		}
+		WebResponse response = componentService.savePageSequence(request);
 		return response;
 	}
 

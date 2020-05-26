@@ -12,6 +12,7 @@ import javax.persistence.Transient;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fajar.dto.FieldType;
 import com.fajar.dto.FormInputColumn;
 
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Dto(formInputColumn =  FormInputColumn.ONE_COLUMN)
+@Dto(formInputColumn = FormInputColumn.ONE_COLUMN)
 @Entity
 @Table(name = "product")
 @Data
@@ -42,21 +43,21 @@ public class Product extends BaseEntity implements Serializable {
 	@FormField
 	private String description;
 	@Column
-	@FormField(type = "currency")
+	@FormField(type = FieldType.FIELD_TYPE_CURRENCY)
 	private long price;
 	@Column
 	@FormField
 	private String type;
 	@Column(name = "image_url", unique = true)
-	@FormField(type = FormField.FIELD_TYPE_IMAGE, required = false, multiple = true, defaultValue = "Default.BMP")
+	@FormField(type = FieldType.FIELD_TYPE_IMAGE, required = false, multiple = true, defaultValue = "Default.BMP")
 	private String imageUrl;
 	@JoinColumn(name = "unit_id")
 	@ManyToOne
-	@FormField(entityReferenceName = "unit", optionItemName = "name", type = FormField.FIELD_TYPE_DYNAMIC_LIST)
+	@FormField(optionItemName = "name", type = FieldType.FIELD_TYPE_DYNAMIC_LIST)
 	private Unit unit;
 	@JoinColumn(name = "category_id", nullable = true)
 	@ManyToOne
-	@FormField(entityReferenceName = "category", optionItemName = "name", type = FormField.FIELD_TYPE_DYNAMIC_LIST)
+	@FormField(optionItemName = "name", type = FieldType.FIELD_TYPE_DYNAMIC_LIST)
 	private Category category;
 
 	@Transient

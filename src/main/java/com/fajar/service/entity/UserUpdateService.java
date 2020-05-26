@@ -15,7 +15,7 @@ public class UserUpdateService extends BaseEntityUpdateService{
 	private UserRepository userRepository;
 	
 	@Override
-	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
+	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord,EntityUpdateInterceptor entityUpdateInterceptor) {
 		User user = (User) copyNewElement(baseEntity, newRecord);
 		User newUser = userRepository.save(user);
 		return WebResponse.builder().entity(newUser).build();

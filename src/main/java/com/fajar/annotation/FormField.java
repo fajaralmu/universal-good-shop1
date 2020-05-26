@@ -5,14 +5,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.fajar.dto.FieldType;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface FormField {
-
-	public static final String FIELD_TYPE_TEXTAREA = "textarea";
-	public static final String FIELD_TYPE_DATE = "date";
+ 
 	
-	public String type() default FIELD_TYPE_TEXT;
+	public FieldType type() default FieldType.FIELD_TYPE_TEXT;
 	
 	public boolean showDetail() default false;
 	
@@ -23,25 +23,12 @@ public @interface FormField {
 
 	public String lableName() default "";
 
-	public String optionItemName() default "";
-
-	public String entityReferenceName() default "";
+	public String optionItemName() default ""; 
 
 	public String defaultValue() default "";
 
-	public String[] detailFields() default {};
-
-	public String[] defaultValues() default {};
-	//the value is result of array of fields multiplication
+	public String[] availableValues() default {};
+	public String[] detailFields() default {}; 
 	public String[] multiply() default {};
-	
-	public static final String FIELD_TYPE_TEXT = "text";
-	public static final String FIELD_TYPE_IMAGE = "img";
-	public static final String FIELD_TYPE_CURRENCY = "currency";
-	public static final String FIELD_TYPE_NUMBER = "number";
-	public static final String FIELD_TYPE_HIDDEN = "hidden";
-	public static final String FIELD_TYPE_COLOR = "color";
-	public static final String FIELD_TYPE_FIXED_LIST ="fixedlist";
-	public static final String FIELD_TYPE_DYNAMIC_LIST = "dynamiclist";
 
 }

@@ -11,21 +11,23 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Dto
+@Slf4j
 public class EntityProperty implements Serializable {
 	/**
 	* 
 	*/
 	private static final long serialVersionUID = 2648801606702528928L;
 	private String entityName;
-	private List<EntityElement> elements;
-	private String fieldNames;
-	private List<String> fieldNameList;
+	private String alias;
+	private String fieldNames; 
+	
 	private String idField;
 	private int formInputColumn;
 	@Builder.Default
@@ -33,15 +35,22 @@ public class EntityProperty implements Serializable {
 	@Builder.Default
 	private boolean withDetail = false;
 	private String detailFieldName;
+	
+	private String imageElementsJson;
+	private String dateElementsJson;
+	private String currencyElementsJson;
+	
 	@Builder.Default
 	private List<String> dateElements = new ArrayList<String>();
-	private String dateElementsJson;
 	@Builder.Default
-	private List<String> imageElements = new ArrayList<String>();
-	private String imageElementsJson;
+	private List<String> imageElements = new ArrayList<String>(); 
 	@Builder.Default
 	private List<String> currencyElements = new ArrayList<String>();
-	private String currencyElementsJson;
+	private List<EntityElement> elements;
+	private List<String> fieldNameList;
+	
+	private boolean ignoreBaseField;
+	
 
 	public void setElementJsonList() {
 
@@ -68,6 +77,18 @@ public class EntityProperty implements Serializable {
 			}
 		}
 		this.fieldNames = MyJsonUtil.listToJson(fieldNameList);
+	}
+
+	public void determineIdField() {
+		if(null == elements) {
+			log.error("Entity ELements is NULL");
+			return;
+		}
+		for(EntityElement entityElement : elements) {
+			if(entityElement.isIdField() && getIdField() == null) {
+				setIdField(entityElement.getId());
+			}
+		}
 	}
 
 }

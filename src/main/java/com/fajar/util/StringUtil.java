@@ -27,10 +27,7 @@ public class StringUtil {
 
 	public static void main(String[] xxx) {
 
-		for (int i = 1; i <= 611; i++) {
-
-			System.out.println("update `transaction` set code= '" + generateRandomNumber(10) + "' where id=" + i + ";");
-		}
+		 System.out.println(extractCamelCase("fajarAmKkkk"));
 	}
 
 	public static String addZeroBefore(Integer number) {
@@ -47,6 +44,10 @@ public class StringUtil {
 
 		return stringBuilder.toString();
 	}
+	
+	public static String buildTableColumnDoubleQuoted(String tableName, String columnName) {
+		return buildString(doubleQuoteMysql(tableName), ".", doubleQuoteMysql(columnName));
+	}
 
 	public static String doubleQuoteMysql(String str) {
 		return " `".concat(str).concat("` ");
@@ -55,6 +56,27 @@ public class StringUtil {
 	public static Object beautifyNominal(Long valueOf) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	static boolean isUpperCase(char _char) {
+		StringBuilder str = new StringBuilder();
+		str.append(_char);
+		return str.toString().equals(str.toString().toUpperCase());
+	}
+	
+	public static String extractCamelCase(String camelCased) {
+		
+		StringBuilder result = new StringBuilder();
+		
+		for (int i = 0; i < camelCased.length(); i++) {
+			char _char = camelCased.charAt(i);
+			if(isUpperCase(_char)) {
+				result.append(" ");
+			}
+			result.append(_char);
+		}
+		
+		return result.toString();
 	}
 
 }

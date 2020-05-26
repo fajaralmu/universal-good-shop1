@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
 import com.fajar.dto.CashType;
+import com.fajar.dto.FieldType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,13 +28,13 @@ public class CashBalance extends BaseEntity implements Serializable{/**
 	 */
 	private static final long serialVersionUID = -1586384158220885834L;
 
-	@FormField(type = FormField.FIELD_TYPE_NUMBER)
+	@FormField(type = FieldType.FIELD_TYPE_NUMBER)
 	private long formerBalance;
-	@FormField(type = FormField.FIELD_TYPE_NUMBER)
+	@FormField(type = FieldType.FIELD_TYPE_NUMBER)
 	private long creditAmount;
-	@FormField(type = FormField.FIELD_TYPE_NUMBER)
+	@FormField(type = FieldType.FIELD_TYPE_NUMBER)
 	private long debitAmount;
-	@FormField(type = FormField.FIELD_TYPE_NUMBER)
+	@FormField(type = FieldType.FIELD_TYPE_NUMBER)
 	private long actualBalance;
 	@FormField
 	private CashType type;

@@ -10,6 +10,7 @@ import javax.persistence.Transient;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fajar.dto.FieldType;
 import com.fajar.dto.FormInputColumn;
 
 import lombok.AllArgsConstructor;
@@ -17,7 +18,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Dto(formInputColumn = FormInputColumn.ONE_COLUMN)
+@Dto(formInputColumn = FormInputColumn.ONE_COLUMN, ignoreBaseField = false)
 @Entity
 @Table(name="page")
 @Data
@@ -35,22 +36,24 @@ public class Page extends BaseEntity implements Serializable {/**
 	@FormField
 	@Column(unique = true)
 	private String name;
-	@FormField(lableName = "Authorized (1 or 0)",type = FormField.FIELD_TYPE_NUMBER)
+	@FormField(lableName = "Authorized (1 or 0)",type = FieldType.FIELD_TYPE_NUMBER)
 	@Column(nullable = false)
 	private int authorized; 
-	@FormField(lableName = "Is nonMenu Page(1 or 0)",type = FormField.FIELD_TYPE_NUMBER)
+	@FormField(lableName = "Is nonMenu Page(1 or 0)",type = FieldType.FIELD_TYPE_NUMBER)
 	@Column(name = "is_non_menu_page")
 	private int nonMenuPage;
 	@FormField(lableName = "Link for non menu page")
 	@Column(unique = true)
 	private String link;
-	@FormField(type = FormField.FIELD_TYPE_TEXTAREA)
+	@FormField(type = FieldType.FIELD_TYPE_TEXTAREA)
 	@Column
 	private String description;
-	@FormField(type = FormField.FIELD_TYPE_IMAGE,  required = false, defaultValue = "DefaultIcon.BMP")
+	@FormField(type = FieldType.FIELD_TYPE_IMAGE,  required = false, defaultValue = "DefaultIcon.BMP")
 	@Column(name= "image_url")
 	private String imageUrl;
-	
+	@Column()
+	@FormField(type=FieldType.FIELD_TYPE_NUMBER,lableName = "Urutan Ke")
+	private int sequence;
 	
 	@Transient
 	private List<Menu> menus;

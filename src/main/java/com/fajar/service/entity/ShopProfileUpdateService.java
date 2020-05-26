@@ -18,7 +18,7 @@ public class ShopProfileUpdateService extends BaseEntityUpdateService{
 	private ShopProfileRepository shopProfileRepository;
 	
 	@Override
-	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord) {
+	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord,EntityUpdateInterceptor entityUpdateInterceptor) {
 		ShopProfile shopProfile = (ShopProfile) copyNewElement(baseEntity, newRecord);
 		String base64Image = shopProfile.getIconUrl();
 		if (base64Image != null && !base64Image.equals("")) {

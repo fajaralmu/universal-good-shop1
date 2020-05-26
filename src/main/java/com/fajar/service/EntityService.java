@@ -1,5 +1,6 @@
 package com.fajar.service;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -21,12 +22,17 @@ import com.fajar.entity.Cost;
 import com.fajar.entity.Unit;
 import com.fajar.entity.UserRole;
 import com.fajar.entity.setting.EntityManagementConfig;
+import com.fajar.querybuilder.CRUDQueryHolder;
+import com.fajar.querybuilder.QueryUtil;
 import com.fajar.repository.EntityRepository;
 import com.fajar.repository.RepositoryCustomImpl;
 import com.fajar.service.entity.BaseEntityUpdateService;
 import com.fajar.util.EntityUtil;
-import com.fajar.util.QueryUtil;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -34,7 +40,6 @@ import lombok.extern.slf4j.Slf4j;
 public class EntityService {
  
 	public static final String ORIGINAL_PREFFIX = "{ORIGINAL>>";
-	public static final String PRODUCT_IMG_PREFFIX = "product";
 	  
 	@Autowired
 	private RepositoryCustomImpl repositoryCustom;   
@@ -63,8 +68,9 @@ public class EntityService {
 		try {
 			
 			final String key = request.getEntity().toLowerCase();
-			BaseEntityUpdateService updateService = getEntityManagementConfig(key).getEntityUpdateService();
-			String fieldName = getEntityManagementConfig(key).getFieldName();
+			EntityManagementConfig entityConfig = getEntityManagementConfig(key);
+			BaseEntityUpdateService updateService = entityConfig.getEntityUpdateService();
+			String fieldName = entityConfig.getFieldName();
 			Object entityValue = null;
 			
 			try {
@@ -80,7 +86,7 @@ public class EntityService {
 			} 
 			
 			if(entityValue != null)
-				return updateService.saveEntity((BaseEntity)entityValue, newRecord);
+				return updateService.saveEntity((BaseEntity)entityValue, newRecord, entityConfig.getUpdateInterceptor());
 			
 		}catch (Exception e) { 
 			e.printStackTrace();
@@ -105,7 +111,7 @@ public class EntityService {
 			filter = new Filter();
 		}
 		if (filter.getFieldsFilter() == null) {
-			filter.setFieldsFilter(new HashMap<>());
+			filter.setFieldsFilter(new HashMap<String, Object>());
 		}
 		 
 		try {
@@ -120,20 +126,12 @@ public class EntityService {
 			/**
 			 * Generate query string
 			 */
-			String[] sqlListAndCount = QueryUtil.generateSqlByFilter(filter, entityClass);
-
-			String sql = sqlListAndCount[0];
-			String sqlCount = sqlListAndCount[1];
-
-			List<BaseEntity> entities = repositoryCustom.filterAndSort(sql, entityClass);
- 
-			Object countResult = repositoryCustom.getSingleResult(sqlCount);
- 
-			int count = countResult == null? 0: ((BigInteger) countResult).intValue(); 
+			EntityResult entityResult = filterEntities(filter, entityClass); 
+			
 			
 			return WebResponse.builder().
-					entities(EntityUtil.validateDefaultValue(entities)).
-					totalData(count).
+					entities(EntityUtil.validateDefaultValue(entityResult.entities)).
+					totalData(entityResult.count).
 					filter(filter).entityClass(entityClass).
 					build();
 			
@@ -143,6 +141,20 @@ public class EntityService {
 		}
 	}  
   
+	private EntityResult filterEntities(Filter filter, Class<? extends BaseEntity> entityClass) {
+
+		CRUDQueryHolder generatedQueryString = QueryUtil.generateSqlByFilter(filter, entityClass); 
+
+		List<BaseEntity> entities = repositoryCustom.filterAndSort(generatedQueryString, entityClass);
+
+		Object countResult = repositoryCustom.getSingleResult(generatedQueryString);
+
+		int count = countResult == null? 0: ((BigInteger) countResult).intValue(); 
+		
+		return EntityResult.builder().entities(entities).count(count).build();
+	}
+
+
 	/**
 	 * delete entity
 	 * @param request
@@ -171,11 +183,29 @@ public class EntityService {
 			return WebResponse.builder().code("01").message("failed: "+ex.getMessage()).build();
 		}
 	}
+ 
 
 	public List<UserRole> getAllUserRole() {
 		return entityRepository.findAll(UserRole.class);
 	}
 	
+	@Data
+	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
+	static class EntityResult implements Serializable{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 7627112916142073122L;
+		List<BaseEntity> entities;
+		int count;
+	}
+	
+	public List<BaseEntity> findAll(Class<? extends BaseEntity> _class){
+		return entityRepository.findAll(_class);
+	}
+//	
 	public List<Cost> getAllCostType() {
 		return entityRepository.findAll(Cost.class);
 	}
@@ -188,5 +218,7 @@ public class EntityService {
 	public List<Capital> getAllCapitalType() { 
 		return entityRepository.findAll(Capital.class);
 	}
+
+ 
 
 }

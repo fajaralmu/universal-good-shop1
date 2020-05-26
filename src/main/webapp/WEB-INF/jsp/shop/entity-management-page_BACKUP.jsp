@@ -11,33 +11,29 @@
 	var page = 0;
 	var limit = 5;
 	var totalData = 0;
-	
 	var imgElements = ${entityProperty.imageElementsJson};
 	var currencyElements = ${entityProperty.currencyElementsJson};
 	var dateElements = ${entityProperty.dateElementsJson};
-	
 	var fieldNames = ${entityProperty.fieldNames};
 	var optionElements = ${options};
 	var imagesData = {};
 	var idField = "${entityProperty.idField}";
-	var editable = ${entityProperty.editable};
+	var  editable = ${entityProperty.editable};
 	var singleRecord = ${singleRecord == null ||singleRecord == false ? false:true}
 	var entityIdValue = "${entityId}";
 	var managedEntity = {};
-	//var entityPropJson = ${entityPropJson};
 	
 </script> 
 
-<%-- <c:if test="${entityProperty.editable == true }"> --%>
 <!-- DETAIL ELEMENT -->
 <jsp:include page="../entity-management-component/detail-element.jsp"></jsp:include>
 
 <!-- INPUT FORM -->
 <jsp:include page="../entity-management-component/form-element.jsp"></jsp:include>
-<%-- </c:if> --%>
+
 <!-- CONTENT -->
 <div class="content">
-	<h2>${entityProperty.alias }</h2>
+	<h2>${entityProperty.entityName.toUpperCase()}-Management</h2>
 	<p></p>
 	<c:if test="${entityProperty.editable == true }">
 		<button type="btn-show-form" class="btn btn-primary"
@@ -97,9 +93,9 @@
 		add single image
 	*/
 	function addImagesData(id) {
-		const imageTag = _byId(id + "-display");
+		let imageTag = _byId(id + "-display");
 		toBase64(_byId(id), function(result) {
-			const imageData = {
+			let imageData = {
 				id : result
 			};
 			imageTag.src = result;
@@ -113,7 +109,7 @@
 	*/
 	function cancelImagesData(id) {
 		_byId(id).value = null;
-		const imageTag = _byId(id + "-display");
+		let imageTag = _byId(id + "-display");
 		imageTag.src = imageTag.getAttribute("originaldata");
 		//remove from imagesData object
 		imagesData[id] = null;
@@ -122,13 +118,13 @@
 	//load dropdown list for multiple select
 	function loadList(inputElement) {
 
-		const element = _byId(inputElement.name);
+		let element = _byId(inputElement.name);
 		element.innerHTML = "";
 		//converter field
-		const itemField = element.getAttribute("itemNameField");
+		let itemField = element.getAttribute("itemNameField");
 		//foreign key field
-		const valueField = element.getAttribute("itemValueField");
-		const filterValue = inputElement.value;
+		let valueField = element.getAttribute("itemValueField");
+		let filterValue = inputElement.value;
 		var requestObject = {
 			"entity" : element.name,
 			"filter" : {
@@ -141,8 +137,8 @@
 
 		doLoadDropDownItems("<spring:url value="/api/entity/get" />", requestObject, function(entities){
 			for (let i = 0; i < entities.length; i++) {
-				const entity = entities[i];
-				const option = document.createElement("option");
+				let entity = entities[i];
+				let option = document.createElement("option");
 				option.value = entity[valueField];
 				option.innerHTML = entity[itemField];
 				option.onclick = function() {
@@ -181,7 +177,7 @@
 		if (page < 0) {
 			page = this.page;
 		}
-		const requestObject = buildRequestObject(page);
+		var requestObject = buildRequestObject(page);
 		doLoadEntities("<spring:url value="/api/entity/get" />", requestObject, function(response){
 			
 			var entities = response.entities;
@@ -198,18 +194,9 @@
 	}
 	
 	function printExcel(){
-		const confirmed = confirm("Do you want to download excel file?");
-		if(!confirmed){
-			return;
-		}
+		var requestObject = buildRequestObject(this.page); 
 		
-		const requestObject = buildRequestObject(this.page);  
-		const limit = prompt("input row count", this.limit);
-		
-		if(limit == null){
-			return;
-		}
-		
+		var limit = prompt("input row count", this.limit);
 		requestObject.filter.limit = limit;
 		
 		postReq("<spring:url value="/api/report/entity" />" ,
@@ -234,12 +221,13 @@
 			};
 			requestObject.filter.fieldsFilter = {};
 			for (let i = 0; i < filterFields.length; i++) {
-				const filterField = filterFields[i];
-				const filterValue = filterField.value;
-				if (filterValue != "") {
-					var fieldName = filterField.getAttribute("field"); 
-					const checkBoxExact = _byId("checkbox-exact-"+fieldName);
-					
+				let filterField = filterFields[i];
+				if (filterField.value != "") {
+					let fieldName = filterField.getAttribute("field");
+					let filterValue = filterField.value;
+					let checkBoxExact = _byId("checkbox-exact-"+fieldName);
+					console.log("EXACT",checkBoxExact != null && checkBoxExact.checked);
+					console.log("CHECKBOX",checkBoxExact);
 					if(checkBoxExact != null && checkBoxExact.checked){
 						fieldName = fieldName+"[EXACTS]";
 					}
@@ -293,124 +281,94 @@
 
 		//CONTENT
 		for (let i = 0; i < entities.length; i++) {
-			const entity = entities[i];
-			populateRow(entityTBody, entity, i);
-		}
-	}
-	
-	function populateRow(entityTBody, entity, index){
-		const row = document.createElement("tr");
-		row.setAttribute("valign", "top");
-		row.setAttribute("class", "entity-record");
-		
-		const number = index * 1 + 1 + page * limit;
-		row.append(createCell(number));
-		
-		for (let j = 0; j < fieldNames.length; j++) {
-			const rawValue = entity[fieldNames[j]];
-			const fieldName = fieldNames[j];
-			const finalValue = getEntityFinalValue(rawValue, fieldName);
-			
-			row.append(createCell(finalValue));
-		}
-		const optionCell = createCell("");
-		const btnOptionGroup = getButtonOptionGroup(entity, index);		
-		
-		optionCell.append(btnOptionGroup);
-		row.append(optionCell);
-		entityTBody.append(row);
-	}
-	
-	function getButtonOptionGroup(entity, index){
-		//button edit
-		const buttonEdit = createButton("btn-edit-" + index, editable?"Edit":"Detail");
-		buttonEdit.className = "btn btn-warning";
-		const _idField = this.idField;
-		buttonEdit.onclick = function() {
-			alert("will Edit: " + entity[_idField]);
-			getById(entity[_idField], function(entity) {
-				populateForm(entity);
-			});
-		}
-		/* row.onclick = function() {
-			alert("will Edit: " + entity[idField]);
-			getById(entity[idField], function(entity) {
-				populateForm(entity);
-			});
-		} */
-		const btnOptionGroup = createDiv("btn-group-option-"+ index,"btn-group btn-group-sm");
-		btnOptionGroup.append(buttonEdit);
-		
-		//button delete
-		if(editable){
-			const buttonDelete = createButton("delete_" + index, "Delete");
-			buttonDelete.className = "btn btn-danger";
-			buttonDelete.onclick = function() {
-				if (!confirm("will Delete: " + entity[_idField])) {
-					return;
+			let entity = entities[i];
+			let row = document.createElement("tr");
+			row.setAttribute("valign", "top");
+			row.setAttribute("class", "entity-record");
+			number = i * 1 + 1 + page * limit;
+			row.append(createCell(number));
+			for (let j = 0; j < fieldNames.length; j++) {
+				let entityValue = entity[fieldNames[j]];
+				//handle object type value
+				if (typeof (entityValue) == "object" && entityValue != null) {
+					console.log("TYPE ", typeof (entityValue), fieldNames[j]);
+					let objectFieldName = managedEntity["itemField_" + fieldNames[j]];
+					entityValue = entityValue[objectFieldName];
 				}
-				deleteEntity(entity[_idField]);
+				
+				//handle date type value
+				else if (isDate(fieldNames[j])) {
+					entityValue = new Date(entityValue);
+				}
+				//handle if currency value
+				//else if (isCurrency(fieldNames[j])) {
+				else if(typeof (entityValue) == "number" && entityValue != null){
+					entityValue = "<span style=\"font-family:consolas\">"+ beautifyNominal(entityValue) +"</span>";
+				}
+				//handle image type value
+				else if (isImage(fieldNames[j])) {
+					if (entityValue.split("~") != null) {
+						entityValue = entityValue.split("~")[0];
+					}
+					entityValue = "<img width=\"30\" height=\"30\" src=\"${host}/${contextPath}/${imagePath}/"
+							+ (entityValue) + "\" />";
+				}
+				//regular value
+				else if (  entityValue != null) {
+					
+					let isUrl = typeof (entityValue) == "string" && (entityValue.trim().startsWith("http://") || entityValue.trim().startsWith("https://"));
+					let isColor =  typeof (entityValue) == "string" && entityValue.startsWith("#") && entityValue.trim().length == 7;
+					
+					//limit string characters count 
+					if ( typeof (entityValue) == "string" && entityValue.length > 35 && !isUrl) {
+						entityValue = entityValue.substring(0, 35) + "...";
+					}
+					if(isUrl){
+						entityValue  ="<a href=\""+entityValue+"\">"+entityValue+"</a>";
+					}else if(isColor){
+						entityValue = "<span style=\"color:"+entityValue+"; font-size: 1.3em \"><b>"+entityValue+"</b></span>";
+					}
+				}
+				row.append(createCell(entityValue));
 			}
-			btnOptionGroup.append(buttonDelete);
-		}
-		return btnOptionGroup;
-		
-	}
-	
-	function getEntityFinalValue(entityValue, fieldName){
-		//handle object type value
-		const isObject = typeof (entityValue) == "object" && entityValue != null;
-		
-		if (isObject) {
-			console.log("TYPE ", typeof (entityValue), fieldName);
-			const objectFieldName = managedEntity["itemField_" + fieldName];
-			entityValue = entityValue[objectFieldName];
-		}
-		
-		//handle date type value
-		else if (isDate(fieldName)) {
-			entityValue = new Date(entityValue);
-		}
-		//handle if currency value
-		//else if (isCurrency(fieldName)) {
-		else if(typeof (entityValue) == "number" && entityValue != null){
-			var dom = createHtmlTag("span",{
-				 style:"font-family:consolas",
-				 innerHTML:beautifyNominal(entityValue)
-			});
-			entityValue = domToString(dom);//"<span style=\"font-family:consolas\">"+ beautifyNominal(entityValue) +"</span>";
-		}
-		//handle image type value
-		else if (isImage(fieldName)) {
-			if (entityValue.split("~") != null) {
-				entityValue = entityValue.split("~")[0];
-			}
-			var dom = createHtmlTag("img",{
-				 width:30,
-				 height:30,
-				 src:"${host}${contextPath}/${imagePath}/" + (entityValue)
-			});
-			entityValue = domToString(dom);
-				//"<img width=\"30\" height=\"30\" src=\"${host}/${contextPath}/${imagePath}/" + (entityValue) + "\" />";
-		}
-		//regular value
-		else if (  entityValue != null) {
+			let optionCell = createCell("");
 			
-			let isUrl = typeof (entityValue) == "string" && (entityValue.trim().startsWith("http://") || entityValue.trim().startsWith("https://"));
-			let isColor =  typeof (entityValue) == "string" && entityValue.startsWith("#") && entityValue.trim().length == 7;
+			//button edit
+			let buttonEdit = createButton("btn-edit-" + i, editable?"Edit":"Detail");
+			buttonEdit.className = "btn btn-warning"
+			buttonEdit.onclick = function() {
+				alert("will Edit: " + entity[idField]);
+				getById(entity[idField], function(entity) {
+					populateForm(entity);
+				});
+			}
+			/* row.onclick = function() {
+				alert("will Edit: " + entity[idField]);
+				getById(entity[idField], function(entity) {
+					populateForm(entity);
+				});
+			} */
+			let btnOptionGroup = createDiv("btn-group-option-"+ i,"btn-group btn-group-sm");
+			btnOptionGroup.append(buttonEdit);
 			
-			//limit string characters count 
-			if ( typeof (entityValue) == "string" && entityValue.length > 35 && !isUrl) {
-				entityValue = entityValue.substring(0, 35) + "...";
+			//button delete
+			if(editable){
+				let buttonDelete = createButton("delete_" + i, "Delete");
+				buttonDelete.className = "btn btn-danger";
+				buttonDelete.onclick = function() {
+					if (!confirm("will Delete: " + entity[idField])) {
+						return;
+					}
+					deleteEntity(entity[idField]);
+				}
+				btnOptionGroup.append(buttonDelete);
 			}
-			if(isUrl){
-				entityValue  ="<a href=\""+entityValue+"\">"+entityValue+"</a>";
-			}else if(isColor){
-				entityValue = "<span style=\"color:"+entityValue+"; font-size: 1.3em \"><b>"+entityValue+"</b></span>";
-			}
+			
+			
+			optionCell.append(btnOptionGroup);
+			row.append(optionCell);
+			entityTBody.append(row);
 		}
-		
-		return entityValue;
 	}
 
 	function createTableHeader() {
@@ -488,91 +446,87 @@
 	function populateForm(entity) {
 		clear();
 		for (let j = 0; j < fieldNames.length; j++) {
-			const fieldName = fieldNames[j];
-			setFieldOfEntity(entity, fieldName);
+			let entityValue = entity[fieldNames[j]];
+			let entityValueAsObject = entityValue;
+			//element
+			let elementField = _byId(fieldNames[j]);
+
+			let enableDetail = elementField.getAttribute("showdetail") == "true";
+			let isMultipleSelect = elementField.nodeName == "SELECT"
+				&& elementField.getAttribute("multiple") == "multiple"
+			let isImageField = isImage(fieldNames[j]);
+			let isDateField = isDate(fieldNames[j]);
+
+			//handle object type value
+			if (typeof (entityValue) == "object" && entityValue != null) {
+
+
+				let objectValueName = managedEntity["valueField_" + fieldNames[j]]
+				entityValue = entityValueAsObject[objectValueName];
+				//handle multiple select
+				if (isMultipleSelect) {
+					let option = document.createElement("option");
+					//foreign key field name
+					objectValueName = elementField
+							.getAttribute("itemvaluefield");
+					option.value = entityValueAsObject[objectValueName];
+					//converter field name
+					let objectItemName = elementField
+							.getAttribute("itemnamefield");
+					option.innerHTML = entityValueAsObject[objectItemName];
+					option.selected = true;
+					elementField.append(option);
+					//set input value same as converter field name
+					let inputField = _byId("input-"
+							+ fieldNames[j]);
+					inputField.value = entityValueAsObject[objectItemName];
+				}
+				//handle regular select
+				else{
+					elementField.value = entityValue;
+				}
+			} 
+			//handle image type value
+			else if (isImageField) {
+				let displayElement = _byId(fieldNames[j]
+						+ "-display");
+				let url = "${host}/${contextPath}/${imagePath}/";
+				if (displayElement == null && entityValue != null) {
+					_byId(fieldNames[j]).innerHTML = "";
+					let entityValues = entityValue.split("~");
+					console.log(fieldNames[j], "values", entityValues);
+					for (let i = 0; i < entityValues.length; i++) {
+						let array_element = entityValues[i];
+						doAddImageList(fieldNames[j], url + array_element,
+								array_element);
+					}
+				} else {
+					let resourceUrl = url + entityValue;
+					displayElement.src = resourceUrl;
+					displayElement.setAttribute("originaldata", resourceUrl);
+					displayElement.setAttribute("originalvalue", entityValue);
+				}
+			}
+			//handle regular value
+			else if (!isMultipleSelect) {
+				//datefield
+				if (isDateField) {
+					let date = new Date(entityValue);
+					entityValue = toDateInput(date);
+				} 
+				//has detail values
+				else if (enableDetail) {
+					entityValue = entity[elementField.getAttribute("name")];
+					elementField.setAttribute(
+							elementField.getAttribute("name"), entityValue);
+				}
+				elementField.value = entityValue;
+
+			}
 
 		}
 		//show("modal-entity-form");
 		$('#modal-entity-form').modal('show');
-	}
-	
-	function setFieldOfEntity(entity, fieldName){
-		let entityValue = entity[fieldName];
-		let entityValueAsObject = entityValue;
-		//element
-		const elementField = _byId(fieldName);
-
-		const enableDetail = elementField.getAttribute("showdetail") == "true";
-		const isMultipleSelect = elementField.nodeName == "SELECT"
-			&& elementField.getAttribute("multiple") == "multiple";
-		const isImageField = isImage(fieldName);
-		const isDateField = isDate(fieldName);
-		const isObject = typeof (entityValue) == "object";
-
-		//handle object type value
-		if (isObject && entityValue != null) { 
-
-			let objectValueName = managedEntity["valueField_" + fieldName]
-			entityValue = entityValueAsObject[objectValueName];
-			//handle multiple select
-			if (isMultipleSelect) {
-				const option = document.createElement("option");
-				//foreign key field name
-				objectValueName = elementField
-						.getAttribute("itemvaluefield");
-				option.value = entityValueAsObject[objectValueName];
-				//converter field name
-				const objectItemName = elementField
-						.getAttribute("itemnamefield");
-				option.innerHTML = entityValueAsObject[objectItemName];
-				option.selected = true;
-				elementField.append(option);
-				//set input value same as converter field name
-				const inputField = _byId("input-"+ fieldName);
-				inputField.value = entityValueAsObject[objectItemName];
-			}
-			//handle regular select
-			else{
-				elementField.value = entityValue;
-			}
-		} 
-		//handle image type value
-		else if (isImageField) {
-			const displayElement = _byId(fieldName
-					+ "-display");
-			const url = "${host}/${contextPath}/${imagePath}/";
-			if (displayElement == null && entityValue != null) {
-				_byId(fieldName).innerHTML = "";
-				const entityValues = entityValue.split("~");
-				console.log(fieldName, "values", entityValues);
-				for (let i = 0; i < entityValues.length; i++) {
-					const array_element = entityValues[i];
-					doAddImageList(fieldName, url + array_element,
-							array_element);
-				}
-			} else {
-				const resourceUrl = url + entityValue;
-				displayElement.src = resourceUrl;
-				displayElement.setAttribute("originaldata", resourceUrl);
-				displayElement.setAttribute("originalvalue", entityValue);
-			}
-		}
-		//handle regular value
-		else if (!isMultipleSelect) {
-			//datefield
-			if (isDateField) {
-				const date = new Date(entityValue);
-				entityValue = toDateInput(date);
-			} 
-			//has detail values
-			else if (enableDetail) {
-				entityValue = entity[elementField.getAttribute("name")];
-				elementField.setAttribute(
-						elementField.getAttribute("name"), entityValue);
-			}
-			elementField.value = entityValue;
-
-		}
 	}
 
 	function clear() {
@@ -598,9 +552,9 @@
 
 	//add image to image list
 	function doAddImageList(id, src, originalvalue) {
-		const listParent = _byId(id);//+"-input-list");
+		let listParent = _byId(id);//+"-input-list");
 		//current item list elements
-		const itemLists = document.getElementsByClassName(id + "-input-item");
+		let itemLists = document.getElementsByClassName(id + "-input-item");
 		let length = 0;
 		if (itemLists != null)
 			length = itemLists.length;
@@ -611,14 +565,14 @@
 		}
 		
 		//begin create new list item element
-		const elmentIdAndIndex = id + "-" + index;
+		let elmentIdAndIndex = id + "-" + index;
 		//create list item
-		const listItem = createDiv(elmentIdAndIndex + "-input-item", id + "-input-item");
+		let listItem = createDiv(elmentIdAndIndex + "-input-item", id + "-input-item");
 		
 		//create file input for choosing image
-		const input = createInput(elmentIdAndIndex, "input-file", "file");
+		let input = createInput(elmentIdAndIndex, "input-file", "file");
 		//create image tag for displaying image
-		const imgTag = createImgTag(elmentIdAndIndex + "-display", null, "50", "50", src);
+		let imgTag = createImgTag(elmentIdAndIndex + "-display", null, "50", "50", src);
 		if (src != null) {
 			//with full path
 			imgTag.setAttribute("originaldata", src);
@@ -626,20 +580,20 @@
 			imgTag.setAttribute("originalvalue", originalvalue);
 		}
 		//button SET selected image
-		const btnAddData = createButton(elmentIdAndIndex + "-file-ok-btn", "ok");
+		let btnAddData = createButton(elmentIdAndIndex + "-file-ok-btn", "ok");
 		btnAddData.className = "btn btn-primary btn-sm";
 		btnAddData.onclick = function() {
 			addImagesData(elmentIdAndIndex);
 		}
 		//button CANCEL selectedImage
-		const btnCancelData = createButton(elmentIdAndIndex + "-file-cancel-btn", "cancel");
+		let btnCancelData = createButton(elmentIdAndIndex + "-file-cancel-btn", "cancel");
 		btnCancelData.className = "btn btn-warning btn-sm";
 		btnCancelData.onclick = function() {
 			cancelImagesData(elmentIdAndIndex);
 		}
 
 		//button REMOVE list item
-		const btnRemoveListItem = createButton(elmentIdAndIndex + "-remove-list", "remove");
+		let btnRemoveListItem = createButton(elmentIdAndIndex + "-remove-list", "remove");
 		btnRemoveListItem.className = "btn btn-danger btn-sm";
 		btnRemoveListItem.onclick = function() {
 			removeImageList(elmentIdAndIndex);
@@ -653,7 +607,7 @@
 		listItem.append(btnRemoveListItem);
 		
 		//append image display
-		const wrapperDiv = createDiv(elmentIdAndIndex + "-wrapper-img", "wrapper");
+		let wrapperDiv = createDiv(elmentIdAndIndex + "-wrapper-img", "wrapper");
 		wrapperDiv.append(imgTag);
 		listItem.append(wrapperDiv);
 
@@ -780,8 +734,7 @@
 			var isNew = true;
 			for (var i = 0; i < fields.length; i++) {
 				var field = fields[i];
-				var fieldId = field.id;
-				
+				let fieldId = field.id;
 				console.log("FIELD ", field);
 				if (field.required
 						&& (field.value == "" || field.value == null)
@@ -794,21 +747,62 @@
 						&& field.value != "" && field.value != null) {
 					isNew = false;
 				}
-				
-				const finalValue = getFinalValueForSubmit(field);
-				entity[fieldId] = finalValue;
-				
+				if (field.nodeName == "SELECT") { //handle select element
+					let idField = field.getAttribute("itemValueField");
+					entity[fieldId] = {};
+					entity[fieldId][idField] = field.value;
+				} else if (isImage(fieldId)) { //handle image element
+					
+					//handle multiple images
+					if (field.getAttribute("name") == "input-list") {
+						let itemLists = document.getElementsByClassName(fieldId
+								+ "-input-item");
+						console.log(fieldId, "item list length",
+								itemLists.length);
+						if (itemLists == null || itemLists.length == 0) {
+							continue;
+						}
+						let length = itemLists.length;
+						entity[fieldId] = "";
+						for (var j = 0; j < length; j++) {
+							let elmentIdAndIndex = fieldId + "-" + j;
+							let imgTag = _byId(elmentIdAndIndex
+									+ "-display");
+							
+							//check original image
+							let originalValue = imgTag
+									.getAttribute("originalvalue");
+							if (originalValue != null) {
+								entity[fieldId] += "{ORIGINAL>>"
+										+ originalValue + "}";
+							}
+
+							//if current value has NOT been updated
+							if (imagesData[fieldId + "-" + j] == null
+									|| imagesData[fieldId + "-" + j].trim() == "") {
+								entity[fieldId] += "~";
+							} else {
+							//if current value has been UPDATED
+								entity[fieldId] += imagesData[elmentIdAndIndex] + "~";
+							}
+						}
+
+					} 
+					// single image
+					else { 
+						entity[fieldId] = imagesData[fieldId];
+					}
+				} else {//regular element
+					entity[fieldId] = field.value;
+				}
 			}
-			
-			requestObject[entityName] = entity;
-			requestObject['entityObject'] = entity;
-			requestObject.entity = entityName;
-			
-			console.log("request object", requestObject);
-			
 			if (!isNew) {
 				endPoint = "update";
 			}
+			requestObject[entityName] = entity;
+			requestObject['entityObject'] = entity;
+			requestObject.entity = entityName;
+			console.log("request object", requestObject);
 			doSubmit("<spring:url value="/api/entity/" />" + endPoint, requestObject, function(){
 				if(singleRecord){
 					 
@@ -817,79 +811,13 @@
 					loadEntity(this.page);
 					clear();
 				}
-			});
-		}
-		
-		function getFinalValueForSubmit(field){
-			var fieldId = field.id;
-			var finalValue = field.value;
-			
-			if (field.nodeName == "SELECT" && field.getAttribute("plainlist") == null) { //handle select element
-				const _idField = field.getAttribute("itemValueField");
-				finalValue = {};
-				finalValue[_idField] = field.value;
-			} else if (isImage(fieldId)) { //handle image element
-				
-				//handle multiple images
-				if (field.getAttribute("name") == "input-list") {
-					let itemLists = document.getElementsByClassName(fieldId
-							+ "-input-item");
-					console.log(fieldId, "item list length",
-							itemLists.length);
-					if (itemLists == null || itemLists.length == 0) {
-						return null;
-					}
-					let length = itemLists.length;
-					finalValue = "";
-					for (var j = 0; j < length; j++) {
-						let elmentIdAndIndex = fieldId + "-" + j;
-						let imgTag = _byId(elmentIdAndIndex
-								+ "-display");
-						
-						//check original image
-						let originalValue = imgTag
-								.getAttribute("originalvalue");
-						if (originalValue != null) {
-							finalValue += "{ORIGINAL>>"
-									+ originalValue + "}";
-						}
-
-						//if current value has NOT been updated
-						if (imagesData[fieldId + "-" + j] == null
-								|| imagesData[fieldId + "-" + j].trim() == "") {
-							finalValue += "~";
-						} else {
-						//if current value has been UPDATED
-							finalValue += imagesData[elmentIdAndIndex] + "~";
-						}
-					}
-
-				} 
-				// single image
-				else { 
-					finalValue = imagesData[fieldId];
-				}
-			} else {//regular element not changed
-				//finalValue = field.value;
-			}
-			
-			return finalValue;
-		}
+			})
+		};
 
 		function deleteEntity(entityId) {
 			doDeleteEntity("<spring:url value="/api/entity/delete" />", entityName, idField, entityId, function(){
 				loadEntity(page);
 			});
 		}
-			
-		function initEvents(){
-			_byId("btn-submit").onclick = function(e){
-				submit();
-			}	
-		 
-		}
-		
-		initEvents();
-		
 	</script>
 </c:if>

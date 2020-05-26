@@ -80,13 +80,13 @@ public class DateUtil {
 
 			{
 				for (int i = 1; i <=12; i++) {
-					add(new KeyValue(MONTH_NAMES[i - 1] + "("+i+")", i));
+					add(new KeyValue(MONTH_NAMES[i - 1] + "("+i+")", i, true));
 				}
 			}
 		};
 	}
 	
-	public static Map map(Object key, Object value) {
+	public static Map map(final Object key, final Object value) {
 		return new HashMap() {
 			{
 				put(key, value);
@@ -126,6 +126,44 @@ public class DateUtil {
 		}
 		date = year + "-" + StringUtil.addZeroBefore(month) + "-" + day;
 		return date;
+	}
+
+	/**
+	 * 
+	 * @param month starts at 0
+	 * @param year
+	 * @return
+	 */
+	public static int getMonthsDay(int month, int year) {
+		// TODO Auto-generated method stub
+		return getMonthsDay(year)[month ];
+	}
+ 
+	/**
+	 * 
+	 * @param dayIndex starts at 1
+	 * @param month starts at 0
+	 * @param year
+	 * @return
+	 */
+	public static Date[] getDaysInOneMonth(int dayIndex, int month, int year) {
+		
+		Date[] result = new Date[5]; 
+		int monthDay = DateUtil.getMonthsDay(month, year);
+		int arrayIndex = 0;
+		
+		for(int i = 1; i <= monthDay; i++) {
+			
+			Date currentDate = DateUtil.getDate(year, month, i);
+			int dayOfWeek = DateUtil.getCalendarItem(currentDate, Calendar.DAY_OF_WEEK);
+			
+			if(dayOfWeek == dayIndex && arrayIndex <= 5) {
+				result[arrayIndex] = currentDate;
+				arrayIndex++;
+			}
+		}
+		
+		return result ;
 	}
 
 }

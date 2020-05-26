@@ -14,6 +14,7 @@ import javax.persistence.Transient;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fajar.dto.FieldType;
 import com.fajar.dto.TransactionType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -38,11 +39,11 @@ public class Transaction extends BaseEntity implements Serializable {
 
 	@JoinColumn(name = "customer_id")
 	@ManyToOne
-	@FormField(entityReferenceName = "customer", optionItemName = "name", type = "dynamiclist")
+	@FormField(  optionItemName = "name", type = FieldType.FIELD_TYPE_DYNAMIC_LIST)
 	private Customer customer;
 	@JoinColumn(name = "supplier_id")
 	@ManyToOne
-	@FormField(entityReferenceName = "supplier", optionItemName = "name", type = "dynamiclist")
+	@FormField(  optionItemName = "name", type = FieldType.FIELD_TYPE_DYNAMIC_LIST)
 	private Supplier supplier;
 	@Column(unique = true)
 	@FormField
@@ -51,11 +52,11 @@ public class Transaction extends BaseEntity implements Serializable {
 	@FormField
 	private String type;
 	@Column(name = "transaction_date")
-	@FormField(type = "date")
+	@FormField(type = FieldType.FIELD_TYPE_DATE)
 	private Date transactionDate;
 	@JoinColumn(name = "user_id")
 	@ManyToOne
-	@FormField(entityReferenceName = "user", optionItemName = "username", type = "dynamiclist")
+	@FormField(  optionItemName = "username", type = FieldType.FIELD_TYPE_DYNAMIC_LIST)
 	private User user;
 	//@OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL/* , fetch = FetchType.LAZY */)
 	@Transient

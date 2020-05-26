@@ -8,6 +8,7 @@ import javax.persistence.Table;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
+import com.fajar.dto.FieldType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,7 @@ public class Category extends BaseEntity implements Serializable{/**
 	@FormField 
 	@Column(unique = true)
 	private String name;
-	@FormField ( type= FormField.FIELD_TYPE_TEXTAREA) 
+	@FormField ( type= FieldType.FIELD_TYPE_TEXTAREA) 
 	@Column
 	private String description;
 }

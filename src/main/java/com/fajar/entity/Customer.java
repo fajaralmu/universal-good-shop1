@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
-import com.fajar.entity.Menu.MenuBuilder;
+import com.fajar.dto.FieldType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,7 +35,7 @@ public class Customer extends BaseEntity implements Serializable {
 	@FormField
 	private String name;
 	@Column
-	@FormField(required = false, type = FormField.FIELD_TYPE_TEXTAREA)
+	@FormField(required = false, type = FieldType.FIELD_TYPE_TEXTAREA)
 	private String address;
 	@Column
 	@FormField

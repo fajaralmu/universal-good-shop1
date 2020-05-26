@@ -25,7 +25,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.util.StringUtils;
 
-import com.fajar.annotation.FormField;
+import com.fajar.dto.FieldType;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
@@ -190,7 +190,7 @@ public class ExcelReportUtil {
 			
 			if(null != value) {
 				
-				if( objectEquals(fieldType, FormField.FIELD_TYPE_DYNAMIC_LIST, FormField.FIELD_TYPE_FIXED_LIST)){
+				if( objectEquals(fieldType, FieldType.FIELD_TYPE_DYNAMIC_LIST, FieldType.FIELD_TYPE_FIXED_LIST)){
 					
 					String optionItemName = element.getOptionItemName();
 					
@@ -204,17 +204,17 @@ public class ExcelReportUtil {
 						value = value.toString(); 
 					}
 					
-				}else if(objectEquals(fieldType, FormField.FIELD_TYPE_IMAGE)) {
+				}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_IMAGE)) {
 				
 					value = value.toString().split("~")[0];
 //					values[seqNum] = ComponentBuilder.imageLabel(UrlConstants.URL_IMAGE+value, 100, 100);
 //					continue elementLoop;
 					
-				}else if(objectEquals(fieldType, FormField.FIELD_TYPE_DATE)) {
+				}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_DATE)) {
 					
 					value = DateUtil.formatDate((Date)value, DATE_PATTERN);
 					
-				}else if(objectEquals(fieldType, FormField.FIELD_TYPE_NUMBER)) {
+				}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_NUMBER)) {
 					
 					value = Double.parseDouble(value.toString()); 
 				}   
