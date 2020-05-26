@@ -16,7 +16,7 @@ import com.fajar.querybuilder.QueryHolder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
+//@Service
 public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 
 	@PersistenceContext
