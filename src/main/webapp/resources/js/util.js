@@ -150,6 +150,21 @@ function createGridWrapper(cols, width){
 	}
 	return div;
 }
+function createHtmlTag(tagName, object){
+	var tag = document.createElement(tagName);
+	
+	for(let key in object){
+		if(key == "innerHTML" || key == "child"){
+			continue;
+		}
+		tag.setAttribute(key, object[key]);
+	}
+	if(object["innerHTML"])
+		tag.innerHTML = object["innerHTML"];
+	if(object["child"])
+		tag.appendChild(object["child"]);
+	return tag;
+}
 
 /** BEGIN ENTITY DETAIL* */
 function createTableHeaderByColumns(columns, ignoreNumber){

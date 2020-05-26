@@ -36,6 +36,10 @@
 	.active{
 		font-weight: bold;
 	}
+	.centered-align{
+		text-align: center;
+		width: 100%;
+	}
 </style>
 </head>
 <body>
