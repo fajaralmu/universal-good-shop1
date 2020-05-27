@@ -20,13 +20,11 @@ import com.fajar.dto.Filter;
 import com.fajar.dto.ReportCategory;
 import com.fajar.dto.WebRequest;
 import com.fajar.dto.WebResponse;
-import com.fajar.dto.TransactionType;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.CapitalFlow;
 import com.fajar.entity.CashBalance;
 import com.fajar.entity.CostFlow;
 import com.fajar.entity.ProductFlow;
-import com.fajar.entity.Transaction;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.repository.CapitalFlowRepository;
 import com.fajar.repository.CostFlowRepository;
@@ -34,6 +32,7 @@ import com.fajar.repository.ProductFlowRepository;
 import com.fajar.service.CashBalanceService;
 import com.fajar.service.EntityService;
 import com.fajar.service.LogProxyFactory;
+import com.fajar.service.entity.FinancialEntity;
 import com.fajar.util.DateUtil;
 import com.fajar.util.EntityUtil;
 
@@ -55,6 +54,8 @@ public class PrintedReportService {
 	private ExcelReportBuilder excelReportBuilder;
 	@Autowired
 	private EntityService entityService;
+	@Autowired
+	private EntityReportBuilder entityReportBuilder;
 	
 	private long debitAmount = 0;
 	private long count = 0;
@@ -62,7 +63,7 @@ public class PrintedReportService {
 	/**
 	 * daily report
 	 */
-	private final Map<Integer, List<BaseEntity>> dailyTransactions = new HashMap<>();
+	private final Map<Integer, List<FinancialEntity>> dailyTransactions = new HashMap<>();
 	private final Map<ReportCategory, DailyReportRow> dailyReportSummary = new HashMap<>();
 	private final List<DailyReportRow > dailyReportRows = new LinkedList<>();
 	private DailyReportRow dailyReportRowTotal = new DailyReportRow();
@@ -166,11 +167,11 @@ public class PrintedReportService {
 		
 		for (int i = 1; i <= dayCount; i++) {
 			
-			List<BaseEntity> transactionItems = getDailyTransactions(i);
+			List<FinancialEntity> transactionItems = getDailyTransactions(i);
 			if(null == transactionItems) {
 				continue;
 			}
-			for (BaseEntity baseEntity : transactionItems) {
+			for (FinancialEntity baseEntity : transactionItems) {
 				DailyReportRow dailyReportRow = mapDailyReportRow(i, month, baseEntity);
 				addDailyReportRow(dailyReportRow);
 				updateSummary(dailyReportRow);
@@ -199,9 +200,9 @@ public class PrintedReportService {
 	 * @param day
 	 * @return
 	 */
-	private List<BaseEntity> getDailyTransactions(int day) { 
+	private List<FinancialEntity> getDailyTransactions(int day) { 
 		 
-		List<BaseEntity> rawTransactions = dailyTransactions.get(day); 
+		List<FinancialEntity> rawTransactions = dailyTransactions.get(day); 
 		return rawTransactions;
 	}
 	
@@ -249,46 +250,23 @@ public class PrintedReportService {
 	 * @param baseEntity
 	 * @return
 	 */
-	private static DailyReportRow mapDailyReportRow(int day, int month, BaseEntity baseEntity) { 
+	private static DailyReportRow mapDailyReportRow(int day, int month, FinancialEntity baseEntity) { 
 		
 		DailyReportRow dailyReportRow = new DailyReportRow();
 		dailyReportRow.setDay(day);
 		dailyReportRow.setMonth(month);
 		
-		long creditAmount = 0l;
-		long debitAmount = 0l;
-		String name = "N/A";
-		ReportCategory reportCategory = ReportCategory.CAPITAL;
+		BalanceJournalInfo journalInfo = baseEntity.getBalanceJournalInfo();
 		
-		if(baseEntity instanceof CapitalFlow) {
-			final CapitalFlow capitalFlow = (CapitalFlow) baseEntity;
-			debitAmount = capitalFlow.getNominal();
-			reportCategory = ReportCategory.CAPITAL;
-			name = "Dana "+capitalFlow.getCapitalType().getName();
-			
-		}else if(baseEntity instanceof ProductFlow) {
-			final ProductFlow productFlow = (ProductFlow) baseEntity;
-			final Transaction transaction = productFlow.getTransaction();
-			reportCategory = ReportCategory.SHOP_ITEM;
-			
-			if(transaction.getType().equals(TransactionType.IN)) {
-				creditAmount = productFlow.getCount() * productFlow.getPrice();
-			}else if(transaction.getType().equals(TransactionType.OUT)) {
-				debitAmount = productFlow.getCount() * productFlow. getPrice();
-			}
-			name  = "SELLING/PURCHASING";
-			
-		}else if(baseEntity instanceof CostFlow) { 
-			final CostFlow costFlow = (CostFlow) baseEntity;
-			creditAmount = costFlow.getNominal();
-			name  = costFlow.getDescription();
-			reportCategory = ReportCategory.OPERATIONAL_COST;
-		} 
+		long creditAmount =  journalInfo.getCreditAmount();
+		long debitAmount = journalInfo.getDebitAmount();
+		String transactioName = journalInfo.getTransactionName(); 
+		ReportCategory reportCategory = journalInfo.getReportCategory();
 		
-		dailyReportRow.setCategory(reportCategory);
+		dailyReportRow.setCategory(reportCategory );
 		dailyReportRow.setCreditAmount(creditAmount);
 		dailyReportRow.setDebitAmount(debitAmount);
-		dailyReportRow.setName(name); 
+		dailyReportRow.setName(transactioName); 
 		return dailyReportRow ;
 	}
 	
@@ -335,7 +313,7 @@ public class PrintedReportService {
 	 * @param day
 	 * @param baseEntity
 	 */
-	private void putTransaction(int day, BaseEntity baseEntity) {
+	private void putTransaction(int day, FinancialEntity baseEntity) {
 		if(dailyTransactions.get(day) == null) {
 			dailyTransactions.put(day, new ArrayList<>());
 		}
@@ -348,7 +326,7 @@ public class PrintedReportService {
 	 * @param year
 	 * @return
 	 */
-	private List<BaseEntity> getTransactionsData(int month, int year) {
+	private List<FinancialEntity> getTransactionsData(int month, int year) {
 		
 		log.info("getTransactions, month: {}, year: {}", month, year);
 		dailyTransactions.clear();
@@ -357,7 +335,7 @@ public class PrintedReportService {
 		List<CapitalFlow> capitalFlows = capitalFlowRepository.findByPeriod(month, year);
 		List<CostFlow> costFlows = costFlowRepository.findByPeriod(month, year); 
 		
-		final List<BaseEntity> results = new ArrayList<BaseEntity>() { 
+		final List<FinancialEntity> results = new ArrayList<FinancialEntity>() { 
 			private static final long serialVersionUID = -9006495340734852418L;
 
 			{
@@ -369,8 +347,9 @@ public class PrintedReportService {
 		
 		log.info("results count: {}", results.size());
 		
-		for (BaseEntity baseEntity : results) {  
+		for (FinancialEntity baseEntity : results) {  
 			//don't access the credit & debt value
+			log.info("Access {}", baseEntity.getClass());
 			Date transactionDate = CashBalanceService.mapCashBalance(baseEntity).getDate(); 
 			int day = DateUtil.getCalendarItem(transactionDate, Calendar.DAY_OF_MONTH);  
 			putTransaction(day, baseEntity);
@@ -437,7 +416,7 @@ public class PrintedReportService {
 		log.info("entities count: {}", entities.size());
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(entityClass, null);
 		
-		File result = excelReportBuilder.getEntityReport(entities, entityProperty);
+		File result = entityReportBuilder.getEntityReport(entities, entityProperty);
 		return result;
 	}
 

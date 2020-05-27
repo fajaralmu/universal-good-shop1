@@ -13,6 +13,8 @@ import com.fajar.entity.CostFlow;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Transaction;
 import com.fajar.repository.CashBalanceRepository;
+import com.fajar.service.entity.FinancialEntity;
+import com.fajar.service.report.BalanceJournalInfo;
 import com.fajar.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,28 +24,12 @@ public class CashBalanceService {
 	@Autowired
 	private CashBalanceRepository cashBalanceRepository; 
 	
-	public CashBalance getBalanceByTransactionItem(BaseEntity baseEntity) {
-		
-		log.info("getBalanceByTransactionItem: {} {}", baseEntity.getId(), baseEntity.getClass());
-		
-		String reffInfo = "CAPITAL";
-		if(baseEntity instanceof ProductFlow) {
-			
-			ProductFlow productFlow = (ProductFlow) baseEntity;
-			Transaction transaction = productFlow.getTransaction(); 
-			
-			reffInfo = "TRAN_"+transaction.getType();
-			
-		}else if(baseEntity instanceof CostFlow) {
-			 
-			reffInfo = "COST";
-			
-		}else if(baseEntity instanceof CapitalFlow) { 
-			
-			reffInfo = "CAPITAL";
-		}
-		CashBalance balance = cashBalanceRepository.getByReferenceInfoAndReferenceId(reffInfo, 
-				String.valueOf(baseEntity.getId()));
+	public CashBalance getBalanceByTransactionItem(FinancialEntity baseEntity) {
+		BalanceJournalInfo journalInfo = baseEntity.getBalanceJournalInfo();
+		log.info("getBalanceByTransactionItem: {} {}", journalInfo.getId(), baseEntity.getClass());
+	 
+		CashBalance balance = cashBalanceRepository.getByReferenceInfoAndReferenceId(journalInfo.getReferenceInfo(), 
+				String.valueOf(journalInfo.getId()));
 		
 		log.info("existing balance:{}", balance);
 		
@@ -77,52 +63,17 @@ public class CashBalanceService {
 	 * @param baseEntity
 	 * @return
 	 */
-	public static CashBalance mapCashBalance(BaseEntity baseEntity) {
-		long creditAmount = 0l;
-		long debitAmount = 0l;
-		String info = "";
-		Date date = new Date();
+	public static CashBalance mapCashBalance(FinancialEntity baseEntity) {
 		
-		if(baseEntity instanceof ProductFlow) {
-			
-			ProductFlow productFlow = (ProductFlow) baseEntity;
-			Transaction transaction = productFlow.getTransaction(); 
-			
-			if(transaction.getType().equals(TransactionType.IN)) {
-				//purchase from supplier
-				creditAmount = productFlow.getCount() * productFlow.getPrice();
-			}else {
-				//selling
-				debitAmount = productFlow.getCount() * productFlow.getProduct().getPrice();
-			}
-			
-			info = "TRAN_"+transaction.getType();
-			date = productFlow.getTransaction().getTransactionDate();
-			
-		}else if(baseEntity instanceof CostFlow) {
-			
-			CostFlow costFlow = (CostFlow) baseEntity;
-			creditAmount = costFlow.getNominal();
-			
-			info = "COST_"+costFlow.getCostType().getName();
-			date = costFlow.getDate();
-			
-		}else if(baseEntity instanceof CapitalFlow) {
-			
-			CapitalFlow capitalFlow = (CapitalFlow) baseEntity;
-			debitAmount = capitalFlow.getNominal();
-			
-			info = "CAPITAL_"+capitalFlow.getCapitalType().getName();
-			date = capitalFlow.getDate();
-		}
-		return CashBalance.builder().date(date).creditAmt(creditAmount).debitAmt(debitAmount).referenceInfo(info).build();
+		BalanceJournalInfo journalInfo = baseEntity.getBalanceJournalInfo();
+		return journalInfo.getBalanceObject();
 	}
 	
 	/**
 	 * update balance
 	 * @param baseEntity
 	 */
-	public synchronized void updateCashBalance(BaseEntity baseEntity) {
+	public synchronized void updateCashBalance(FinancialEntity baseEntity) {
 		
 		if(baseEntity == null || baseEntity.getId() == null) {
 			return;

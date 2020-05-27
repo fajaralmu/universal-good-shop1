@@ -13,6 +13,9 @@ import javax.persistence.Table;
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
 import com.fajar.dto.FieldType;
+import com.fajar.service.entity.FinancialEntity;
+import com.fajar.service.report.BalanceJournalInfo;
+import com.fajar.service.report.CapitalFlowJournalInfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CapitalFlow extends BaseEntity implements Remote, Serializable{
+public class CapitalFlow extends BaseEntity implements FinancialEntity{
 
 	 
 	/**
@@ -47,6 +50,30 @@ public class CapitalFlow extends BaseEntity implements Remote, Serializable{
 	@ManyToOne
 	@FormField( type=FieldType.FIELD_TYPE_FIXED_LIST,optionItemName="name")
 	private Capital capitalType;
+
+	@Override
+	public Date getTransactionDate() {
+		 
+		return date;
+	}
+
+	@Override
+	public String getTransactionName() {
+		 
+		return "Dana " + getCapitalType().getName();
+	}
+
+	@Override
+	public long getTransactionNominal() {
+		 
+		return nominal;
+	}
+
+	@Override
+	public BalanceJournalInfo getBalanceJournalInfo() {
+		 
+		return new CapitalFlowJournalInfo(this);
+	}
 	 
 	 
 }

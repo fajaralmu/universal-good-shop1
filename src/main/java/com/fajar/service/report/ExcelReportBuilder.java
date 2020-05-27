@@ -6,9 +6,7 @@ import static com.fajar.util.ExcelReportUtil.createRow;
 import static com.fajar.util.ExcelReportUtil.removeBorder;
 import static com.fajar.util.ExcelReportUtil.setBorderTop;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,12 +26,10 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.dto.Filter;
 import com.fajar.dto.ReportCategory;
-import com.fajar.entity.BaseEntity;
 import com.fajar.entity.CashBalance;
-import com.fajar.entity.setting.EntityProperty;
 import com.fajar.service.WebConfigService;
 import com.fajar.util.DateUtil;
-import com.fajar.util.ExcelReportUtil;
+import com.fajar.util.MyFileUtil;
 import com.fajar.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -78,7 +74,7 @@ public class ExcelReportBuilder {
 		
 		writeDailyReport(xsheet, reportRequest);
 		
-		File file = getFile(xwb, reportName);
+		File file = MyFileUtil.getFile(xwb, reportName);
 		return file;
 	}
 	
@@ -243,7 +239,7 @@ public class ExcelReportBuilder {
 		
 		writeMonthlyReport(xsheet, reportRequest, reportName);
 		
-		File file = getFile(xwb, reportName);
+		File file = MyFileUtil.getFile(xwb, reportName);
 		return file;
 	}
 	
@@ -413,54 +409,8 @@ public class ExcelReportBuilder {
 		return total;
 	}
 	
-	/**
-	 * get file from XSSFWorkbook
-	 * @param xssfWorkbook
-	 * @param fileName
-	 * @return
-	 */
-	public static File getFile(XSSFWorkbook xssfWorkbook, String fileName) {
-		/**
-		 * Write file to disk
-		 */
-		File f = new File(fileName);
-		try {
-			xssfWorkbook.write(new FileOutputStream(f));
-			if (f.canRead()) {
-				log.info("DONE Writing Report: "+f.getAbsolutePath());
-//				return f.getName();
-			}
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			try {
-				xssfWorkbook.write(bos);
-			} finally {
-			    bos.close();
-			}
-			byte[] bytes = bos.toByteArray();
-			return f;
-		} catch ( Exception e) { 
-			e.printStackTrace();
-			return null;
-		} 
-	}
-
-
-	public File getEntityReport(List<BaseEntity> entities, EntityProperty entityProperty) { 
-		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hhmmss-a");
-		String sheetName = entityProperty.getEntityName();
-		
-		String reportName = reportPath + "/" + sheetName + "_"+ time+ ".xlsx";
-		XSSFWorkbook xwb  = new XSSFWorkbook();
-		XSSFSheet xsheet = xwb.createSheet(sheetName ); 
-		
-		Object[] entityValues = ExcelReportUtil.getEntitiesTableValues(entities, entityProperty);
-		ExcelReportUtil.createTable(xsheet, entityProperty.getElements().size() + 1, 2, 2, entityValues);
-		
-		File file = getFile(xwb, reportName);
-		return file;
-	}
-	 
 	
+ 
 	
 
 }

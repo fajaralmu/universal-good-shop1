@@ -1,5 +1,7 @@
 package com.fajar.service.report;
 
+import org.apache.poi.xssf.usermodel.XSSFCell;
+
 public class NumericCell extends CustomCell{
 
 	/**
@@ -17,5 +19,13 @@ public class NumericCell extends CustomCell{
 	public NumericCell(double value) {
 		super();
 		this.value = value;
+	}
+	@Override
+	public void setValue(XSSFCell cell) {
+		try {
+			cell.setCellValue(Double.parseDouble(value.toString()));
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

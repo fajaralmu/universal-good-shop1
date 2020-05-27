@@ -25,7 +25,7 @@ public class CapitalFlowUpdateService extends BaseEntityUpdateService{
 //			return WebResponse.failed("Unable to update!");
 //		}
 		 
-		BaseEntity newEntity = entityRepository.save(capital); 
+		CapitalFlow newEntity = entityRepository.save(capital); 
 		cashBalanceService.updateCashBalance(newEntity);
 		
 		return WebResponse.builder().entity(newEntity).build();

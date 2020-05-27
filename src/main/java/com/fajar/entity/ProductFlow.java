@@ -13,11 +13,15 @@ import javax.persistence.Transient;
 import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
 import com.fajar.dto.FieldType;
+import com.fajar.service.entity.FinancialEntity;
+import com.fajar.service.report.BalanceJournalInfo;
+import com.fajar.service.report.ProductFlowJournalInfo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 @Dto
 @Entity
@@ -26,7 +30,8 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 //@NoArgsConstructor
-public class ProductFlow extends BaseEntity implements Serializable {
+@Slf4j
+public class ProductFlow extends BaseEntity implements FinancialEntity {
 
 	/**
 	* 
@@ -63,6 +68,32 @@ public class ProductFlow extends BaseEntity implements Serializable {
 
 	public ProductFlow() {
 		// System.out.println("---------------CALL THIS:"+this);
+	}
+
+	@Override
+	public Date getTransactionDate() {
+		if (transaction == null) {
+			log.error("Transaction for ID {} is NULL", getId());
+			return getCreatedDate();
+		}
+		return getTransaction().getTransactionDate();
+	}
+
+	@Override
+	public String getTransactionName() { 
+		return "SELLING/PURCHASING";
+	}
+
+	@Override
+	public long getTransactionNominal() {
+		 
+		return getPrice() * getCount();
+	}
+
+	@Override
+	public BalanceJournalInfo getBalanceJournalInfo() {
+		 
+		return new ProductFlowJournalInfo(this);
 	}
 
 }

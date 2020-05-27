@@ -2,10 +2,12 @@ package com.fajar.service.report;
 
 import java.io.Serializable;
 
+import org.apache.poi.xssf.usermodel.XSSFCell;
+
 import lombok.Data;
 
 @Data
-public class CustomCell implements Serializable{
+public abstract class CustomCell implements Serializable{
 	
 	/**
 	 * 
@@ -21,5 +23,7 @@ public class CustomCell implements Serializable{
 		
 		return value.toString();
 	}
+	
+	public abstract void setValue(XSSFCell cell);
 
 }

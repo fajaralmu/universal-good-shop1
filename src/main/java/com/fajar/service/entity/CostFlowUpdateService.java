@@ -24,7 +24,7 @@ public class CostFlowUpdateService extends BaseEntityUpdateService{
 //		if(newRecord) {
 //			return WebResponse.failed("Unable to update");
 //		}
-		BaseEntity newEntity = entityRepository.save(costFlow);
+		CostFlow newEntity = entityRepository.save(costFlow);
 		cashBalanceService.updateCashBalance(newEntity);
 		
 		return WebResponse.builder().entity(newEntity).build();
