@@ -23,6 +23,7 @@ import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Capital;
 import com.fajar.entity.CapitalFlow;
 import com.fajar.entity.CashBalance;
+import com.fajar.entity.Category;
 import com.fajar.entity.Cost;
 import com.fajar.entity.CostFlow;
 import com.fajar.entity.Customer;
@@ -144,7 +145,7 @@ public class EntityRepository {
 		 * commons
 		 */
 		toCommonUpdateService(Unit.class, Customer.class, RegisteredRequest.class, CustomerVoucher.class,
-				UserRole.class, Capital.class, Cost.class, Page.class, Supplier.class);
+				UserRole.class, Capital.class, Cost.class, Page.class, Supplier.class, Category.class);
 
 		/**
 		 * special

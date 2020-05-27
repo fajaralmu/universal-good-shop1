@@ -117,7 +117,9 @@ public class EntityService {
 		try {
 			
 			String entityName = request.getEntity().toLowerCase();
-			entityClass = getEntityManagementConfig(entityName).getEntityClass();
+			EntityManagementConfig config = getEntityManagementConfig(entityName);
+			log.info("entityName: {}, config: {}", entityName, config);
+			entityClass = config.getEntityClass();
 			
 			if(null == entityClass) {
 				throw new Exception("Invalid entity");
