@@ -65,8 +65,8 @@ public class CashBalanceService {
 		Object[] result = (Object[]) object;
 		
 		CashBalance cashBalance = new CashBalance();
-		cashBalance.setCreditAmount(Long.valueOf(result[0].toString()));
-		cashBalance.setDebitAmount(Long.valueOf(result[1].toString()));
+		cashBalance.setCreditAmt(Long.valueOf(result[0].toString()));
+		cashBalance.setDebitAmt(Long.valueOf(result[1].toString()));
 		cashBalance.setActualBalance(Long.valueOf(result[2].toString()));
 		
 		return cashBalance;
@@ -89,9 +89,11 @@ public class CashBalanceService {
 			Transaction transaction = productFlow.getTransaction(); 
 			
 			if(transaction.getType().equals(TransactionType.IN)) {
-				debitAmount = productFlow.getCount() * productFlow.getPrice();
+				//purchase from supplier
+				creditAmount = productFlow.getCount() * productFlow.getPrice();
 			}else {
-				creditAmount = productFlow.getCount() * productFlow.getProduct().getPrice();
+				//selling
+				debitAmount = productFlow.getCount() * productFlow.getProduct().getPrice();
 			}
 			
 			info = "TRAN_"+transaction.getType();
@@ -100,7 +102,7 @@ public class CashBalanceService {
 		}else if(baseEntity instanceof CostFlow) {
 			
 			CostFlow costFlow = (CostFlow) baseEntity;
-			debitAmount = costFlow.getNominal();
+			creditAmount = costFlow.getNominal();
 			
 			info = "COST_"+costFlow.getCostType().getName();
 			date = costFlow.getDate();
@@ -108,12 +110,12 @@ public class CashBalanceService {
 		}else if(baseEntity instanceof CapitalFlow) {
 			
 			CapitalFlow capitalFlow = (CapitalFlow) baseEntity;
-			creditAmount = capitalFlow.getNominal();
+			debitAmount = capitalFlow.getNominal();
 			
 			info = "CAPITAL_"+capitalFlow.getCapitalType().getName();
 			date = capitalFlow.getDate();
 		}
-		return CashBalance.builder().date(date).creditAmount(creditAmount).debitAmount(debitAmount).referenceInfo(info).build();
+		return CashBalance.builder().date(date).creditAmt(creditAmount).debitAmt(debitAmount).referenceInfo(info).build();
 	}
 	
 	/**
@@ -131,14 +133,14 @@ public class CashBalanceService {
 		CashBalance cashBalance = existingRecord == null ? new CashBalance() : existingRecord;
 		
 		final CashBalance mappedCashBalanceInfo = mapCashBalance(baseEntity);
-		final long creditAmount = mappedCashBalanceInfo.getCreditAmount();
-		final long debitAmount = mappedCashBalanceInfo.getDebitAmount();
+		final long creditAmount = mappedCashBalanceInfo.getCreditAmt();
+		final long debitAmount = mappedCashBalanceInfo.getDebitAmt();
 		final String info = mappedCashBalanceInfo.getReferenceInfo(); 
 		final Date date = mappedCashBalanceInfo.getDate();
 		
 //		cashBalance.setFormerBalance(formerBalance);
-		cashBalance.setDebitAmount(debitAmount);
-		cashBalance.setCreditAmount(creditAmount);
+		cashBalance.setDebitAmt(debitAmount);
+		cashBalance.setCreditAmt(creditAmount);
 //		cashBalance.setActualBalance(formerBalance + creditAmount - debitAmount);
 		cashBalance.setReferenceInfo(info);
 		cashBalance.setReferenceId(String.valueOf(baseEntity.getId()));

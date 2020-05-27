@@ -3,6 +3,7 @@ package com.fajar.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -31,9 +32,11 @@ public class CashBalance extends BaseEntity implements Serializable{/**
 	@FormField(type = FieldType.FIELD_TYPE_NUMBER)
 	private long formerBalance;
 	@FormField(type = FieldType.FIELD_TYPE_NUMBER)
-	private long creditAmount;
+	@Column(name="credit_temp")
+	private long creditAmt;
 	@FormField(type = FieldType.FIELD_TYPE_NUMBER)
-	private long debitAmount;
+	@Column(name="debit_temp")
+	private long debitAmt ;
 	@FormField(type = FieldType.FIELD_TYPE_NUMBER)
 	private long actualBalance;
 	@FormField

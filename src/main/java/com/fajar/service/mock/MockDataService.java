@@ -174,9 +174,9 @@ public class MockDataService {
 				 
 				
 				if(transaction.getType().equals(TransactionType.IN)) {
-					debitAmount = productFlow.getCount() * productFlow.getPrice();
-				}else {
 					creditAmount = productFlow.getCount() * productFlow.getPrice();
+				}else {
+					debitAmount = productFlow.getCount() * productFlow.getPrice();
 				}
 				
 				info = "TRAN_"+transaction.getType();
@@ -184,14 +184,14 @@ public class MockDataService {
 			}else if(baseEntity instanceof CostFlow) {
 				
 				CostFlow costFlow = (CostFlow) baseEntity;
-				debitAmount = costFlow.getNominal();
+				creditAmount = costFlow.getNominal();
 				
 				info = "COST_"+costFlow.getCostType().getName();
 				
 			}else if(baseEntity instanceof CapitalFlow) {
 				
 				CapitalFlow capitalFlow = (CapitalFlow) baseEntity;
-				creditAmount = capitalFlow.getNominal();
+				debitAmount = capitalFlow.getNominal();
 				
 				info = "CAPITAL_"+capitalFlow.getCapitalType().getName();
 			}
@@ -200,8 +200,8 @@ public class MockDataService {
 				formerBalance = 0l;
 			}
 			cashBalance.setFormerBalance(formerBalance);
-			cashBalance.setDebitAmount(debitAmount);
-			cashBalance.setCreditAmount(creditAmount);
+			cashBalance.setDebitAmt(debitAmount);
+			cashBalance.setCreditAmt(creditAmount);
 			cashBalance.setActualBalance(formerBalance + creditAmount - debitAmount);
 			cashBalance.setReferenceInfo(info);
 			
