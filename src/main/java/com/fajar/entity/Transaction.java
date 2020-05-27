@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -48,12 +50,16 @@ public class Transaction extends BaseEntity implements Serializable {
 	@Column(unique = true)
 	@FormField
 	private String code;
+	
 	@Column
+	@Enumerated(EnumType.STRING)
 	@FormField
-	private String type;
+	private TransactionType type;
+	
 	@Column(name = "transaction_date")
 	@FormField(type = FieldType.FIELD_TYPE_DATE)
 	private Date transactionDate;
+	
 	@JoinColumn(name = "user_id")
 	@ManyToOne
 	@FormField(  optionItemName = "username", type = FieldType.FIELD_TYPE_DYNAMIC_LIST)

@@ -197,9 +197,9 @@ public class TransactionService {
 			int totalCount = 0;
 			int used = 0;
 
-			Object resultUsedProduct = productFlowRepository.findFlowCount(TransactionType.OUT, product.getId());
+			Object resultUsedProduct = productFlowRepository.findFlowCount(TransactionType.OUT.toString(), product.getId());
 
-			Object resultTotalProduct = productFlowRepository.findFlowCount(TransactionType.IN, product.getId());
+			Object resultTotalProduct = productFlowRepository.findFlowCount(TransactionType.IN.toString(), product.getId());
 
 			int remainingCount = 0;
 			try {

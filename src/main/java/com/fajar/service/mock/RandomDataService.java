@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.dto.TransactionType;
 import com.fajar.entity.Customer;
 import com.fajar.entity.InventoryItem;
 import com.fajar.entity.Product;
@@ -115,7 +116,7 @@ public class RandomDataService {
 		transaction.setTransactionDate(cal.getTime());
 		transaction.setCreatedDate(cal.getTime());
 		transaction.setCode("90000000002");
-		transaction.setType("IN");
+		transaction.setType(TransactionType.IN);
 		
 		Supplier supplier = supplierRepository.findById(1L).get();
 		transaction.setSupplier(supplier );
@@ -188,7 +189,7 @@ public class RandomDataService {
 			System.out.println("#..TRX ID: "+i+", count: "+flowCount);
 			Transaction trx = new Transaction();
 			
-			trx.setType("OUT");
+			trx.setType(TransactionType.OUT);
 			trx.setCode(StringUtil.generateRandomNumber(12));
 			trx.setDeleted(false);
 			Customer customer = new Customer();

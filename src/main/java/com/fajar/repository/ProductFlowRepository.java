@@ -6,14 +6,15 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import com.fajar.dto.TransactionType;
 import com.fajar.entity.ProductFlow;
 
 public interface ProductFlowRepository extends JpaRepository<ProductFlow, Long>, RepositoryCustom<ProductFlow> {
-	List<ProductFlow> findByTransaction_Type(String type);
+	List<ProductFlow> findByTransaction_Type(TransactionType type);
 
-	Optional<ProductFlow> findByIdAndTransaction_Type(Long id, String type);
+	Optional<ProductFlow> findByIdAndTransaction_Type(Long id, TransactionType type);
 
-	List<ProductFlow> findByProduct_NameContainingAndTransactionType(String name, String string);
+	List<ProductFlow> findByProduct_NameContainingAndTransactionType(String name, TransactionType type);
 
 	List<ProductFlow> findByPriceIsNull();
 
@@ -66,7 +67,7 @@ public interface ProductFlowRepository extends JpaRepository<ProductFlow, Long>,
 //	+ " and product." + key + " $CONDITION " + "having(used is null or flowCount-used>0) "
 //	+ (limit > 0 ? " limit " + limit : "");
 	
-	List<ProductFlow> findByTransaction_TypeAndProduct_Id(String type, long productId);
+	List<ProductFlow> findByTransaction_TypeAndProduct_Id(TransactionType type, long productId);
 	
 	@Query(value="select sum(count)  from product_flow left join `transaction` on transaction_id = transaction.id  " + 
 			"where transaction.`type` = ?1 and product_id = ?2 ",nativeQuery = true)

@@ -16,6 +16,7 @@ import com.fajar.entity.Category;
 import com.fajar.entity.Menu;
 import com.fajar.entity.Page;
 import com.fajar.entity.User;
+import com.fajar.entity.UserRole;
 import com.fajar.repository.CategoryRepository;
 import com.fajar.repository.MenuRepository;
 import com.fajar.repository.PageRepository;
@@ -35,6 +36,8 @@ public class ComponentService {
 	private CategoryRepository categoryRepository;
 	@Autowired
 	private UserSessionService userSessionService;
+	@Autowired
+	private UserAccountService userAccountService;
 	@Autowired
 	private PageRepository pageRepository;
 
@@ -138,9 +141,10 @@ public class ComponentService {
 	}
 	 
 	private boolean hasAccess(User user, String menuAccess) {
+		UserRole userRole = userAccountService.getRole(user);
 		boolean hasAccess = false;
 		
-		for (String userAccess : user.getRole().getAccess().split(",")) {
+		for (String userAccess : userRole.getAccess().split(",")) {
 			if (userAccess.equals(menuAccess)) {
 				hasAccess = true;
 				break;
@@ -182,7 +186,6 @@ public class ComponentService {
 		String[] menuAccess = menu.getPage().split("-");
 		if (menuAccess.length > 1) {
 			String access 			= menuAccess[1];
-			String[] userAccesses 	= user.getRole().getAccess().split(",");
 			boolean hasAccess 		= hasAccess(user, access);
 			if (!hasAccess) {
 				throw new Exception("Has No Access");

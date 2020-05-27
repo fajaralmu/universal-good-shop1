@@ -449,12 +449,12 @@ public class UserSessionService {
 		}
 		
 		boolean passwordMatched = comparePassword(dbUser, requestUser.getPassword());
-		
+		log.info("LOgged User Role: {}", dbUser.getRole());
 		return passwordMatched ? dbUser : null;
 	}
 	
 	private boolean comparePassword(User dbUser, String password) {
-		if(null == password) {
+		if(null == password || dbUser == null) {
 			return false;
 		}
 		

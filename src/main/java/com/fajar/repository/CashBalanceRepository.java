@@ -10,9 +10,6 @@ public interface CashBalanceRepository extends JpaRepository<CashBalance, Long> 
 
 	public CashBalance findTop1ByOrderByIdDesc(); 
 
-//	@Query(nativeQuery = true, value = "select * from cash_balance where month(date) = ?1 and year(date) = ?2 order by id  desc limit 1")
-//	public CashBalance getCashBalanceAt(int month, int year);
-
 	/**
 	 * 
 	 * @param dateString 'yyyy-MM-dd' pattern

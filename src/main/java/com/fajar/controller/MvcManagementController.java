@@ -16,7 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.fajar.entity.BaseEntity;
 import com.fajar.entity.CapitalFlow;
 import com.fajar.entity.CostFlow;
 import com.fajar.entity.Menu;
@@ -72,6 +71,7 @@ public class MvcManagementController extends BaseController {
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/common/" + name);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return ERROR_404_PAGE;
 		}
 		model = entityManagementPageService.setModel(request, model, name);
@@ -88,6 +88,7 @@ public class MvcManagementController extends BaseController {
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/profile");
 		} catch (Exception e) {
+			e.printStackTrace();
 			return ERROR_404_PAGE;
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(ShopProfile.class, null);
@@ -109,6 +110,7 @@ public class MvcManagementController extends BaseController {
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/menu");
 		} catch (Exception e) {
+			e.printStackTrace();
 			return ERROR_404_PAGE;
 		}
 		HashMap<String, List> listObject = new HashMap<>();
@@ -128,6 +130,7 @@ public class MvcManagementController extends BaseController {
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/costflow");
 		} catch (Exception e) {
+			e.printStackTrace();
 			return ERROR_404_PAGE;
 		}
 		HashMap<String, List> listObject = new HashMap<>();
@@ -148,6 +151,7 @@ public class MvcManagementController extends BaseController {
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/capitalflow");
 		} catch (Exception e) {
+			e.printStackTrace();
 			return ERROR_404_PAGE;
 		}
 		HashMap<String, List> listObject = new HashMap<String, List>() {
@@ -173,6 +177,7 @@ public class MvcManagementController extends BaseController {
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/messages");
 		} catch (Exception e) {
+			e.printStackTrace();
 			return ERROR_404_PAGE;
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(Message.class, null);
@@ -194,7 +199,7 @@ public class MvcManagementController extends BaseController {
 //		try {
 //			checkUserAccess(userService.getUserFromSession(request), "/management/productFlow");
 //		} catch (Exception e) {
-//			return ERROR_404_PAGE;
+//			e.printStackTrace(); return ERROR_404_PAGE;
 //		}
 //		EntityProperty entityProperty = EntityUtil.createEntityProperty(ProductFlow.class, null); 
 //		model = constructCommonModel(request,entityProperty, model, "productFlow", "management");
@@ -212,6 +217,7 @@ public class MvcManagementController extends BaseController {
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/transaction");
 		} catch (Exception e) {
+			e.printStackTrace();
 			return ERROR_404_PAGE;
 		}
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(Transaction.class, null);
@@ -231,6 +237,7 @@ public class MvcManagementController extends BaseController {
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/user");
 		} catch (Exception e) {
+			e.printStackTrace();
 			return ERROR_404_PAGE;
 		}
 		HashMap<String, List> listObject = new HashMap<>();
@@ -250,7 +257,7 @@ public class MvcManagementController extends BaseController {
 //		try {
 //			checkUserAccess(userService.getUserFromSession(request), "/management/menu");
 //		} catch (Exception e) {
-//			return ERROR_404_PAGE;
+//			e.printStackTrace(); return ERROR_404_PAGE;
 //		}
 //		EntityProperty entityProperty = EntityUtil.createEntityProperty(Menu.class, null); 
 //		model = constructCommonModel(request, entityProperty, model, "Menu", "management");
@@ -273,6 +280,7 @@ public class MvcManagementController extends BaseController {
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/menu");
 		} catch (Exception e) {
+			e.printStackTrace();
 			return ERROR_404_PAGE;
 		}
 		model.addAttribute("title", "Apps Sessions");

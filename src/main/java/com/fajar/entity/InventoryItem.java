@@ -7,8 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fajar.annotation.Dto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,12 +44,28 @@ public class InventoryItem extends BaseEntity implements Serializable{
 	@Column(name="new_version")
 	private boolean newVersion;
 	
+	@Transient
+	@JsonIgnore
+	private ProductFlow productFlow;
+	
+	public InventoryItem(ProductFlow productFlow) {
+		this.productFlow = productFlow;
+	}
+	
 	public void takeProduct(int count) {
 		this.count = this.count - count;
 	}
 	
 	public void addProduct(int count) {
 		this.count = this.count + count;
+	}
+	
+	public void addNewProduct() {
+		setProduct(productFlow.getProduct());
+		setCount(productFlow.getCount());
+		setOriginalCount(productFlow.getCount());
+		setId(productFlow.getId());
+		setIncomingFlowId(productFlow.getId());
 	}
 
 }

@@ -11,6 +11,7 @@ import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Product;
 import com.fajar.repository.ProductRepository;
+import com.fajar.service.ProductInventoryService;
 import com.fajar.util.CollectionUtil;
 import static com.fajar.service.EntityService.*;
 
@@ -19,6 +20,8 @@ public class ProductUpdateService extends BaseEntityUpdateService{
 
 	@Autowired
 	private ProductRepository productRepository;
+	@Autowired
+	private ProductInventoryService productInventoryService;
 	
 	/**
 	 * add & update product
@@ -81,6 +84,11 @@ public class ProductUpdateService extends BaseEntityUpdateService{
 			}
 		}
 		Product newProduct = productRepository.save(product);
+		
+		if(newRecord) {
+			productInventoryService.addNewProduct(newProduct);
+		}
+		
 		return WebResponse.builder().entity(newProduct).build();
 	}
 }

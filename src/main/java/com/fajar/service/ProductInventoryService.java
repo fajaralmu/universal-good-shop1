@@ -19,7 +19,10 @@ import com.fajar.repository.ProductFlowRepository;
 import com.fajar.repository.TransactionRepository;
 import com.fajar.util.StringUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ProductInventoryService {
 
 	@Autowired
@@ -33,8 +36,8 @@ public class ProductInventoryService {
 	@Autowired
 	private CashBalanceService cashBalanceService;
 	
-	public static final String TYPE_OUT = TransactionType.OUT;
-	public static final String TYPE_IN = TransactionType.IN;
+	public static final TransactionType TYPE_OUT = TransactionType.OUT;
+	public static final TransactionType TYPE_IN = TransactionType.IN;
 	
 	/**
 	 * create common transaction object
@@ -45,7 +48,7 @@ public class ProductInventoryService {
 	 * @param date
 	 * @return
 	 */
-	private Transaction buildTransactionObject (String type, User user, Customer customer, Supplier supplier, Date date) {
+	private Transaction buildTransactionObject (TransactionType type, User user, Customer customer, Supplier supplier, Date date) {
 		Transaction transaction = new Transaction();
 		transaction.setCode(StringUtil.generateRandomNumber(10));
 		transaction.setUser(user);
@@ -77,7 +80,7 @@ public class ProductInventoryService {
 			Transaction newTransaction = transactionRepository.save(transaction);
 			progressService.sendProgress(1, 1, 10, false, requestId);
 
-			for (ProductFlow productFlow : productFlows) {
+			loop: for (ProductFlow productFlow : productFlows) {
 
 				productFlow.setId(null);// never update
 				// IMPORTANT!!
@@ -88,16 +91,13 @@ public class ProductInventoryService {
 				 * update cash balance
 				 */
 				cashBalanceService.updateCashBalance(productFlow);
+				 
 				
 				/**
 				 * INSERT new inventory item row
 				 */
-				InventoryItem inventoryItem = new InventoryItem();
-				inventoryItem.setProduct(productFlow.getProduct());
-				inventoryItem.setCount(productFlow.getCount());
-				inventoryItem.setOriginalCount(productFlow.getCount());
-				inventoryItem.setId(productFlow.getId());
-				inventoryItem.setIncomingFlowId(productFlow.getId());
+				InventoryItem inventoryItem = new InventoryItem(productFlow);
+				inventoryItem.addNewProduct();
 				inventoryItemRepository.save(inventoryItem);
 				
 				/**
@@ -107,6 +107,7 @@ public class ProductInventoryService {
 				
 				if(null == inventoryItemV2) {
 					inventoryItemV2 = new InventoryItem();
+					inventoryItemV2.setProduct(productFlow.getProduct());
 					inventoryItemV2.setCount(productFlow.getCount());
 				}else {
 					int currentCount = inventoryItemV2.getCount();
@@ -333,6 +334,14 @@ public class ProductInventoryService {
 		}
 		
 		return quantity;
+	}
+	
+	public void addNewProduct(Product product) {
+		log.info("Add new product: {}", product.getName());
+		
+		InventoryItem inventoryItem = new InventoryItem();
+		inventoryItem.setProduct(product);
+		inventoryItemRepository.save(inventoryItem);
 	}
 	
 

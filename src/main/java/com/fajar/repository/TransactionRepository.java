@@ -5,15 +5,16 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import com.fajar.dto.TransactionType;
 import com.fajar.entity.Transaction;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long>, RepositoryCustom<Transaction> {
 
-	List<Transaction> findByType(String string);
+	List<Transaction> findByType(TransactionType type);
 
-	List<Transaction> findByTypeAndIdGreaterThan(String string, long l);
+	List<Transaction> findByTypeAndIdGreaterThan(TransactionType type, long l);
 
-	List<Transaction> findByTypeAndIdGreaterThanAndIdLessThan(String string, long from, long to);
+	List<Transaction> findByTypeAndIdGreaterThanAndIdLessThan(TransactionType type, long from, long to);
 
 	@Query(nativeQuery = true, value = "select year( `transaction`.transaction_date) from `transaction` where "
 			+ "`transaction`.transaction_date is not null  " + "order by transaction_date asc limit 1")

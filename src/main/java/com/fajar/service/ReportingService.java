@@ -251,8 +251,8 @@ public class ReportingService {
 			System.out.println("Report month : "+month);
 			System.out.println("Report year : "+year);
 
-			List<ProductFlow> flowIncome = productFlowRepository.findByTransactionTypeAndPeriod(TransactionType.OUT, month, year);
-			List<ProductFlow> flowCost = productFlowRepository.findByTransactionTypeAndPeriod(TransactionType.IN, month, year);
+			List<ProductFlow> flowIncome = productFlowRepository.findByTransactionTypeAndPeriod(TransactionType.OUT.toString(), month, year);
+			List<ProductFlow> flowCost = productFlowRepository.findByTransactionTypeAndPeriod(TransactionType.IN.toString(), month, year);
 
 			response.setMonthlyDetailIncome(parseCashflow("OUT", flowIncome));
 			response.setMonthlyDetailCost(parseCashflow("IN", flowCost));
@@ -376,9 +376,9 @@ public class ReportingService {
 			int day 		= filter.getDay();
 			int month 		= filter.getMonth();
 			int year		= filter.getYear(); 
-			String type		= TransactionType.OUT;// filter.getModule();
+			TransactionType type		= TransactionType.OUT;// filter.getModule();
 			
-			List<ProductFlow> productSold = productFlowRepository.findByTransactionTypeAndPeriod(type, day, month, year);
+			List<ProductFlow> productSold = productFlowRepository.findByTransactionTypeAndPeriod(type.toString(), day, month, year);
 		//	List<ProductFlow> productSupp = productFlowRepository.findByTransactionTypeAndPeriod(type, day, month, year); 
 			response.setDailyCashflow(parseDailyCashflow(productSold));
 			response.setFilter(filter);

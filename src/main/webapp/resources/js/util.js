@@ -1,4 +1,4 @@
-
+const tempComponent = document.createElement("div");
 function _byId(id){
 	return document.getElementById(id);
 }
@@ -164,6 +164,13 @@ function createHtmlTag(tagName, object){
 	if(object["child"])
 		tag.appendChild(object["child"]);
 	return tag;
+}
+
+function domToString(dom){
+	tempComponent.innerHTML = "";
+	tempComponent.appendChild(dom);
+	
+	return tempComponent.innerHTML;
 }
 
 /** BEGIN ENTITY DETAIL* */

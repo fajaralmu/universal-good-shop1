@@ -84,7 +84,7 @@ public class UserAccountService {
 		String loginKey = userSessionService.addUserSession(dbUser,httpRequest,httpResponse);
 		dbUser.setLoginKey(loginKey); 
 		dbUser.setPassword(null);
-		dbUser.setRole(null); 
+//		dbUser.setRole(null); 
 		
 		WebResponse response = new WebResponse("00","success");   
 		response.setEntity(dbUser);
@@ -148,6 +148,12 @@ public class UserAccountService {
 			boolean tokenEquals = requestToken.equals(existingToken); 
 			return tokenEquals;
 		}
+	}
+	
+	public UserRole getRole(User user) {
+		log.info("Role From User: {}", user.getRole());
+		Optional<UserRole> dbUserRole = userRoleRepository.findById(user.getRole().getId());
+		return dbUserRole.get();
 	}
  
 
