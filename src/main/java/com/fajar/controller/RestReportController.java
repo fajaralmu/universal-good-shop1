@@ -41,7 +41,7 @@ public class RestReportController {
 			HttpServletResponse httpResponse) throws Exception {
 		log.info("daily report {}", request);
 //		if(!userSessionService.hasSession(httpRequest)) {
-//			return ShopApiResponse.failedResponse();
+//			return WebResponse.failedResponse();
 //		}
 		  
 		File result = excelReportService.buildDailyReport(request) ;
@@ -69,7 +69,7 @@ public class RestReportController {
 			HttpServletResponse httpResponse) throws Exception {
 		log.info("monthly report {}", request);
 //		if(!userSessionService.hasSession(httpRequest)) {
-//			return ShopApiResponse.failedResponse();
+//			return WebResponse.failedResponse();
 //		}
 		
 		File result = excelReportService.buildMonthlyReport(request);
@@ -81,7 +81,7 @@ public class RestReportController {
 			HttpServletResponse httpResponse) throws Exception {
 		log.info("entityreport {}", request);
 //		if(!userSessionService.hasSession(httpRequest)) {
-//			return ShopApiResponse.failedResponse();
+//			return WebResponse.failedResponse();
 //		}
 		
 		File result = excelReportService.buildEntityReport(request);

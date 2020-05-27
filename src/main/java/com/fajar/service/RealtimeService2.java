@@ -33,8 +33,8 @@ public class RealtimeService2 {
 		sendProgress(WebResponse.builder().requestId(requestId).percentage(progress).build());
 	}
 
-	public void sendProgress(WebResponse shopApiResponse) {
-		webSocket.convertAndSend("/wsResp/progress/"+shopApiResponse.getRequestId(), shopApiResponse);
+	public void sendProgress(WebResponse WebResponse) {
+		webSocket.convertAndSend("/wsResp/progress/"+WebResponse.getRequestId(), WebResponse);
 	}
 
 

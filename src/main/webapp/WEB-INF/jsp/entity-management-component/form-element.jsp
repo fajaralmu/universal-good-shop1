@@ -77,6 +77,17 @@
 												managedEntity["itemField_${element.id}"] = "${element.optionItemName}";
 											</script>
 										</c:when>
+										<c:when test="${  element.type == 'plainlist'}">
+											<select class="input-field form-control" id="${element.id }"
+												required="${element.required }"
+												identity="${element.identity }"
+												plainlist="true" >
+												<c:forEach var="val" items="${element.plainListValues }">
+													<option value="${val }">${val }</option>
+												</c:forEach>
+
+											</select>
+										</c:when>
 										<c:when test="${  element.type == 'textarea'}">
 											<textarea class="input-field form-control"
 												id="${element.id }" type="${element.type }"
@@ -161,7 +172,7 @@
 			</div>
 			<div class="modal-footer">
 				<c:if test="${entityProperty.editable == true }">
-					<button id="btn-submit" onclick="submit()"
+					<button id="btn-submit"  
 						class="btn btn-primary">Save Changes</button>
 					<c:if test="${singleRecord == false }">
 						<input  type="reset" id="btn-clear" 
@@ -172,7 +183,7 @@
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 				</c:if>
 				<c:if test="${singleRecord == true }">
-					<a role="button" class="btn btn-secondary" href="<spring:url value="/admin/management" />">Back</a>
+					<a role="button" class="btn btn-secondary" href="<spring:url value="/admin/home" />">Back</a>
 				</c:if>
 			</div>
 		</div>

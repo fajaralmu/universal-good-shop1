@@ -22,7 +22,7 @@ public class CapitalFlowUpdateService extends BaseEntityUpdateService{
 		CapitalFlow capital = (CapitalFlow) copyNewElement(entity, newRecord);
 		
 //		if(newRecord) {
-//			return ShopApiResponse.failed("Unable to update!");
+//			return WebResponse.failed("Unable to update!");
 //		}
 		 
 		BaseEntity newEntity = entityRepository.save(capital); 

@@ -263,7 +263,8 @@
 							<includes>
 								<include>**/fajar/entity/**</include> 
 								<include>**/fajar/annotation/**</include> 
-								<include>**/dto/*</include>
+								<include>**/fajar/dto/*</include>
+								<include>**/fajar/util/*</include>
 							</includes>
 						</configuration>
 					</plugin>
