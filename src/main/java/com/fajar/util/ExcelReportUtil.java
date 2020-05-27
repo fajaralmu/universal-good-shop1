@@ -39,6 +39,10 @@ import lombok.extern.slf4j.Slf4j;
 public class ExcelReportUtil {
 	private static final String DATE_PATTERN = "dd-MM-yyyy' 'hh:mm:ss";
 
+	public static CurrencyCell curr(long value) {
+		return new CurrencyCell(value);
+	}
+	
 	/**
 	 * 
 	 * @param row

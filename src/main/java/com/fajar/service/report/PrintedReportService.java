@@ -51,7 +51,7 @@ public class PrintedReportService {
 	@Autowired
 	private ProductFlowRepository productFlowRepository;
 	@Autowired
-	private ExcelReportBuilder excelReportBuilder;
+	private TransactionReportBuilder excelReportBuilder;
 	@Autowired
 	private EntityService entityService;
 	@Autowired

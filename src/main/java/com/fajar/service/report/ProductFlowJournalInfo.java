@@ -1,5 +1,6 @@
 package com.fajar.service.report;
 
+import com.fajar.dto.CashType;
 import com.fajar.dto.ReportCategory;
 import com.fajar.dto.TransactionType;
 import com.fajar.entity.ProductFlow;
@@ -28,9 +29,11 @@ public class ProductFlowJournalInfo extends BalanceJournalInfo {
 		if(transaction.getType().equals(TransactionType.IN)) {
 			//purchase from supplier
 			creditAmount 	= productFlow.getCount() * productFlow.getPrice();
+			cashType = CashType.PURCHASING;
 		}else {
 			//selling
 			debitAmount 	= productFlow.getCount() * productFlow.getProduct().getPrice();
+			cashType = CashType.SELLING;
 		}
 		
 		referenceInfo 		= "TRAN_"+transaction.getType(); 

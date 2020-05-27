@@ -29,7 +29,7 @@ public class CostJournalInfo extends BalanceJournalInfo {
 	}
 	
 	private CashType determineCashType() { 
-		return CashType.CREDIT;
+		return CashType.GENERAL_COST;
 	}
 
 	 

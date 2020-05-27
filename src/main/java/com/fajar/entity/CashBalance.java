@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 import com.fajar.annotation.Dto;
@@ -40,6 +42,8 @@ public class CashBalance extends BaseEntity implements Serializable{/**
 	@FormField(type = FieldType.FIELD_TYPE_NUMBER)
 	private long actualBalance;
 	@FormField
+	@Enumerated(EnumType.STRING)
+	@Column
 	private CashType type;
 	@FormField
 	private Date date;

@@ -21,7 +21,7 @@ public class CapitalFlowJournalInfo extends BalanceJournalInfo {
 
 	@Override
 	public void buildBalanceObject() {   
-		cashType = CashType.DEBIT;
+		cashType = CashType.CAPITAL;
 		debitAmount = capitalFlow.getNominal(); 
 		referenceInfo = "CAPITAL_"+capitalFlow.getCapitalType().getName(); 
 		reportCategory = ReportCategory.CAPITAL; 

@@ -3,6 +3,7 @@ package com.fajar.service.report;
 import static com.fajar.util.ExcelReportUtil.addMergedRegion;
 import static com.fajar.util.ExcelReportUtil.autosizeColumn;
 import static com.fajar.util.ExcelReportUtil.createRow;
+import static com.fajar.util.ExcelReportUtil.curr;
 import static com.fajar.util.ExcelReportUtil.removeBorder;
 import static com.fajar.util.ExcelReportUtil.setBorderTop;
 
@@ -36,9 +37,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class ExcelReportBuilder {
+public class TransactionReportBuilder {
 	
 	private static final String BLANK = "";
+	private static final String DATE_PATTERN = "ddMMyyyy'T'hhmmss-a";
+	
 	@Autowired
 	private WebConfigService webConfigService;
 	
@@ -65,7 +68,7 @@ public class ExcelReportBuilder {
 	public File getDailyReportFile (ReportRequest reportRequest) {
 
 		Filter filter = reportRequest.getFilter();
-		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hhmmss-a");
+		String time = DateUtil.formatDate(new Date(), DATE_PATTERN);
 		String sheetName = "Daily-"+filter.getMonth()+"-"+filter.getYear();
 		
 		String reportName = reportPath + "/" + sheetName + "_"+ time+ ".xlsx";
@@ -214,9 +217,7 @@ public class ExcelReportBuilder {
 		
 	}  
 	
-	public static CurrencyCell curr(long value) {
-		return new CurrencyCell(value);
-	}
+	
 	
 	/**
 	 * ============================================

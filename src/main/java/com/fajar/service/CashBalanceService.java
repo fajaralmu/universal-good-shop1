@@ -28,7 +28,7 @@ public class CashBalanceService {
 		BalanceJournalInfo journalInfo = baseEntity.getBalanceJournalInfo();
 		log.info("getBalanceByTransactionItem: {} {}", journalInfo.getId(), baseEntity.getClass());
 	 
-		CashBalance balance = cashBalanceRepository.getByReferenceInfoAndReferenceId(journalInfo.getReferenceInfo(), 
+		CashBalance balance = cashBalanceRepository.findTop1ByTypeAndReferenceId(journalInfo.getCashType(), 
 				String.valueOf(journalInfo.getId()));
 		
 		log.info("existing balance:{}", balance);
