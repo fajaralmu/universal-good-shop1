@@ -6,15 +6,11 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.RegistryModel;
-import com.fajar.dto.SessionData;
 import com.fajar.dto.WebRequest;
 import com.fajar.dto.WebResponse;
-import com.fajar.entity.BaseEntity;
 import com.fajar.entity.User;
 import com.fajar.entity.UserRole;
 import com.fajar.repository.UserRepository;
@@ -24,20 +20,14 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class UserAccountService {
+public class UserAccountService { 
 	
-	private static final String ATTR_REQUEST_URI = SessionData.ATTR_REQUEST_URI;
-	private static final String HEADER_LOGIN_KEY = "loginKey";
-	private static final String HEADER_REQUEST_TOKEN = "requestToken";
-	
+	@Autowired
+	private UserSessionService userSessionService; 
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
 	private UserRoleRepository userRoleRepository;
-	@Autowired
-	private UserSessionService userSessionService;
-	@Autowired
-	private RegistryService registryService;
 	
 	@PostConstruct
 	public void init() {
@@ -75,64 +65,50 @@ public class UserAccountService {
 			return response;
 		}
 	}
-
+	 
+	/**
+	 * login to system
+	 * @param request
+	 * @param httpRequest
+	 * @param httpResponse
+	 * @return
+	 * @throws IllegalAccessException
+	 */
 	public WebResponse login(WebRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IllegalAccessException {
-		User dbUser = userRepository.findByUsernameAndPassword(request.getUser().getUsername(), request.getUser().getPassword());
+		User dbUser = userSessionService.getUserByUsernameAndPassword(request);
 		 
 		if(dbUser == null) {
 			return new WebResponse("01","invalid credential");
 		} 
 		 
-		User loggedUser = userSessionService.addUserSession(dbUser,httpRequest,httpResponse);
+		String loginKey = userSessionService.addUserSession(dbUser,httpRequest,httpResponse);
+		dbUser.setLoginKey(loginKey); 
+		dbUser.setPassword(null);
+		dbUser.setRole(null); 
+		
+		WebResponse response = new WebResponse("00","success");   
+		response.setEntity(dbUser);
+		
 		log.info("LOGIN SUCCESS");
 		
-		WebResponse response = new WebResponse("00","success");
-		 
-		BaseEntity registeredUser = userSessionService.getUserFromRegistry(loggedUser.getLoginKey());
-		BaseEntity clonedUser = new User();
-		BeanUtils.copyProperties(registeredUser, clonedUser, "password","role");
-		
-		response.setEntity(clonedUser);
-		
-		if(httpRequest.getSession(false).getAttribute(ATTR_REQUEST_URI) != null) {
-			log.info("WILL REDIRECT TO REQUESTED URI: "+httpRequest.getSession(false).getAttribute(ATTR_REQUEST_URI));
-			response.setRedirectUrl(httpRequest.getSession(false).getAttribute(ATTR_REQUEST_URI).toString());			
+		if(httpRequest.getSession(false).getAttribute(UserSessionService.ATTR_REQUEST_URI) != null) {
+			log.info("WILL REDIRECT TO REQUESTED URI: "+httpRequest.getSession(false).getAttribute(UserSessionService.ATTR_REQUEST_URI));
+			response.setRedirectUrl(httpRequest.getSession(false).getAttribute(UserSessionService.ATTR_REQUEST_URI).toString());			
 		}
+		
 		return response;
-	}
-	
-	public boolean logout(HttpServletRequest httpRequest) {
-		User user = userSessionService.getUserFromSession(httpRequest);
-		
-		if(user == null) {
-			if(httpRequest.getHeader(HEADER_LOGIN_KEY)!=null) {
-				String apiKey = httpRequest.getHeader(HEADER_LOGIN_KEY);
-				RegistryModel registryModel = registryService.getModel(apiKey);
-				if(registryModel == null) {
-					return false;
-				}
-				user = registryModel.getUser();
-			}else
-				return false;
-		}
-		 
-		userSessionService.logout(httpRequest);
-		return true;
-	}
+	} 
 	
 	/**
-	 * get token from session
+	 * logout from system
 	 * @param httpRequest
 	 * @return
 	 */
-	public String getToken(HttpServletRequest httpRequest) {
-		User user = userSessionService.getUserFromSession(httpRequest);
-		log.info("==loggedUser: "+user);
-		
-		if(user == null)
-			return null;
-		return (String) userSessionService.getToken(user);
-	}
+	public boolean logout(HttpServletRequest httpRequest) { 
+		 
+		boolean logoutResult = userSessionService.logout(httpRequest);
+		return logoutResult;
+	} 
 
 	/**
 	 * validate session token & registry token
@@ -140,23 +116,38 @@ public class UserAccountService {
 	 * @return
 	 */
 	public boolean validateToken(HttpServletRequest httpRequest) {
-		String requestToken = httpRequest.getHeader(HEADER_REQUEST_TOKEN);
+		String requestToken = httpRequest.getHeader(UserSessionService.HEADER_REQUEST_TOKEN);
 		/**
 		 * TESTING
 		 */
-		boolean validated = userSessionService.validatePageRequest(httpRequest );
-		if(validated) {
+		boolean pageRequestValidated = userSessionService.validatePageRequest(httpRequest );
+		if(pageRequestValidated) {
 			return true;
-		}
-		if(requestToken == null) {
-			log.info("NULL TOKEN");
-			return false;
-		}
-		String existingToken = getToken(httpRequest);
-		log.info("|| REQ_TOKEN: "+requestToken+" vs EXISTING:"+existingToken+"||");
+		}else {
+			return validateToken(requestToken, httpRequest);
+		} 
+	}
+
+	/**
+	 * compare token
+	 * @param requestToken
+	 * @param httpRequest
+	 * @return
+	 */
+	private boolean validateToken(String requestToken, HttpServletRequest httpRequest) {
 		
-		boolean tokenEquals = requestToken.equals(existingToken); 
-		return tokenEquals;
+		if(requestToken == null) {
+			log.error("NULL TOKEN, invalid request");
+			return false;
+			
+		}else {
+			
+			String existingToken = userSessionService.getToken(httpRequest);
+			log.info("|| REQUEST_TOKEN: "+requestToken+" vs EXISTING:"+existingToken+"||");
+			
+			boolean tokenEquals = requestToken.equals(existingToken); 
+			return tokenEquals;
+		}
 	}
  
 

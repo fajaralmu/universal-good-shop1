@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class RegistryService {
+public class RuntimeService {
 
 	public static final String PAGE_REQUEST = "page_req_id";
 

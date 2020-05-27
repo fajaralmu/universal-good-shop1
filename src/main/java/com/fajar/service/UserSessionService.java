@@ -1,13 +1,12 @@
 package com.fajar.service;
 
-import static com.fajar.dto.SessionData.ATTR_REQUEST_URI;
-
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
+import javax.management.RuntimeErrorException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -21,7 +20,6 @@ import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.RegisteredRequest;
 import com.fajar.entity.User;
-import com.fajar.exception.InvalidRequestException;
 import com.fajar.repository.RegisteredRequestRepository;
 import com.fajar.repository.UserRepository;
 import com.fajar.util.CollectionUtil;
@@ -45,28 +43,43 @@ public class UserSessionService {
 	private RealtimeService2 realtimeService;
 
 	@Autowired
-	private RegistryService registryService;
+	private RuntimeService registryService;
 	
 	@Autowired
 	private MessagingService messagingService;
 	
-	public static final String PAGE_CODE = "page-code";
-
+	public static final String PAGE_CODE = "page-code";  
+	public static final String ATTR_USER = "user"; 
+	public static final String ACCESS_CONTROL_EXPOSE_HEADER = "Access-Control-Expose-Headers";
+	public static final String ATTR_REQUEST_URI = SessionData.ATTR_REQUEST_URI;
+	public static final String HEADER_LOGIN_KEY = "loginKey";
+	public static final String HEADER_REQUEST_TOKEN = "requestToken";
+	
 	@PostConstruct
 	public void init() {
 		LogProxyFactory.setLoggers(this);
 	}
 
+	/**
+	 * get user from httpSession
+	 * @param request
+	 * @return
+	 */
 	public User getUserFromSession(HttpServletRequest request) {
 		try {
-			return (User) request.getSession(false).getAttribute("user");
+			return (User) request.getSession(false).getAttribute(ATTR_USER);
 		} catch (Exception ex) {
 			return null;
 		}
 	}
 
+	/**
+	 * get user from runtime
+	 * @param request
+	 * @return
+	 */
 	public User getUserFromRegistry(HttpServletRequest request) {
-		String loginKey = request.getHeader("loginKey");
+		String loginKey = request.getHeader(HEADER_LOGIN_KEY);
 		RegistryModel registryModel = registryService.getModel(loginKey);
 
 		if (registryModel == null) {
@@ -92,7 +105,7 @@ public class UserSessionService {
 	}
 
 	public boolean hasSession(HttpServletRequest request, boolean setRequestURI) {
-		if (setRequestURI && request.getMethod().toLowerCase().equals("get")) {
+		if (setRequestURI && request.getMethod().toLowerCase().equals("get") && request.getRequestURI().contains("login") == false) {
 
 			request.getSession().setAttribute(ATTR_REQUEST_URI, request.getRequestURI());
 			log.info("REQUESTED URI: " + request.getSession(false).getAttribute(ATTR_REQUEST_URI));
@@ -102,7 +115,7 @@ public class UserSessionService {
 		 * handle Client
 		 */ 
 		 
-		if (request.getHeader("loginKey") != null) {
+		if (request.getHeader(HEADER_LOGIN_KEY) != null) {
 			String remoteAddress = request.getRemoteAddr();
 			int remotePort = request.getRemotePort(); 
 			log.info("remoteAddress:" + remoteAddress + ":" + remotePort);
@@ -114,13 +127,13 @@ public class UserSessionService {
 		 * end handle Client
 		 */
  
-		Object sessionObj = request.getSession().getAttribute("user");
+		Object sessionObj = request.getSession().getAttribute(ATTR_USER);
 		
 		if (sessionObj == null || !(sessionObj instanceof User)) {
 			log.info("invalid session object: {}", sessionObj);
 			return false;
 		}
-		User sessionUser = (User) request.getSession().getAttribute("user");
+		User sessionUser = (User) request.getSession().getAttribute(ATTR_USER);
 
 		try {
 			RegistryModel registryModel = registryService.getModel(sessionUser.getLoginKey().toString());
@@ -128,13 +141,9 @@ public class UserSessionService {
 			if (sessionUser == null || registryModel == null || !sessionUser.equals(registryModel.getUser())) {
 				log.error("==========USER NOT EQUALS==========");
 				throw new Exception();
-			}
-
-			User loggedUser = userRepository.findByUsernameAndPassword(sessionUser.getUsername(),
-					sessionUser.getPassword());
-
+			}  
 			log.info("USER HAS SESSION");
-			return loggedUser != null;
+			return true;
 
 		} catch (Exception ex) {
 			log.info("USER DOSE NOT HAVE SESSION");
@@ -143,7 +152,7 @@ public class UserSessionService {
 		}
 	}
 
-	public User addUserSession(final User dbUser, HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+	public String addUserSession(final User dbUser, HttpServletRequest httpRequest, HttpServletResponse httpResponse)
 			throws IllegalAccessException {
 		RegistryModel registryModel = null;
 		try {
@@ -153,16 +162,19 @@ public class UserSessionService {
 		 
 			String key = UUID.randomUUID().toString();
 			dbUser.setLoginKey(key);
+			
 			boolean registryIsSet = registryService.set(key, registryModel);
 			if (!registryIsSet) {
 				throw new Exception();
 			}
 
-			httpResponse.addHeader("loginKey", key);
-			httpResponse.addHeader("Access-Control-Expose-Headers", "*");
-			httpRequest.getSession(true).setAttribute("user", dbUser);
+			httpResponse.addHeader(HEADER_LOGIN_KEY, key);
+			httpResponse.addHeader(ACCESS_CONTROL_EXPOSE_HEADER, "*");
+			
+			httpRequest.getSession(true).setAttribute(ATTR_USER, dbUser);
+			
 			log.info(" > > > SUCCESS LOGIN :");
-			return dbUser;
+			return dbUser.getLoginKey();
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(" < < < FAILED LOGIN");
@@ -170,26 +182,13 @@ public class UserSessionService {
 		}
 	}
 
-	public boolean logout(HttpServletRequest request) {
-		User user = getUserFromSession(request);
-		
-		try {
-			if (user == null) {
-				user = getUserFromRegistry(request); 
-			}
+	public boolean logout(HttpServletRequest request) { 
+		 
+		try {   
 			
-			if (user == null) {
-				return false;
-			}
-			
-			boolean registryIsUnbound = registryService.unbind(user.getLoginKey().toString());
-
-			if (!registryIsUnbound) {
-				throw new Exception();
-			}
-
-			request.getSession(false).removeAttribute("user");
-			request.getSession(false).invalidate();
+			User user = getLoggedUser(request);  
+			registryService.unbind(user.getLoginKey().toString()); 
+			invalidateSessionUser(request);
 
 			log.info(" > > > > > SUCCESS LOGOUT");
 			return true;
@@ -198,22 +197,64 @@ public class UserSessionService {
 			e.printStackTrace();
 			log.info(" < < < < < FAILED LOGOUT");
 			return false;
-		}
-		
-
+		} 
 	}
 
+	/**
+	 * get logged user
+	 * @param request
+	 * @return
+	 */
+	private User getLoggedUser(HttpServletRequest request) {
+		User user = getUserFromSession(request);  
+		 
+		try {
+			if (user == null && request.getHeader(HEADER_LOGIN_KEY)!=null) {
+				user = getUserFromRegistry(request); 
+			} 
+			return user;
+		}catch (Exception e) {
+
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private void invalidateSessionUser(HttpServletRequest request) { 
+		request.getSession(false).removeAttribute(ATTR_USER);
+		request.getSession(false).invalidate();
+	}
+
+	/**
+	 * get token
+	 * @param httpRequest
+	 * @return
+	 */
+	public String getToken(HttpServletRequest httpRequest) {
+		User user = getUserFromSession(httpRequest);
+		log.info("==loggedUser: "+user);
+		
+		if(user == null)
+			return null;
+		return getToken(user);
+	}
+	
+	/**
+	 * get token
+	 * @param user
+	 * @return
+	 */
 	public String getToken(User user) {
 		RegistryModel reqModel = registryService.getModel(user.getLoginKey());
 		if(reqModel == null) {
-			throw new InvalidRequestException("Invalid Session");
+			throw new RuntimeErrorException(null, "Invalid Session");
 		}
 		String token = reqModel.getUserToken();
 		return token;
 	}
 
 	public boolean validatePageRequest(HttpServletRequest req) {
-		final String requestId = req.getHeader(RegistryService.PAGE_REQUEST_ID);
+		final String requestId = req.getHeader(RuntimeService.PAGE_REQUEST_ID);
 		log.info("Page request id: " + requestId);
 		
 		if(null == requestId) {
@@ -231,7 +272,7 @@ public class UserSessionService {
 			registeredRequest = sessionData.getRequest(requestId);
 		}
 		if (registeredRequest != null) {
-			log.info("x x x Found Registered Request: " + registeredRequest);
+			log.info("Found Registered Request: " + registeredRequest);
 			return true;
 		}
 		log.info("Reuqest not registered");
@@ -268,10 +309,10 @@ public class UserSessionService {
 
 	public WebResponse requestId(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
 		if(validatePageRequest(servletRequest)) {
-			 String requestId = servletRequest.getHeader(RegistryService.PAGE_REQUEST_ID);
+			 String requestId = servletRequest.getHeader(RuntimeService.PAGE_REQUEST_ID);
 			 
 			 if(hasSession(servletRequest)) {
-				 servletResponse.addHeader("loginKey",servletRequest.getHeader("loginKey"));
+				 servletResponse.addHeader(HEADER_LOGIN_KEY,servletRequest.getHeader(HEADER_LOGIN_KEY));
 			 }
 			 
 			 return WebResponse.builder().code("00").message(requestId).build();
@@ -282,7 +323,7 @@ public class UserSessionService {
 		
 		if (null == sessionData) {
 			if (!registryService.set(SESSION_DATA, new SessionData()))
-				throw new InvalidRequestException("Error getting session data");
+				throw new RuntimeErrorException(null, "Error getting session data");
 			
 			sessionData  = registryService.getModel(SESSION_DATA);
 		}
@@ -306,7 +347,7 @@ public class UserSessionService {
 		
 		sessionData.addNewApp(request);
 		if (!registryService.set(SESSION_DATA, sessionData))
-			throw new InvalidRequestException("Error generating request id");
+			throw new  RuntimeErrorException(null,"Error generating request id");
 		
 		realtimeService.sendUpdateSession(generateAppRequest());
 		return WebResponse.builder().code("00").message(requestId).build();
@@ -334,7 +375,7 @@ public class UserSessionService {
 			boolean successSettingRegistry = registryService.set(SESSION_DATA, new SessionData());
 			
 			if (!successSettingRegistry )
-				throw new InvalidRequestException("Error updating session data");
+				throw new  RuntimeErrorException(null,"Error updating session data");
 			
 			sessionData  = registryService.getModel(SESSION_DATA);
 		}
@@ -352,7 +393,7 @@ public class UserSessionService {
 		sessionData.remove(request.getRegisteredRequest().getRequestId());
 		
 		if (!registryService.set(SESSION_DATA, sessionData))
-			throw new InvalidRequestException("Error updating session data");
+			throw new  RuntimeErrorException(null, "Error updating session data");
 
 		return WebResponse.builder().code("00").sessionData(sessionData).build();
 	}
@@ -362,7 +403,7 @@ public class UserSessionService {
 		sessionData.clear();
 		
 		if (!registryService.set(SESSION_DATA, sessionData))
-			throw new InvalidRequestException("Error updating session data");
+			throw new  RuntimeErrorException(null, "Error updating session data");
 		sessionData  = registryService.getModel(SESSION_DATA);
 		
 		realtimeService.sendUpdateSession(generateAppRequest());
@@ -385,10 +426,42 @@ public class UserSessionService {
 		log.info("setActivePage: {}", pageCode);
 		try {
 			request.getSession(false).setAttribute(PAGE_CODE, pageCode);
+			log.info("pageCode: {}", pageCode);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	/**
+	 * get user by userName and password
+	 * @param request
+	 * @return
+	 */
+	public User getUserByUsernameAndPassword(WebRequest request) {
+		User requestUser = request.getUser();
+		User dbUser = userRepository.findByUsername (requestUser.getUsername());
+		
+		if(dbUser != null) {
+			log.info("username: {} exist", dbUser.getUsername() );
+		}else {
+			log.error("username: {} does not exist", requestUser.getUsername());
+		}
+		
+		boolean passwordMatched = comparePassword(dbUser, requestUser.getPassword());
+		
+		return passwordMatched ? dbUser : null;
+	}
+	
+	private boolean comparePassword(User dbUser, String password) {
+		if(null == password) {
+			return false;
+		}
+		
+		boolean match = password.equals(dbUser.getPassword());
+		log.info("Password match: {}", match);
+		
+		return match;
 	}
 
 }

@@ -17,7 +17,7 @@ import com.fajar.entity.ShopProfile;
 import com.fajar.entity.User;
 import com.fajar.service.ComponentService;
 import com.fajar.service.ProductService;
-import com.fajar.service.RegistryService;
+import com.fajar.service.RuntimeService;
 import com.fajar.service.TransactionService;
 import com.fajar.service.UserAccountService;
 import com.fajar.service.UserSessionService;
@@ -36,7 +36,7 @@ public class BaseController {
 	@Autowired
 	protected UserAccountService accountService;
 	@Autowired
-	protected RegistryService registryService; 
+	protected RuntimeService registryService; 
 	@Autowired
 	protected UserSessionService userService;
 	@Autowired
@@ -89,12 +89,12 @@ public class BaseController {
 	
 	@ModelAttribute("pageToken")
 	public String pageToken(HttpServletRequest request) {
-		  return accountService.getToken(request);
+		  return userSessionService.getToken(request);
 	}
 	
 	@ModelAttribute("requestId")
 	public String requestId(HttpServletRequest request) {
-		Cookie cookie = getCookie(RegistryService.JSESSSIONID, request.getCookies());
+		Cookie cookie = getCookie(RuntimeService.JSESSSIONID, request.getCookies());
 		String cookieValue = cookie == null ? UUID.randomUUID().toString():cookie.getValue();
 		return	registryService.addPageRequest(  cookieValue);
 		 
