@@ -41,6 +41,7 @@ public class EntityElement implements Serializable {
 	private String className;
 	private boolean identity;
 	private boolean required;
+	private boolean idField;
 	private String lableName;
 	private List<BaseEntity> options;
 	private String jsonList;
@@ -53,7 +54,7 @@ public class EntityElement implements Serializable {
 	private String detailFields;
 	private String[] defaultValues;
 	private List<Object> plainListValues;
-	private boolean idField;
+	
 	private boolean detailField;
 
 	//not shown in view
@@ -84,8 +85,11 @@ public class EntityElement implements Serializable {
 	private void init() {
 		formField = field.getAnnotation(FormField.class);
 		baseField = field.getAnnotation(BaseField.class);
-		skipBaseField = (baseField != null && ignoreBaseField);
+		
 		idField = field.getAnnotation(Id.class) != null;
+		skipBaseField = !idField && (baseField != null && ignoreBaseField);
+		
+		identity = idField;
 		hasJoinColumn = field.getAnnotation(JoinColumn.class) != null;
 	}
 	

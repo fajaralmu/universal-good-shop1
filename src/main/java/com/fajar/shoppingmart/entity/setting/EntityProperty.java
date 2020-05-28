@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fajar.shoppingmart.annotation.Dto;
+import com.fajar.shoppingmart.entity.Product;
+import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.MyJsonUtil;
 
 import lombok.AllArgsConstructor;
@@ -84,11 +86,23 @@ public class EntityProperty implements Serializable {
 			log.error("Entity ELements is NULL");
 			return;
 		}
+		log.info("elements size: {}", elements.size());
+		
 		for(EntityElement entityElement : elements) {
+			log.info("entityElement.name: {}", entityElement.getId());
 			if(entityElement.isIdField() && getIdField() == null) {
 				setIdField(entityElement.getId());
+				log.info("Got ID field: {}", entityElement.getId());
+				return;
 			}
 		}
+		
+		log.warn("NO ID FIELD FOR THIS ENTITY: {}", entityName);
+	}
+	
+	public static void main(String[] args) {
+		EntityProperty prop = EntityUtil.createEntityProperty(Product.class, null);
+		System.out.println("ID FIELD: "+prop.getIdField());
 	}
 
 }

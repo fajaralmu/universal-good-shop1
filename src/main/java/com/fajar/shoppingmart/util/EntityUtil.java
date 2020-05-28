@@ -37,7 +37,7 @@ public class EntityUtil {
 			List<Field> fieldList = getDeclaredFields(clazz);
 			List<EntityElement> entityElements = new ArrayList<>();
 			List<String> fieldNames = new ArrayList<>();
-			String fieldToShowDetail = "";
+			String fieldToShowDetail = ""; 
 
 			for (Field field : fieldList) {
 
