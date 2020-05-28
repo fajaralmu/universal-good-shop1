@@ -14,7 +14,7 @@ import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Transaction;
 import com.fajar.repository.CashBalanceRepository;
 import com.fajar.service.entity.FinancialEntity;
-import com.fajar.service.report.BalanceJournalInfo;
+import com.fajar.service.report.data.BalanceJournalInfo;
 import com.fajar.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;

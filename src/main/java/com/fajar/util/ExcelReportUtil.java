@@ -29,9 +29,9 @@ import com.fajar.dto.FieldType;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
-import com.fajar.service.report.CurrencyCell;
-import com.fajar.service.report.CustomCell;
-import com.fajar.service.report.NumericCell;
+import com.fajar.service.report.data.CurrencyCell;
+import com.fajar.service.report.data.CustomCell;
+import com.fajar.service.report.data.NumericCell;
 
 import lombok.extern.slf4j.Slf4j;
 

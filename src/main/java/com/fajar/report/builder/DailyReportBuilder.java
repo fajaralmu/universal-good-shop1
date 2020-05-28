@@ -1,20 +1,15 @@
-package com.fajar.service.report;
+package com.fajar.report.builder;
 
 import static com.fajar.util.ExcelReportUtil.addMergedRegion;
 import static com.fajar.util.ExcelReportUtil.autosizeColumn;
 import static com.fajar.util.ExcelReportUtil.createRow;
 import static com.fajar.util.ExcelReportUtil.curr;
 import static com.fajar.util.ExcelReportUtil.removeBorder;
-import static com.fajar.util.ExcelReportUtil.setBorderTop;
 
 import java.io.File;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -22,35 +17,31 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.fajar.dto.Filter;
 import com.fajar.dto.ReportCategory;
 import com.fajar.entity.CashBalance;
 import com.fajar.service.WebConfigService;
+import com.fajar.service.report.data.DailyReportRow;
+import com.fajar.service.report.data.ReportData;
 import com.fajar.util.DateUtil;
 import com.fajar.util.MyFileUtil;
-import com.fajar.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Service
+
 @Slf4j
 public class DailyReportBuilder {
 	
 	private static final String BLANK = "";
-	private static final String DATE_PATTERN = "ddMMyyyy'T'hhmmss-a";
+	private static final String DATE_PATTERN = "ddMMyyyy'T'hhmmss-a"; 
 	
-	@Autowired
-	private WebConfigService webConfigService;
+	private final WebConfigService webConfigService; 
+	private XSSFSheet xsheet;
 	
-	private String reportPath;
-	
-	@PostConstruct
-	public void init() {
-		this.reportPath = webConfigService.getReportPath();
-	}
+	 public DailyReportBuilder(WebConfigService webConfigService) {
+		 this.webConfigService = webConfigService;
+	 }
 	
 	
 	/**
@@ -65,17 +56,17 @@ public class DailyReportBuilder {
 	 * @param reportRequest
 	 * @return
 	 */
-	public File getDailyReportFile (ReportRequest reportRequest) {
+	public File getDailyReportFile (ReportData reportRequest) {
 
 		Filter filter = reportRequest.getFilter();
 		String time = DateUtil.formatDate(new Date(), DATE_PATTERN);
 		String sheetName = "Daily-"+filter.getMonth()+"-"+filter.getYear();
 		
-		String reportName = reportPath + "/" + sheetName + "_"+ time+ ".xlsx";
+		String reportName = webConfigService.getReportPath() + "/" + sheetName + "_"+ time+ ".xlsx";
 		XSSFWorkbook xwb  = new XSSFWorkbook();
-		XSSFSheet xsheet = xwb.createSheet(sheetName ); 
+		xsheet = xwb.createSheet(sheetName ); 
 		
-		writeDailyReportOneMonth(xsheet, reportRequest);
+		writeDailyReportOneMonth( reportRequest);
 		
 		File file = MyFileUtil.getFile(xwb, reportName);
 		return file;
@@ -86,7 +77,7 @@ public class DailyReportBuilder {
 	 * @param xsheet
 	 * @param reportRequest
 	 */
-	private void writeDailyReportOneMonth(XSSFSheet xsheet, ReportRequest reportRequest) {
+	private void writeDailyReportOneMonth( ReportData reportRequest) {
 		
 		Filter filter = reportRequest.getFilter();
 		CashBalance initialBalance = reportRequest.getInitialBalance();
@@ -102,12 +93,12 @@ public class DailyReportBuilder {
 		 * Report title
 		 */
 		
-		createOneMonthReportTitle(xsheet, row, columnOffset, filter); 
+		createOneMonthReportTitle(row, columnOffset, filter); 
 		
 		row++;
 		row++;
 		 
-		final XSSFRow headerRow = createOneMonthReportHeader(xsheet, row, columnOffset ); 
+		final XSSFRow headerRow = createOneMonthReportHeader(row, columnOffset ); 
 		
 		row++;
 		
@@ -119,14 +110,14 @@ public class DailyReportBuilder {
 		 * First Row (Previous Balance)
 		 */ 
 		int dailyRow = row;
-		writeOneMonthReportBalanceRow(xsheet, dailyRow, columnOffset, initialBalance );
+		writeOneMonthReportBalanceRow(dailyRow, columnOffset, initialBalance );
 		dailyRow++;
 		
 		int currentDay = 1;  
 		
 		for (int i = 0; i < dailyReportRows.size(); i++) {
 			DailyReportRow dailyReportRow = dailyReportRows.get(i);  
-			writeOneMonthDailyTransactionRow(xsheet, dailyRow, columnOffset, currentDay, dailyReportRow );  
+			writeOneMonthDailyTransactionRow( dailyRow, columnOffset, currentDay, dailyReportRow );  
 			
 			currentDay = dailyReportRow.getDay();
 			log.info("writing row: {} of {}, day = {}", i, dailyReportRows.size(), dailyReportRow.getDay());
@@ -136,7 +127,7 @@ public class DailyReportBuilder {
 		/**
 		 * Daily Summary
 		 */
-		writeOneMonthDailyTransactionTotal(xsheet, dailyRow, columnOffset, totalDailyReportRow ); 
+		writeOneMonthDailyTransactionTotal(dailyRow, columnOffset, totalDailyReportRow ); 
 		
 		/**
 		 * ======================================================
@@ -152,13 +143,13 @@ public class DailyReportBuilder {
 					new DailyReportRow(reportCategory) : dailyReportSummary.get(reportCategory) ;
 			 
 			final int rowNum  = summaryRow;  
-			writeOneMonthTransacionSummaryRow(xsheet, rowNum, columnOffset + 7, number, summary, initialBalance);   
+			writeOneMonthTransacionSummaryRow(rowNum, columnOffset + 7, number, summary, initialBalance);   
 			
 			summaryRow++;
 			number++;
 		}
 		 
-		writeOneMonthTransactionSummaryTotal(xsheet, summaryRow, columnOffset + 7, totalDailyReportRow ); 
+		writeOneMonthTransactionSummaryTotal(summaryRow, columnOffset + 7, totalDailyReportRow ); 
 		
 		/**
 		 * auto size columns
@@ -167,7 +158,7 @@ public class DailyReportBuilder {
 
 	}   
 	
-	private void writeOneMonthTransactionSummaryTotal(XSSFSheet xsheet, int summaryRow, int columnOffset,
+	private void writeOneMonthTransactionSummaryTotal(  int summaryRow, int columnOffset,
 			DailyReportRow	totalDailyReportRow) {
 		createRow(xsheet, summaryRow, columnOffset, BLANK, "Jumlah", BLANK, 
 				curr(totalDailyReportRow.getDebitAmount()),
@@ -180,7 +171,7 @@ public class DailyReportBuilder {
 	}
 
 
-	private void writeOneMonthTransacionSummaryRow(XSSFSheet xsheet, int rowNum, int columnOffset, int number,
+	private void writeOneMonthTransacionSummaryRow( int rowNum, int columnOffset, int number,
 			  DailyReportRow summary, CashBalance initialBalance) {
 		 
 		long debitAmount = summary.getDebitAmount();
@@ -199,7 +190,7 @@ public class DailyReportBuilder {
 	}
 
 
-	private void writeOneMonthDailyTransactionTotal(XSSFSheet xsheet, int dailyRow, int columnOffset,
+	private void writeOneMonthDailyTransactionTotal(int dailyRow, int columnOffset,
 			DailyReportRow totalDailyReportRow) {
 		 
 		createRow(xsheet, dailyRow, columnOffset,
@@ -210,7 +201,7 @@ public class DailyReportBuilder {
 	}
 
 
-	private void writeOneMonthDailyTransactionRow(XSSFSheet xsheet, int dailyRow, int columnOffset, int currentDay,
+	private void writeOneMonthDailyTransactionRow(int dailyRow, int columnOffset, int currentDay,
 			DailyReportRow dailyReportRow) {
 		 
 		final boolean sameDay = dailyReportRow.getDay() == currentDay; 
@@ -222,7 +213,7 @@ public class DailyReportBuilder {
 	}
 
 
-	private void writeOneMonthReportBalanceRow(XSSFSheet xsheet, int dailyRow, int columnOffset,
+	private void writeOneMonthReportBalanceRow(int dailyRow, int columnOffset,
 			CashBalance initialBalance) {
 		int FIRST_DAY = 1;
 		createRow(xsheet, dailyRow, columnOffset,
@@ -231,7 +222,7 @@ public class DailyReportBuilder {
 	}
 
 
-	private XSSFRow createOneMonthReportHeader(XSSFSheet xsheet, int row, int columnOffset) {
+	private XSSFRow createOneMonthReportHeader(int row, int columnOffset) {
 		final Object[] columnNames = new Object[] {
 				 "No", "Tgl", "Uraian", "Kode", "Debet", "Kredit","Saldo" ,
 				 "No", "Perkiraan", "Kode", "Debet", "Kredit"
@@ -241,7 +232,7 @@ public class DailyReportBuilder {
 	}
 
 
-	private void createOneMonthReportTitle(XSSFSheet xsheet, int row, int columnOffset, Filter filter) {
+	private void createOneMonthReportTitle(int row, int columnOffset, Filter filter) {
 		 
 		String period = DateUtil.MONTH_NAMES[filter.getMonth()-1] + " " + filter.getYear();
 		addMergedRegion(xsheet, new CellRangeAddress(row, row, 0, 6), new CellRangeAddress(row, row, 7, 11));

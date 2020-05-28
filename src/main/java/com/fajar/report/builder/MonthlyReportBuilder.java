@@ -1,4 +1,4 @@
-package com.fajar.service.report;
+package com.fajar.report.builder;
 
 import static com.fajar.util.ExcelReportUtil.addMergedRegion;
 import static com.fajar.util.ExcelReportUtil.autosizeColumn;
@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 import com.fajar.dto.Filter;
 import com.fajar.dto.ReportCategory;
 import com.fajar.service.WebConfigService;
+import com.fajar.service.report.data.DailyReportRow;
+import com.fajar.service.report.data.ReportData;
 import com.fajar.util.DateUtil;
 import com.fajar.util.MyFileUtil;
 import com.fajar.util.StringUtil;
@@ -54,7 +56,7 @@ public class MonthlyReportBuilder {
 	 * @param reportRequest
 	 * @return
 	 */
-	public File getMonthyReport(ReportRequest reportRequest) {
+	public File getMonthyReport(ReportData reportRequest) {
 		Filter filter = reportRequest.getFilter();
 		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hhmmss-a");
 		String sheetName = "Monthly-" + filter.getYear();
@@ -84,7 +86,7 @@ public class MonthlyReportBuilder {
 	 * @param reportRequest
 	 * @param reportName
 	 */
-	private void writeMonthlyReport( ReportRequest reportRequest, String reportName) {
+	private void writeMonthlyReport( ReportData reportRequest, String reportName) {
 
 		Map<Integer, Map<ReportCategory, DailyReportRow>> reportContent = reportRequest.getMonthyReportContent();
 		
@@ -159,7 +161,7 @@ public class MonthlyReportBuilder {
 
 		for (int j = 0; j < reportCategories.length; j++) {
 			ReportCategory reportCategory = reportCategories[j];
-			DailyReportRow categoryData = getCategoryDataForOneCategory(monthData,reportCategory, monthIndex, offsetRow); 
+			DailyReportRow categoryData = getRowDataForOneCategory(monthData,reportCategory, monthIndex, offsetRow); 
 
 			totalDebit += categoryData.getDebitAmount();
 			totalCredit += categoryData.getCreditAmount();
@@ -182,7 +184,7 @@ public class MonthlyReportBuilder {
 		return 0;
 	}
 
-	private DailyReportRow getCategoryDataForOneCategory(Map<ReportCategory, DailyReportRow> monthData,
+	private DailyReportRow getRowDataForOneCategory(Map<ReportCategory, DailyReportRow> monthData,
 			ReportCategory reportCategory, int monthIndex, int offsetRow) {
 		DailyReportRow categoryData = monthData.get(reportCategory);
 		

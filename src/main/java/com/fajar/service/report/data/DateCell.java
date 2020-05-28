@@ -1,4 +1,4 @@
-package com.fajar.service.report;
+package com.fajar.service.report.data;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

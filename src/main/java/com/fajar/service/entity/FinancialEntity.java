@@ -2,7 +2,7 @@ package com.fajar.service.entity;
 
 import java.util.Date;
 
-import com.fajar.service.report.BalanceJournalInfo;
+import com.fajar.service.report.data.BalanceJournalInfo;
 
 public interface FinancialEntity {
 

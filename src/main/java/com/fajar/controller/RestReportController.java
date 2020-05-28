@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.dto.WebRequest;
 import com.fajar.service.LogProxyFactory;
-import com.fajar.service.report.PrintedReportService;
+import com.fajar.service.report.data.ReportDataService;
+import com.fajar.service.report.data.ReportService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RestReportController {
 	
 	@Autowired
-	private PrintedReportService excelReportService;
+	private ReportService reportService;
 	
 	@PostConstruct
 	public void init() {
@@ -44,7 +45,7 @@ public class RestReportController {
 //			return WebResponse.failedResponse();
 //		}
 		  
-		File result = excelReportService.buildDailyReport(request) ;
+		File result = reportService.buildDailyReport(request) ;
 
 		writeFileReponse(httpResponse, result);
 	}
@@ -72,7 +73,7 @@ public class RestReportController {
 //			return WebResponse.failedResponse();
 //		}
 		
-		File result = excelReportService.buildMonthlyReport(request);
+		File result = reportService.buildMonthlyReport(request);
 		
 		writeFileReponse(httpResponse, result);
 	}
@@ -84,7 +85,7 @@ public class RestReportController {
 //			return WebResponse.failedResponse();
 //		}
 		
-		File result = excelReportService.buildEntityReport(request);
+		File result = reportService.buildEntityReport(request);
 		
 		writeFileReponse(httpResponse, result);
 	}

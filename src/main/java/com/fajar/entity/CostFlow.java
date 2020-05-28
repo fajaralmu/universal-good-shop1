@@ -12,8 +12,8 @@ import com.fajar.annotation.Dto;
 import com.fajar.annotation.FormField;
 import com.fajar.dto.FieldType;
 import com.fajar.service.entity.FinancialEntity;
-import com.fajar.service.report.BalanceJournalInfo;
-import com.fajar.service.report.CostJournalInfo;
+import com.fajar.service.report.data.BalanceJournalInfo;
+import com.fajar.service.report.data.CostJournalInfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

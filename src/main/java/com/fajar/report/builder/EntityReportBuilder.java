@@ -1,4 +1,4 @@
-package com.fajar.service.report;
+package com.fajar.report.builder;
 
 import java.io.File;
 import java.util.Date;
@@ -6,23 +6,32 @@ import java.util.List;
 
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.service.WebConfigService;
+import com.fajar.service.report.data.ReportData;
 import com.fajar.util.DateUtil;
 import com.fajar.util.ExcelReportUtil;
 import com.fajar.util.MyFileUtil;
 
-@Service
-public class EntityReportBuilder {
+import lombok.extern.slf4j.Slf4j;
 
-	@Autowired
-	private WebConfigService webConfigService;
+ @Slf4j
+public class EntityReportBuilder { 
+	 
+	private final WebConfigService webConfigService;
 	
-	public File getEntityReport(List<BaseEntity> entities, EntityProperty entityProperty) { 
+	public EntityReportBuilder(WebConfigService webConfigService) {
+		this.webConfigService = webConfigService;
+	}
+	
+	public File getEntityReport(ReportData reportData) { 
+		List<BaseEntity> entities = reportData.getEntities();
+		EntityProperty entityProperty = reportData.getEntityProperty();
+		
+		log.info("Writing entity report of: {}", entityProperty.getEntityName());
+		
 		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hhmmss-a");
 		String sheetName = entityProperty.getEntityName();
 		

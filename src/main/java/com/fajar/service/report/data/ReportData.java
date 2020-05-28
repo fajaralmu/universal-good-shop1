@@ -1,4 +1,4 @@
-package com.fajar.service.report;
+package com.fajar.service.report.data;
 
 import java.io.Serializable;
 import java.util.List;
@@ -6,7 +6,9 @@ import java.util.Map;
 
 import com.fajar.dto.Filter;
 import com.fajar.dto.ReportCategory;
+import com.fajar.entity.BaseEntity;
 import com.fajar.entity.CashBalance;
+import com.fajar.entity.setting.EntityProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReportRequest implements Serializable {
+public class ReportData implements Serializable {
 
 	/**
 	 * 
@@ -37,5 +39,12 @@ public class ReportRequest implements Serializable {
 	 * monthly
 	 */
 	private Map<Integer, Map<ReportCategory, DailyReportRow>> monthyReportContent;
+	
+	/**
+	 * entities
+	 */
+	private Class entityClass;
+	private List<BaseEntity> entities;
+	private EntityProperty entityProperty;
 	
 }

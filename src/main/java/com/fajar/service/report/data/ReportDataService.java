@@ -1,6 +1,5 @@
-package com.fajar.service.report;
+package com.fajar.service.report.data;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,7 +18,6 @@ import com.fajar.dto.Filter;
 import com.fajar.dto.ReportCategory;
 import com.fajar.dto.WebRequest;
 import com.fajar.dto.WebResponse;
-import com.fajar.entity.BaseEntity;
 import com.fajar.entity.CapitalFlow;
 import com.fajar.entity.CashBalance;
 import com.fajar.entity.CostFlow;
@@ -39,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class PrintedReportService {
+public class ReportDataService {
 	
 	@Autowired
 	private CostFlowRepository costFlowRepository;
@@ -48,15 +46,9 @@ public class PrintedReportService {
 	@Autowired
 	private CashBalanceService cashBalanceService;
 	@Autowired
-	private ProductFlowRepository productFlowRepository;
+	private ProductFlowRepository productFlowRepository; 
 	@Autowired
-	private DailyReportBuilder dailyReportBuilder;
-	@Autowired
-	private EntityService entityService;
-	@Autowired
-	private EntityReportBuilder entityReportBuilder;
-	@Autowired
-	private MonthlyReportBuilder monthlyReportBuilder;
+	private EntityService entityService;  
 	
 	private long debitAmount = 0;
 	private long count = 0;
@@ -80,15 +72,14 @@ public class PrintedReportService {
 		LogProxyFactory.setLoggers(this);
 	}
 
-	public File buildDailyReport(WebRequest request) { 
+	public ReportData getDailyReportData(WebRequest request) { 
 		try {
 			
 			Filter filter = request.getFilter();    
 			getTransactionRecords(filter); 
-			ReportRequest reportRequest = generateDailyReportRequest(filter); 
-			File result = dailyReportBuilder.getDailyReportFile(reportRequest); 
+			ReportData reportRequest = generateDailyReportRequest(filter);  
 			
-			return result;
+			return reportRequest;
 		}catch (Exception e) { 
 			e.printStackTrace();
 			throw e;
@@ -105,8 +96,8 @@ public class PrintedReportService {
 	 * @param filter
 	 * @return
 	 */
-	private ReportRequest generateDailyReportRequest(Filter filter) {
-		ReportRequest reportRequest = new ReportRequest();
+	private ReportData generateDailyReportRequest(Filter filter) {
+		ReportData reportRequest = new ReportData();
 		reportRequest.setFilter(filter);
 		reportRequest.setDailyReportRows(dailyReportRows);
 		reportRequest.setDailyReportSummary(dailyReportSummary);
@@ -369,7 +360,7 @@ public class PrintedReportService {
 	 * @param request
 	 * @return
 	 */
-	public File buildMonthlyReport(WebRequest request) {
+	public ReportData getMonthlyReportData(WebRequest request) {
 		
 		Filter filter = request.getFilter();
 		Integer year = filter.getYear();
@@ -393,10 +384,10 @@ public class PrintedReportService {
 				System.out.println(reportCategory.toString()+". D: "+daily.get(reportCategory).getDebitAmount()+" | K: "+daily.get(reportCategory).getCreditAmount());
 			}
 		}
-		File result = monthlyReportBuilder.getMonthyReport(ReportRequest.builder()
+		ReportData reportData = (ReportData.builder()
 				.filter(filter).monthyReportContent(monthyReportContent).build());
 		
-		return result;
+		return reportData;
 	}
 	 
 	/**
@@ -404,21 +395,15 @@ public class PrintedReportService {
 	 * 		Entity Report
 	 * ===========================
 	 */
-	
-	public File getEntityReport(List<BaseEntity> entities, Class<? extends BaseEntity> entityClass) {
-		log.info("entities count: {}", entities.size());
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(entityClass, null);
-		
-		File result = entityReportBuilder.getEntityReport(entities, entityProperty);
-		return result;
-	}
+	 
 
-	public File buildEntityReport(WebRequest request) { 
+	public ReportData getEntityReportData(WebRequest request) { 
 //		request.getFilter().setLimit(0);
 		WebResponse response = entityService.filter(request);
 		
-		File file = getEntityReport(response.getEntities(), response.getEntityClass());
-		return file ;
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(response.getEntityClass(), null);
+		
+		return ReportData.builder().entities(response.getEntities()).entityProperty(entityProperty).build();
 	}
 	
 }
