@@ -1,6 +1,7 @@
 package com.fajar.shoppingmart.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -201,6 +202,9 @@ public class EntityUtil {
 			if (field.getAnnotation(Id.class) != null && !withId) {
 				continue;
 			}
+			if(isStaticField(field)) {
+				continue;
+			}
 
 			Field currentField = getDeclaredField(targetClass, field.getName());
 
@@ -209,7 +213,7 @@ public class EntityUtil {
 
 			currentField.setAccessible(true);
 			field.setAccessible(true);
-
+			
 			try {
 				currentField.set(targetObject, field.get(source));
 
@@ -232,6 +236,10 @@ public class EntityUtil {
 		for (int i = 0; i < entities.size(); i++) {
 			validateDefaultValue(entities.get(i));
 		}
+	}
+	
+	public static boolean isStaticField(Field field) {
+		return Modifier.isStatic(field.getModifiers());
 	}
 
 	public static <T extends BaseEntity> T validateDefaultValue(BaseEntity baseEntity) {
