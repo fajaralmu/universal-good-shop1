@@ -5,12 +5,14 @@ import java.io.Serializable;
 import com.fajar.dto.ReportCategory;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class DailyReportRow implements Serializable{/**
 	 * 
 	 */
@@ -28,6 +30,10 @@ public class DailyReportRow implements Serializable{/**
 	}
 	public void addDebitAmount(long amt) {
 		this.debitAmount += amt;
+	}
+	public DailyReportRow(ReportCategory reportCategory) {
+		// TODO Auto-generated constructor stub
+		this.category  = reportCategory;
 	}
 	
 }

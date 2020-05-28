@@ -50,6 +50,23 @@ public class DateUtil {
 		Calendar cal = cal(date);
 		return cal.get(type);
 	}
+	
+	public static int getCalendarYear(Date date) {
+		return getCalendarItem(date, Calendar.YEAR);
+	}
+	
+	/**
+	 * month starts at 0
+	 * @param date
+	 * @return
+	 */
+	public static int getCalendarMonth(Date date) {
+		return getCalendarItem(date, Calendar.MONTH);
+	}
+	
+	public static int getCalendarDayOfMonth(Date date) {
+		return getCalendarItem(date, Calendar.DAY_OF_MONTH);
+	}
 
 	public static Integer[] getMonthsDay(int year) {
 		boolean kabisat = year % 4 == 0;

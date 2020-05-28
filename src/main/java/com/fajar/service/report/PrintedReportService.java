@@ -80,22 +80,18 @@ public class PrintedReportService {
 	}
 
 	public File buildDailyReport(WebRequest request) { 
-		
 		try {
 			
-			Filter filter = request.getFilter();   
-			
-			getTransactionRecords(filter);
-			
-			ReportRequest reportRequest = generateDailyReportRequest(filter);
-			
-			File result = excelReportBuilder.getDailyReportFile(reportRequest);
-			
+			Filter filter = request.getFilter();    
+			getTransactionRecords(filter); 
+			ReportRequest reportRequest = generateDailyReportRequest(filter); 
+			File result = excelReportBuilder.getDailyReportFile(reportRequest); 
 			
 			return result;
 		}catch (Exception e) { 
 			e.printStackTrace();
 			throw e;
+			
 		}finally {
 			clearDailyReport(); 
 			System.out.println("DEBIT AMOUNT: "+this.debitAmount);
@@ -128,11 +124,12 @@ public class PrintedReportService {
 		
 		Integer[] months = DateUtil.getMonthsDay(year);
 		Integer dayCount = months[month - 1];
+		
 		clearDailyReport();
 		getInitialBalance(filter);  
 		getTransactionsData(month, year);
 		populateDailyReportRows(dayCount, month);
-		calculateTotalSummary( );
+		calculateTotalSummary();
 		
 	}
 
@@ -143,12 +140,12 @@ public class PrintedReportService {
 	 */
 	private DailyReportRow calculateTotalSummary( ) { 
 		DailyReportRow dailyReportRow = new DailyReportRow();
-		long debitAmount = dailyReportInitialBalance.getActualBalance();
-		long creditAmount = 0l;
+		long debitAmount 	= dailyReportInitialBalance.getActualBalance();
+		long creditAmount 	= 0l;
 		
 		for (DailyReportRow dailyReportRow2 : dailyReportRows) {
-			debitAmount+=dailyReportRow2.getDebitAmount();
-			creditAmount+=dailyReportRow2.getCreditAmount();
+			debitAmount		+=	dailyReportRow2.getDebitAmount();
+			creditAmount	+=	dailyReportRow2.getCreditAmount();
 		}
 		
 		dailyReportRow.setDebitAmount(debitAmount);
@@ -182,16 +179,14 @@ public class PrintedReportService {
 	/**
 	 * clear dailyReportRows and dailyReportSummary
 	 */
-	private void clearDailyReport() { 
-
+	private void clearDailyReport() {  
 		count = 0l;
 		debitAmount = 0l; 
 		dailyReportRows.clear();
 		dailyReportSummary.clear();
 	}
 	
-	private void clearMontlyReport() {
-
+	private void clearMontlyReport() { 
 		monthyReportContent.clear();
 	}
 
@@ -200,8 +195,7 @@ public class PrintedReportService {
 	 * @param day
 	 * @return
 	 */
-	private List<FinancialEntity> getDailyTransactions(int day) { 
-		 
+	private List<FinancialEntity> getDailyTransactions(int day) {  
 		List<FinancialEntity> rawTransactions = dailyTransactions.get(day); 
 		return rawTransactions;
 	}
@@ -302,9 +296,8 @@ public class PrintedReportService {
 	 */
 	private DailyReportRow getSummary(ReportCategory reportCategory) { 
 		if(null == dailyReportSummary.get(reportCategory)) {
-			dailyReportSummary.put(reportCategory, new DailyReportRow());
-		}
-		
+			dailyReportSummary.put(reportCategory, DailyReportRow.builder().category(reportCategory).build());
+		} 
 		return this.dailyReportSummary.get(reportCategory);
 	}
 
@@ -336,8 +329,7 @@ public class PrintedReportService {
 		List<CostFlow> costFlows = costFlowRepository.findByPeriod(month, year); 
 		
 		final List<FinancialEntity> results = new ArrayList<FinancialEntity>() { 
-			private static final long serialVersionUID = -9006495340734852418L;
-
+			private static final long serialVersionUID = -9006495340734852418L; 
 			{
 				addAll(costFlows); 
 				addAll(transactionItems); 
@@ -351,7 +343,7 @@ public class PrintedReportService {
 			//don't access the credit & debt value
 			log.info("Access {}", baseEntity.getClass());
 			Date transactionDate = CashBalanceService.mapCashBalance(baseEntity).getDate(); 
-			int day = DateUtil.getCalendarItem(transactionDate, Calendar.DAY_OF_MONTH);  
+			int day = DateUtil.getCalendarDayOfMonth(transactionDate);
 			putTransaction(day, baseEntity);
 		}
 		
