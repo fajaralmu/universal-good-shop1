@@ -3,7 +3,6 @@ package com.fajar.service.report;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -51,11 +50,13 @@ public class PrintedReportService {
 	@Autowired
 	private ProductFlowRepository productFlowRepository;
 	@Autowired
-	private TransactionReportBuilder excelReportBuilder;
+	private DailyReportBuilder dailyReportBuilder;
 	@Autowired
 	private EntityService entityService;
 	@Autowired
 	private EntityReportBuilder entityReportBuilder;
+	@Autowired
+	private MonthlyReportBuilder monthlyReportBuilder;
 	
 	private long debitAmount = 0;
 	private long count = 0;
@@ -85,7 +86,7 @@ public class PrintedReportService {
 			Filter filter = request.getFilter();    
 			getTransactionRecords(filter); 
 			ReportRequest reportRequest = generateDailyReportRequest(filter); 
-			File result = excelReportBuilder.getDailyReportFile(reportRequest); 
+			File result = dailyReportBuilder.getDailyReportFile(reportRequest); 
 			
 			return result;
 		}catch (Exception e) { 
@@ -392,7 +393,7 @@ public class PrintedReportService {
 				System.out.println(reportCategory.toString()+". D: "+daily.get(reportCategory).getDebitAmount()+" | K: "+daily.get(reportCategory).getCreditAmount());
 			}
 		}
-		File result = excelReportBuilder.getMonthyReport(ReportRequest.builder()
+		File result = monthlyReportBuilder.getMonthyReport(ReportRequest.builder()
 				.filter(filter).monthyReportContent(monthyReportContent).build());
 		
 		return result;
