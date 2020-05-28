@@ -261,10 +261,10 @@
 						<configuration>
 							<classifier>dto</classifier>
 							<includes>
-								<include>**/fajar/entity/**</include> 
-								<include>**/fajar/annotation/**</include> 
-								<include>**/fajar/dto/*</include>
-								<include>**/fajar/util/*</include>
+								<include>**/fajar/shoppingmart/entity/**</include> 
+								<include>**/fajar/shoppingmart/annotation/**</include> 
+								<include>**/fajar/shoppingmart/dto/*</include>
+								<include>**/fajar/shoppingmart/util/*</include>
 							</includes>
 						</configuration>
 					</plugin>
