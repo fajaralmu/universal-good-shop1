@@ -1,4 +1,4 @@
-package com.fajar.shoppingmart.service.report.data;
+package com.fajar.shoppingmart.entity.custom;
 
 import com.fajar.shoppingmart.dto.CashType;
 import com.fajar.shoppingmart.dto.ReportCategory;

@@ -1,8 +1,6 @@
-package com.fajar.shoppingmart.service.entity;
+package com.fajar.shoppingmart.entity.custom;
 
 import java.util.Date;
-
-import com.fajar.shoppingmart.service.report.data.BalanceJournalInfo;
 
 public interface FinancialEntity {
 

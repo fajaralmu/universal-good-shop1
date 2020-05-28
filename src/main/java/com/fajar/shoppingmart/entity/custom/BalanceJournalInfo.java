@@ -1,4 +1,4 @@
-package com.fajar.shoppingmart.service.report.data;
+package com.fajar.shoppingmart.entity.custom;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -6,7 +6,6 @@ import java.util.Date;
 import com.fajar.shoppingmart.dto.CashType;
 import com.fajar.shoppingmart.dto.ReportCategory;
 import com.fajar.shoppingmart.entity.CashBalance;
-import com.fajar.shoppingmart.service.entity.FinancialEntity;
 
 import lombok.Data;
 

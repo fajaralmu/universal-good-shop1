@@ -11,9 +11,9 @@ import javax.persistence.Table;
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
-import com.fajar.shoppingmart.service.entity.FinancialEntity;
-import com.fajar.shoppingmart.service.report.data.BalanceJournalInfo;
-import com.fajar.shoppingmart.service.report.data.CostJournalInfo;
+import com.fajar.shoppingmart.entity.custom.BalanceJournalInfo;
+import com.fajar.shoppingmart.entity.custom.CostJournalInfo;
+import com.fajar.shoppingmart.entity.custom.FinancialEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

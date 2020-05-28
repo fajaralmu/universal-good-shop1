@@ -12,9 +12,9 @@ import com.fajar.shoppingmart.entity.CashBalance;
 import com.fajar.shoppingmart.entity.CostFlow;
 import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.Transaction;
+import com.fajar.shoppingmart.entity.custom.BalanceJournalInfo;
+import com.fajar.shoppingmart.entity.custom.FinancialEntity;
 import com.fajar.shoppingmart.repository.CashBalanceRepository;
-import com.fajar.shoppingmart.service.entity.FinancialEntity;
-import com.fajar.shoppingmart.service.report.data.BalanceJournalInfo;
 import com.fajar.shoppingmart.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
