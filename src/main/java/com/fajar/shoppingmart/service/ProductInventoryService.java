@@ -17,7 +17,7 @@ import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.repository.InventoryItemRepository;
 import com.fajar.shoppingmart.repository.ProductFlowRepository;
 import com.fajar.shoppingmart.repository.TransactionRepository;
-import com.shoppingmart.fajar.util.StringUtil;
+import com.fajar.shoppingmart.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

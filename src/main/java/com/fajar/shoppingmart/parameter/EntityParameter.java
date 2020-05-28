@@ -3,7 +3,7 @@ package com.fajar.shoppingmart.parameter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.shoppingmart.fajar.util.MyJsonUtil;
+import com.fajar.shoppingmart.util.MyJsonUtil;
 
 public class EntityParameter {
  

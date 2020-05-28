@@ -22,8 +22,8 @@ import com.fajar.shoppingmart.entity.RegisteredRequest;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.repository.RegisteredRequestRepository;
 import com.fajar.shoppingmart.repository.UserRepository;
-import com.shoppingmart.fajar.util.CollectionUtil;
-import com.shoppingmart.fajar.util.EntityUtil;
+import com.fajar.shoppingmart.util.CollectionUtil;
+import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

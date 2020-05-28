@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fajar.shoppingmart.annotation.Dto;
-import com.shoppingmart.fajar.util.MyJsonUtil;
+import com.fajar.shoppingmart.util.MyJsonUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

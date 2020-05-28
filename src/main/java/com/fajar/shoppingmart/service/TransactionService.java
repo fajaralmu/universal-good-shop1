@@ -28,8 +28,8 @@ import com.fajar.shoppingmart.repository.CustomerRepository;
 import com.fajar.shoppingmart.repository.ProductFlowRepository;
 import com.fajar.shoppingmart.repository.ProductRepository;
 import com.fajar.shoppingmart.repository.SupplierRepository;
-import com.shoppingmart.fajar.util.CollectionUtil;
-import com.shoppingmart.fajar.util.EntityUtil;
+import com.fajar.shoppingmart.util.CollectionUtil;
+import com.fajar.shoppingmart.util.EntityUtil;
 
 @Service
 public class TransactionService {

@@ -2,7 +2,7 @@ package com.fajar.shoppingmart.querybuilder;
 
 import static com.fajar.shoppingmart.querybuilder.QueryUtil.SQL_KEYWORDSET_SELECT_COUNT;
 import static com.fajar.shoppingmart.querybuilder.QueryUtil.doubleQuoteMysql;
-import static com.shoppingmart.fajar.util.StringUtil.buildString;
+import static com.fajar.shoppingmart.util.StringUtil.buildString;
 
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.entity.BaseEntity;

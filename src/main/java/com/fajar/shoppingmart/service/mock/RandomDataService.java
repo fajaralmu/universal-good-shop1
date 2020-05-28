@@ -24,9 +24,9 @@ import com.fajar.shoppingmart.repository.ProductFlowRepository;
 import com.fajar.shoppingmart.repository.ProductRepository;
 import com.fajar.shoppingmart.repository.SupplierRepository;
 import com.fajar.shoppingmart.repository.TransactionRepository;
-import com.shoppingmart.fajar.util.DateUtil;
-import com.shoppingmart.fajar.util.StringUtil;
-import com.shoppingmart.fajar.util.ThreadUtil;
+import com.fajar.shoppingmart.util.DateUtil;
+import com.fajar.shoppingmart.util.StringUtil;
+import com.fajar.shoppingmart.util.ThreadUtil;
 
 @Service
 public class RandomDataService {

@@ -22,8 +22,8 @@ import com.fajar.shoppingmart.service.TransactionService;
 import com.fajar.shoppingmart.service.UserAccountService;
 import com.fajar.shoppingmart.service.UserSessionService;
 import com.fajar.shoppingmart.service.WebConfigService;
-import com.shoppingmart.fajar.util.DateUtil;
-import com.shoppingmart.fajar.util.MvcUtil;
+import com.fajar.shoppingmart.util.DateUtil;
+import com.fajar.shoppingmart.util.MvcUtil;
 @Controller 
 public class BaseController {
 	

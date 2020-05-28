@@ -1,4 +1,4 @@
-package com.shoppingmart.fajar.util;
+package com.fajar.shoppingmart.util;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

@@ -30,8 +30,8 @@ import com.fajar.shoppingmart.service.CashBalanceService;
 import com.fajar.shoppingmart.service.EntityService;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.entity.FinancialEntity;
-import com.shoppingmart.fajar.util.DateUtil;
-import com.shoppingmart.fajar.util.EntityUtil;
+import com.fajar.shoppingmart.util.DateUtil;
+import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

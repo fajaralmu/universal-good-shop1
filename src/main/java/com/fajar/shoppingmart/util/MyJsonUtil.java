@@ -1,4 +1,4 @@
-package com.shoppingmart.fajar.util;
+package com.fajar.shoppingmart.util;
 
 import java.lang.reflect.Field;
 import java.util.List;

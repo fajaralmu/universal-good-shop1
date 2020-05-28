@@ -21,8 +21,8 @@ import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.Product;
 import com.fajar.shoppingmart.service.LogProxyFactory;
-import com.shoppingmart.fajar.util.CollectionUtil;
-import com.shoppingmart.fajar.util.DateUtil;
+import com.fajar.shoppingmart.util.CollectionUtil;
+import com.fajar.shoppingmart.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

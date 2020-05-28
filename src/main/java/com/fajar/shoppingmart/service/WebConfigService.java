@@ -14,7 +14,7 @@ import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.entity.ShopProfile;
 import com.fajar.shoppingmart.repository.ShopProfileRepository;
 import com.fajar.shoppingmart.test.RmiStopper;
-import com.shoppingmart.fajar.util.EntityUtil;
+import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.Data;
 

@@ -2,7 +2,7 @@ package com.fajar.shoppingmart.querybuilder;
 
 import java.io.Serializable;
 
-import com.shoppingmart.fajar.util.StringUtil;
+import com.fajar.shoppingmart.util.StringUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

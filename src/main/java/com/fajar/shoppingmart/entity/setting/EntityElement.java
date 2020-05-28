@@ -15,10 +15,10 @@ import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
 import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.util.EntityUtil;
+import com.fajar.shoppingmart.util.MyJsonUtil;
+import com.fajar.shoppingmart.util.StringUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.shoppingmart.fajar.util.EntityUtil;
-import com.shoppingmart.fajar.util.MyJsonUtil;
-import com.shoppingmart.fajar.util.StringUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -97,7 +97,8 @@ public class EntityElement implements Serializable {
 
 	private boolean doBuild() {
 		
-		if (formField == null || skipBaseField) {
+		boolean formFieldIsNullOrSkip = (formField == null || skipBaseField);
+		if (formFieldIsNullOrSkip) {
 			return false;
 		} 
 		

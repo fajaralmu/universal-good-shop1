@@ -1,7 +1,7 @@
 package com.fajar.shoppingmart.service;
 
-import static com.shoppingmart.fajar.util.CollectionUtil.arrayToList;
-import static com.shoppingmart.fajar.util.CollectionUtil.convertList;
+import static com.fajar.shoppingmart.util.CollectionUtil.arrayToList;
+import static com.fajar.shoppingmart.util.CollectionUtil.convertList;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,8 +23,8 @@ import com.fajar.shoppingmart.entity.ProductSales;
 import com.fajar.shoppingmart.entity.Supplier;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.repository.ProductRepository;
-import com.shoppingmart.fajar.util.CollectionUtil;
-import com.shoppingmart.fajar.util.DateUtil;
+import com.fajar.shoppingmart.util.CollectionUtil;
+import com.fajar.shoppingmart.util.DateUtil;
 
 @Service
 public class ProductService {

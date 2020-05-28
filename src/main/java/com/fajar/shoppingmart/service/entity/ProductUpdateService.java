@@ -14,7 +14,7 @@ import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Product;
 import com.fajar.shoppingmart.repository.ProductRepository;
 import com.fajar.shoppingmart.service.ProductInventoryService;
-import com.shoppingmart.fajar.util.CollectionUtil;
+import com.fajar.shoppingmart.util.CollectionUtil;
 
 @Service
 public class ProductUpdateService extends BaseEntityUpdateService{

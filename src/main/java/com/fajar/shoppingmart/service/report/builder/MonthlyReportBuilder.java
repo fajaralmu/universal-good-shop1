@@ -1,10 +1,10 @@
 package com.fajar.shoppingmart.service.report.builder;
 
-import static com.shoppingmart.fajar.util.ExcelReportUtil.addMergedRegion;
-import static com.shoppingmart.fajar.util.ExcelReportUtil.autosizeColumn;
-import static com.shoppingmart.fajar.util.ExcelReportUtil.createRow;
-import static com.shoppingmart.fajar.util.ExcelReportUtil.curr;
-import static com.shoppingmart.fajar.util.ExcelReportUtil.setBorderTop;
+import static com.fajar.shoppingmart.util.ExcelReportUtil.addMergedRegion;
+import static com.fajar.shoppingmart.util.ExcelReportUtil.autosizeColumn;
+import static com.fajar.shoppingmart.util.ExcelReportUtil.createRow;
+import static com.fajar.shoppingmart.util.ExcelReportUtil.curr;
+import static com.fajar.shoppingmart.util.ExcelReportUtil.setBorderTop;
 
 import java.io.File;
 import java.util.Date;
@@ -26,9 +26,9 @@ import com.fajar.shoppingmart.dto.ReportCategory;
 import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.service.report.data.DailyReportRow;
 import com.fajar.shoppingmart.service.report.data.ReportData;
-import com.shoppingmart.fajar.util.DateUtil;
-import com.shoppingmart.fajar.util.MyFileUtil;
-import com.shoppingmart.fajar.util.StringUtil;
+import com.fajar.shoppingmart.util.DateUtil;
+import com.fajar.shoppingmart.util.MyFileUtil;
+import com.fajar.shoppingmart.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

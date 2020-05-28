@@ -1,6 +1,6 @@
 package com.fajar.shoppingmart.controller;
 
-import static com.shoppingmart.fajar.util.MvcUtil.constructCommonModel;
+import static com.fajar.shoppingmart.util.MvcUtil.constructCommonModel;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,9 +27,9 @@ import com.fajar.shoppingmart.entity.setting.EntityProperty;
 import com.fajar.shoppingmart.service.EntityManagementPageService;
 import com.fajar.shoppingmart.service.EntityService;
 import com.fajar.shoppingmart.service.LogProxyFactory;
-import com.shoppingmart.fajar.util.CollectionUtil;
-import com.shoppingmart.fajar.util.EntityUtil;
-import com.shoppingmart.fajar.util.MyJsonUtil;
+import com.fajar.shoppingmart.util.CollectionUtil;
+import com.fajar.shoppingmart.util.EntityUtil;
+import com.fajar.shoppingmart.util.MyJsonUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

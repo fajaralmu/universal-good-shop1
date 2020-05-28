@@ -3,7 +3,7 @@ package com.fajar.shoppingmart.querybuilder;
 import static com.fajar.shoppingmart.querybuilder.QueryUtil.SQL_KEYWORD_FROM;
 import static com.fajar.shoppingmart.querybuilder.QueryUtil.SQL_KEYWORD_SELECT;
 import static com.fajar.shoppingmart.querybuilder.QueryUtil.doubleQuoteMysql;
-import static com.shoppingmart.fajar.util.StringUtil.buildString;
+import static com.fajar.shoppingmart.util.StringUtil.buildString;
 
 import java.io.Serializable;
 import java.util.List;

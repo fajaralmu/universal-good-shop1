@@ -13,7 +13,7 @@ import com.fajar.shoppingmart.entity.Voucher;
 import com.fajar.shoppingmart.repository.CustomerRepository;
 import com.fajar.shoppingmart.repository.CustomerVoucherRepository;
 import com.fajar.shoppingmart.repository.VoucherRepository;
-import com.shoppingmart.fajar.util.ThreadUtil;
+import com.fajar.shoppingmart.util.ThreadUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

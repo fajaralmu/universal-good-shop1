@@ -1,7 +1,7 @@
-package com.shoppingmart.fajar.util;
+package com.fajar.shoppingmart.util;
 
-import static com.shoppingmart.fajar.util.EntityUtil.getDeclaredField;
-import static com.shoppingmart.fajar.util.MapUtil.objectEquals;
+import static com.fajar.shoppingmart.util.EntityUtil.getDeclaredField;
+import static com.fajar.shoppingmart.util.MapUtil.objectEquals;
 import static org.apache.poi.ss.usermodel.BorderStyle.THIN;
 
 import java.lang.reflect.Field;

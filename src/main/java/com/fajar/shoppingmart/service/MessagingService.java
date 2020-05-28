@@ -18,7 +18,7 @@ import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Message;
 import com.fajar.shoppingmart.entity.RegisteredRequest;
 import com.fajar.shoppingmart.repository.MessageRepository;
-import com.shoppingmart.fajar.util.StringUtil; 
+import com.fajar.shoppingmart.util.StringUtil; 
 
 @Service
 public class MessagingService {

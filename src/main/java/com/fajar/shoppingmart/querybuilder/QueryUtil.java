@@ -1,9 +1,9 @@
 package com.fajar.shoppingmart.querybuilder;
 
-import static com.shoppingmart.fajar.util.EntityUtil.getClassAnnotation;
-import static com.shoppingmart.fajar.util.EntityUtil.getDeclaredField;
-import static com.shoppingmart.fajar.util.EntityUtil.getIdFieldOfAnObject;
-import static com.shoppingmart.fajar.util.StringUtil.buildString;
+import static com.fajar.shoppingmart.util.EntityUtil.getClassAnnotation;
+import static com.fajar.shoppingmart.util.EntityUtil.getDeclaredField;
+import static com.fajar.shoppingmart.util.EntityUtil.getIdFieldOfAnObject;
+import static com.fajar.shoppingmart.util.StringUtil.buildString;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -19,8 +19,8 @@ import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.KeyValue;
 import com.fajar.shoppingmart.entity.BaseEntity;
-import com.shoppingmart.fajar.util.EntityUtil;
-import com.shoppingmart.fajar.util.StringUtil;
+import com.fajar.shoppingmart.util.EntityUtil;
+import com.fajar.shoppingmart.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

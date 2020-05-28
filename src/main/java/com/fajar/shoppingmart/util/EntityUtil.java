@@ -1,4 +1,4 @@
-package com.shoppingmart.fajar.util;
+package com.fajar.shoppingmart.util;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -51,10 +51,7 @@ public class EntityUtil {
 				}
 				
 				fieldNames.add(entityElement.getId());  
-				entityElements.add(entityElement);
-				
-				
-				
+				entityElements.add(entityElement);				
 			}
 
 			entityProperty.setAlias(dto.value().isEmpty() ? clazz.getSimpleName() : dto.value());

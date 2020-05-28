@@ -1,6 +1,6 @@
 package com.fajar.shoppingmart.service;
 
-import static com.shoppingmart.fajar.util.MvcUtil.constructCommonModel;
+import static com.fajar.shoppingmart.util.MvcUtil.constructCommonModel;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,7 +11,7 @@ import org.springframework.ui.Model;
 import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
 import com.fajar.shoppingmart.entity.setting.EntityProperty;
 import com.fajar.shoppingmart.repository.EntityRepository;
-import com.shoppingmart.fajar.util.EntityUtil;
+import com.fajar.shoppingmart.util.EntityUtil;
 
 @Service
 public class EntityManagementPageService {
