@@ -215,7 +215,7 @@ public class TransactionReportBuilder {
 		 
 		final boolean sameDay = dailyReportRow.getDay() == currentDay; 
 		createRow(xsheet, dailyRow, columnOffset,
-		 		BLANK, sameDay ? BLANK : currentDay, dailyReportRow.getName(), dailyReportRow.getCategory().code,
+		 		BLANK, sameDay ? BLANK : dailyReportRow.getDay(), dailyReportRow.getName(), dailyReportRow.getCategory().code,
 				 curr(dailyReportRow.getDebitAmount()),
 				 curr(dailyReportRow.getCreditAmount()),
 				 "-" );  
