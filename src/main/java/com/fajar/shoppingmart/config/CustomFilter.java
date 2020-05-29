@@ -49,8 +49,7 @@ public class CustomFilter implements javax.servlet.Filter {
         out.println();
         out.println("****************************** BEGIN API "+randomID+" ***************************"); 
         out.println(uriInfo(req));
-        printRequestHeaders(req);
-        out.println(contentTypeInfo(req));
+        printRequestHeaders(req); 
         out.println("********************************************************************");
         out.println(); 
         
@@ -66,8 +65,7 @@ public class CustomFilter implements javax.servlet.Filter {
     	out.println("***************************** END API "+randomID+" *******************************");
     	out.println(uriInfo(req));
     	printResponseHeaders(res);
-        out.println("Status: "+ res.getStatus()+" Duration: "+ getDuration()+" ms");
-        out.println(contentTypeInfo(req));
+        out.println("Status: "+ res.getStatus()+" Duration: "+ getDuration()+" ms"); 
         out.println("*********************************************************************");
         out.println();
          
@@ -82,8 +80,7 @@ public class CustomFilter implements javax.servlet.Filter {
     	Collection<String> headers = res.getHeaderNames(); 
 		for (String header : headers) {
 			out.println(header+": "+res.getHeader(header));
-		}
-		
+		} 
 	}
 
 	private void printRequestHeaders(HttpServletRequest req) {
@@ -91,15 +88,8 @@ public class CustomFilter implements javax.servlet.Filter {
 		while(headers.hasMoreElements()) {
 			String header = headers.nextElement();
 			out.println(header+": "+req.getHeader(header));
-		}
-		 
-	}
-
-	private String contentTypeInfo(HttpServletRequest req) {
-
-    	String contentInfo = "Content Type: "+ req.getContentType();
-		return contentInfo;
-	}
+		} 
+	} 
 
 	private String uriInfo(HttpServletRequest req) {
     	return("URI: ["+req.getMethod()+"]"+req.getRequestURI());
