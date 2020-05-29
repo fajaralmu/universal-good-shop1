@@ -25,9 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class CustomFilter implements javax.servlet.Filter {
-  
-	private Date startTime, endTime = new Date();
+public class CustomFilter implements javax.servlet.Filter { 
 	
 	public CustomFilter() {
 		log.info("_________________CustomFilter______________");
@@ -39,7 +37,7 @@ public class CustomFilter implements javax.servlet.Filter {
       ServletResponse response, 
       FilterChain chain) throws IOException, ServletException {
   
-    	startTime = new Date();
+    	Date startTime = new Date();
         HttpServletRequest req = (HttpServletRequest) request; 
          
         final String randomID = randomID();
@@ -56,7 +54,7 @@ public class CustomFilter implements javax.servlet.Filter {
         chain.doFilter(request, response);
         HttpServletResponse res = (HttpServletResponse) response;
         
-        endTime = new Date();
+        Date endTime = new Date();
          
         /*
          * ================== RESPONSE =================
@@ -65,7 +63,7 @@ public class CustomFilter implements javax.servlet.Filter {
     	out.println("***************************** END API "+randomID+" *******************************");
     	out.println(uriInfo(req));
     	printResponseHeaders(res);
-        out.println("Status: "+ res.getStatus()+" Duration: "+ getDuration()+" ms"); 
+        out.println("Status: "+ res.getStatus()+" Duration: "+ getDuration(startTime, endTime)+" ms"); 
         out.println("*********************************************************************");
         out.println();
          
@@ -95,7 +93,7 @@ public class CustomFilter implements javax.servlet.Filter {
     	return("URI: ["+req.getMethod()+"]"+req.getRequestURI());
     }
 
-    private long getDuration() {
+    private long getDuration(Date startTime, Date endTime) {
     	return endTime.getTime() - startTime.getTime();
     }
     
