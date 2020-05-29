@@ -108,15 +108,15 @@ public class EntityElement implements Serializable {
 		} 
 		
 		String lableName = formField.lableName().equals("") ? field.getName() : formField.lableName(); 
-		FieldType fieldType = determineFieldType();
+		FieldType determinedFieldType = determineFieldType();
 		
 		try {
 			
-			checkFieldType(fieldType); 
+			checkFieldType(determinedFieldType); 
 			boolean hasJoinColumn = field.getAnnotation(JoinColumn.class) != null; 
 			
 			if (hasJoinColumn) {
-				processJoinColumn(fieldType);  
+				processJoinColumn(determinedFieldType);  
 			}
 		} catch (Exception e1) { 
 			e1.printStackTrace();
@@ -129,7 +129,7 @@ public class EntityElement implements Serializable {
 		setIdentity(idField);
 		setLableName(StringUtil.extractCamelCase(lableName));
 		setRequired(formField.required());
-		setType(fieldType.value);
+		setType(determinedFieldType.value);
 		setMultiple(formField.multiple());
 		setClassName(field.getType().getCanonicalName());
 		setShowDetail(formField.showDetail());
@@ -146,40 +146,54 @@ public class EntityElement implements Serializable {
 			setDetailField(true);
 		}
 	}
+	
 	private void checkFieldType(FieldType fieldType) throws Exception {
-		 
-		final String entityElementId = field.getName(); 
 
-		/**
-		 * check @FormField.fieldType
-		 */
 		if (fieldType.equals(FieldType.FIELD_TYPE_IMAGE)) {
-			entityProperty.getImageElements().add(entityElementId);
+			processImageType();
 
-		} else if (fieldType.equals(FieldType.FIELD_TYPE_CURRENCY)) {
-			entityProperty.getCurrencyElements().add(entityElementId);
-
-			fieldType = FieldType.FIELD_TYPE_NUMBER;
-		} else if (fieldType.equals(FieldType.FIELD_TYPE_DATE)) {
-			entityProperty.getDateElements().add(entityElementId);
-
-		} else if (fieldType.equals(FieldType.FIELD_TYPE_PLAIN_LIST)) {
-			String[] availableValues = formField.availableValues();
+		} else if (fieldType.equals(FieldType.FIELD_TYPE_CURRENCY)) { 
+			processCurrencyType();
 			
-			if (availableValues.length > 0) {
-				setPlainListValues(Arrays.asList(availableValues));
-				
-			} else if (field.getType().isEnum()) {
-				Object[] enumConstants = field.getType().getEnumConstants();
-				setPlainListValues(Arrays.asList(enumConstants));
-				
-			} else {
-				log.error("Ivalid element: {}", field.getName());
-				throw new Exception("Invalid Element");
-			}
+		} else if (fieldType.equals(FieldType.FIELD_TYPE_DATE)) {
+			processDateType();
+			
+		} else if (fieldType.equals(FieldType.FIELD_TYPE_PLAIN_LIST)) {
+			processPlainListType();
+			
 		}
 
 	}
+	
+	private void processCurrencyType() { 
+		entityProperty.getCurrencyElements().add(field.getName());
+	}
+	
+	private void processImageType() {
+		entityProperty.getImageElements().add(field.getName());
+	}
+	
+	private void processDateType() {
+		entityProperty.getDateElements().add(field.getName());
+	}
+	
+	private void processPlainListType() throws Exception {
+		 
+		String[] availableValues = formField.availableValues();
+		
+		if (availableValues.length > 0) {
+			setPlainListValues(Arrays.asList(availableValues));
+			
+		} else if (field.getType().isEnum()) {
+			Object[] enumConstants = field.getType().getEnumConstants();
+			setPlainListValues(Arrays.asList(enumConstants));
+			
+		} else {
+			log.error("Ivalid element: {}", field.getName());
+			throw new Exception("Invalid Element");
+		}
+	}
+	
 	private FieldType determineFieldType() {
 		
 		FieldType fieldType;

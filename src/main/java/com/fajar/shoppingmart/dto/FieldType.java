@@ -4,7 +4,7 @@ public enum FieldType {
 
 	 FIELD_TYPE_TEXT ( "text"),
 	 FIELD_TYPE_IMAGE ( "img"),
-	 FIELD_TYPE_CURRENCY ( "currency"),
+	 FIELD_TYPE_CURRENCY ( "number"),
 	 FIELD_TYPE_NUMBER ( "number"),
 	 FIELD_TYPE_HIDDEN ( "hidden"),
 	 FIELD_TYPE_COLOR ( "color"),
@@ -16,5 +16,5 @@ public enum FieldType {
 	public final String value;
 	private FieldType(String val) {
 		this.value = val;
-	}
+	} 
 }
