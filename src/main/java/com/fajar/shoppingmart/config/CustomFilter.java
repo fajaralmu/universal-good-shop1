@@ -28,21 +28,23 @@ public class CustomFilter implements javax.servlet.Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         
-        boolean isRestEndpoint = req.getMethod().toLowerCase().equals("post");
+        boolean isRestEndpoint = true;//req.getMethod().toLowerCase().equals("post");
         
         if(isRestEndpoint) {
-	        log.info("=====================BEGIN API==================");
+	        log.info("****************************** BEGIN API ***************************");
 	        log.info("Content Type: {}", req.getContentType());
 	        log.info("Method: {} Uri: {}",req.getMethod(), req.getRequestURI());
+	        log.info("********************************************************************");
 	         
         } 
         	
         chain.doFilter(request, response);
         
         if(isRestEndpoint) {
+        	log.info("********************************************************************");
 	        log.info("Status: {}", res.getStatus());
 	        log.info("Content Type: {}", res.getContentType());
-	        log.info("================END API=================");
+	        log.info("***************************** END API ******************************");
         }
     }
 

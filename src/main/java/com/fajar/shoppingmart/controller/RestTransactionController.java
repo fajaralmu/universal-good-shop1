@@ -6,8 +6,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,22 +20,22 @@ import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.ProductService;
 import com.fajar.shoppingmart.service.TransactionService;
-import com.fajar.shoppingmart.service.UserSessionService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/api/transaction")
-public class RestTransactionController {
-	Logger log = LoggerFactory.getLogger(RestTransactionController.class);
-	@Autowired
-	private UserSessionService userSessionService;
+@Slf4j
+public class RestTransactionController extends BaseController{
+	
 	@Autowired
 	private TransactionService transactionService;
 	@Autowired
 	private ProductService productService;
 
 	public RestTransactionController() {
-		log.info("------------------RestTransactionController-----------------");
+		log.info("------------------Rest Transaction Controller-----------------");
 	}
 
 	@PostConstruct

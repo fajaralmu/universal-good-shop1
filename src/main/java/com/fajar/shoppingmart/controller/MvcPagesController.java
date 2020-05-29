@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MvcPagesController extends BaseController{  
 	
 	public MvcPagesController() {
-		log.info("---------------------------Mvc Public Controller------------------------------");
+		log.info("---------------------------Mvc Pages Controller------------------------------");
 	}
 	
 	@PostConstruct

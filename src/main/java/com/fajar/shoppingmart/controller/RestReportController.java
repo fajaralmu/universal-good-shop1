@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.service.LogProxyFactory;
-import com.fajar.shoppingmart.service.report.data.ReportDataService;
 import com.fajar.shoppingmart.service.report.data.ReportService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +34,10 @@ public class RestReportController {
 	@PostConstruct
 	public void init() {
 		LogProxyFactory.setLoggers(this);
+	}
+	
+	public RestReportController() {
+		log.info("------------------RestReportController----------------------");
 	}
 	
 	@PostMapping(value = "/daily", consumes = MediaType.APPLICATION_JSON_VALUE )

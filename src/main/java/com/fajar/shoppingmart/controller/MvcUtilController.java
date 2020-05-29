@@ -18,8 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("web")
 @Slf4j
-public class MvcUtilController {
- 
+public class MvcUtilController extends BaseController{ 
 	
 	public MvcUtilController() {
 		log.info("-----------------MvcUtilController------------------");

@@ -6,9 +6,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,19 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.LogProxyFactory;
-import com.fajar.shoppingmart.service.UserAccountService;
-import com.fajar.shoppingmart.service.UserSessionService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/api/account")
-public class RestAccountController {
-	Logger log = LoggerFactory.getLogger(RestAccountController.class);
-	@Autowired
-	private UserAccountService accountService;
-	@Autowired
-	private UserSessionService userSessionService;
- 
+@Slf4j
+public class RestAccountController extends BaseController{
 	
 	public RestAccountController() {
 		log.info("------------------RestAccountController-----------------");

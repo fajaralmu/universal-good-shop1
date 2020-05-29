@@ -20,7 +20,6 @@ import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.exception.InvalidRequestException;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.ProductService;
-import com.fajar.shoppingmart.service.UserSessionService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,12 +31,14 @@ public class RestPublicController extends BaseController{
 	
 	@Autowired
 	private ProductService productService;
-	@Autowired
-	private UserSessionService userSessionService;
 
 	@PostConstruct
 	public void init() {
 		LogProxyFactory.setLoggers(this);
+	}
+	
+	public RestPublicController() {
+		log.info("----------------------Rest Public Controller-------------------");
 	}
 	
 	@PostMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

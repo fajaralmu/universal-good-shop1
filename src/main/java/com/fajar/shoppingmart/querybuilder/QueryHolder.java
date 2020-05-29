@@ -17,6 +17,7 @@ public abstract class QueryHolder implements Serializable{
 	 * 
 	 */
 	protected static final long serialVersionUID = 772056003694375496L;
+	protected static final String SQL_DOT_STAR = ".*";
 	protected List<QueryFilterItem> queryFilters;
 	protected final Class<? extends BaseEntity> entityClass;
 	protected final String tableName;
@@ -62,7 +63,7 @@ public abstract class QueryHolder implements Serializable{
 
 		return buildString(SQL_KEYWORD_SELECT, 
 				doubleQuoteMysql(tableName), 
-				".*", 
+				SQL_DOT_STAR, 
 				SQL_KEYWORD_FROM,
 				doubleQuoteMysql(tableName));
 	}
