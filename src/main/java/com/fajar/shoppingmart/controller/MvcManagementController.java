@@ -134,7 +134,7 @@ public class MvcManagementController extends BaseController {
 			return ERROR_404_PAGE;
 		}
 		HashMap<String, List> listObject = new HashMap<>();
-		listObject.put("cost", CollectionUtil.convertList(entityService.getAllCostType()));
+		listObject.put("costType", CollectionUtil.convertList(entityService.getAllCostType()));
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(CostFlow.class, listObject);
 		model = constructCommonModel(request, entityProperty, model, "CostFlow", "management");
 		return basePage;
