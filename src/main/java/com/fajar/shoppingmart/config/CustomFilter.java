@@ -1,5 +1,7 @@
 package com.fajar.shoppingmart.config;
 
+import static java.lang.System.out;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
@@ -14,7 +16,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+
+import com.fajar.shoppingmart.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,39 +41,47 @@ public class CustomFilter implements javax.servlet.Filter {
   
     	startTime = new Date();
         HttpServletRequest req = (HttpServletRequest) request; 
+         
+        final String randomID = randomID();
+        /*
+         * ================== REQUEST ==================
+         */
+        out.println();
+        out.println("****************************** BEGIN API "+randomID+" ***************************"); 
+        out.println(uriInfo(req));
+        printRequestHeaders(req);
+        out.println(contentTypeInfo(req));
+        out.println("********************************************************************");
+        out.println(); 
         
-        boolean isRestEndpoint = true;//req.getMethod().toLowerCase().equals("post");
-        
-        if(isRestEndpoint) {
-	        System.out.println("****************************** BEGIN API ***************************"); 
-	        System.out.println(uriInfo(req));
-	        printRequestHeaders(req);
-	        System.out.println(contentTypeInfo(req));
-	        System.out.println("********************************************************************");
-	        System.out.println();
-	         
-        } 
-        	
         chain.doFilter(request, response);
         HttpServletResponse res = (HttpServletResponse) response;
         
         endTime = new Date();
-        
-        if(isRestEndpoint) {
-        	System.out.println();
-        	System.out.println("***************************** END API *******************************");
-        	System.out.println(uriInfo(req));
-        	printResponseHeaders(res);
-	        System.out.println("Status: "+ res.getStatus()+" Duration: "+ getDuration()+" ms");
-	        System.out.println(contentTypeInfo(req));
-	        System.out.println("*********************************************************************");
-        }
+         
+        /*
+         * ================== RESPONSE =================
+         */
+    	out.println();
+    	out.println("***************************** END API "+randomID+" *******************************");
+    	out.println(uriInfo(req));
+    	printResponseHeaders(res);
+        out.println("Status: "+ res.getStatus()+" Duration: "+ getDuration()+" ms");
+        out.println(contentTypeInfo(req));
+        out.println("*********************************************************************");
+        out.println();
+         
+    }
+    
+    private String randomID() {
+    	
+    	return StringUtil.generateRandomNumber(5);
     }
     
     private void printResponseHeaders(HttpServletResponse res) {
     	Collection<String> headers = res.getHeaderNames(); 
 		for (String header : headers) {
-			System.out.println(header+": "+res.getHeader(header));
+			out.println(header+": "+res.getHeader(header));
 		}
 		
 	}
@@ -77,7 +90,7 @@ public class CustomFilter implements javax.servlet.Filter {
 		Enumeration<String> headers = req.getHeaderNames(); 
 		while(headers.hasMoreElements()) {
 			String header = headers.nextElement();
-			System.out.println(header+": "+req.getHeader(header));
+			out.println(header+": "+req.getHeader(header));
 		}
 		 
 	}
