@@ -1,6 +1,7 @@
 package com.fajar.shoppingmart.config;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -18,6 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomFilter implements javax.servlet.Filter {
   
+	private Date startTime, endTime = new Date();
+	
+	public CustomFilter() {
+		log.info("_________________CustomFilter______________");
+	}
 	
     @Override
     public void doFilter(
@@ -25,29 +31,38 @@ public class CustomFilter implements javax.servlet.Filter {
       ServletResponse response, 
       FilterChain chain) throws IOException, ServletException {
   
+    	startTime = new Date();
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         
         boolean isRestEndpoint = true;//req.getMethod().toLowerCase().equals("post");
         
         if(isRestEndpoint) {
-	        log.info("****************************** BEGIN API ***************************");
-	        log.info("Content Type: {}", req.getContentType());
-	        log.info("Method: {} Uri: {}",req.getMethod(), req.getRequestURI());
-	        log.info("********************************************************************");
+	        System.out.println("****************************** BEGIN API ***************************");
+	        System.out.println("Content Type: "+ req.getContentType());
+	        System.out.println("Method: "+req.getMethod()+" \nURI: "+ req.getRequestURI());
+	        System.out.println("********************************************************************");
+	        System.out.println();
 	         
         } 
         	
         chain.doFilter(request, response);
+        endTime = new Date();
         
         if(isRestEndpoint) {
-        	log.info("********************************************************************");
-	        log.info("Status: {}", res.getStatus());
-	        log.info("Content Type: {}", res.getContentType());
-	        log.info("***************************** END API ******************************");
+        	System.out.println();
+        	System.out.println("********************************************************************");
+        	System.out.println("URI: "+req.getRequestURI());
+	        System.out.println("Status: "+ res.getStatus()+" Duration: "+ getDuration()+" ms");
+	        System.out.println("Content Type: "+ res.getContentType());
+	        System.out.println("***************************** END API ******************************");
         }
     }
 
+    private long getDuration() {
+    	return endTime.getTime() - startTime.getTime();
+    }
+    
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		// TODO Auto-generated method stub
