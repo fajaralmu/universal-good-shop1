@@ -8,7 +8,7 @@
  
 <div class="content">
 	<p id="info" align="center"></p>
-	<h2>Sessions Management</h2>
+	<h2>Sessions Management<small> [${registeredRequestId }]</small></h2>
 	<button id="btn-clear-sessions" onclick="clearSessions()" class="btn btn-danger">Clear
 		All Sessions</button>
 	<table id="app-sessions">

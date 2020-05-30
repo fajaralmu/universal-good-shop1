@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserAccountService { 
 	
+	public static final String ATTR_REGISTERED_REQUEST_ID = "registered_request_id";
 	@Autowired
 	private UserSessionService userSessionService; 
 	@Autowired
@@ -81,13 +82,15 @@ public class UserAccountService {
 			return new WebResponse("01","invalid credential");
 		} 
 		 
-		String loginKey = userSessionService.addUserSession(dbUser,httpRequest,httpResponse);
+		String loginKey = userSessionService.addUserSession(dbUser, httpRequest, httpResponse);
 		dbUser.setLoginKey(loginKey); 
 		dbUser.setPassword(null);
 //		dbUser.setRole(null); 
 		
 		WebResponse response = new WebResponse("00","success");   
 		response.setEntity(dbUser);
+		WebResponse reqIdGenerated = userSessionService.requestId(httpRequest, httpResponse);
+		httpRequest.getSession(false).setAttribute(ATTR_REGISTERED_REQUEST_ID, reqIdGenerated.getMessage());
 		
 		log.info("LOGIN SUCCESS");
 		
@@ -95,7 +98,7 @@ public class UserAccountService {
 			log.info("WILL REDIRECT TO REQUESTED URI: "+httpRequest.getSession(false).getAttribute(UserSessionService.ATTR_REQUEST_URI));
 			response.setRedirectUrl(httpRequest.getSession(false).getAttribute(UserSessionService.ATTR_REQUEST_URI).toString());			
 		}
-		
+		response.setMessage(reqIdGenerated.getMessage());
 		return response;
 	} 
 	

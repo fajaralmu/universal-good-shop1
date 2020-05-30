@@ -1,6 +1,7 @@
 package com.fajar.shoppingmart.service;
 
 import java.lang.reflect.Field;
+import java.rmi.Remote;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -308,17 +309,32 @@ public class UserSessionService {
 	 */
 
 	public WebResponse requestId(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
+		String requestId;
+		 
 		if(validatePageRequest(servletRequest)) {
-			 String requestId = servletRequest.getHeader(RuntimeService.PAGE_REQUEST_ID);
+			 requestId = servletRequest.getHeader(RuntimeService.PAGE_REQUEST_ID);
 			 
 			 if(hasSession(servletRequest)) {
 				 servletResponse.addHeader(HEADER_LOGIN_KEY,servletRequest.getHeader(HEADER_LOGIN_KEY));
-			 }
+			 } 
 			 
-			 return WebResponse.builder().code("00").message(requestId).build();
+		} else {
+		
+			requestId = UUID.randomUUID().toString();   
 		}
 		
-		String requestId = UUID.randomUUID().toString();
+		SessionData sessionData = generateSessionData(servletRequest, servletResponse,requestId);
+		if (!registryService.set(SESSION_DATA, sessionData ))
+			throw new  RuntimeErrorException(null,"Error generating request id");
+		
+		log.info("NEW Session Data Created: {}", (SessionData) registryService.getModel(SESSION_DATA));
+		realtimeService.sendUpdateSession(getAvailableSessions()); 
+		
+		return WebResponse.builder().code("00").message(requestId).build();
+	}
+	
+	private SessionData generateSessionData(HttpServletRequest servletRequest, HttpServletResponse servletResponse, String requestId) {
+		
 		SessionData sessionData = registryService.getModel(SESSION_DATA);
 		
 		if (null == sessionData) {
@@ -346,13 +362,9 @@ public class UserSessionService {
 				build();
 		
 		sessionData.addNewApp(request);
-		if (!registryService.set(SESSION_DATA, sessionData))
-			throw new  RuntimeErrorException(null,"Error generating request id");
-		
-		realtimeService.sendUpdateSession(generateAppRequest());
-		return WebResponse.builder().code("00").message(requestId).build();
+		return sessionData;
 	}
-	
+
 	public RegisteredRequest getRegisteredRequest(String requestId) {
 		SessionData sessionData = registryService.getModel(SESSION_DATA);
 		RegisteredRequest registeredRequest = sessionData.getRequest(requestId);
@@ -367,18 +379,21 @@ public class UserSessionService {
 	 * key for client app
 	 * @return
 	 */
-	public WebResponse generateAppRequest() {
+	public WebResponse getAvailableSessions() {
 		SessionData sessionData = registryService.getModel(SESSION_DATA);
 		
 		if (null == sessionData) {
-			
+			log.info("Session Data IS NULL");
 			boolean successSettingRegistry = registryService.set(SESSION_DATA, new SessionData());
 			
 			if (!successSettingRegistry )
 				throw new  RuntimeErrorException(null,"Error updating session data");
 			
 			sessionData  = registryService.getModel(SESSION_DATA);
+		}else {
+			log.info("sessionData found: {}", sessionData);
 		}
+		
 		List<BaseEntity> appSessions = CollectionUtil.mapToList(sessionData.getRegisteredApps());
 		 
 		for (BaseEntity appSession : appSessions) {
@@ -406,7 +421,7 @@ public class UserSessionService {
 			throw new  RuntimeErrorException(null, "Error updating session data");
 		sessionData  = registryService.getModel(SESSION_DATA);
 		
-		realtimeService.sendUpdateSession(generateAppRequest());
+		realtimeService.sendUpdateSession(getAvailableSessions());
 		return WebResponse.builder().code("00").sessionData(sessionData).build();
 	}
 	

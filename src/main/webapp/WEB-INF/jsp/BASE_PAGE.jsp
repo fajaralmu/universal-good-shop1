@@ -53,6 +53,7 @@
 	</div>
 	<input id="token-value" value="${pageToken }" type="hidden" />
 	<input id="request-id" value="${requestId }" type="hidden" />
+	<input id="registered-request-id" value="${registeredRequestId }" type="hidden" />
 	<div id="loading-div"></div>
 	<div class="container">
 		<div>

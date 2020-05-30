@@ -93,7 +93,8 @@
 	}
 
 	function getCurrentPageCode() {
-		postReq("<spring:url value="/api/public/pagecode" />", {},
+		try{
+			postReq("<spring:url value="/api/public/pagecode" />", {},
 				function(xhr) {
 					infoDone();
 					var response = (xhr.data);
@@ -101,6 +102,9 @@
 					_byId(pageCode).setAttribute("class",
 							"nav-link pagelink active");
 				});
+		}catch (e) {
+			 console.log("Error occured.. when getCurrentPageCode");
+		}
 	}
 
 	function initPagesLinkEvent() {
@@ -187,6 +191,6 @@
 		}
 	}
 
-	initPagesLinkEvent();
+//	initPagesLinkEvent();
 	getCurrentPageCode();
 </script>

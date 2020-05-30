@@ -47,7 +47,7 @@ public class RestAdminController extends BaseController {
 		if (!accountService.validateToken(httpRequest)) {
 			return WebResponse.failedResponse();
 		}
-		WebResponse response = userSessionService.generateAppRequest();
+		WebResponse response = userSessionService.getAvailableSessions();
 		return response;
 	}
 

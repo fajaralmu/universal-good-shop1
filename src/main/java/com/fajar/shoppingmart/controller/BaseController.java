@@ -93,11 +93,20 @@ public class BaseController {
 	}
 	
 	@ModelAttribute("requestId")
-	public String requestId(HttpServletRequest request) {
+	public String getPublicRequestId(HttpServletRequest request) {
 		Cookie cookie = getCookie(RuntimeService.JSESSSIONID, request.getCookies());
 		String cookieValue = cookie == null ? UUID.randomUUID().toString():cookie.getValue();
 		return	registryService.addPageRequest(  cookieValue);
 		 
+	}
+	
+	@ModelAttribute("registeredRequestId")
+	public String getRegisteredRequestId(HttpServletRequest request) {
+		try {
+			return (String) request.getSession().getAttribute(UserAccountService.ATTR_REGISTERED_REQUEST_ID);
+		}catch (Exception e) {
+			return "INVALID ARG";
+		}
 	}
 	
 	@ModelAttribute("pages")
