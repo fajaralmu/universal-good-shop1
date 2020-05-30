@@ -24,7 +24,7 @@
 			<video controls id="video">Video stream not available. </video>
 		</div> 
 		<div class ="output-receiver" style="padding: 20px; border: solid 1px green; text-align: center;">
-			<h2>Partner</h2>
+			<h2>Partner <small id="partner-info">Online: ${partnerInfo.active }</small></h2>
 			<img width="350" height="350" id="photo-receiver"
 				alt="The screen RECEIVER will appear in this box." />
 		</div>
@@ -47,10 +47,11 @@ var height = 90;
 const theCanvas = document.createElement("canvas");
 var btnTerminate = _byId("btn-terminate");
 var btnPause = _byId("btn-pause");
+var partnerInfo = _byId("partner-info");
 
 function init () {
-    const _class = this;
-    window.navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+	const _class = this;   
+    window.navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then(function (stream) {
             _class.video.srcObject = stream;
            // console.log("stream:", stream); 
@@ -126,6 +127,7 @@ function handleLiveStream(response)  {
     if(this.terminated){
         return;
     }
+    partnerInfo.innerHTML = "Online: True";
     this.latestImageResponse = response;
     console.info("Getting response.imageData :",response.imageData .length);
     photoReceiver.setAttribute('src', response.imageData );

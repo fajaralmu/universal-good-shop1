@@ -379,7 +379,18 @@ public class UserSessionService {
 	 * key for client app
 	 * @return
 	 */
-	public WebResponse getAvailableSessions() {
+	public WebResponse getAvailableSessions() { 
+		
+		List<BaseEntity> appSessions = getAvailableSessionList();
+		 
+		for (BaseEntity appSession : appSessions) {
+			List<BaseEntity> messages = messagingService.getMessages(((RegisteredRequest)appSession).getRequestId());
+			((RegisteredRequest)appSession).setMessages(messages);
+		}
+		return WebResponse.builder().code("00").entities(appSessions).build();
+	}
+	
+	private List<BaseEntity> getAvailableSessionList() {
 		SessionData sessionData = registryService.getModel(SESSION_DATA);
 		
 		if (null == sessionData) {
@@ -396,11 +407,26 @@ public class UserSessionService {
 		
 		List<BaseEntity> appSessions = CollectionUtil.mapToList(sessionData.getRegisteredApps());
 		 
-		for (BaseEntity appSession : appSessions) {
-			List<BaseEntity> messages = messagingService.getMessages(((RegisteredRequest)appSession).getRequestId());
-			((RegisteredRequest)appSession).setMessages(messages);
+		return appSessions;
+	}
+	
+	public void setActiveSession(String requestId, boolean active) {
+		SessionData sessionData = registryService.getModel(SESSION_DATA);
+		if(null == sessionData) {
+			return;
 		}
-		return WebResponse.builder().code("00").entities(appSessions).build();
+		((SessionData)registryService.getModel(SESSION_DATA)).setActiveSession(requestId, active);
+	}
+
+	public RegisteredRequest getAvailableSession(String requestId) {
+		
+		List<RegisteredRequest> sessionList = CollectionUtil.convertList(getAvailableSessionList());
+		for (RegisteredRequest baseEntity : sessionList) {
+			if(baseEntity.getRequestId().equals(requestId)) {
+				return baseEntity;
+			}
+		}
+		return null;
 	}
 
 	public WebResponse deleteSession(WebRequest request) {

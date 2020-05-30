@@ -3,6 +3,7 @@ package com.fajar.shoppingmart.dto;
 import java.io.Serializable;
 import java.rmi.Remote;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.fajar.shoppingmart.entity.RegisteredRequest;
@@ -51,5 +52,13 @@ public class SessionData implements Remote, Serializable{
 		}
 		return registeredApps.get(reqId);
 	}
+
+	public void setActiveSession(String requestId, boolean active) {
+		try { 
+			getRequest(requestId).setActive(active);
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+	} 
 
 }

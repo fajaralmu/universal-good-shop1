@@ -1,20 +1,20 @@
 package com.fajar.shoppingmart.controller;
 
 import java.io.IOException;
-import java.util.Calendar;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fajar.shoppingmart.dto.PartnerInfo;
 import com.fajar.shoppingmart.service.LogProxyFactory;
-import com.fajar.shoppingmart.util.CollectionUtil;
-import com.fajar.shoppingmart.util.DateUtil;
+import com.fajar.shoppingmart.service.StreamingService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,6 +27,9 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("stream")
 public class MvcStreamController extends BaseController { 
+	
+	@Autowired
+	private StreamingService streamingService;
 
 	public MvcStreamController() {
 		log.info("-----------------Mvc Stram Controller------------------");
@@ -47,12 +50,20 @@ public class MvcStreamController extends BaseController {
 			sendRedirectLogin(request, response);
 			return basePage;
 		}
-		
-		setActivePage(request );
-		model.addAttribute("partnerId", partnerId);
-		model.addAttribute("title", "Video Call");
-		model.addAttribute("pageUrl", "shop/video-call");
-		
+		PartnerInfo partnerInfo;
+		try {
+			partnerInfo = streamingService.getPartnerInfo(partnerId); 
+			
+			streamingService.setActive(request);
+			setActivePage(request );
+			model.addAttribute("partnerId", partnerId);
+			model.addAttribute("title", "Video Call");
+			model.addAttribute("partnerInfo", partnerInfo);
+			model.addAttribute("pageUrl", "shop/video-call");
+		} catch (Exception e) {
+			sendRedirectLogin(request, response);
+			 
+		}
 		return basePage;
 	} 
 

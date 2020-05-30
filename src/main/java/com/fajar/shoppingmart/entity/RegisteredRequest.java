@@ -46,5 +46,7 @@ public class RegisteredRequest extends BaseEntity implements Serializable, Remot
 	private String ipAddress;
 	@Transient
 	private  List<? extends BaseEntity> messages;
+	@Transient
+	private boolean active;
 	
 }
