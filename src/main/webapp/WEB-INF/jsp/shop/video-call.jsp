@@ -11,44 +11,40 @@
 	<h2>Live Streaming</h2>
 	<p>Stream ID: ${registeredRequestId}</p> 
 	<div id="live-wrapper" style="display: grid; grid-template-columns: 40% 55%">
-		<div className="camera">
-			<h2>You</h2>
-			<canvas id="canvas"> </canvas>
-			<video style="display: none" controls id="video">Video stream not available.
-			</video>
-			<div>
-				<button id="startbutton" onClick="takepicture()">Take photo</button>
-				<br/>
-				<button onClick="clearphoto()">Clear Photo</button>
-				<br/>
-				<button onClick="terminate()">Terminate</button>
+		<div class ="camera" style="padding: 20px; border: solid 1px green; text-align: center">
+			<h2>You</h2>   
+			<img id="my-capture" height="400" width="400" />
+			<div>  
+				<button id="btn-terminate" class="btn btn-danger btn-sm" onClick="terminate()">Terminate</button>
+				<button id="btn-pause" class="btn btn-info btn-sm" onClick="pauseOrContinue()">Pause</button>
 			</div>
-	
+			<div style="display: none"><canvas id="canvas"> </canvas><video   controls id="video">Video stream not available.
+			</video></div>
 		</div> 
-		<div className="output-receiver x"
-			style="width: 500px; height: 450px; border: solid 1px green">
+		<div class ="output-receiver" style="padding: 20px; border: solid 1px green; text-align: center;">
 			<h2>Partner</h2>
-			<img width="300" height="300" id="photo-receiver"
+			<img width="400" height="400" id="photo-receiver"
 				alt="The screen RECEIVER will appear in this box." />
 		</div>
 	</div>
-	<b>PARTNER IMAGE DATA</b>
-	<p id="base64-info"></p>
-	<b>MY IMAGE DATA</b>
-	<p id="my-base64-info"></p>
+	 
 	<hr />
 </div>
 <script type="text/javascript">
 
+var paused = false;
 var video;
 var canvas;
 var photoReceiver;
+var myCapture;
 var terminated = false;
 var receiver = "${partnerId}";
 var latestImageResponse = {};
-var width = 200;
-var height = 200;
+var width = 70;
+var height = 70;
 const theCanvas = document.createElement("canvas");
+var btnTerminate = _byId("btn-terminate");
+var btnPause = _byId("btn-pause");
 
 function init () {
     const _class = this;
@@ -69,8 +65,8 @@ function init () {
 
             _class.video.setAttribute('width', _class.width);
             _class.video.setAttribute('height', _class.height);
-            _class.canvas.setAttribute('width', _class.width);
-            _class.canvas.setAttribute('height', _class.height);
+            _class.canvas.setAttribute('width', _class.width );
+            _class.canvas.setAttribute('height', _class.height );
             _class.streaming = true; 
            
         }
@@ -81,6 +77,21 @@ function init () {
 
 function terminate (){
     this.terminated = true;
+    
+    btnTerminate.innerHTML = "Reload to continue";
+    btnTerminate.setAttribute("class", "btn btn-info btn-sm");
+    btnTerminate.onclick = function(){
+    	window.location.reload();
+    }
+}
+
+function pauseOrContinue(){
+	paused = !paused;
+	if(paused){
+		btnPause.innerHTML = "Continue";
+	}else{
+		btnPause.innerHTML = "Pause";
+	}
 }
 
 function setSendingVideoFalse () {
@@ -89,24 +100,23 @@ function setSendingVideoFalse () {
  
 
 function sendVideoImage(imageData ){
-	if(this.sendingVideo == true || this.terminated){
+	if(this.sendingVideo == true || this.terminated || this.paused){
 	        return;
 	    }
-	 this.sendingVideo = true;  
-	//_byId("my-base64-info").innerHTML = "DATA:-->"+ imageData;
-	/* console.log("--------------SEND VIDE IMAGE--------------"); 
-	console.log("Origin ReqID: ", requestId);
-	console.log("Receiver: ", receiver);
-	console.log("Image Data: ",imageData); */ 
+	this.sendingVideo = true;   
 	console.info("Sending video at ", new Date().toString(), " length: ", imageData.length);
-	const imageSent = sendToWebsocket("/app/stream", {
-		partnerId : "${partnerId}",
-		originId : "${registeredRequestId}",
-		imageData : imageData
-	});
+	const requestObject =  {
+			partnerId : "${partnerId}",
+			originId : "${registeredRequestId}",
+			imageData : imageData
+		};
+	
+	const imageSent = sendToWebsocket("/app/stream", requestObject);
 	if(!imageSent){
 		this.sendingVideo = false
 	}
+	
+	myCapture.setAttribute("src", imageData);
 }
 
 function handleLiveStream(response)  { 
@@ -123,20 +133,7 @@ function handleLiveStream(response)  {
         _class.photoReceiver.setAttribute('src', base64 );
     }); */
 }
-
-function populateCanvas()  {
-	console.info("Poulate canvas")
-    const _class = this;
-    return new Promise(function(resolve, reject) {
-        const img = new Image();
-        img.src =  _class.latestImageResponse.imageData;
-        
-        img.onload = function () {
-            const newDataUri = _class.imageToDataUri(this, 300, 300);
-            resolve(newDataUri);
-        }; 
- });
-}
+ 
 
  function takepicture () {
     const _class = this;
@@ -163,7 +160,8 @@ function resizeWebcamImage () {
     return new Promise(function(resolve, reject) {
         var context = _class.canvas.getContext('2d');
         resolve(_class.canvas.toDataURL('image/png'));
-        context.drawImage(_class.video, 0, 0, _class.width , _class.height );
+        if(paused) return;
+        context.drawImage(_class.video, 0, 0, _class.width, _class.height    );
          
         // if (_class.width && _class.height) {
         //     const dividier = 1;
@@ -241,7 +239,7 @@ function initLiveStream(){
      this.init();
      this.initAnimation(this);
      this.initWebSocket();
-     
+     this.myCapture = _byId("my-capture");
      console.info("END initLiveStream");
 }
 
