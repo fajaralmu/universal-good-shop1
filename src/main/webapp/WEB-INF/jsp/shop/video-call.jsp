@@ -10,7 +10,7 @@
 
 	<h2>Live Streaming</h2>
 	<p>Stream ID: ${registeredRequestId}</p>
-	<canvas id="canvas"> </canvas>
+	<canvas id="canvas" style="display:none"> </canvas>
 
 	<div className="camera">
 		<h2>You</h2>
@@ -23,6 +23,9 @@
 		</div>
 
 	</div>
+	<p></p>
+	<hr/>
+	<p></p>
 	<div className="output-receiver x"
 		style="width: 500px; height: 450px; border: solid 1px green">
 		<h2>Partner</h2>
@@ -86,21 +89,24 @@ function setSendingVideoFalse () {
  
 
 function sendVideoImage(imageData ){
-	/*  if(this.sendingVideo == true || this.terminated){
+	if(this.sendingVideo == true || this.terminated){
 	        return;
 	    }
-	 this.sendingVideo = true; */
-	_byId("my-base64-info").innerHTML = "DATA:-->"+ imageData;
+	 this.sendingVideo = true;  
+	//_byId("my-base64-info").innerHTML = "DATA:-->"+ imageData;
 	/* console.log("--------------SEND VIDE IMAGE--------------"); 
 	console.log("Origin ReqID: ", requestId);
 	console.log("Receiver: ", receiver);
 	console.log("Image Data: ",imageData); */ 
 	console.info("Sending video at ", new Date().toString(), " length: ", imageData.length);
-	sendToWebsocket("/app/stream", {
+	const imageSent = sendToWebsocket("/app/stream", {
 		partnerId : "${partnerId}",
 		originId : "${registeredRequestId}",
 		imageData : imageData
 	});
+	if(!imageSent){
+		this.sendingVideo = false
+	}
 }
 
 function handleLiveStream(response)  { 
@@ -111,7 +117,7 @@ function handleLiveStream(response)  {
     this.latestImageResponse = response;
     console.info("Getting response.imageData :",response.imageData .length);
     photoReceiver.setAttribute('src', response.imageData );
-    _byId("base64-info").innerHTML = response.imageData;
+    //_byId("base64-info").innerHTML = response.imageData;
    /*  const _class = this;
     this.populateCanvas().then(function(base64) {
         _class.photoReceiver.setAttribute('src', base64 );

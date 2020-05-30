@@ -22,9 +22,10 @@ function updateMovement() {
 function sendToWebsocket(url, requestObject){
 	if(!wsConnected){
 		console.info("Connecting");
-		return;
+		return false;
 	}
 	stompClient.send(url, {}, JSON.stringify(requestObject));
+	return true;
 }
 
 /**
