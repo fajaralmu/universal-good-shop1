@@ -95,11 +95,11 @@ function sendVideoImage(imageData ){
 	console.log("Origin ReqID: ", requestId);
 	console.log("Receiver: ", receiver);
 	console.log("Image Data: ",imageData); */ 
-	console.info("Sending video ", new Date().toString());
+	console.info("Sending video at ", new Date().toString(), " length: ", imageData.length);
 	sendToWebsocket("/app/stream", {
 		partnerId : "${partnerId}",
 		originId : "${registeredRequestId}",
-		imageData : new Date().toString()
+		imageData : imageData
 	});
 }
 

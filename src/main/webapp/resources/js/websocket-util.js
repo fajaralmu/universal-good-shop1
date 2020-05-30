@@ -105,7 +105,7 @@ function disconnect() {
 	if (stompClient != null) {
 		stompClient.disconnect();
 	}
-	setConnected(false);
+	wsConnected = (false);
 	console.log("Disconnected");
 }
 
