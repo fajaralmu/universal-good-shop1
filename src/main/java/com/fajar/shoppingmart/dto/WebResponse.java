@@ -57,6 +57,8 @@ public class WebResponse implements Serializable {
 	private SessionData sessionData;
 	@JsonIgnore
 	private Class<? extends BaseEntity> entityClass;
+	private String imageData;
+	private String partnerId;
 	
 	private Map<Integer, CashFlow> monthlyDetailIncome;
 	private Map<Integer, CashFlow> monthlyDetailCost;

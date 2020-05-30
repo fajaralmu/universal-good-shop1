@@ -18,18 +18,30 @@ function updateMovement() {
 	}));
 }
 
-function connectToWebsocket(callback1, callback2, callback3) {
-	let stompClients;
+function sendToWebsocket(url, requestObject){
+	stompClient.send(url, {}, JSON.stringify(requestObject));
+}
+
+/**
+ * 
+ * @param callback1 progress
+ * @param callback2 sessions
+ * @param callback3 messages
+ * @param callbackObject4 video call
+ * @returns
+ */
+function connectToWebsocket(callback1, callback2, callback3, callbackObject4) {
+
 	const requestIdElement = document.getElementById("request-id");
 	 
 	var socket = new SockJS('/universal-good-shop/shop-app');
-	stompClients = Stomp.over(socket);
+	const stompClients = Stomp.over(socket);
 	stompClients.connect({}, function(frame) {
 		// setConnected(true);
 		console.log('Connected -> ' + frame, stompClients.ws._transport.ws.url);
 
 		// document.getElementById("ws-info").innerHTML =
-		// stompClient.ws._transport.ws.url;
+		// stompClients.ws._transport.ws.url;
 
 		if(requestIdElement != null){
 		
@@ -65,9 +77,22 @@ function connectToWebsocket(callback1, callback2, callback3) {
 			// document.getElementById("realtime-info").innerHTML =
 			// response.body;
 		});
+		
+		if(callbackObject4){
+			stompClients.subscribe("/wsResp/videostream/"+callbackObject4.partnerId, function(response) {
+				if(!callback4) return;
+				console.log("Websocket Updated...");
+				
+				var respObject = JSON.parse(response.body);
+				 
+				callbackObject4.callback(respObject);
+				 
+			});
+		}
 
 	});
 
+	this.stompClient = stompClients;
 }
 
 function disconnect() {

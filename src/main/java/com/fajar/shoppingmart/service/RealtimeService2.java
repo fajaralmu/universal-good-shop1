@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 
 @Service
@@ -39,8 +40,22 @@ public class RealtimeService2 {
 
 
 	public void sendMessageChat(WebResponse response) {
-		webSocket.convertAndSend("/wsResp/messages", response);
+		webSocket.convertAndSend("/wsResp/messages", response); 
+	}
+	
+	private void sendLiveStramResponse(WebResponse response) {
+		webSocket.convertAndSend("/wsResp/videostream/"+response.getPartnerId(), response);
+	}
+
+
+	public WebResponse stream(WebRequest request) {
+		WebResponse response = new WebResponse();
 		
+		response.setImageData(request.getImageData());
+		response.setPartnerId(request.getPartnerId());
+		
+		sendLiveStramResponse(response);
+		return response;
 	}
 
 }

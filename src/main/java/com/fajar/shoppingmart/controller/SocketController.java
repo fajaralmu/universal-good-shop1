@@ -1,13 +1,18 @@
 package com.fajar.shoppingmart.controller;
 
+import java.io.IOException;
+
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fajar.shoppingmart.dto.WebRequest;
+import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.RealtimeService2;
 
@@ -79,7 +84,11 @@ public class SocketController {
 //	    response.setMessage(msg);
 //	    return response;
 //	}
-	
+	@MessageMapping("/stream") 
+	public WebResponse leave( WebRequest request) throws IOException {
+		
+		return realtimeUserService.stream(request);
+	}
 	
 	
 }

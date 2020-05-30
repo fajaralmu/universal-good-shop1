@@ -201,7 +201,7 @@
 			console.log("Response connectWesocket updateMessage: ", response);
 			updateMessage(response);
 
-		});
+		}, null);
 	}
 
 	getAppSessions();
