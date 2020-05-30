@@ -9,28 +9,28 @@
 	<a href="<spring:url value="/admin/home" />">Back</a>
 
 	<h2>Live Streaming</h2>
-	<p>Stream ID: ${registeredRequestId}</p>
-	<canvas id="canvas" style="display:none"> </canvas>
-
-	<div className="camera">
-		<h2>You</h2>
-		<video controls id="video">Video stream not available.
-		</video>
-		<div>
-			<button id="startbutton" onClick="takepicture()">Take photo</button>
-			<button onClick="clearphoto()">Clear Photo</button>
-			<button onClick="terminate()">Terminate</button>
+	<p>Stream ID: ${registeredRequestId}</p> 
+	<div id="live-wrapper" style="display: grid; grid-template-columns: 40% 55%">
+		<div className="camera">
+			<h2>You</h2>
+			<canvas id="canvas"> </canvas>
+			<video style="display: none" controls id="video">Video stream not available.
+			</video>
+			<div>
+				<button id="startbutton" onClick="takepicture()">Take photo</button>
+				<br/>
+				<button onClick="clearphoto()">Clear Photo</button>
+				<br/>
+				<button onClick="terminate()">Terminate</button>
+			</div>
+	
+		</div> 
+		<div className="output-receiver x"
+			style="width: 500px; height: 450px; border: solid 1px green">
+			<h2>Partner</h2>
+			<img width="300" height="300" id="photo-receiver"
+				alt="The screen RECEIVER will appear in this box." />
 		</div>
-
-	</div>
-	<p></p>
-	<hr/>
-	<p></p>
-	<div className="output-receiver x"
-		style="width: 500px; height: 450px; border: solid 1px green">
-		<h2>Partner</h2>
-		<img width="300" height="300" id="photo-receiver"
-			alt="The screen RECEIVER will appear in this box." />
 	</div>
 	<b>PARTNER IMAGE DATA</b>
 	<p id="base64-info"></p>
@@ -46,8 +46,8 @@ var photoReceiver;
 var terminated = false;
 var receiver = "${partnerId}";
 var latestImageResponse = {};
-var width = 100;
-var height = 100;
+var width = 200;
+var height = 200;
 const theCanvas = document.createElement("canvas");
 
 function init () {
