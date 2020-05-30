@@ -1,4 +1,5 @@
 var stompClient = null;
+var wsConnected = false;
 
 function updateMovement() {
 	stompClient.send("/app/move", {}, JSON.stringify({
@@ -19,6 +20,10 @@ function updateMovement() {
 }
 
 function sendToWebsocket(url, requestObject){
+	if(!wsConnected){
+		console.info("Connecting");
+		return;
+	}
 	stompClient.send(url, {}, JSON.stringify(requestObject));
 }
 
@@ -37,6 +42,7 @@ function connectToWebsocket(callback1, callback2, callback3, callbackObject4) {
 	var socket = new SockJS('/universal-good-shop/shop-app');
 	const stompClients = Stomp.over(socket);
 	stompClients.connect({}, function(frame) {
+		wsConnected = true;
 		// setConnected(true);
 		console.log('Connected -> ' + frame, stompClients.ws._transport.ws.url);
 
@@ -80,7 +86,7 @@ function connectToWebsocket(callback1, callback2, callback3, callbackObject4) {
 		
 		if(callbackObject4){
 			stompClients.subscribe("/wsResp/videostream/"+callbackObject4.partnerId, function(response) {
-				if(!callback4) return;
+				 
 				console.log("Websocket Updated...");
 				
 				var respObject = JSON.parse(response.body);

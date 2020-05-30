@@ -44,7 +44,7 @@ public class RealtimeService2 {
 	}
 	
 	private void sendLiveStramResponse(WebResponse response) {
-		webSocket.convertAndSend("/wsResp/videostream/"+response.getPartnerId(), response);
+		webSocket.convertAndSend("/wsResp/videostream/"+response.getRequestId(), response);
 	}
 
 
@@ -52,7 +52,7 @@ public class RealtimeService2 {
 		WebResponse response = new WebResponse();
 		
 		response.setImageData(request.getImageData());
-		response.setPartnerId(request.getPartnerId());
+		response.setRequestId(request.getOriginId());
 		
 		sendLiveStramResponse(response);
 		return response;

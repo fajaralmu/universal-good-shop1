@@ -29,7 +29,10 @@
 		<img width="300" height="300" id="photo-receiver"
 			alt="The screen RECEIVER will appear in this box." />
 	</div>
-
+	<b>PARTNER IMAGE DATA</b>
+	<p id="base64-info"></p>
+	<b>MY IMAGE DATA</b>
+	<p id="my-base64-info"></p>
 	<hr />
 </div>
 <script type="text/javascript">
@@ -38,8 +41,11 @@ var video;
 var canvas;
 var photoReceiver;
 var terminated = false;
-const receiver = "${partnerId}";
+var receiver = "${partnerId}";
 var latestImageResponse = {};
+var width = 100;
+var height = 100;
+const theCanvas = document.createElement("canvas");
 
 function init () {
     const _class = this;
@@ -56,7 +62,7 @@ function init () {
    
     this.video.addEventListener('canplay', function (ev) {
         if (!_class.streaming) {
-            _class.height = _class.video.videoHeight / (_class.video.videoWidth / _class.width);
+            _class.height = _class.video.videoHeight /  (_class.video.videoWidth / _class.width);
 
             _class.video.setAttribute('width', _class.width);
             _class.video.setAttribute('height', _class.height);
@@ -77,51 +83,50 @@ function terminate (){
 function setSendingVideoFalse () {
    this.sendingVideo = false;
 }
+ 
 
-function sendVideoImage (imageData)  {
-
-    if(this.sendingVideo == true || this.terminated){
-        return;
-    }
-    this.sendingVideo = true;
-
-    const requestId = "${registeredRequestId}";
-    const receiver =  this.props.receiver;
-    this.sendVideoImage(imageData, requestId, receiver);  
-    
-}
-
-function sendVideoImage(imageData, requestId, partnedId){
+function sendVideoImage(imageData ){
+	/*  if(this.sendingVideo == true || this.terminated){
+	        return;
+	    }
+	 this.sendingVideo = true; */
+	_byId("my-base64-info").innerHTML = "DATA:-->"+ imageData;
 	/* console.log("--------------SEND VIDE IMAGE--------------"); 
 	console.log("Origin ReqID: ", requestId);
 	console.log("Receiver: ", receiver);
-	console.log("Image Data: ",imageData); */
+	console.log("Image Data: ",imageData); */ 
+	console.info("Sending video ", new Date().toString());
 	sendToWebsocket("/app/stream", {
-		partnedId : partnedId,
-		originId : requestId,
-		imageData : imageData
+		partnerId : "${partnerId}",
+		originId : "${registeredRequestId}",
+		imageData : new Date().toString()
 	});
 }
 
 function handleLiveStream(response)  { 
+	setSendingVideoFalse();
     if(this.terminated){
         return;
     }
     this.latestImageResponse = response;
-    const _class = this;
-    this.populateCanvas().then((base64)=>{
+    console.info("Getting response.imageData :",response.imageData .length);
+    photoReceiver.setAttribute('src', response.imageData );
+    _byId("base64-info").innerHTML = response.imageData;
+   /*  const _class = this;
+    this.populateCanvas().then(function(base64) {
         _class.photoReceiver.setAttribute('src', base64 );
-    });
+    }); */
 }
 
 function populateCanvas()  {
+	console.info("Poulate canvas")
     const _class = this;
-    return new Promise((resolve, reject) => {
+    return new Promise(function(resolve, reject) {
         const img = new Image();
         img.src =  _class.latestImageResponse.imageData;
         
         img.onload = function () {
-            var newDataUri = _class.imageToDataUri(this, 300, 300);
+            const newDataUri = _class.imageToDataUri(this, 300, 300);
             resolve(newDataUri);
         }; 
  });
@@ -129,7 +134,7 @@ function populateCanvas()  {
 
  function takepicture () {
     const _class = this;
-    this.resizeWebcamImage().then((data)=>{
+    this.resizeWebcamImage().then(function(data){
         _class.sendVideoImage(data);
     })
 
@@ -137,7 +142,7 @@ function populateCanvas()  {
     // if (this.width && this.height) {
     //     this.canvas.width = this.width/ 5;
     //     this.canvas.height = this.height/ 5;
-    //     context.drawImage(this.video, 0, 0, this.width/ 5, this.height/ 5);
+  	// context.drawImage(this.video, 0, 0, 200, 200);
 
          
 
@@ -149,7 +154,7 @@ function populateCanvas()  {
 
 function resizeWebcamImage () {
     const _class = this;
-    return new Promise((resolve, reject)=>{
+    return new Promise(function(resolve, reject) {
         var context = _class.canvas.getContext('2d');
         resolve(_class.canvas.toDataURL('image/png'));
         context.drawImage(_class.video, 0, 0, _class.width , _class.height );
@@ -221,6 +226,8 @@ function animate(){
 }
 
 function initLiveStream(){
+	console.info("START initLiveStream");
+	
 	 this.video = _byId('video');
      console.log("video:", this.video);
      this.canvas = _byId('canvas'); 
@@ -228,6 +235,8 @@ function initLiveStream(){
      this.init();
      this.initAnimation(this);
      this.initWebSocket();
+     
+     console.info("END initLiveStream");
 }
 
 function initWebSocket(){
