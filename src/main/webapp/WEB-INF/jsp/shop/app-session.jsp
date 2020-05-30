@@ -65,23 +65,17 @@
 		let rows = createTableBody([ "requestId", "referrer", "ipAddress", "created", "userAgent" ],
 				entities);
 		for (var i = 0; i < rows.length; i++) {
-			let row = rows[i];
-			let button = createButton("delete-" + i, "Delete");
-			button.setAttribute("class", "btn btn-danger");
-			const entity = entities[i];
-			button.onclick = function(e) {
-				if (!confirm("Invalidate Session: " + entity.requestId + "?")) {
-					return;
-				}
-				deleteSession(entity.requestId);
-			};
-			let optionCell = createCell("");
-			row.appendChild(button);
+			const row = rows[i];
+			const entity = entities[i]; 
+			const optionCell = createOptionCell(entity, i);
+			
+			row.appendChild(optionCell);
 
-			let rowMessage = createRow("<td colspan=\"6\" id=\""+entity.requestId+"\"></td>");
+			const rowMessage = createRow("<td colspan=\"6\" id=\""+entity.requestId+"\"></td>");
 			table.appendChild(row);
 			table.appendChild(rowMessage);
 			console.log("=>=>=>messages:", entity.messages);
+			
 			if (entity.messages != null) {
 				console.log("MESSAGES NOT NULL");
 				updateMessage({
@@ -90,6 +84,27 @@
 				});
 			}
 		}
+	}
+	
+	function createOptionCell(entity, i){
+		const optionCell = createCell("");
+		const button = createButton("delete-" + i, "Delete");
+		button.setAttribute("class", "btn btn-danger btn-sm");
+		button.onclick = function(e) {
+			if (!confirm("Invalidate Session: " + entity.requestId + "?")) {
+				return;
+			}
+			deleteSession(entity.requestId);
+		}; 
+		
+		optionCell.appendChild(button);
+		
+		if(entity.requestId != "${registeredRequestId}"){
+			const linkVidCall = createAnchor("link-" + i, "VidCall", "<spring:url value="/stream/videocall" />/"+ entity.requestId);
+			optionCell.appendChild(linkVidCall);
+		}
+		
+		return optionCell;
 	}
 
 	function sendReply(destination, message) {
