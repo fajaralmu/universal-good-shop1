@@ -14,6 +14,7 @@
 		<div class ="camera" style="padding: 20px; border: solid 1px green; text-align: center">
 			<h2>You</h2>   
 			<img id="my-capture" height="350" width="350" />
+			<p></p>
 			<div>  
 				<button id="btn-terminate" class="btn btn-danger btn-sm" onClick="terminate()">Terminate</button>
 				<button id="btn-pause" class="btn btn-info btn-sm" onClick="pauseOrContinue()">Pause</button>
@@ -41,8 +42,8 @@ var myCapture;
 var terminated = false;
 var receiver = "${partnerId}";
 var latestImageResponse = {};
-var width = 70;
-var height = 70;
+var width = 90;
+var height = 90;
 const theCanvas = document.createElement("canvas");
 var btnTerminate = _byId("btn-terminate");
 var btnPause = _byId("btn-pause");
