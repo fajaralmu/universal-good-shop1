@@ -3,7 +3,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
-<div class="content" onload="initLiveStream()">
+ 
+<div   class="content" onload="initLiveStream()">
 	<h2>Video Call With</h2>
 	<h3>Partner ID: ${partnerId }</h3>
 	<a href="<spring:url value="/admin/home" />">Back</a>
@@ -127,10 +128,16 @@ function handleLiveStream(response)  {
     if(this.terminated){
         return;
     }
-    partnerInfo.innerHTML = "Online: True";
-    this.latestImageResponse = response;
-    console.info("Getting response.imageData :",response.imageData .length);
-    photoReceiver.setAttribute('src', response.imageData );
+    
+    if(response.code == "00"){
+    	partnerInfo.innerHTML = "Online: True";
+    	console.info("Getting response.imageData :",response.imageData .length);
+        photoReceiver.setAttribute('src', response.imageData );
+    }else{
+    	partnerInfo.innerHTML = "Online: False";
+    } 
+    
+    
     //_byId("base64-info").innerHTML = response.imageData;
    /*  const _class = this;
     this.populateCanvas().then(function(base64) {
@@ -145,18 +152,6 @@ function handleLiveStream(response)  {
         _class.sendVideoImage(data);
     })
 
-    // var context = this.canvas.getContext('2d');
-    // if (this.width && this.height) {
-    //     this.canvas.width = this.width/ 5;
-    //     this.canvas.height = this.height/ 5;
-  	// context.drawImage(this.video, 0, 0, 200, 200);
-
-         
-
-      
-    // } else {
-    //     this.clearphoto();
-    // }
 }
 
 function resizeWebcamImage () {
@@ -245,6 +240,7 @@ function initLiveStream(){
      this.initWebSocket();
      this.myCapture = _byId("my-capture");
      console.info("END initLiveStream");
+     document.body.onunload = onClose;
 }
 
 function initWebSocket(){
@@ -257,7 +253,12 @@ function initWebSocket(){
 		
 	});
 }
-
+function onClose(){
+	postReq("<spring:url value="/api/stream/disconnect" />",
+			{originId : "${registeredRequestId}"}, function(xhr) {
+				 
+			});
+}
 initLiveStream();
 </script>
 

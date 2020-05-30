@@ -15,6 +15,8 @@ public class RealtimeService2 {
 
 	@Autowired
 	private SimpMessagingTemplate webSocket; 
+	@Autowired
+	private UserSessionService userSessionService;
 
 	public RealtimeService2() {
 		LogProxyFactory.setLoggers(this);
@@ -56,6 +58,14 @@ public class RealtimeService2 {
 		
 		sendLiveStramResponse(response);
 		return response;
+	}
+
+
+	public void disconnectLiveStream(WebRequest request) {
+		 
+		userSessionService.setActiveSession(request.getOriginId(), false);
+		WebResponse response = WebResponse.builder().code("01").requestId(request.getOriginId()).build();
+		sendLiveStramResponse(response );
 	}
 
 }
