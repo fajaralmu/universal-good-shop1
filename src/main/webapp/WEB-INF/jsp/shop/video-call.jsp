@@ -10,20 +10,21 @@
 
 	<h2>Live Streaming</h2>
 	<p>Stream ID: ${registeredRequestId}</p> 
-	<div id="live-wrapper" style="display: grid; grid-template-columns: 40% 55%">
+	<div id="live-wrapper" style="display: grid; grid-template-columns: 47% 47%">
 		<div class ="camera" style="padding: 20px; border: solid 1px green; text-align: center">
 			<h2>You</h2>   
-			<img id="my-capture" height="400" width="400" />
+			<img id="my-capture" height="350" width="350" />
 			<div>  
 				<button id="btn-terminate" class="btn btn-danger btn-sm" onClick="terminate()">Terminate</button>
 				<button id="btn-pause" class="btn btn-info btn-sm" onClick="pauseOrContinue()">Pause</button>
 			</div>
-			<div style="display: none"><canvas id="canvas"> </canvas><video   controls id="video">Video stream not available.
-			</video></div>
+			<div style="display: none"><canvas id="canvas"> </canvas></div>
+			<p>Preview</p>
+			<video controls id="video">Video stream not available. </video>
 		</div> 
 		<div class ="output-receiver" style="padding: 20px; border: solid 1px green; text-align: center;">
 			<h2>Partner</h2>
-			<img width="400" height="400" id="photo-receiver"
+			<img width="350" height="350" id="photo-receiver"
 				alt="The screen RECEIVER will appear in this box." />
 		</div>
 	</div>
