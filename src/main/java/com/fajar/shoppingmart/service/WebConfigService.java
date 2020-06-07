@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.entity.ShopProfile;
 import com.fajar.shoppingmart.repository.ShopProfileRepository;
-import com.fajar.shoppingmart.test.RmiStopper;
 import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.Data;
@@ -40,7 +39,7 @@ public class WebConfigService {
 	@PreDestroy
 	public void preDestroy() {
 		System.out.println("========= will destroy ========");
-		RmiStopper.main(new String[] {});
+		
 	}
 	
 	public static String readFile(String path) throws IOException {
