@@ -7,7 +7,6 @@ import static com.fajar.shoppingmart.util.ExcelReportUtil.curr;
 import static com.fajar.shoppingmart.util.ExcelReportUtil.removeBorder;
 
 import java.io.File;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +14,6 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.fajar.shoppingmart.dto.Filter;
@@ -31,35 +29,22 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-public class DailyReportBuilder {
-	
-	private static final String BLANK = "";
-	private static final String DATE_PATTERN = "ddMMyyyy'T'hhmmss-a"; 
-	
-	private final WebConfigService webConfigService; 
-	private XSSFSheet xsheet;
+public class DailyReportBuilder extends ReportBuilder{ 
 	
 	 public DailyReportBuilder(WebConfigService webConfigService) {
-		 this.webConfigService = webConfigService;
-	 }
-	
-	
-	/**
-	 * ====================================
-	 * 				Daily Report
-	 * ====================================
-	 * 
-	 */
+		super(webConfigService);
+	 } 
 	
 	/**
 	 * get daily report file
 	 * @param reportRequest
 	 * @return
 	 */
-	public File getDailyReportFile (ReportData reportRequest) {
+	 @Override
+	public File buildReport (ReportData reportRequest) {
 
 		Filter filter = reportRequest.getFilter();
-		String time = DateUtil.formatDate(new Date(), DATE_PATTERN);
+		String time = getDateTime();
 		String sheetName = "Daily-"+filter.getMonth()+"-"+filter.getYear();
 		
 		String reportName = webConfigService.getReportPath() + "/" + sheetName + "_"+ time+ ".xlsx";

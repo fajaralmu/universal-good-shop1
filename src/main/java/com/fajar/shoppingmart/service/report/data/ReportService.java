@@ -22,20 +22,20 @@ public class ReportService {
 		 
 		ReportData reportData = reportDataService.getDailyReportData(request);
 		DailyReportBuilder reportBuilder = new DailyReportBuilder(webConfigService);
-		return reportBuilder.getDailyReportFile(reportData);
+		return reportBuilder.buildReport(reportData);
 	}
 
 	public File buildMonthlyReport(WebRequest request) {
 
 		ReportData reportData = reportDataService.getMonthlyReportData(request);
 		MonthlyReportBuilder reportBuilder = new MonthlyReportBuilder(webConfigService);
-		return reportBuilder.getMonthyReport(reportData);
+		return reportBuilder.buildReport(reportData);
 	}
 
 	public File buildEntityReport(WebRequest request) {
 		ReportData reportData = reportDataService.getEntityReportData(request);
 		EntityReportBuilder reportBuilder = new EntityReportBuilder(webConfigService);
-		return reportBuilder.getEntityReport(reportData);
+		return reportBuilder.buildReport(reportData);
 	}
 	
 

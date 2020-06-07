@@ -16,10 +16,7 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.ReportCategory;
@@ -34,17 +31,16 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-public class MonthlyReportBuilder { 
-	
-	private final WebConfigService webConfigService;
+public class MonthlyReportBuilder extends ReportBuilder{   
+	 
 	private long grandTotalDebit = 0L;
 	private long grandTotalCredit = 0L;
 	private Map<ReportCategory, DailyReportRow> totalEachCategory = new HashMap<>();
-	private XSSFSheet xsheet;
+	
 	private final ReportCategory[] reportCategories = ReportCategory.values();
 	
 	public MonthlyReportBuilder(WebConfigService webConfigService) {
-		this.webConfigService = webConfigService;
+		super(webConfigService);
 	}
 
 	/**
@@ -56,9 +52,10 @@ public class MonthlyReportBuilder {
 	 * @param reportRequest
 	 * @return
 	 */
-	public File getMonthyReport(ReportData reportRequest) {
+	@Override
+	public File buildReport(ReportData reportRequest) {
 		Filter filter = reportRequest.getFilter();
-		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hhmmss-a");
+		String time = getDateTime();
 		String sheetName = "Monthly-" + filter.getYear();
 
 		String reportName = webConfigService.getReportPath() + "/" + sheetName + "_" + time + ".xlsx";
@@ -98,7 +95,7 @@ public class MonthlyReportBuilder {
 		preprareCells();
 		createLeftColumnLabels(offsetRow);
 		createLeftColumnHeader(totalRowNum);
-		createMonthNameColumns();
+		createHorizontalMonthNameColumns();
 
 		/**
 		 * Values
@@ -206,7 +203,7 @@ public class MonthlyReportBuilder {
 		return categoryData;
 	}
 
-	private void createMonthNameColumns() {
+	private void createHorizontalMonthNameColumns() {
 		/**
 		 * Month Names
 		 */
