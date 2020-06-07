@@ -8,9 +8,9 @@
 	<packaging>jar</packaging>
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target> 
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version> 
-		
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+
 	</properties>
 	<build>
 		<plugins>
@@ -236,17 +236,17 @@
 			<version>1.18.8</version>
 			<optional>true</optional>
 		</dependency>
-<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
-<dependency>
-    <groupId>org.apache.poi</groupId>
-    <artifactId>poi</artifactId>
-    <version>3.9</version>
-</dependency>
-<dependency>
-    <groupId>org.apache.poi</groupId>
-    <artifactId>poi-ooxml</artifactId>
-    <version>3.9</version>
-</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.9</version>
+		</dependency>
 
 
 	</dependencies>
@@ -261,8 +261,8 @@
 						<configuration>
 							<classifier>dto</classifier>
 							<includes>
-								<include>**/fajar/shoppingmart/entity/**</include> 
-								<include>**/fajar/shoppingmart/annotation/**</include> 
+								<include>**/fajar/shoppingmart/entity/**</include>
+								<include>**/fajar/shoppingmart/annotation/**</include>
 								<include>**/fajar/shoppingmart/dto/*</include>
 								<include>**/fajar/shoppingmart/util/*</include>
 							</includes>

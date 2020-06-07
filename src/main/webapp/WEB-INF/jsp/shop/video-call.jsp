@@ -159,7 +159,7 @@ function resizeWebcamImage () {
     return new Promise(function(resolve, reject) {
         var context = _class.canvas.getContext('2d');
         resolve(_class.canvas.toDataURL('image/png'));
-        if(paused) return;
+       // if(paused) return;
         context.drawImage(_class.video, 0, 0, _class.width, _class.height    );
          
         // if (_class.width && _class.height) {
