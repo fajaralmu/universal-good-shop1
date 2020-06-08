@@ -31,8 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DailyReportBuilder extends ReportBuilder{ 
 	
-	 public DailyReportBuilder(WebConfigService webConfigService) {
-		super(webConfigService);
+	 public DailyReportBuilder(WebConfigService webConfigService, ReportData reportData) {
+		super(webConfigService, reportData);
 	 } 
 	
 	/**
@@ -41,7 +41,7 @@ public class DailyReportBuilder extends ReportBuilder{
 	 * @return
 	 */
 	 @Override
-	public File buildReport (ReportData reportData) {
+	public File buildReport () {
 
 		Filter filter = reportData.getFilter();
 		String time = getDateTime();

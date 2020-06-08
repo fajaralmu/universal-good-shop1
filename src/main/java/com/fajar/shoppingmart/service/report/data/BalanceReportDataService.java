@@ -85,8 +85,8 @@ public class BalanceReportDataService {
 
 	private MonthlyReportBuilder getMonthlyReportBuilder(int year) {
 		ReportData monthlyData = getMonthlyData(year); 
-		MonthlyReportBuilder builder = new MonthlyReportBuilder(webConfigService, false);
-		builder.buildReport(monthlyData);
+		MonthlyReportBuilder builder = new MonthlyReportBuilder(webConfigService, monthlyData, false);
+		builder.buildReport();
 		return builder;
 	}
 

@@ -34,9 +34,11 @@ public class BalanceReportBuilder extends ReportBuilder {
 	private Map<ReportCategory, ReportRowData> adjustedBalance = new HashMap<>();
 	private Map<ReportCategory, ReportRowData> lossProfitBalance = new HashMap<>();
 	private Map<ReportCategory, ReportRowData> finalBalance = new HashMap<>();
+	
+	private long businessProfit = 0L;
 
-	public BalanceReportBuilder(WebConfigService configService) {
-		super(configService);
+	public BalanceReportBuilder(WebConfigService configService, ReportData reportData) {
+		super(configService, reportData);
 
 	}
 	
@@ -160,7 +162,7 @@ public class BalanceReportBuilder extends ReportBuilder {
 	}
 
 	@Override
-	public File buildReport(ReportData reportData) {
+	public File buildReport() {
 
 		Filter filter = reportData.getFilter();
 		String time = getDateTime();
@@ -207,12 +209,42 @@ public class BalanceReportBuilder extends ReportBuilder {
  
 	private void writeFinalBalance(int rowNum, int colOffset) {
 		buildFinalBalanceFromAdjustedBalance();
-		writeBalanceColumn(rowNum, colOffset, 6, finalBalance);
+		long[] totalDebitAndCredit = writeBalanceColumn(rowNum, colOffset, 6, finalBalance);
+		long totalDebit = totalDebitAndCredit[0];
+		long totalCredit = totalDebitAndCredit[0];
+		writeBusinessBalanceCell(rowNum, colOffset, totalDebit, totalCredit);
 	}
-
+	 
 	private void writeLossProfitBalance(int rowNum, int colOffset) {
 		buildLossProfitBalanceFromAdjustedBalance();
-		writeBalanceColumn(rowNum, colOffset,5, lossProfitBalance);
+		long[] totalDebitAndCredit = writeBalanceColumn(rowNum, colOffset,5, lossProfitBalance);
+		long totalDebit = totalDebitAndCredit[0];
+		long totalCredit = totalDebitAndCredit[0];
+		writeBusinessProfitCell(rowNum, colOffset,totalDebit, totalCredit);
+	}
+	
+	private void writeBusinessBalanceCell(int rowNum, int colOffset, long totalDebit, long totalCredit) {
+		
+		int workingRow = rowNum + ReportCategory.values().length + 1;
+		int offsetIndex = colOffset + 2 + 2 * 6; 
+		createRow(xsheet, workingRow, offsetIndex , "", curr(businessProfit));
+		workingRow++; 
+		createRow(xsheet, workingRow, offsetIndex, curr(totalDebit), curr(totalCredit+businessProfit));
+		
+	}
+
+	private void writeBusinessProfitCell(int rowNum, int colOffset, long totalDebit, long totalCredit) {
+	
+		int workingRow = rowNum + ReportCategory.values().length + 1;
+		int offsetIndex = colOffset + 2 + 2*5;
+		long businessProfit = totalCredit > totalDebit ? totalCredit-totalDebit : 0L;
+		createRow(xsheet, workingRow, offsetIndex - 1, "SHU "+reportData.getFilter().getYear(), curr(businessProfit), curr(0));
+		workingRow++;
+		//TODO: total credit calculation
+		createRow(xsheet, workingRow, offsetIndex -1,"", curr(totalDebit+businessProfit), curr(totalCredit));
+		
+		this.businessProfit = businessProfit;
+		
 	}
 
 	private void writeAdjustedBalance(int rowNum, int colOffset) {
@@ -243,8 +275,9 @@ public class BalanceReportBuilder extends ReportBuilder {
 	 * @param colOffset
 	 * @param contentSequence starts at 0
 	 * @param rowDatas
+	 * @return array containing totalDebit & totalCredit
 	 */
-	private void writeBalanceColumn(int rowNum, int colOffset, int contentSequence, Map<ReportCategory, ReportRowData> rowDatas) {
+	private long[] writeBalanceColumn(int rowNum, int colOffset, int contentSequence, Map<ReportCategory, ReportRowData> rowDatas) {
 		 
 		long totalCredit = 0l;
 		long totalDebit = 0l;
@@ -265,6 +298,7 @@ public class BalanceReportBuilder extends ReportBuilder {
 		}
 		
 		createRow(xsheet, rowNum, offset, curr(totalDebit), curr(totalCredit));
+		return new long[]{totalDebit, totalCredit};
 	} 
 
 	private void writeReportCategoriesLabel(int rowNum, int colOffset) {

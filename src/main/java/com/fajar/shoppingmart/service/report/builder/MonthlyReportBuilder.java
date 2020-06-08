@@ -41,8 +41,8 @@ public class MonthlyReportBuilder extends ReportBuilder{
 	
 	private final ReportCategory[] reportCategories = ReportCategory.values();
 	
-	public MonthlyReportBuilder(WebConfigService webConfigService, boolean  writeExcel) {
-		super(webConfigService);
+	public MonthlyReportBuilder(WebConfigService webConfigService,ReportData reportData, boolean  writeExcel) {
+		super(webConfigService, reportData);
 		this.writeExcel = writeExcel;
 	}
 	public Map<ReportCategory, ReportRowData> getTotalEachCategory(){
@@ -59,7 +59,7 @@ public class MonthlyReportBuilder extends ReportBuilder{
 	 * @return
 	 */
 	@Override
-	public File buildReport(ReportData reportData) {
+	public File buildReport() {
 		Filter filter = reportData.getFilter();
 		String time = getDateTime();
 		String sheetName = "Monthly-" + filter.getYear();
@@ -229,7 +229,7 @@ public class MonthlyReportBuilder extends ReportBuilder{
 		/**
 		 * Month Names
 		 */
-		int triwulan = 0;
+		int quarterlyLabel = 0;
 		for (int i = 1; i <= 12; i++) {
 			String monthName = DateUtil.MONTH_NAMES[i - 1];
 			mergeRegion(xsheet, new CellRangeAddress(2, 2, i * 2, i * 2 + 1));
@@ -239,9 +239,9 @@ public class MonthlyReportBuilder extends ReportBuilder{
 
 			if (i % 3 == 0) {
 				mergeRegion(xsheet, new CellRangeAddress(1, 1, (i - 2) * 2, i * 2 + 1));
-				writeRow(xsheet, 1, (i - 2) * 2, "Triwulan " + StringUtil.GREEK_NUMBER[triwulan]);
+				writeRow(xsheet, 1, (i - 2) * 2, "Triwulan " + StringUtil.GREEK_NUMBER[quarterlyLabel]);
 
-				triwulan++;
+				quarterlyLabel++;
 			}
 		}
 	}

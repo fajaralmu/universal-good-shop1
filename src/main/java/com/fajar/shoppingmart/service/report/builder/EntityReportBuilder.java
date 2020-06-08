@@ -19,12 +19,12 @@ public class EntityReportBuilder extends ReportBuilder {
 	private List<BaseEntity> entities;
 	private EntityProperty entityProperty;
 
-	public EntityReportBuilder(WebConfigService webConfigService) {
-		super(webConfigService);
+	public EntityReportBuilder(WebConfigService webConfigService, ReportData reportData) {
+		super(webConfigService, reportData);
 	}
 
 	@Override
-	public File buildReport(ReportData reportData) {
+	public File buildReport() {
 		entities = reportData.getEntities();
 		entityProperty = reportData.getEntityProperty();
 

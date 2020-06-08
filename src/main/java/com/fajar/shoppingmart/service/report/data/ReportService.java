@@ -28,34 +28,34 @@ public class ReportService {
 		log.info("buildDailyReport, request: {}", request);
 		
 		ReportData reportData = reportDataService.getDailyReportData(request);
-		DailyReportBuilder reportBuilder = new DailyReportBuilder(webConfigService);
+		DailyReportBuilder reportBuilder = new DailyReportBuilder(webConfigService, reportData);
 		log.info("report row data size: {}", reportData.getDailyReportRows().size());
 		
-		return reportBuilder.buildReport(reportData);
+		return reportBuilder.buildReport();
 	}
 
 	public File buildMonthlyReport(WebRequest request) {
 		log.info("buildMonthlyReport, request: {}", request);
 		
 		ReportData reportData = reportDataService.getMonthlyReportData(request);
-		MonthlyReportBuilder reportBuilder = new MonthlyReportBuilder(webConfigService, true);
-		return reportBuilder.buildReport(reportData);
+		MonthlyReportBuilder reportBuilder = new MonthlyReportBuilder(webConfigService, reportData, true);
+		return reportBuilder.buildReport();
 	}
 
 	public File buildEntityReport(WebRequest request) {
 		log.info("buildEntityReport, request: {}", request);
 		
 		ReportData reportData = reportDataService.getEntityReportData(request);
-		EntityReportBuilder reportBuilder = new EntityReportBuilder(webConfigService);
-		return reportBuilder.buildReport(reportData);
+		EntityReportBuilder reportBuilder = new EntityReportBuilder(webConfigService, reportData);
+		return reportBuilder.buildReport();
 	}
 	
 	public File buildBalanceReport(WebRequest request) {
 		log.info("buildBalanceReport, request: {}", request);
 		
 		ReportData reportData = balanceReportDataService.getBalanceReportData(request);
-		BalanceReportBuilder reportBuilder = new BalanceReportBuilder(webConfigService);
-		return reportBuilder.buildReport(reportData);
+		BalanceReportBuilder reportBuilder = new BalanceReportBuilder(webConfigService, reportData);
+		return reportBuilder.buildReport();
 	}
 
 }

@@ -14,14 +14,16 @@ public abstract class ReportBuilder {
 	protected XSSFSheet xsheet;
 	protected static final String BLANK = "";
 	protected static final String DATE_PATTERN = "ddMMyyyy'T'hhmmss-a"; 
+	protected final ReportData reportData;
 	
-	public ReportBuilder(WebConfigService configService) {
+	public ReportBuilder(WebConfigService configService, ReportData reportData) {
 		this.webConfigService = configService;
+		this.reportData = reportData;
 	}
 
 	protected String getDateTime() {
 		return DateUtil.formatDate(new Date(), DATE_PATTERN);
 	}
 	
-	public abstract File buildReport(ReportData reportData);
+	public abstract File buildReport( );
 }
