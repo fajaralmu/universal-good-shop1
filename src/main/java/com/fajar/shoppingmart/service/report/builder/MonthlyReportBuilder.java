@@ -78,7 +78,9 @@ public class MonthlyReportBuilder extends ReportBuilder{
 
 		grandTotalDebit = 0L;
 		grandTotalCredit = 0L;
-		totalEachCategory = new HashMap<>();
+		if(writeExcel) {
+			totalEachCategory = new HashMap<>();
+		}
 	}
 
 	/**

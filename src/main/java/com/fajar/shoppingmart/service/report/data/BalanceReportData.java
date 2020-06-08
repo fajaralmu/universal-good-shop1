@@ -1,6 +1,5 @@
 package com.fajar.shoppingmart.service.report.data;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +12,6 @@ import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.service.TransactionService;
 import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.service.report.builder.MonthlyReportBuilder;
-import com.fajar.shoppingmart.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,24 +41,41 @@ public class BalanceReportData {
 		
 		for(int year = firstYear; year <= nowYear; year++) { 
 			log.info("collecting data for year: {}", year);
+			  
+			Map<ReportCategory, ReportRowData> totalEachCategory = getMonthlyTotalEachCategory(year);
+			log.info("totalEachCategory keys - {}: {}", year, totalEachCategory.keySet().size());
 			
-			WebRequest request = WebRequest.builder().filter(Filter.builder().year(year).build()).build();
-			ReportData monthlyData = reportDataService.getMonthlyReportData(request );
-			
-			MonthlyReportBuilder builder = new MonthlyReportBuilder(webConfigService, false);
-			builder.buildReport(monthlyData);
-			Map<ReportCategory, ReportRowData> totalEachCategory = builder.getTotalEachCategory();
 			summaryDatas.put(year, totalEachCategory);
 		}
 		
 		log.info("End collecting data");
 		Map<ReportCategory, ReportRowData> formerData = summaryDatas.get(formerYear);
+		log.info("formerData: {}", formerData);
 		
 		ReportData reportData = new ReportData();
 		reportData.setFilter(webRequest.getFilter());
 		reportData.setMonthyReportContent(summaryDatas); 
 		reportData.setDailyReportSummary(formerData);
 		return reportData;
+	}
+
+	private Map<ReportCategory, ReportRowData> getMonthlyTotalEachCategory(int year) { 
+		MonthlyReportBuilder builder = getMonthlyReportBuilder(year);
+		Map<ReportCategory, ReportRowData> totalEachCategory = builder.getTotalEachCategory();
+		return totalEachCategory;
+	}
+
+	private MonthlyReportBuilder getMonthlyReportBuilder(int year) {
+		ReportData monthlyData = getMonthlyData(year); 
+		MonthlyReportBuilder builder = new MonthlyReportBuilder(webConfigService, false);
+		builder.buildReport(monthlyData);
+		return builder;
+	}
+
+	private ReportData getMonthlyData(int year) {
+		WebRequest request = WebRequest.builder().filter(Filter.builder().year(year).build()).build();
+		ReportData monthlyData = reportDataService.getMonthlyReportData(request );
+		return monthlyData;
 	}
 
 }

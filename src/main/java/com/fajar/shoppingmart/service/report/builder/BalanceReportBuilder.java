@@ -96,7 +96,7 @@ public class BalanceReportBuilder extends ReportBuilder {
 			totalCredit+=creditAmount;
 			totalDebit+=debitAmount;
 			
-			createRow(xsheet, rowNum, colOffset + 2, debitAmount, creditAmount);
+			createRow(xsheet, rowNum, colOffset + 3, debitAmount, creditAmount);
 			rowNum++;
 		}
 		
