@@ -26,6 +26,8 @@ public class BalanceReportBuilder extends ReportBuilder {
 	private Map<ReportCategory, ReportRowData> formerBalance;
 	private Map<ReportCategory, ReportRowData> thisYearCashflow;
 	private Map<ReportCategory, ReportRowData> remainingBalance = new HashMap<>();
+	private Map<ReportCategory, ReportRowData> adjustingBalance = emptyCategories();
+	private Map<ReportCategory, ReportRowData> adjustedBalance = new HashMap<>();
 
 	public BalanceReportBuilder(WebConfigService configService) {
 		super(configService);
@@ -65,7 +67,29 @@ public class BalanceReportBuilder extends ReportBuilder {
 		}
 	}
 	
-	
+	private void buildAdjustedBalance() {
+		adjustedBalance.clear();
+		for(ReportCategory reportCategory:ReportCategory.values()) {
+			ReportRowData remaining = remainingBalance.get(reportCategory);
+			ReportRowData adjusting = adjustingBalance.get(reportCategory);
+			
+			long debitSum = remaining.getDebitAmount() + adjusting.getDebitAmount();
+			long creditSum = remaining.getCreditAmount() + adjusting.getCreditAmount();
+			
+			long debitAmount = 0l;
+			long creditAmount = 0l;
+			
+			if(debitSum > creditSum) {
+				debitAmount = debitSum - creditSum;
+			}
+			
+			if(creditSum > debitSum) {
+				creditAmount = creditSum - debitSum;
+			} 
+			ReportRowData rowData = new ReportRowData(reportCategory, debitAmount, creditAmount);
+			adjustedBalance.put(reportCategory, rowData);
+		}
+	}
 	
 	private static Map<ReportCategory, ReportRowData> emptyCategories(){ 
 		
@@ -121,12 +145,24 @@ public class BalanceReportBuilder extends ReportBuilder {
 	private void writeContents(int rowNum, int colOffset) {
 		 
 		writeFormerBalance(rowNum, colOffset);
-		wirteBalanceChanging(rowNum, colOffset);
-		buildRemainingBalance();
+		wirteBalanceChanging(rowNum, colOffset); 
 		writeRemainingBalance(rowNum, colOffset);
+		writeAdjustingBalance(rowNum, colOffset);
+		writeAdjustedBalance(rowNum, colOffset);
 	}  
  
+	private void writeAdjustedBalance(int rowNum, int colOffset) {
+		buildAdjustedBalance();
+		writeBalanceColumn(rowNum, colOffset, 4, adjustedBalance);
+	} 
+	
+	private void writeAdjustingBalance(int rowNum, int colOffset) {
+		// TODO: Calculate adjusted balance content
+		writeBalanceColumn(rowNum, colOffset, 3, adjustingBalance); 
+	}
+
 	private void writeRemainingBalance(int rowNum, int colOffset) {
+		buildRemainingBalance();
 		writeBalanceColumn(rowNum, colOffset, 2, remainingBalance); 
 		
 	}
