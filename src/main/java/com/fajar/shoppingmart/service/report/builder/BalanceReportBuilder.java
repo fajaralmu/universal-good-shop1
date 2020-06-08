@@ -106,7 +106,7 @@ public class BalanceReportBuilder extends ReportBuilder {
 			}
 			
 			ReportRowData rowData = new ReportRowData(reportCategory, debitAmount, creditAmount);
-			lossProfitBalance.put(reportCategory, rowData);
+			finalBalance.put(reportCategory, rowData);
 		}
 	}
 	
