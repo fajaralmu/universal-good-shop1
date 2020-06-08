@@ -74,7 +74,10 @@ public class BalanceReportBuilder extends ReportBuilder {
 		}
 	}
 	
-	private void buildLossProfitBalance() {
+	/**
+	 * build lossProfitBalance using adjustedBalance
+	 */
+	private void buildLossProfitBalanceFromAdjustedBalance() {
 		lossProfitBalance.clear();
 		for(ReportCategory reportCategory:ReportCategory.values()) {
 			ReportRowData adjustedData = adjustedBalance.get(reportCategory);
@@ -93,7 +96,10 @@ public class BalanceReportBuilder extends ReportBuilder {
 		}
 	}
 	
-	private void buildFinalBalance() {
+	/**
+	 * build finalBalance using adjustedBalance
+	 */
+	private void buildFinalBalanceFromAdjustedBalance() {
 		finalBalance.clear();
 		for(ReportCategory reportCategory:ReportCategory.values()) {
 			ReportRowData adjustedData = adjustedBalance.get(reportCategory);
@@ -103,7 +109,8 @@ public class BalanceReportBuilder extends ReportBuilder {
 			
 			if(reportCategory.codeLeftCharLessThan(BALANCE_DEBIT)) {
 				debitAmount = adjustedData.getDebitAmount();
-			}else if(reportCategory.codeLeftCharLessThan(BALANCE_CREDIT)) {
+			}
+			if(reportCategory.codeLeftCharLessThan(BALANCE_CREDIT)) {
 				creditAmount = adjustedData.getCreditAmount();
 			}
 			
@@ -199,12 +206,12 @@ public class BalanceReportBuilder extends ReportBuilder {
 	}  
  
 	private void writeFinalBalance(int rowNum, int colOffset) {
-		buildFinalBalance();
+		buildFinalBalanceFromAdjustedBalance();
 		writeBalanceColumn(rowNum, colOffset, 6, finalBalance);
 	}
 
 	private void writeLossProfitBalance(int rowNum, int colOffset) {
-		buildLossProfitBalance();
+		buildLossProfitBalanceFromAdjustedBalance();
 		writeBalanceColumn(rowNum, colOffset,5, lossProfitBalance);
 	}
 
