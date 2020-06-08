@@ -1,5 +1,6 @@
 package com.fajar.shoppingmart.service.report.data;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.service.TransactionService;
 import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.service.report.builder.MonthlyReportBuilder;
+import com.fajar.shoppingmart.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,9 +33,10 @@ public class BalanceReportData {
 		int selectedYear = webRequest.getFilter().getYear();
 		int formerYear = selectedYear - 1;
 		int firstYear = transactionService.getMinTransactionYear();
-		int nowYear = 2017;// DateUtil.getCalendarYear(new Date());
-		int years = nowYear - firstYear + 1;
-		
+		int nowYear = DateUtil.getCalendarYear(new Date());
+		if(selectedYear < nowYear) {
+			nowYear = selectedYear;
+		}
 		
 		log.info("From year: {} to: {}", firstYear, nowYear);
 		

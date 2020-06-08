@@ -25,6 +25,7 @@ public class BalanceReportBuilder extends ReportBuilder {
 
 	private Map<ReportCategory, ReportRowData> formerBalance;
 	private Map<ReportCategory, ReportRowData> thisYearCashflow;
+	private Map<ReportCategory, ReportRowData> remainingBalance = new HashMap<>();
 
 	public BalanceReportBuilder(WebConfigService configService) {
 		super(configService);
@@ -37,6 +38,34 @@ public class BalanceReportBuilder extends ReportBuilder {
 		}
 		this.formerBalance = formerBalance;
 	}
+	
+	private void buildRemainingBalance() {
+		remainingBalance.clear();
+		
+		for(ReportCategory reportCategory:ReportCategory.values()) {
+			ReportRowData former = formerBalance.get(reportCategory);
+			ReportRowData current = thisYearCashflow.get(reportCategory);
+			
+			long debitSum = former.getDebitAmount() + current.getDebitAmount();
+			long creditSum = former.getCreditAmount() + current.getCreditAmount();
+			
+			long debitAmount = 0l;
+			long creditAmount = 0l;
+			
+			if(debitSum > creditSum) {
+				debitAmount = debitSum - creditSum;
+			}
+			
+			if(creditSum > debitSum) {
+				creditAmount = creditSum - debitSum;
+			} 
+			
+			ReportRowData rowData = new ReportRowData(reportCategory, debitAmount, creditAmount);
+			remainingBalance.put(reportCategory, rowData);
+		}
+	}
+	
+	
 	
 	private static Map<ReportCategory, ReportRowData> emptyCategories(){ 
 		
@@ -93,15 +122,14 @@ public class BalanceReportBuilder extends ReportBuilder {
 		 
 		writeFormerBalance(rowNum, colOffset);
 		wirteBalanceChanging(rowNum, colOffset);
-	}
+		buildRemainingBalance();
+		writeRemainingBalance(rowNum, colOffset);
+	}  
  
-	private void autoSizeColumns(int rowNum, int colOffset) {
+	private void writeRemainingBalance(int rowNum, int colOffset) {
+		writeBalanceColumn(rowNum, colOffset, 2, remainingBalance); 
 		
-		for(int i = 1; i<3+ReportCategory.values().length; i++) {
-			ExcelReportUtil.autosizeColumn(xsheet.getRow(i), 20, BorderStyle.THIN, null);
-		}
 	}
-
 	private void wirteBalanceChanging(int rowNum, int colOffset) {
 		writeBalanceColumn(rowNum, colOffset, 1, thisYearCashflow); 
 	}
@@ -148,6 +176,13 @@ public class BalanceReportBuilder extends ReportBuilder {
 		createRow(xsheet, rowNum, colOffset, "", "Jumlah");
 	}
 
+	private void autoSizeColumns(int rowNum, int colOffset) {
+		
+		for(int i = 1; i<3+ReportCategory.values().length; i++) {
+			ExcelReportUtil.autosizeColumn(xsheet.getRow(i), 20, BorderStyle.THIN, null);
+		}
+	}
+	
 	private void writeHorizontalColumNames(final int rowNum, int colOffset) {
 
 		/**

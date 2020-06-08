@@ -25,6 +25,12 @@ public class ReportRowData implements Serializable{/**
 	private int day;
 	private int month;
 	
+	public ReportRowData(ReportCategory category, long debit, long credit) {
+		this.category = category;
+		this.debitAmount = debit;
+		this.creditAmount = credit;
+	}
+	
 	public void addCreditAmount(long amt) {
 		this.creditAmount += amt;
 	}
