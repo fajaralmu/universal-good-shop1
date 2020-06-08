@@ -58,15 +58,15 @@ public class ReportDataService {
 	 * daily report
 	 */
 	private final Map<Integer, List<FinancialEntity>> dailyTransactions = new HashMap<>();
-	private final Map<ReportCategory, DailyReportRow> dailyReportSummary = new HashMap<>();
-	private final List<DailyReportRow > dailyReportRows = new LinkedList<>();
-	private DailyReportRow dailyReportRowTotal = new DailyReportRow();
+	private final Map<ReportCategory, ReportRowData> dailyReportSummary = new HashMap<>();
+	private final List<ReportRowData > dailyReportRows = new LinkedList<>();
+	private ReportRowData dailyReportRowTotal = new ReportRowData();
 	private CashBalance dailyReportInitialBalance = new CashBalance();
 	
 	/**
 	 * monthly report
 	 */
-	private final Map<Integer, Map<ReportCategory, DailyReportRow>> monthyReportContent = new HashMap<>();
+	private final Map<Integer, Map<ReportCategory, ReportRowData>> monthyReportContent = new HashMap<>();
 	
 	@PostConstruct
 	public void init() {
@@ -131,12 +131,12 @@ public class ReportDataService {
 	 * @param latestBalance
 	 * @return
 	 */
-	private DailyReportRow calculateTotalSummary( ) { 
-		DailyReportRow dailyReportRow = new DailyReportRow();
+	private ReportRowData calculateTotalSummary( ) { 
+		ReportRowData dailyReportRow = new ReportRowData();
 		long debitAmount 	= dailyReportInitialBalance.getActualBalance();
 		long creditAmount 	= 0l;
 		
-		for (DailyReportRow dailyReportRow2 : dailyReportRows) {
+		for (ReportRowData dailyReportRow2 : dailyReportRows) {
 			debitAmount		+=	dailyReportRow2.getDebitAmount();
 			creditAmount	+=	dailyReportRow2.getCreditAmount();
 		}
@@ -162,7 +162,7 @@ public class ReportDataService {
 				continue;
 			}
 			for (FinancialEntity baseEntity : transactionItems) {
-				DailyReportRow dailyReportRow = mapDailyReportRow(i, month, baseEntity);
+				ReportRowData dailyReportRow = mapDailyReportRow(i, month, baseEntity);
 				addDailyReportRow(dailyReportRow);
 				updateSummary(dailyReportRow);
 			}
@@ -201,7 +201,7 @@ public class ReportDataService {
 	 */
 	private int isExistInDailyReportRow(ReportCategory reportCategory, int day) {
 		int i = 0;
-		for (DailyReportRow dailyReportRow : dailyReportRows) {
+		for (ReportRowData dailyReportRow : dailyReportRows) {
 			if(dailyReportRow.getCategory().equals(reportCategory) && dailyReportRow.getDay() == day ) {
 				return i;
 			}
@@ -214,7 +214,7 @@ public class ReportDataService {
 	 * add row data to list
 	 * @param newDailyReportRow
 	 */
-	private void addDailyReportRow(DailyReportRow newDailyReportRow) { 
+	private void addDailyReportRow(ReportRowData newDailyReportRow) { 
 		
 		if(newDailyReportRow.getCategory().equals(ReportCategory.SHOP_ITEM)) {
 			int index = isExistInDailyReportRow(ReportCategory.SHOP_ITEM, newDailyReportRow.getDay());
@@ -237,9 +237,9 @@ public class ReportDataService {
 	 * @param baseEntity
 	 * @return
 	 */
-	private static DailyReportRow mapDailyReportRow(int day, int month, FinancialEntity baseEntity) { 
+	private static ReportRowData mapDailyReportRow(int day, int month, FinancialEntity baseEntity) { 
 		
-		DailyReportRow dailyReportRow = new DailyReportRow();
+		ReportRowData dailyReportRow = new ReportRowData();
 		dailyReportRow.setDay(day);
 		dailyReportRow.setMonth(month);
 		
@@ -272,9 +272,9 @@ public class ReportDataService {
 	 * update accumulation for debit and credit
 	 * @param dailyReportRow
 	 */
-	private void updateSummary(DailyReportRow dailyReportRow) {
+	private void updateSummary(ReportRowData dailyReportRow) {
 		ReportCategory reportCategory = dailyReportRow.getCategory();
-		DailyReportRow existingSummaryRow = getSummary(reportCategory); 
+		ReportRowData existingSummaryRow = getSummary(reportCategory); 
 		
 		long creditAmount = existingSummaryRow.getCreditAmount() + dailyReportRow.getCreditAmount();
 		long debitAmount = existingSummaryRow.getDebitAmount() + dailyReportRow.getDebitAmount();
@@ -287,9 +287,9 @@ public class ReportDataService {
 	 * @param reportCategory
 	 * @return
 	 */
-	private DailyReportRow getSummary(ReportCategory reportCategory) { 
+	private ReportRowData getSummary(ReportCategory reportCategory) { 
 		if(null == dailyReportSummary.get(reportCategory)) {
-			dailyReportSummary.put(reportCategory, DailyReportRow.builder().category(reportCategory).build());
+			dailyReportSummary.put(reportCategory, ReportRowData.builder().category(reportCategory).build());
 		} 
 		return this.dailyReportSummary.get(reportCategory);
 	}
@@ -373,14 +373,14 @@ public class ReportDataService {
 		for(int i = 1; i <= 12; i++) {
 			Filter monthFilter = Filter.builder().month(i).year(year).build();
 			getTransactionRecords(monthFilter); 
-			Map<ReportCategory, DailyReportRow> dailyReportSummaryCloned = (Map<ReportCategory, DailyReportRow>) SerializationUtils.clone((Serializable) dailyReportSummary);
+			Map<ReportCategory, ReportRowData> dailyReportSummaryCloned = (Map<ReportCategory, ReportRowData>) SerializationUtils.clone((Serializable) dailyReportSummary);
 			monthyReportContent.put(i,  dailyReportSummaryCloned);
 			 
 		}
 		
 		for(Integer key: monthyReportContent.keySet()) {
 			System.out.println("==================="+key);
-			Map<ReportCategory, DailyReportRow> daily = monthyReportContent.get(key);
+			Map<ReportCategory, ReportRowData> daily = monthyReportContent.get(key);
 			for(ReportCategory reportCategory : daily.keySet()) {
 				System.out.println(reportCategory.toString()+". D: "+daily.get(reportCategory).getDebitAmount()+" | K: "+daily.get(reportCategory).getCreditAmount());
 			}
@@ -406,5 +406,6 @@ public class ReportDataService {
 		
 		return ReportData.builder().entities(response.getEntities()).entityProperty(entityProperty).build();
 	}
+ 
 	
 }

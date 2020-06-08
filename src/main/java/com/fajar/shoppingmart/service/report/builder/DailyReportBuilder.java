@@ -20,7 +20,7 @@ import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.ReportCategory;
 import com.fajar.shoppingmart.entity.CashBalance;
 import com.fajar.shoppingmart.service.WebConfigService;
-import com.fajar.shoppingmart.service.report.data.DailyReportRow;
+import com.fajar.shoppingmart.service.report.data.ReportRowData;
 import com.fajar.shoppingmart.service.report.data.ReportData;
 import com.fajar.shoppingmart.util.DateUtil;
 import com.fajar.shoppingmart.util.MyFileUtil;
@@ -66,9 +66,9 @@ public class DailyReportBuilder extends ReportBuilder{
 		
 		Filter filter = reportRequest.getFilter();
 		CashBalance initialBalance = reportRequest.getInitialBalance();
-		List<DailyReportRow> dailyReportRows = reportRequest.getDailyReportRows();
-		Map<ReportCategory, DailyReportRow> dailyReportSummary = reportRequest.getDailyReportSummary(); 
-		DailyReportRow totalDailyReportRow = reportRequest.getTotalDailyReportRow();
+		List<ReportRowData> dailyReportRows = reportRequest.getDailyReportRows();
+		Map<ReportCategory, ReportRowData> dailyReportSummary = reportRequest.getDailyReportSummary(); 
+		ReportRowData totalDailyReportRow = reportRequest.getTotalDailyReportRow();
 		
 		int row = 0;
 		final int columnOffset = 0;
@@ -101,7 +101,7 @@ public class DailyReportBuilder extends ReportBuilder{
 		int currentDay = 1;  
 		
 		for (int i = 0; i < dailyReportRows.size(); i++) {
-			DailyReportRow dailyReportRow = dailyReportRows.get(i);  
+			ReportRowData dailyReportRow = dailyReportRows.get(i);  
 			writeOneMonthDailyTransactionRow( dailyRow, columnOffset, currentDay, dailyReportRow );  
 			
 			currentDay = dailyReportRow.getDay();
@@ -124,8 +124,8 @@ public class DailyReportBuilder extends ReportBuilder{
 		int number = 1;
 		
 		for (ReportCategory reportCategory : ReportCategory.values()) {
-			final DailyReportRow summary = dailyReportSummary.get(reportCategory) == null?
-					new DailyReportRow(reportCategory) : dailyReportSummary.get(reportCategory) ;
+			final ReportRowData summary = dailyReportSummary.get(reportCategory) == null?
+					new ReportRowData(reportCategory) : dailyReportSummary.get(reportCategory) ;
 			 
 			final int rowNum  = summaryRow;  
 			writeOneMonthTransacionSummaryRow(rowNum, columnOffset + 7, number, summary, initialBalance);   
@@ -144,7 +144,7 @@ public class DailyReportBuilder extends ReportBuilder{
 	}   
 	
 	private void writeOneMonthTransactionSummaryTotal(  int summaryRow, int columnOffset,
-			DailyReportRow	totalDailyReportRow) {
+			ReportRowData	totalDailyReportRow) {
 		createRow(xsheet, summaryRow, columnOffset, BLANK, "Jumlah", BLANK, 
 				curr(totalDailyReportRow.getDebitAmount()),
 				curr(totalDailyReportRow.getCreditAmount())); 
@@ -157,7 +157,7 @@ public class DailyReportBuilder extends ReportBuilder{
 
 
 	private void writeOneMonthTransacionSummaryRow( int rowNum, int columnOffset, int number,
-			  DailyReportRow summary, CashBalance initialBalance) {
+			  ReportRowData summary, CashBalance initialBalance) {
 		 
 		long debitAmount = summary.getDebitAmount();
 		long creditAmount = summary.getCreditAmount();
@@ -176,7 +176,7 @@ public class DailyReportBuilder extends ReportBuilder{
 
 
 	private void writeOneMonthDailyTransactionTotal(int dailyRow, int columnOffset,
-			DailyReportRow totalDailyReportRow) {
+			ReportRowData totalDailyReportRow) {
 		 
 		createRow(xsheet, dailyRow, columnOffset,
 				BLANK,BLANK, "Jumlah", BLANK,
@@ -187,7 +187,7 @@ public class DailyReportBuilder extends ReportBuilder{
 
 
 	private void writeOneMonthDailyTransactionRow(int dailyRow, int columnOffset, int currentDay,
-			DailyReportRow dailyReportRow) {
+			ReportRowData dailyReportRow) {
 		 
 		final boolean sameDay = dailyReportRow.getDay() == currentDay; 
 		createRow(xsheet, dailyRow, columnOffset,

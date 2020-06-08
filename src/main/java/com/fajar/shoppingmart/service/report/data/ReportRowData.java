@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DailyReportRow implements Serializable{/**
+public class ReportRowData implements Serializable{/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6472123129880639922L;
@@ -31,7 +31,7 @@ public class DailyReportRow implements Serializable{/**
 	public void addDebitAmount(long amt) {
 		this.debitAmount += amt;
 	}
-	public DailyReportRow(ReportCategory reportCategory) {
+	public ReportRowData(ReportCategory reportCategory) {
 		// TODO Auto-generated constructor stub
 		this.category  = reportCategory;
 	}

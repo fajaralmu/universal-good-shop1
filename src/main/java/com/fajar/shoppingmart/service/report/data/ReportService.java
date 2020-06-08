@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.service.WebConfigService;
+import com.fajar.shoppingmart.service.report.builder.BalanceReportBuilder;
 import com.fajar.shoppingmart.service.report.builder.DailyReportBuilder;
 import com.fajar.shoppingmart.service.report.builder.EntityReportBuilder;
 import com.fajar.shoppingmart.service.report.builder.MonthlyReportBuilder;
@@ -17,6 +18,8 @@ public class ReportService {
 	private WebConfigService webConfigService;
 	@Autowired
 	private ReportDataService reportDataService; 
+	@Autowired
+	private BalanceReportData balanceReportDataService;
 
 	public File buildDailyReport(WebRequest request) {
 		 
@@ -28,7 +31,7 @@ public class ReportService {
 	public File buildMonthlyReport(WebRequest request) {
 
 		ReportData reportData = reportDataService.getMonthlyReportData(request);
-		MonthlyReportBuilder reportBuilder = new MonthlyReportBuilder(webConfigService);
+		MonthlyReportBuilder reportBuilder = new MonthlyReportBuilder(webConfigService, true);
 		return reportBuilder.buildReport(reportData);
 	}
 
@@ -38,5 +41,10 @@ public class ReportService {
 		return reportBuilder.buildReport(reportData);
 	}
 	
+	public File buildBalanceReport(WebRequest request) {
+		ReportData reportData = balanceReportDataService.getBalanceReportData(request);
+		BalanceReportBuilder reportBuilder = new BalanceReportBuilder(webConfigService);
+		return reportBuilder.buildReport(reportData);
+	}
 
 }

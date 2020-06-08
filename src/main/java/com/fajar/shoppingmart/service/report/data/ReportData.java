@@ -31,14 +31,14 @@ public class ReportData implements Serializable {
 	 * daily
 	 */
 	private CashBalance initialBalance; 
-	private List<DailyReportRow> dailyReportRows;
-	private Map<ReportCategory, DailyReportRow> dailyReportSummary; 
-	private DailyReportRow totalDailyReportRow;
+	private List<ReportRowData> dailyReportRows;
+	private Map<ReportCategory, ReportRowData> dailyReportSummary; 
+	private ReportRowData totalDailyReportRow;
 	
 	/**
 	 * monthly
 	 */
-	private Map<Integer, Map<ReportCategory, DailyReportRow>> monthyReportContent;
+	private Map<Integer, Map<ReportCategory, ReportRowData>> monthyReportContent;
 	
 	/**
 	 * entities
