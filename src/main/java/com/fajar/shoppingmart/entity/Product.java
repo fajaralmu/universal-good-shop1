@@ -1,6 +1,5 @@
 package com.fajar.shoppingmart.entity;
 
-import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -27,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product extends BaseEntity implements Serializable {
+public class Product extends BaseEntity {
 
 	/**
 	* 

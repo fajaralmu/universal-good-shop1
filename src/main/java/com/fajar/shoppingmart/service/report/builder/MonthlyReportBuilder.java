@@ -21,18 +21,17 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.ReportCategory;
 import com.fajar.shoppingmart.service.WebConfigService;
-import com.fajar.shoppingmart.service.report.data.ReportRowData;
 import com.fajar.shoppingmart.service.report.data.ReportData;
+import com.fajar.shoppingmart.service.report.data.ReportRowData;
 import com.fajar.shoppingmart.util.DateUtil;
 import com.fajar.shoppingmart.util.MyFileUtil;
 import com.fajar.shoppingmart.util.StringUtil;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-@Data
+
 public class MonthlyReportBuilder extends ReportBuilder{   
 	 
 	private long grandTotalDebit = 0L;
@@ -45,6 +44,9 @@ public class MonthlyReportBuilder extends ReportBuilder{
 	public MonthlyReportBuilder(WebConfigService webConfigService, boolean  writeExcel) {
 		super(webConfigService);
 		this.writeExcel = writeExcel;
+	}
+	public Map<ReportCategory, ReportRowData> getTotalEachCategory(){
+		return totalEachCategory;
 	}
 
 	/**
@@ -94,7 +96,7 @@ public class MonthlyReportBuilder extends ReportBuilder{
 		Map<Integer, Map<ReportCategory, ReportRowData>> reportContent = reportData.getMonthyReportContent();
 		
 		int offsetRow = 4;
-		int offsetColumn = 1;
+//		int offsetColumn = 1;
 
 		int totalRowNum = offsetRow + reportCategories.length;
 
@@ -237,7 +239,7 @@ public class MonthlyReportBuilder extends ReportBuilder{
 
 			if (i % 3 == 0) {
 				mergeRegion(xsheet, new CellRangeAddress(1, 1, (i - 2) * 2, i * 2 + 1));
-				XSSFRow row = writeRow(xsheet, 1, (i - 2) * 2, "Triwulan " + StringUtil.GREEK_NUMBER[triwulan]);
+				writeRow(xsheet, 1, (i - 2) * 2, "Triwulan " + StringUtil.GREEK_NUMBER[triwulan]);
 
 				triwulan++;
 			}

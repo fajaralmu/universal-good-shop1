@@ -1,7 +1,5 @@
 package com.fajar.shoppingmart.entity;
 
-import java.io.Serializable;
-import java.rmi.Remote;
 import java.util.Date;
 import java.util.List;
 
@@ -25,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder	
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisteredRequest extends BaseEntity implements Serializable, Remote{/**
+public class RegisteredRequest extends BaseEntity {/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2584171097698972770L; 

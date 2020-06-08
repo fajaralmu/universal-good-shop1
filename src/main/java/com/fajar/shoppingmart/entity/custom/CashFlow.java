@@ -1,7 +1,5 @@
 package com.fajar.shoppingmart.entity.custom;
  
-import java.io.Serializable;
-
 import com.fajar.shoppingmart.annotation.CustomEntity;
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.entity.BaseEntity;
@@ -18,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @CustomEntity(propOrder = {"count", "amount", "module"})
-public class CashFlow extends BaseEntity implements Serializable{
+public class CashFlow extends BaseEntity{
 
 	 
 	/**

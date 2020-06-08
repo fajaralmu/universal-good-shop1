@@ -1,7 +1,5 @@
 package com.fajar.shoppingmart.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -21,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder	
 @AllArgsConstructor
 @NoArgsConstructor
-public class Category extends BaseEntity implements Serializable{/**
+public class Category extends BaseEntity {/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1168912843978053906L; 

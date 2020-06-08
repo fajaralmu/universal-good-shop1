@@ -1,5 +1,6 @@
 package com.fajar.shoppingmart.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -17,8 +18,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Dto
 @MappedSuperclass
-public class BaseEntity {
+public class BaseEntity implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5713292970611528372L;
 	@Column(name = "created_date")
 	@JsonIgnore
 //	@FormField

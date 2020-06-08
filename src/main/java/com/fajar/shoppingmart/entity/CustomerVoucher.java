@@ -1,7 +1,5 @@
 package com.fajar.shoppingmart.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -18,7 +16,7 @@ import lombok.Data;
 @Entity
 @Dto
 @Table(name = "member_voucher")
-public class CustomerVoucher extends BaseEntity implements Serializable {
+public class CustomerVoucher extends BaseEntity {
 
 	/**
 	 * 

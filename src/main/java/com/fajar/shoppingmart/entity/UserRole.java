@@ -1,7 +1,5 @@
 package com.fajar.shoppingmart.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -16,14 +14,13 @@ import lombok.NoArgsConstructor;
 
 @Dto
 @Entity
-@Table(name="user_role")
+@Table(name = "user_role")
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRole extends BaseEntity  implements Serializable{
+public class UserRole extends BaseEntity {
 
-	
 	/**
 	 * 
 	 */
@@ -34,6 +31,5 @@ public class UserRole extends BaseEntity  implements Serializable{
 	@Column
 	@FormField
 	private String access;
-	 
-	
+
 }

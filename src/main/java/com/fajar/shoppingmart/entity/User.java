@@ -1,8 +1,5 @@
 package com.fajar.shoppingmart.entity;
 
-import java.io.Serializable;
-import java.rmi.Remote;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -26,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User extends BaseEntity implements Remote, Serializable {
+public class User extends BaseEntity {
 
 	/**
 	 * 

@@ -1,7 +1,5 @@
 package com.fajar.shoppingmart.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -21,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder	
 @AllArgsConstructor
 @NoArgsConstructor
-public class Cost extends BaseEntity implements Serializable{ 
+public class Cost extends BaseEntity  { 
 	/**
 	 * 
 	 */

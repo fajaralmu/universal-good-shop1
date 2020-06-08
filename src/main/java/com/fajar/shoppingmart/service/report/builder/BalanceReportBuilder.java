@@ -7,7 +7,6 @@ import static com.fajar.shoppingmart.util.ExcelReportUtil.curr;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -87,7 +86,8 @@ public class BalanceReportBuilder extends ReportBuilder {
 			
 			if(reportCategory.codeStartsWith(LOSS_CODE)) {
 				debitAmount = adjustedData.getDebitAmount();
-			}else if(reportCategory.codeStartsWith(PROFIT_CODE)) {
+			}
+			if(reportCategory.codeStartsWith(PROFIT_CODE)) {
 				creditAmount = adjustedData.getCreditAmount();
 			}
 			

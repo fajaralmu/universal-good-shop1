@@ -20,7 +20,6 @@ import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.RealtimeService2;
-import com.fajar.shoppingmart.service.UserSessionService;
 
 @CrossOrigin
 @RestController

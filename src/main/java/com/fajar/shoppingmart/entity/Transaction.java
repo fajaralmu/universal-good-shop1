@@ -1,6 +1,5 @@
 package com.fajar.shoppingmart.entity;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,7 +31,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Transaction extends BaseEntity implements Serializable {
+public class Transaction extends BaseEntity {
 
 	/**
 	* 

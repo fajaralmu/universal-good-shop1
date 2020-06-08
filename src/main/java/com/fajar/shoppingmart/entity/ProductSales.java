@@ -1,7 +1,5 @@
 package com.fajar.shoppingmart.entity;
 
-import java.io.Serializable;
-
 import com.fajar.shoppingmart.annotation.Dto;
 
 import lombok.AllArgsConstructor;
@@ -14,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductSales extends BaseEntity implements Serializable {
+public class ProductSales extends BaseEntity {
 	/**
 	* 
 	*/

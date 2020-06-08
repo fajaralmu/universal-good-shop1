@@ -2,8 +2,6 @@ package com.fajar.shoppingmart.entity;
 
 import static com.fajar.shoppingmart.dto.FieldType.FIELD_TYPE_TEXTAREA;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -24,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShopProfile extends BaseEntity implements Serializable {
+public class ShopProfile extends BaseEntity {
 
 	/**
 	* 

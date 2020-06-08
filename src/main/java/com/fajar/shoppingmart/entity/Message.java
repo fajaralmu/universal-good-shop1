@@ -24,7 +24,12 @@ import lombok.NoArgsConstructor;
 @Table(name="message")
 public class Message extends BaseEntity{
 	 
-    public Message(String sender, String content, Date date2, Long valueOf, String reqId2) { 
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8717505831657905055L;
+	
+	public Message(String sender, String content, Date date2, Long valueOf, String reqId2) { 
     	this.sender = sender;
     	this.text = content;
     	this.date = date2;
