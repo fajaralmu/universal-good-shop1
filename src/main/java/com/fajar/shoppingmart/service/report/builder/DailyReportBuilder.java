@@ -37,13 +37,13 @@ public class DailyReportBuilder extends ReportBuilder{
 	
 	/**
 	 * get daily report file
-	 * @param reportRequest
+	 * @param reportData
 	 * @return
 	 */
 	 @Override
-	public File buildReport (ReportData reportRequest) {
+	public File buildReport (ReportData reportData) {
 
-		Filter filter = reportRequest.getFilter();
+		Filter filter = reportData.getFilter();
 		String time = getDateTime();
 		String sheetName = "Daily-"+filter.getMonth()+"-"+filter.getYear();
 		
@@ -51,7 +51,7 @@ public class DailyReportBuilder extends ReportBuilder{
 		XSSFWorkbook xwb  = new XSSFWorkbook();
 		xsheet = xwb.createSheet(sheetName ); 
 		
-		writeDailyReportOneMonth( reportRequest);
+		writeDailyReportOneMonth( reportData);
 		
 		File file = MyFileUtil.getFile(xwb, reportName);
 		return file;
@@ -60,20 +60,20 @@ public class DailyReportBuilder extends ReportBuilder{
 	/**
 	 * write daily report for one month
 	 * @param xsheet
-	 * @param reportRequest
+	 * @param reportData
 	 */
-	private void writeDailyReportOneMonth( ReportData reportRequest) {
+	private void writeDailyReportOneMonth( ReportData reportData) {
 		
-		Filter filter = reportRequest.getFilter();
-		CashBalance initialBalance = reportRequest.getInitialBalance();
-		List<ReportRowData> dailyReportRows = reportRequest.getDailyReportRows();
-		Map<ReportCategory, ReportRowData> dailyReportSummary = reportRequest.getDailyReportSummary(); 
-		ReportRowData totalDailyReportRow = reportRequest.getTotalDailyReportRow();
+		Filter filter = reportData.getFilter();
+		CashBalance initialBalance = reportData.getInitialBalance();
+		List<ReportRowData> dailyReportRows = reportData.getDailyReportRows();
+		Map<ReportCategory, ReportRowData> dailyReportSummary = reportData.getDailyReportSummary(); 
+		ReportRowData totalDailyReportRow = reportData.getTotalDailyReportRow();
 		
 		int row = 0;
 		final int columnOffset = 0;
 		//final int firstDate = 1;
-		
+		log.info("Prepare column labels");
 		/**
 		 * Report title
 		 */
@@ -86,7 +86,8 @@ public class DailyReportBuilder extends ReportBuilder{
 		final XSSFRow headerRow = createOneMonthReportHeader(row, columnOffset ); 
 		
 		row++;
-		
+		log.info("Writing content");
+		log.info("dailyReportRows.size(): {}", dailyReportRows.size());
 		/**
 		 * =========================================
 		 * 				Daily Content
@@ -109,6 +110,7 @@ public class DailyReportBuilder extends ReportBuilder{
 			dailyRow++;
 		}
 		
+		log.info("Writing summary");
 		/**
 		 * Daily Summary
 		 */
@@ -119,7 +121,7 @@ public class DailyReportBuilder extends ReportBuilder{
 		 * 					RECAPITULATION CONTENT
 		 * ======================================================
 		 */
-		 
+		log.info("Writing recapitulation");
 		int summaryRow = row;
 		int number = 1;
 		

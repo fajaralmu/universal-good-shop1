@@ -1,5 +1,6 @@
 package com.fajar.shoppingmart.util;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -11,6 +12,8 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+import org.apache.commons.lang3.SerializationUtils;
 
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
@@ -349,6 +352,21 @@ public class EntityUtil {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Clone Serializable Object
+	 * @param <T>
+	 * @param serializable
+	 * @return
+	 */
+	public static <T> T cloneSerializable(Object serializable) {
+		try {
+			return (T) SerializationUtils.clone((Serializable)serializable);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }

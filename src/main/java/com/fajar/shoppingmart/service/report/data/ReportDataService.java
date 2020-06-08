@@ -1,5 +1,7 @@
 package com.fajar.shoppingmart.service.report.data;
 
+import static com.fajar.shoppingmart.util.EntityUtil.cloneSerializable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -78,9 +80,9 @@ public class ReportDataService {
 			
 			Filter filter = request.getFilter();    
 			getTransactionRecords(filter); 
-			ReportData reportRequest = generateDailyReportRequest(filter);  
+			ReportData reportData = generateDailyReportRequest(filter);  
 			
-			return reportRequest;
+			return reportData;
 		}catch (Exception e) { 
 			e.printStackTrace();
 			throw e;
@@ -100,12 +102,14 @@ public class ReportDataService {
 	private ReportData generateDailyReportRequest(Filter filter) {
 		ReportData reportRequest = new ReportData();
 		reportRequest.setFilter(filter);
-		reportRequest.setDailyReportRows(dailyReportRows);
-		reportRequest.setDailyReportSummary(dailyReportSummary);
-		reportRequest.setInitialBalance(dailyReportInitialBalance);
-		reportRequest.setTotalDailyReportRow(dailyReportRowTotal);
+		log.info("reportDataSvc->dailyReportRows.size(): {}", dailyReportRows.size());
+		reportRequest.setDailyReportRows(cloneSerializable(dailyReportRows));
+		reportRequest.setDailyReportSummary(cloneSerializable(dailyReportSummary));
+		reportRequest.setInitialBalance(cloneSerializable(dailyReportInitialBalance));
+		reportRequest.setTotalDailyReportRow(cloneSerializable(dailyReportRowTotal));
 		return reportRequest;
 	}
+	 
 	
 	/**
 	 * gather required data from database

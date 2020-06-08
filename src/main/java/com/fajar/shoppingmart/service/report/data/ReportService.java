@@ -12,7 +12,10 @@ import com.fajar.shoppingmart.service.report.builder.DailyReportBuilder;
 import com.fajar.shoppingmart.service.report.builder.EntityReportBuilder;
 import com.fajar.shoppingmart.service.report.builder.MonthlyReportBuilder;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ReportService {
 	@Autowired
 	private WebConfigService webConfigService;
@@ -22,26 +25,33 @@ public class ReportService {
 	private BalanceReportData balanceReportDataService;
 
 	public File buildDailyReport(WebRequest request) {
-		 
+		log.info("buildDailyReport, request: {}", request);
+		
 		ReportData reportData = reportDataService.getDailyReportData(request);
 		DailyReportBuilder reportBuilder = new DailyReportBuilder(webConfigService);
+		log.info("report row data size: {}", reportData.getDailyReportRows().size());
+		
 		return reportBuilder.buildReport(reportData);
 	}
 
 	public File buildMonthlyReport(WebRequest request) {
-
+		log.info("buildMonthlyReport, request: {}", request);
+		
 		ReportData reportData = reportDataService.getMonthlyReportData(request);
 		MonthlyReportBuilder reportBuilder = new MonthlyReportBuilder(webConfigService, true);
 		return reportBuilder.buildReport(reportData);
 	}
 
 	public File buildEntityReport(WebRequest request) {
+		log.info("buildEntityReport, request: {}", request);
+		
 		ReportData reportData = reportDataService.getEntityReportData(request);
 		EntityReportBuilder reportBuilder = new EntityReportBuilder(webConfigService);
 		return reportBuilder.buildReport(reportData);
 	}
 	
 	public File buildBalanceReport(WebRequest request) {
+		log.info("buildBalanceReport, request: {}", request);
 		
 		ReportData reportData = balanceReportDataService.getBalanceReportData(request);
 		BalanceReportBuilder reportBuilder = new BalanceReportBuilder(webConfigService);
