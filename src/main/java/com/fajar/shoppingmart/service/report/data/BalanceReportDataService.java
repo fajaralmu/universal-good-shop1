@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class BalanceReportData {
+public class BalanceReportDataService {
 	
 	@Autowired
 	private WebConfigService webConfigService;
@@ -46,6 +46,7 @@ public class BalanceReportData {
 			log.info("collecting data for year: {}", year);
 			  
 			Map<ReportCategory, ReportRowData> totalEachCategory = getMonthlyTotalEachCategory(year);
+			swapCreditAndDebit(totalEachCategory);
 			summaryDatas.put(year, totalEachCategory);
 			
 			log.info("totalEachCategory keys - {}: {}", year, totalEachCategory.keySet().size()); 
@@ -61,6 +62,19 @@ public class BalanceReportData {
 		reportData.setMonthyReportContent(summaryDatas); 
 		reportData.setDailyReportSummary(formerData);
 		return reportData;
+	}
+
+	private static void swapCreditAndDebit(Map<ReportCategory, ReportRowData> rowDatas) {
+		for (ReportCategory reportCategory : rowDatas.keySet()) {
+			ReportRowData rowData = rowDatas.get(reportCategory);
+			final long debitAmount = rowData.getDebitAmount();
+			final long creditAmount = rowData.getCreditAmount();
+			
+			rowDatas.get(reportCategory).setDebitAmount(creditAmount);
+			rowDatas.get(reportCategory).setCreditAmount(debitAmount);
+			
+		}
+		
 	}
 
 	private Map<ReportCategory, ReportRowData> getMonthlyTotalEachCategory(int year) { 

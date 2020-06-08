@@ -22,7 +22,7 @@ public class ReportService {
 	@Autowired
 	private ReportDataService reportDataService; 
 	@Autowired
-	private BalanceReportData balanceReportDataService;
+	private BalanceReportDataService balanceReportDataService;
 
 	public File buildDailyReport(WebRequest request) {
 		log.info("buildDailyReport, request: {}", request);
