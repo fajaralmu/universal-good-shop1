@@ -25,6 +25,8 @@ public class BalanceReportBuilder extends ReportBuilder {
 
 	private static final String PROFIT_CODE = "4";
 	private static final String LOSS_CODE = "5";
+	private static final String BALANCE_DEBIT = "2";
+	private static final String BALANCE_CREDIT = "4";
 	
 	private Map<ReportCategory, ReportRowData> formerBalance;
 	private Map<ReportCategory, ReportRowData> thisYearCashflow;
@@ -99,9 +101,9 @@ public class BalanceReportBuilder extends ReportBuilder {
 			long debitAmount = 0l;
 			long creditAmount = 0l;
 			
-			if(reportCategory.codeLeftCharLessThan("2")) {
+			if(reportCategory.codeLeftCharLessThan(BALANCE_DEBIT)) {
 				debitAmount = adjustedData.getDebitAmount();
-			}else if(reportCategory.codeLeftCharLessThan("4")) {
+			}else if(reportCategory.codeLeftCharLessThan(BALANCE_CREDIT)) {
 				creditAmount = adjustedData.getCreditAmount();
 			}
 			
@@ -261,7 +263,7 @@ public class BalanceReportBuilder extends ReportBuilder {
 	private void writeReportCategoriesLabel(int rowNum, int colOffset) {
 		ReportCategory[] reportCategories = ReportCategory.values();
 		for (int i = 0; i < reportCategories.length; i++) {
-			createRow(xsheet, rowNum, colOffset, (i + 1), reportCategories[i].name);
+			createRow(xsheet, rowNum, colOffset, reportCategories[i].code, reportCategories[i].name);
 			rowNum++;
 		}
 		createRow(xsheet, rowNum, colOffset, "", "Jumlah");
@@ -279,7 +281,7 @@ public class BalanceReportBuilder extends ReportBuilder {
 		/**
 		 * Column title
 		 */
-		Object[] colNames = { "No", "Nama Akun", "Neraca Awal", "", "Neraca Perubahan", "", "Neraca Sisa", "",
+		Object[] colNames = { "No. Akun", "Nama Akun", "Neraca Awal", "", "Neraca Perubahan", "", "Neraca Sisa", "",
 				"Penyesuaian", "", "NS Disesuaikan", "", "Rugi / Laba", "", "Neraca", ""
 
 		};

@@ -3,7 +3,7 @@ package com.fajar.shoppingmart.dto;
 public enum ReportCategory{
 	
 	//Changing the order of the declaration will affect report label order
-	CASH_BALANCE("Saldo", "20001"),
+	CASH_BALANCE("Saldo", "10001"),
 	SHOP_ITEM("Barang Toko", "40002"),
 	OPERATIONAL_COST("Biaya Operasional", "50003"),
 	CAPITAL("Dana", "10004");
