@@ -16,4 +16,8 @@ public enum ReportCategory{
 		this.code = code;
 	}
 	
+	public boolean codeStartsWith(String val) {
+		return code.startsWith(val);
+	}
+	
 }
