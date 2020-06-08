@@ -32,17 +32,16 @@ public class BalanceReportData {
 		
 		int selectedYear = webRequest.getFilter().getYear();
 		int formerYear = selectedYear - 1;
-		int firstYear = 2020;//transactionService.getMinTransactionYear();
-		int nowYear = DateUtil.getCalendarYear(new Date());
-		int arraySize = nowYear - firstYear + 1;
+		int firstYear = transactionService.getMinTransactionYear();
+		int nowYear = 2017;// DateUtil.getCalendarYear(new Date());
+		int years = nowYear - firstYear + 1;
 		
 		
 		log.info("From year: {} to: {}", firstYear, nowYear);
 		
 		Map<Integer, Map<ReportCategory, ReportRowData>> summaryDatas = new HashMap<>();
 		
-		for(int i = 0; i < arraySize; i++) {
-			int year = (firstYear + i);
+		for(int year = firstYear; year <= nowYear; year++) { 
 			log.info("collecting data for year: {}", year);
 			
 			WebRequest request = WebRequest.builder().filter(Filter.builder().year(year).build()).build();
