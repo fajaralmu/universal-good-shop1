@@ -20,6 +20,9 @@ import com.fajar.shoppingmart.service.report.data.ReportRowData;
 import com.fajar.shoppingmart.util.ExcelReportUtil;
 import com.fajar.shoppingmart.util.MyFileUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class BalanceReportBuilder extends ReportBuilder {
 
 	private static final String PROFIT_CODE = "4";
@@ -211,7 +214,7 @@ public class BalanceReportBuilder extends ReportBuilder {
 		buildFinalBalanceFromAdjustedBalance();
 		long[] totalDebitAndCredit = writeBalanceColumn(rowNum, colOffset, 6, finalBalance);
 		long totalDebit = totalDebitAndCredit[0];
-		long totalCredit = totalDebitAndCredit[0];
+		long totalCredit = totalDebitAndCredit[1];
 		writeBusinessBalanceCell(rowNum, colOffset, totalDebit, totalCredit);
 	}
 	 
@@ -219,11 +222,12 @@ public class BalanceReportBuilder extends ReportBuilder {
 		buildLossProfitBalanceFromAdjustedBalance();
 		long[] totalDebitAndCredit = writeBalanceColumn(rowNum, colOffset,5, lossProfitBalance);
 		long totalDebit = totalDebitAndCredit[0];
-		long totalCredit = totalDebitAndCredit[0];
+		long totalCredit = totalDebitAndCredit[1];
 		writeBusinessProfitCell(rowNum, colOffset,totalDebit, totalCredit);
 	}
 	
 	private void writeBusinessBalanceCell(int rowNum, int colOffset, long totalDebit, long totalCredit) {
+		log.info("writeBusinessBalanceCell. totalDebit: {}, totalCredit: {}",totalDebit,totalCredit);
 		
 		int workingRow = rowNum + ReportCategory.values().length + 1;
 		int offsetIndex = colOffset + 2 + 2 * 6; 
@@ -234,7 +238,8 @@ public class BalanceReportBuilder extends ReportBuilder {
 	}
 
 	private void writeBusinessProfitCell(int rowNum, int colOffset, long totalDebit, long totalCredit) {
-	
+		log.info("writeBusinessProfitCell. totalDebit: {}, totalCredit: {}",totalDebit,totalCredit);
+		
 		int workingRow = rowNum + ReportCategory.values().length + 1;
 		int offsetIndex = colOffset + 2 + 2*5;
 		long businessProfit = totalCredit > totalDebit ? totalCredit-totalDebit : 0L;
