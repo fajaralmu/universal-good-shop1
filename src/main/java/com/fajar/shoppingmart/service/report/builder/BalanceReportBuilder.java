@@ -2,12 +2,14 @@ package com.fajar.shoppingmart.service.report.builder;
 
 import static com.fajar.shoppingmart.util.ExcelReportUtil.addMergedRegion;
 import static com.fajar.shoppingmart.util.ExcelReportUtil.createRow;
+import static com.fajar.shoppingmart.util.ExcelReportUtil.curr;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -16,6 +18,7 @@ import com.fajar.shoppingmart.dto.ReportCategory;
 import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.service.report.data.ReportData;
 import com.fajar.shoppingmart.service.report.data.ReportRowData;
+import com.fajar.shoppingmart.util.ExcelReportUtil;
 import com.fajar.shoppingmart.util.MyFileUtil;
 
 public class BalanceReportBuilder extends ReportBuilder {
@@ -68,6 +71,7 @@ public class BalanceReportBuilder extends ReportBuilder {
 		writeBalanceReport(reportData);
 
 		File file = MyFileUtil.getFile(xwb, reportName);
+		 
 		return file;
 	}
 
@@ -77,18 +81,50 @@ public class BalanceReportBuilder extends ReportBuilder {
 		int colOffset = 1;
 		writeHorizontalColumNames(rowNum, colOffset);
 		rowNum += 2;
-		writeReportCategoriesLabel(rowNum, colOffset);
-		writeFormerBalance(rowNum, colOffset);
+		
+		writeReportCategoriesLabel(rowNum, colOffset); 
+		writeContents(rowNum, colOffset);
+		autoSizeColumns(rowNum, colOffset);
+		
 
 	}
 
+	private void writeContents(int rowNum, int colOffset) {
+		 
+		writeFormerBalance(rowNum, colOffset);
+		wirteBalanceChanging(rowNum, colOffset);
+	}
+ 
+	private void autoSizeColumns(int rowNum, int colOffset) {
+		
+		for(int i = 1; i<3+ReportCategory.values().length; i++) {
+			ExcelReportUtil.autosizeColumn(xsheet.getRow(i), 20, BorderStyle.THIN, null);
+		}
+	}
+
+	private void wirteBalanceChanging(int rowNum, int colOffset) {
+		writeBalanceColumn(rowNum, colOffset, 1, thisYearCashflow); 
+	}
 	private void writeFormerBalance(int rowNum, int colOffset) {
-		Set<ReportCategory> keys = formerBalance.keySet();
+		writeBalanceColumn(rowNum, colOffset, 0, formerBalance);
+	}
+	
+	/**
+	 * 
+	 * @param rowNum
+	 * @param colOffset
+	 * @param contentSequence starts at 0
+	 * @param rowDatas
+	 */
+	private void writeBalanceColumn(int rowNum, int colOffset, int contentSequence, Map<ReportCategory, ReportRowData> rowDatas) {
+		Set<ReportCategory> keys = rowDatas.keySet();
 		long totalCredit = 0l;
 		long totalDebit = 0l;
+		int extraOffset = 2 * contentSequence;
+		int offset = colOffset + 2 + extraOffset;
 		for (ReportCategory reportCategory : keys) {
 			
-			ReportRowData rowData = formerBalance.get(reportCategory);
+			ReportRowData rowData = rowDatas.get(reportCategory);
 			
 			long creditAmount = rowData.getCreditAmount();
 			long debitAmount = rowData.getDebitAmount();
@@ -96,12 +132,12 @@ public class BalanceReportBuilder extends ReportBuilder {
 			totalCredit+=creditAmount;
 			totalDebit+=debitAmount;
 			
-			createRow(xsheet, rowNum, colOffset + 3, debitAmount, creditAmount);
+			createRow(xsheet, rowNum, offset, curr(debitAmount) , curr(creditAmount));
 			rowNum++;
 		}
 		
-		createRow(xsheet, rowNum, colOffset + 1, totalDebit, totalCredit);
-	}
+		createRow(xsheet, rowNum, offset, curr(totalDebit), curr(totalCredit));
+	} 
 
 	private void writeReportCategoriesLabel(int rowNum, int colOffset) {
 		ReportCategory[] reportCategories = ReportCategory.values();
@@ -109,7 +145,7 @@ public class BalanceReportBuilder extends ReportBuilder {
 			createRow(xsheet, rowNum, colOffset, (i + 1), reportCategories[i].name);
 			rowNum++;
 		}
-		createRow(xsheet, rowNum, colOffset, (reportCategories.length + 1), "Jumlah");
+		createRow(xsheet, rowNum, colOffset, "", "Jumlah");
 	}
 
 	private void writeHorizontalColumNames(final int rowNum, int colOffset) {

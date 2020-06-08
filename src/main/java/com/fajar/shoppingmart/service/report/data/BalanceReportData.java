@@ -43,12 +43,13 @@ public class BalanceReportData {
 			log.info("collecting data for year: {}", year);
 			  
 			Map<ReportCategory, ReportRowData> totalEachCategory = getMonthlyTotalEachCategory(year);
-			log.info("totalEachCategory keys - {}: {}", year, totalEachCategory.keySet().size());
-			
 			summaryDatas.put(year, totalEachCategory);
+			
+			log.info("totalEachCategory keys - {}: {}", year, totalEachCategory.keySet().size()); 
 		}
 		
 		log.info("End collecting data");
+		
 		Map<ReportCategory, ReportRowData> formerData = summaryDatas.get(formerYear);
 		log.info("formerData: {}", formerData);
 		
