@@ -23,11 +23,16 @@ import com.fajar.shoppingmart.util.MyFileUtil;
 
 public class BalanceReportBuilder extends ReportBuilder {
 
+	private static final String PROFIT_CODE = "4";
+	private static final String LOSS_CODE = "5";
+	
 	private Map<ReportCategory, ReportRowData> formerBalance;
 	private Map<ReportCategory, ReportRowData> thisYearCashflow;
 	private Map<ReportCategory, ReportRowData> remainingBalance = new HashMap<>();
 	private Map<ReportCategory, ReportRowData> adjustingBalance = emptyCategories();
 	private Map<ReportCategory, ReportRowData> adjustedBalance = new HashMap<>();
+	private Map<ReportCategory, ReportRowData> lossProfitBalance = new HashMap<>();
+	private Map<ReportCategory, ReportRowData> finalBalance = new HashMap<>();
 
 	public BalanceReportBuilder(WebConfigService configService) {
 		super(configService);
@@ -64,6 +69,44 @@ public class BalanceReportBuilder extends ReportBuilder {
 			
 			ReportRowData rowData = new ReportRowData(reportCategory, debitAmount, creditAmount);
 			remainingBalance.put(reportCategory, rowData);
+		}
+	}
+	
+	private void buildLossProfitBalance() {
+		lossProfitBalance.clear();
+		for(ReportCategory reportCategory:ReportCategory.values()) {
+			ReportRowData adjustedData = adjustedBalance.get(reportCategory);
+
+			long debitAmount = 0l;
+			long creditAmount = 0l;
+			
+			if(reportCategory.codeStartsWith(LOSS_CODE)) {
+				debitAmount = adjustedData.getDebitAmount();
+			}else if(reportCategory.codeStartsWith(PROFIT_CODE)) {
+				creditAmount = adjustedData.getCreditAmount();
+			}
+			
+			ReportRowData rowData = new ReportRowData(reportCategory, debitAmount, creditAmount);
+			lossProfitBalance.put(reportCategory, rowData);
+		}
+	}
+	
+	private void buildFinalBalance() {
+		finalBalance.clear();
+		for(ReportCategory reportCategory:ReportCategory.values()) {
+			ReportRowData adjustedData = adjustedBalance.get(reportCategory);
+
+			long debitAmount = 0l;
+			long creditAmount = 0l;
+			
+			if(reportCategory.codeLeftCharLessThan("2")) {
+				debitAmount = adjustedData.getDebitAmount();
+			}else if(reportCategory.codeLeftCharLessThan("4")) {
+				creditAmount = adjustedData.getCreditAmount();
+			}
+			
+			ReportRowData rowData = new ReportRowData(reportCategory, debitAmount, creditAmount);
+			lossProfitBalance.put(reportCategory, rowData);
 		}
 	}
 	
@@ -149,8 +192,20 @@ public class BalanceReportBuilder extends ReportBuilder {
 		writeRemainingBalance(rowNum, colOffset);
 		writeAdjustingBalance(rowNum, colOffset);
 		writeAdjustedBalance(rowNum, colOffset);
+		writeLossProfitBalance(rowNum, colOffset);
+		writeFinalBalance(rowNum, colOffset);
 	}  
  
+	private void writeFinalBalance(int rowNum, int colOffset) {
+		buildFinalBalance();
+		writeBalanceColumn(rowNum, colOffset, 6, finalBalance);
+	}
+
+	private void writeLossProfitBalance(int rowNum, int colOffset) {
+		buildLossProfitBalance();
+		writeBalanceColumn(rowNum, colOffset,5, lossProfitBalance);
+	}
+
 	private void writeAdjustedBalance(int rowNum, int colOffset) {
 		buildAdjustedBalance();
 		writeBalanceColumn(rowNum, colOffset, 4, adjustedBalance);
