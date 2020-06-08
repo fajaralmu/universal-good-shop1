@@ -42,6 +42,7 @@ public class ReportService {
 	}
 	
 	public File buildBalanceReport(WebRequest request) {
+		
 		ReportData reportData = balanceReportDataService.getBalanceReportData(request);
 		BalanceReportBuilder reportBuilder = new BalanceReportBuilder(webConfigService);
 		return reportBuilder.buildReport(reportData);

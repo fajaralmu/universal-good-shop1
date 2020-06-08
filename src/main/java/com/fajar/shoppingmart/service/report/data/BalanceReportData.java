@@ -30,9 +30,12 @@ public class BalanceReportData {
 	
 	public ReportData getBalanceReportData(WebRequest webRequest) {
 		
-		int firstYear = transactionService.getMinTransactionYear();
+		int selectedYear = webRequest.getFilter().getYear();
+		int formerYear = selectedYear - 1;
+		int firstYear = 2020;//transactionService.getMinTransactionYear();
 		int nowYear = DateUtil.getCalendarYear(new Date());
 		int arraySize = nowYear - firstYear + 1;
+		
 		
 		log.info("From year: {} to: {}", firstYear, nowYear);
 		
@@ -52,9 +55,12 @@ public class BalanceReportData {
 		}
 		
 		log.info("End collecting data");
+		Map<ReportCategory, ReportRowData> formerData = summaryDatas.get(formerYear);
 		
 		ReportData reportData = new ReportData();
-		reportData.setMonthyReportContent(summaryDatas);
+		reportData.setFilter(webRequest.getFilter());
+		reportData.setMonthyReportContent(summaryDatas); 
+		reportData.setDailyReportSummary(formerData);
 		return reportData;
 	}
 

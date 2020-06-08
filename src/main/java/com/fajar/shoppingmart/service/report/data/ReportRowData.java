@@ -32,7 +32,7 @@ public class ReportRowData implements Serializable{/**
 		this.debitAmount += amt;
 	}
 	public ReportRowData(ReportCategory reportCategory) {
-		// TODO Auto-generated constructor stub
+		
 		this.category  = reportCategory;
 	}
 	

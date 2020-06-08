@@ -33,7 +33,7 @@
 				<button class="btn btn-outline-secondary" onclick="getCashflow()">Search</button> 
 				<button class="btn btn-outline-secondary" onclick="report('daily')">Report This Month</button>
 				<button class="btn btn-outline-secondary" onclick="report('monthly')">Report This Year</button>
-				<button class="btn btn-outline-secondary" onclick="report('balance1')">Report This Year</button>
+				<button class="btn btn-outline-secondary" onclick="report('balance1')">Balance Report</button>
 			</div>
 		</div>
 		<p></p>
