@@ -34,11 +34,13 @@ public class BalanceReportData {
 		int nowYear = DateUtil.getCalendarYear(new Date());
 		int arraySize = nowYear - firstYear + 1;
 		
+		log.info("From year: {} to: {}", firstYear, nowYear);
+		
 		Map<Integer, Map<ReportCategory, ReportRowData>> summaryDatas = new HashMap<>();
 		
 		for(int i = 0; i < arraySize; i++) {
 			int year = (firstYear + i);
-			log.info("writing year: {}", year);
+			log.info("collecting data for year: {}", year);
 			
 			WebRequest request = WebRequest.builder().filter(Filter.builder().year(year).build()).build();
 			ReportData monthlyData = reportDataService.getMonthlyReportData(request );
@@ -49,7 +51,11 @@ public class BalanceReportData {
 			summaryDatas.put(year, totalEachCategory);
 		}
 		
-		return new ReportData();
+		log.info("End collecting data");
+		
+		ReportData reportData = new ReportData();
+		reportData.setMonthyReportContent(summaryDatas);
+		return reportData;
 	}
 
 }

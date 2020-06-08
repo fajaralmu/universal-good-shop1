@@ -92,7 +92,18 @@ public class RestReportController {
 		
 		writeFileReponse(httpResponse, result);
 	}
-	
+	@PostMapping(value = "/balance1", consumes = MediaType.APPLICATION_JSON_VALUE )
+	public void balanceWorkSheet(@RequestBody WebRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws Exception {
+		log.info("balance work sheet {}", request);
+//		if(!userSessionService.hasSession(httpRequest)) {
+//			return WebResponse.failedResponse();
+//		}
+		
+		File result = reportService.buildBalanceReport(request);
+		
+		writeFileReponse(httpResponse, result);
+	}
 	 
 
 }
