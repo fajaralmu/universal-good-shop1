@@ -145,12 +145,12 @@ public class BalanceReportBuilder extends ReportBuilder {
 	 * @param rowDatas
 	 */
 	private void writeBalanceColumn(int rowNum, int colOffset, int contentSequence, Map<ReportCategory, ReportRowData> rowDatas) {
-		Set<ReportCategory> keys = rowDatas.keySet();
+		 
 		long totalCredit = 0l;
 		long totalDebit = 0l;
 		int extraOffset = 2 * contentSequence;
 		int offset = colOffset + 2 + extraOffset;
-		for (ReportCategory reportCategory : keys) {
+		for (ReportCategory reportCategory : ReportCategory.values()) {
 			
 			ReportRowData rowData = rowDatas.get(reportCategory);
 			

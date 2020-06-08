@@ -54,7 +54,7 @@ public class BalanceReportData {
 		log.info("End collecting data");
 		
 		Map<ReportCategory, ReportRowData> formerData = summaryDatas.get(formerYear);
-		log.info("formerData: {}", formerData);
+		log.info("formerData keys: {}", formerData == null ? null : formerData.keySet().size());
 		
 		ReportData reportData = new ReportData();
 		reportData.setFilter(webRequest.getFilter());
