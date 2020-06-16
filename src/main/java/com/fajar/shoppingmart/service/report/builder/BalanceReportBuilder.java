@@ -30,6 +30,14 @@ public class BalanceReportBuilder extends ReportBuilder {
 	private static final String BALANCE_DEBIT = "2";
 	private static final String BALANCE_CREDIT = "4";
 	
+	private static final int FINAL_BALANCE_INDEX = 6;
+	private static final int LOSS_PROFIT_BALANCE_INDEX = 5;
+	private static final int ADJUSTED_BALANCE_INDEX = 4;
+	private static final int ADJUSTING_BALANCE_INDEX = 3;
+	private static final int REMAINING_BALANCE_INDEX = 2;
+	private static final int CHANGING_BALANCE_INDEX = 1;
+	private static final int FORMER_BALANCE_INDEX = 0;
+	
 	private Map<ReportCategory, ReportRowData> formerBalance;
 	private Map<ReportCategory, ReportRowData> thisYearCashflow;
 	private Map<ReportCategory, ReportRowData> remainingBalance = new HashMap<>();
@@ -212,7 +220,7 @@ public class BalanceReportBuilder extends ReportBuilder {
  
 	private void writeFinalBalance(int rowNum, int colOffset) {
 		buildFinalBalanceFromAdjustedBalance();
-		long[] totalDebitAndCredit = writeBalanceColumn(rowNum, colOffset, 6, finalBalance);
+		long[] totalDebitAndCredit = writeBalanceColumn(rowNum, colOffset, FINAL_BALANCE_INDEX, finalBalance);
 		long totalDebit = totalDebitAndCredit[0];
 		long totalCredit = totalDebitAndCredit[1];
 		writeBusinessBalanceCell(rowNum, colOffset, totalDebit, totalCredit);
@@ -220,7 +228,7 @@ public class BalanceReportBuilder extends ReportBuilder {
 	 
 	private void writeLossProfitBalance(int rowNum, int colOffset) {
 		buildLossProfitBalanceFromAdjustedBalance();
-		long[] totalDebitAndCredit = writeBalanceColumn(rowNum, colOffset,5, lossProfitBalance);
+		long[] totalDebitAndCredit = writeBalanceColumn(rowNum, colOffset, LOSS_PROFIT_BALANCE_INDEX, lossProfitBalance);
 		long totalDebit = totalDebitAndCredit[0];
 		long totalCredit = totalDebitAndCredit[1];
 		writeBusinessProfitCell(rowNum, colOffset,totalDebit, totalCredit);
@@ -230,7 +238,7 @@ public class BalanceReportBuilder extends ReportBuilder {
 		log.info("writeBusinessBalanceCell. totalDebit: {}, totalCredit: {}",totalDebit,totalCredit);
 		
 		int workingRow = rowNum + ReportCategory.values().length + 1;
-		int offsetIndex = colOffset + 2 + 2 * 6; 
+		int offsetIndex = colOffset + 2 + 2 * FINAL_BALANCE_INDEX; 
 		createRow(xsheet, workingRow, offsetIndex , "", curr(businessProfit));
 		workingRow++; 
 		createRow(xsheet, workingRow, offsetIndex, curr(totalDebit), curr(totalCredit+businessProfit));
@@ -241,7 +249,7 @@ public class BalanceReportBuilder extends ReportBuilder {
 		log.info("writeBusinessProfitCell. totalDebit: {}, totalCredit: {}",totalDebit,totalCredit);
 		
 		int workingRow = rowNum + ReportCategory.values().length + 1;
-		int offsetIndex = colOffset + 2 + 2*5;
+		int offsetIndex = colOffset + 2 + 2 * LOSS_PROFIT_BALANCE_INDEX;
 		long businessProfit = totalCredit > totalDebit ? totalCredit-totalDebit : 0L;
 		createRow(xsheet, workingRow, offsetIndex - 1, "SHU "+reportData.getFilter().getYear(), curr(businessProfit), curr(0));
 		workingRow++;
@@ -254,24 +262,24 @@ public class BalanceReportBuilder extends ReportBuilder {
 
 	private void writeAdjustedBalance(int rowNum, int colOffset) {
 		buildAdjustedBalance();
-		writeBalanceColumn(rowNum, colOffset, 4, adjustedBalance);
+		writeBalanceColumn(rowNum, colOffset, ADJUSTED_BALANCE_INDEX, adjustedBalance);
 	} 
 	
 	private void writeAdjustingBalance(int rowNum, int colOffset) {
 		// TODO: Calculate adjusted balance content
-		writeBalanceColumn(rowNum, colOffset, 3, adjustingBalance); 
+		writeBalanceColumn(rowNum, colOffset, ADJUSTING_BALANCE_INDEX, adjustingBalance); 
 	}
 
 	private void writeRemainingBalance(int rowNum, int colOffset) {
 		buildRemainingBalance();
-		writeBalanceColumn(rowNum, colOffset, 2, remainingBalance); 
+		writeBalanceColumn(rowNum, colOffset, REMAINING_BALANCE_INDEX, remainingBalance); 
 		
 	}
 	private void wirteBalanceChanging(int rowNum, int colOffset) {
-		writeBalanceColumn(rowNum, colOffset, 1, thisYearCashflow); 
+		writeBalanceColumn(rowNum, colOffset, CHANGING_BALANCE_INDEX, thisYearCashflow); 
 	}
 	private void writeFormerBalance(int rowNum, int colOffset) {
-		writeBalanceColumn(rowNum, colOffset, 0, formerBalance);
+		writeBalanceColumn(rowNum, colOffset, FORMER_BALANCE_INDEX, formerBalance);
 	}
 	
 	/**

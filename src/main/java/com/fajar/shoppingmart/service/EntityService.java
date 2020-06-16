@@ -3,6 +3,7 @@ package com.fajar.shoppingmart.service;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -203,24 +204,30 @@ public class EntityService {
 		List<BaseEntity> entities;
 		int count;
 	}
-	
-	public List<BaseEntity> findAll(Class<? extends BaseEntity> _class){
-		return entityRepository.findAll(_class);
-	}
+	 
 //	
 	public List<Cost> getAllCostType() {
-		return entityRepository.findAll(Cost.class);
+		return findAll(Cost.class);
 	}
 	
 	public List<Unit> getAllUnit() { 
-		return entityRepository.findAll(Unit.class);
+		return findAll(Unit.class);
 	}
 
 
 	public List<Capital> getAllCapitalType() { 
-		return entityRepository.findAll(Capital.class);
+		return findAll(Capital.class);
 	}
 
+	private <T> List<T> findAll(Class<? extends BaseEntity> _class){
+		List<T> resultList = entityRepository.findAll(_class);
+		
+		if(null == resultList) {
+			resultList = new ArrayList<T>();
+		}
+		
+		return resultList;
+	}
  
 
 }
