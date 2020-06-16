@@ -262,6 +262,7 @@
 							<classifier>dto</classifier>
 							<includes>
 								<include>**/fajar/shoppingmart/entity/**</include>
+								<include>**/fajar/shoppingmart/entity/custom/*</include>
 								<include>**/fajar/shoppingmart/annotation/**</include>
 								<include>**/fajar/shoppingmart/dto/*</include>
 								<include>**/fajar/shoppingmart/util/*</include>
