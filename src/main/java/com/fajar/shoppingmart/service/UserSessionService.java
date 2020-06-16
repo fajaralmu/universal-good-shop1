@@ -1,7 +1,6 @@
 package com.fajar.shoppingmart.service;
 
 import java.lang.reflect.Field;
-import java.rmi.Remote;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -147,7 +146,7 @@ public class UserSessionService {
 			return true;
 
 		} catch (Exception ex) {
-			log.info("USER DOSE NOT HAVE SESSION");
+			log.info("USER DOES NOT HAVE SESSION");
 			ex.printStackTrace();
 			return false;
 		}
@@ -233,7 +232,7 @@ public class UserSessionService {
 	 */
 	public String getToken(HttpServletRequest httpRequest) {
 		User user = getUserFromSession(httpRequest);
-		log.info("==loggedUser: "+user);
+		log.info("==loggedUser: "+ (user == null? null : user.getUsername()));
 		
 		if(user == null)
 			return null;

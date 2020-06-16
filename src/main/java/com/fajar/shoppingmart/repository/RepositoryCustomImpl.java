@@ -8,8 +8,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.springframework.stereotype.Service;
-
 import com.fajar.shoppingmart.annotation.CustomEntity;
 import com.fajar.shoppingmart.querybuilder.QueryHolder;
 

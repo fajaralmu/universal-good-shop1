@@ -337,10 +337,10 @@ public class EntityRepository {
 	 * @param clazz
 	 * @return
 	 */
-	public List findAll(Class<? extends BaseEntity> clazz) {
+	public <T> List<T> findAll(Class<? extends BaseEntity> clazz) {
 		JpaRepository repository = findRepo(clazz);
 		if (repository == null) {
-			return new ArrayList<>();
+			return new ArrayList<T>();
 		}
 		return repository.findAll();
 	}

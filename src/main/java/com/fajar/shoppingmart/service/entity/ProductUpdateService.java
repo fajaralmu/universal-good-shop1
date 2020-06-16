@@ -68,7 +68,7 @@ public class ProductUpdateService extends BaseEntityUpdateService{
 					}
 				}
 
-				List validUrls = removeNullItemFromArray(imageUrls);
+				List<String> validUrls = removeNullItemFromArray(imageUrls);
 				String[] arrayOfString = CollectionUtil.toArrayOfString(validUrls);
 
 				String imageUrl = String.join("~", arrayOfString);
