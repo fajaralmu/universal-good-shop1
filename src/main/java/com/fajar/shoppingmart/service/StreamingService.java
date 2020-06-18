@@ -34,6 +34,7 @@ public class StreamingService {
 
 	public void setActive(HttpServletRequest request) {
 		String currentRequestId = baseController.getRegisteredRequestId(request);
+		log.info("req id active : {}", currentRequestId);
 		userSessionService.setActiveSession(currentRequestId, true);
 		
 	}

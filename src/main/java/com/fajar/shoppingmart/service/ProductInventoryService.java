@@ -80,7 +80,7 @@ public class ProductInventoryService {
 			Transaction newTransaction = transactionRepository.save(transaction);
 			progressService.sendProgress(1, 1, 10, false, requestId);
 
-			loop: for (ProductFlow productFlow : productFlows) {
+			 for (ProductFlow productFlow : productFlows) {
 
 				productFlow.setId(null);// never update
 				// IMPORTANT!!

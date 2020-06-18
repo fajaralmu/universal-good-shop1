@@ -43,7 +43,7 @@ public class ReportData implements Serializable {
 	/**
 	 * entities
 	 */
-	private Class entityClass;
+	private Class<? extends BaseEntity> entityClass;
 	private List<BaseEntity> entities;
 	private EntityProperty entityProperty;
 	

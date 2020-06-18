@@ -362,7 +362,7 @@ public class EntityRepository {
 		return null;
 	}
 
-	public static <T> T getGenericClassIndexZero(Class clazz) {
+	public static <T> T getGenericClassIndexZero(Class<?> clazz) {
 		Type[] interfaces = clazz.getGenericInterfaces();
 
 		if (interfaces == null) {

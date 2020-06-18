@@ -35,7 +35,7 @@ import com.fajar.shoppingmart.util.EntityUtil;
 public class TransactionService {
 
 	private static final boolean NOT_EXACTS = false;
-	private static final boolean MATCH = true; 
+	//private static final boolean MATCH = true; 
 	@Autowired
 	private ProductRepository productRepository;
 	@Autowired
