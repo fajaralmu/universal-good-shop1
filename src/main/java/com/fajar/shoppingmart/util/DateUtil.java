@@ -103,8 +103,13 @@ public class DateUtil {
 		};
 	}
 	
-	public static Map map(final Object key, final Object value) {
-		return new HashMap() {
+	public static <K, V> Map<K, V> map(final K key, final V value) {
+		return new HashMap<K, V>() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -1426364237618468152L;
+
 			{
 				put(key, value);
 			}

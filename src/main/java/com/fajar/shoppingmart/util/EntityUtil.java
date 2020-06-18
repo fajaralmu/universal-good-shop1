@@ -24,9 +24,9 @@ import com.fajar.shoppingmart.entity.setting.EntityProperty;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class EntityUtil {
+public class  EntityUtil {
 
-	public static EntityProperty createEntityProperty(Class clazz, HashMap<String, List> listObject) {
+	public static EntityProperty createEntityProperty(Class<?> clazz, HashMap<String, List> listObject) {
 		if (clazz == null || getClassAnnotation(clazz, Dto.class) == null) {
 			return null;
 		}
@@ -86,7 +86,7 @@ public class EntityUtil {
 		}
 	}
 
-	public static <T> T getFieldAnnotation(Field field, Class annotation) {
+	public static <T> T getFieldAnnotation(Field field, Class  annotation) {
 		try {
 			return (T) field.getAnnotation(annotation);
 		} catch (Exception e) {
@@ -94,7 +94,7 @@ public class EntityUtil {
 		}
 	}
 
-	public static Field getDeclaredField(Class clazz, String fieldName) {
+	public static Field getDeclaredField(Class<?> clazz, String fieldName) {
 		try {
 			Field field = clazz.getDeclaredField(fieldName);
 			if (field == null) {
@@ -130,7 +130,7 @@ public class EntityUtil {
 	 * @param clazz
 	 * @return
 	 */
-	public static List<Field> getDeclaredFields(Class clazz) {
+	public static List<Field> getDeclaredFields(Class<?> clazz) {
 		Field[] baseField = clazz.getDeclaredFields();
 //
 //		List<EntityElement> entityElements = new ArrayList<EntityElement>();
@@ -153,7 +153,7 @@ public class EntityUtil {
 		return fieldList;
 	}
 
-	public static Field getIdFieldOfAnObject(Class clazz) {
+	public static Field getIdFieldOfAnObject(Class<?> clazz) {
 		log.info("Get ID FIELD FROM :" + clazz.getCanonicalName());
 
 		if (getClassAnnotation(clazz, Entity.class) == null) {

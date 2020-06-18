@@ -72,14 +72,11 @@ public class CollectionUtil {
 	
 	 
 
-	public static String[] toArrayOfString(List validUrls) {
+	public static String[] toArrayOfString(List<String> validUrls) {
 		if(validUrls == null) {
 			return new String[] {};
 		}
-		String[] array = new String[validUrls.size()];
-		for (int i = 0; i < validUrls.size(); i++) {
-			array[i] = validUrls.get(i).toString();
-		}
+		String[] array = listToArray(validUrls);
 		return array;
 	}
 	
