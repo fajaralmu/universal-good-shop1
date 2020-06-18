@@ -7,7 +7,7 @@ import java.util.Date;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFDataFormat;
 
-public class DateCell extends CustomCell{
+public class DateCell extends CustomCell<Object>{
  
 	/**
 	 * 

@@ -7,13 +7,13 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import lombok.Data;
 
 @Data
-public abstract class CustomCell implements Serializable{
+public abstract class CustomCell<ValueType> implements Serializable{
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1936743863408885308L;
-	protected Object value;
+	protected ValueType value;
 	
 	@Override
 	public String toString() {

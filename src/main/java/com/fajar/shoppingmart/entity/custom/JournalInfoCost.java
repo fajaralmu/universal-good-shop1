@@ -4,26 +4,24 @@ import com.fajar.shoppingmart.dto.CashType;
 import com.fajar.shoppingmart.dto.ReportCategory;
 import com.fajar.shoppingmart.entity.CostFlow;
 
-public class CostJournalInfo extends BalanceJournalInfo {
+public class JournalInfoCost extends BalanceJournalInfo<CostFlow> {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -6427982548966366819L;
-	final CostFlow costFlow;
+	private static final long serialVersionUID = -6427982548966366819L; 
 
-	public CostJournalInfo(CostFlow costFlow) {
-		super(costFlow);
-		this.costFlow = costFlow;
+	public JournalInfoCost(CostFlow costFlow) {
+		super(costFlow); 
 		
 		buildBalanceObject();
 	}
  
 	@Override
 	public void buildBalanceObject() {  
-		creditAmount = costFlow.getNominal(); 
+		creditAmount = financialEntity.getNominal(); 
 		cashType = determineCashType();
-		referenceInfo = cashType+"_"+costFlow.getCostType().getName();
+		referenceInfo = cashType+"_"+financialEntity.getCostType().getName();
 		
 		reportCategory = ReportCategory.OPERATIONAL_COST;
 	}

@@ -14,7 +14,7 @@ import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
 import com.fajar.shoppingmart.entity.custom.BalanceJournalInfo;
 import com.fajar.shoppingmart.entity.custom.FinancialEntity;
-import com.fajar.shoppingmart.entity.custom.ProductFlowJournalInfo;
+import com.fajar.shoppingmart.entity.custom.JournalInfoProductFlow;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
@@ -92,7 +92,7 @@ public class ProductFlow extends BaseEntity implements FinancialEntity {
 	@Override
 	public BalanceJournalInfo getBalanceJournalInfo() {
 		 
-		return new ProductFlowJournalInfo(this);
+		return new JournalInfoProductFlow(this);
 	}
 
 }

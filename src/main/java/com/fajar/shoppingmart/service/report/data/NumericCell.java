@@ -2,7 +2,7 @@ package com.fajar.shoppingmart.service.report.data;
 
 import org.apache.poi.xssf.usermodel.XSSFCell;
 
-public class NumericCell extends CustomCell{
+public class NumericCell extends CustomCell<Number>{
 
 	/**
 	 * 

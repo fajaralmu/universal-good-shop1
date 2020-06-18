@@ -4,17 +4,15 @@ import com.fajar.shoppingmart.dto.CashType;
 import com.fajar.shoppingmart.dto.ReportCategory;
 import com.fajar.shoppingmart.entity.CapitalFlow;
 
-public class CapitalFlowJournalInfo extends BalanceJournalInfo {
+public class JournalInfoCapitalFlow extends BalanceJournalInfo<CapitalFlow> {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 8279681237082762899L;
-	final CapitalFlow capitalFlow;
+	private static final long serialVersionUID = 8279681237082762899L; 
 	
-	public CapitalFlowJournalInfo(CapitalFlow capitalFlow) {
+	public JournalInfoCapitalFlow(CapitalFlow capitalFlow) {
 		super(capitalFlow);
-		this.capitalFlow = capitalFlow; 
 		 
 		buildBalanceObject();
 	}
@@ -22,8 +20,8 @@ public class CapitalFlowJournalInfo extends BalanceJournalInfo {
 	@Override
 	public void buildBalanceObject() {   
 		cashType = CashType.CAPITAL;
-		debitAmount = capitalFlow.getNominal(); 
-		referenceInfo = "CAPITAL_"+capitalFlow.getCapitalType().getName(); 
+		debitAmount = financialEntity.getNominal(); 
+		referenceInfo = "CAPITAL_"+financialEntity.getCapitalType().getName(); 
 		reportCategory = ReportCategory.CAPITAL; 
 	}
 

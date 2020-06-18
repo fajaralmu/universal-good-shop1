@@ -6,17 +6,15 @@ import com.fajar.shoppingmart.dto.TransactionType;
 import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.Transaction;
 
-public class ProductFlowJournalInfo extends BalanceJournalInfo {
+public class JournalInfoProductFlow extends BalanceJournalInfo<ProductFlow> {
 	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 2983590409837039514L;
-	private final ProductFlow productFlow;
+	private static final long serialVersionUID = 2983590409837039514L; 
 	
-	public ProductFlowJournalInfo(ProductFlow productFlow) {
-		super(productFlow);
-		this.productFlow = productFlow;
+	public JournalInfoProductFlow(ProductFlow productFlow) {
+		super(productFlow); 
 		
 		buildBalanceObject();
 	}
@@ -24,15 +22,15 @@ public class ProductFlowJournalInfo extends BalanceJournalInfo {
 	@Override
 	public void buildBalanceObject() {
 		 
-		Transaction transaction = productFlow.getTransaction(); 
+		Transaction transaction = financialEntity.getTransaction(); 
 		
 		if(transaction.getType().equals(TransactionType.IN)) {
 			//purchase from supplier
-			creditAmount 	= productFlow.getCount() * productFlow.getPrice();
+			creditAmount 	= financialEntity.getCount() * financialEntity.getPrice();
 			cashType = CashType.PURCHASING;
 		}else {
 			//selling
-			debitAmount 	= productFlow.getCount() * productFlow.getProduct().getPrice();
+			debitAmount 	= financialEntity.getCount() * financialEntity.getProduct().getPrice();
 			cashType = CashType.SELLING;
 		}
 		

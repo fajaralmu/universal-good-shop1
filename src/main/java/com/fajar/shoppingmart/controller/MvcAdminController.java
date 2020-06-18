@@ -95,7 +95,7 @@ public class MvcAdminController extends BaseController {
 		Product product = (Product) productResponse.getEntities().get(0);
 
 		List<String> imageUrlList = CollectionUtil.arrayToList(product.getImageUrl().split("~"));
-		List<Map> imageUrlObjects = new ArrayList<>();
+		List<Map<String, Object>> imageUrlObjects = new ArrayList<>();
 		for (String string : imageUrlList) {
 			imageUrlObjects.add(new HashMap<String, Object>() {/**
 				 * 
