@@ -247,7 +247,7 @@ public class ReportDataService {
 		dailyReportRow.setDay(day);
 		dailyReportRow.setMonth(month);
 		
-		BalanceJournalInfo journalInfo = baseEntity.getBalanceJournalInfo();
+		BalanceJournalInfo<? extends FinancialEntity> journalInfo = baseEntity.getBalanceJournalInfo();
 		
 		long creditAmount =  journalInfo.getCreditAmount();
 		long debitAmount = journalInfo.getDebitAmount();

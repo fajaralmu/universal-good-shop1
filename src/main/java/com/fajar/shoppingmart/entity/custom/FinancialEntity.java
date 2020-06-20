@@ -13,6 +13,6 @@ public interface FinancialEntity extends Serializable {
 	@JsonIgnore
 	public long getTransactionNominal();
 	@JsonIgnore
-	public BalanceJournalInfo getBalanceJournalInfo();
+	public BalanceJournalInfo<? extends FinancialEntity> getBalanceJournalInfo();
 	public Long getId();
 }

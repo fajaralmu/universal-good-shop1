@@ -10,7 +10,7 @@ import com.fajar.shoppingmart.entity.CashBalance;
 import lombok.Data;
 
 @Data
-public abstract class BalanceJournalInfo<FinancialEntityType extends FinancialEntity> implements Serializable {
+public abstract class BalanceJournalInfo<T extends FinancialEntity> implements Serializable {
 	/**
 	 * 
 	 */
@@ -24,9 +24,9 @@ public abstract class BalanceJournalInfo<FinancialEntityType extends FinancialEn
 	protected ReportCategory reportCategory;
 	 
 	protected final String transactionName;
-	protected final FinancialEntityType financialEntity;
+	protected final T financialEntity;
 	
-	public BalanceJournalInfo(FinancialEntityType financialEntity) {
+	public BalanceJournalInfo(T financialEntity) {
 		 
 		this.financialEntity = financialEntity;
 		this.date = financialEntity.getTransactionDate();

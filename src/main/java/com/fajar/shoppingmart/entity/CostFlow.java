@@ -67,7 +67,7 @@ public class CostFlow extends BaseEntity implements FinancialEntity{
 	}
 
 	@Override
-	public BalanceJournalInfo getBalanceJournalInfo() {
+	public BalanceJournalInfo<CostFlow> getBalanceJournalInfo() {
 		return new JournalInfoCost(this); 
 	}
   

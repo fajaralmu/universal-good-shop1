@@ -90,7 +90,7 @@ public class ProductFlow extends BaseEntity implements FinancialEntity {
 	}
 
 	@Override
-	public BalanceJournalInfo getBalanceJournalInfo() {
+	public BalanceJournalInfo<ProductFlow> getBalanceJournalInfo() {
 		 
 		return new JournalInfoProductFlow(this);
 	}
