@@ -40,21 +40,21 @@ import com.fajar.shoppingmart.util.ThreadUtil;
 public class MockDataService {
 
 	@Autowired
-	private TransactionRepository transactionRepository;
+	public TransactionRepository transactionRepository;
 	@Autowired
-	private ProductRepository productRepository;
+	public ProductRepository productRepository;
 	@Autowired
-	private ProductFlowRepository productFlowRepository;
+	public ProductFlowRepository productFlowRepository;
 	@Autowired
-	private InventoryItemRepository inventoryItemRepository;
+	public InventoryItemRepository inventoryItemRepository;
 	@Autowired
-	private CapitalFlowRepository capitalFlowRepository;
+	public CapitalFlowRepository capitalFlowRepository;
 	@Autowired
-	private CapitalRepository capitalRepository;
+	public CapitalRepository capitalRepository;
 	@Autowired
-	private CostFlowRepository costFlowRepository;
+	public CostFlowRepository costFlowRepository;
 	@Autowired
-	private CashBalanceRepository cashBalanceRepository;
+	public CashBalanceRepository cashBalanceRepository;
 	
 	static final Random RAND = new Random();
 
@@ -79,7 +79,7 @@ public class MockDataService {
 		});
 	}
 	
-	private void fixIncorrectTransactionDate() {
+	public void fixIncorrectTransactionDate() {
 		// TODO Auto-generated method stub
 	
 		List<ProductFlow> incorrectFlows = productFlowRepository.FINDINCORRECTDATE();
@@ -96,7 +96,7 @@ public class MockDataService {
 		}
 	}
 	
-	private void updateSoldProductFlowsPrice() {
+	public void updateSoldProductFlowsPrice() {
 		List<ProductFlow> productFlows = productFlowRepository.findByTransaction_Type(TransactionType.OUT);
 		for (ProductFlow productFlow : productFlows) {
 			
@@ -110,7 +110,7 @@ public class MockDataService {
 		}
 		
 	}
-	private void updateAllProductFlows() {
+	public void updateAllProductFlows() {
 		List<ProductFlow> productFlows = productFlowRepository.findAll();
 		for (ProductFlow productFlow : productFlows) {
 			Transaction transaction = productFlow.getTransaction();
@@ -120,7 +120,7 @@ public class MockDataService {
 		}
 	}
 	
-	private void writeCashBalance() {
+	public void writeCashBalance() {
 		List<BaseEntity> mainList = new ArrayList<>(); 
 		
 		List<ProductFlow> productFlows = productFlowRepository.findAll();
@@ -229,7 +229,7 @@ public class MockDataService {
 		}
 	}
 	
-	private void buildCapitals() {
+	public void buildCapitals() {
 		List<Capital> capitals = capitalRepository.findAll();
 		for(int i = 0;i<100;i++) {
 			Date date  = randomDate();
@@ -243,7 +243,7 @@ public class MockDataService {
 		}
 	}
 	
-	private void updatePurchaseTrx() {
+	public void updatePurchaseTrx() {
 		System.out.println("============ BEGIN updatePurchaseTrx ============");
 		
 		final List<Product> allProducts= productRepository.findAll();
@@ -276,7 +276,7 @@ public class MockDataService {
 		thread.start();
 	}
 	
-	private void updateIncomingTrx( ) {
+	public void updateIncomingTrx( ) {
 		
 		System.out.println("============ BEGIN updateIncomingTrx ============");
 		
@@ -310,7 +310,7 @@ public class MockDataService {
 		thread.start();
 	}
 
-	private void randDate() {
+	public void randDate() {
 		List<Transaction> transactions = transactionRepository.findByType(TransactionType.IN);
 		
 		System.out.println("******** will begin manipulating , COUNT: "+ transactions.size() +"***********");
@@ -335,7 +335,7 @@ public class MockDataService {
 		thread.start();
 	}
 	
-	private static Date randomDate() {
+	public static Date randomDate() {
 		
 		int randDate = RAND.nextInt(25)+1;
 		int randMonth = RAND.nextInt(11); 
@@ -347,7 +347,7 @@ public class MockDataService {
 		return cal.getTime();
 	}
 	
-	private static List sortByDate(List list) {
+	public static List sortByDate(List list) {
 		
 		
 		List rsultList = new ArrayList<>();

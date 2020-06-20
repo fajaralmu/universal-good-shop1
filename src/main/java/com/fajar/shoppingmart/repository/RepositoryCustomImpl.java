@@ -10,6 +10,7 @@ import javax.persistence.Query;
 
 import com.fajar.shoppingmart.annotation.CustomEntity;
 import com.fajar.shoppingmart.querybuilder.QueryHolder;
+import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +25,7 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 	}
 
 	@Override
-	public List<T> filterAndSort(String sql, Class<?> clazz) {
+	public List<T> filterAndSort(String sql, Class<? extends T> clazz) {
 
 		log.info("==============GET LIST FROM NATIVE SQL: " + sql);
 		List<T> resultList = entityManager.createNativeQuery(sql, clazz).getResultList();
@@ -52,10 +53,10 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 	}
 
 	@Override
-	public Object getCustomedObjectFromNativeQuery(String sql, Class<?> objectClass) {
+	public <O> O getCustomedObjectFromNativeQuery(String sql, Class<O> objectClass) {
 		log.info("SQL for result object: {}", sql);
 		try {
-			Object singleObject = objectClass.getDeclaredConstructor().newInstance();
+			O singleObject = objectClass.getDeclaredConstructor().newInstance();
 
 			Query result = entityManager.createNativeQuery(sql);
 			Object resultObject = result.getSingleResult();
@@ -85,13 +86,16 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 
 	}
 
-	private Object fillObject(Object object, Object[] propertiesArray, String[] propertyOrder)
+	private <O> O fillObject(O object, Object[] propertiesArray, String[] propertyOrder)
 			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		
 		for (int j = 0; j < propertiesArray.length; j++) {
 			String propertyName = propertyOrder[j];
 			Object propertyValue = propertiesArray[j];
-			Field field = object.getClass().getDeclaredField(propertyName);
-			field.setAccessible(true);
+			Field field = EntityUtil.getDeclaredField(object.getClass(), propertyName);
+//					object.getClass().getDeclaredField(propertyName);
+//			field.setAccessible(true);
+			
 			if (field != null && propertyValue != null) {
 				final Class<?> fieldType = field.getType();
 				if (fieldType.equals(Integer.class) || fieldType.equals(int.class)) {
@@ -100,7 +104,7 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 				} else if (field.getType().equals(Long.class) || fieldType.equals(long.class)) {
 					log.info("type long ==========================> : {}", propertyValue);
 					propertyValue = Long.parseLong(propertyValue.toString());
-				} else if (field.getType().equals(Double.class)  || fieldType.equals(double.class)) {
+				} else if (field.getType().equals(Double.class) || fieldType.equals(double.class)) {
 					log.info("type double ==========================> : {}", propertyValue);
 					propertyValue = Double.parseDouble(propertyValue.toString());
 				}
@@ -113,14 +117,14 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 	}
 
 	@Override
-	public List<T> filterAndSort(QueryHolder queryHolder, Class<?> objectClass) {
-		 
+	public List<T> filterAndSort(QueryHolder queryHolder, Class<? extends T> objectClass) {
+
 		return filterAndSort(queryHolder.getSqlSelect(), objectClass);
 	}
 
 	@Override
 	public Object getSingleResult(QueryHolder queryHolder) {
-		 
+
 		return getSingleResult(queryHolder.getSqlSingleResult());
 	}
 

@@ -226,7 +226,7 @@ public class EntityRepository {
 	 * @param baseEntity
 	 * @return
 	 */
-	public <T> T save(BaseEntity baseEntity) {
+	public <T extends BaseEntity, ID> T save(T baseEntity) {
 		log.info("execute method save");
 
 		boolean joinEntityExist = validateJoinColumn(baseEntity);
@@ -237,16 +237,16 @@ public class EntityRepository {
 		}
 
 		try {
-			JpaRepository repository = findRepo(baseEntity.getClass());
+			JpaRepository<T, ID> repository = (JpaRepository<T, ID>) findRepo(baseEntity.getClass());
 			log.info("found repo: " + repository);
-			return (T) repository.save(baseEntity);
+			return (T) repository.save((T) baseEntity);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw ex;
 		}
 	}
 
-	public boolean validateJoinColumn(BaseEntity baseEntity) {
+	public <T extends BaseEntity, ID> boolean validateJoinColumn(T baseEntity) {
 
 		List<Field> joinColumns = getJoinColumn(baseEntity.getClass());
 
@@ -263,11 +263,12 @@ public class EntityRepository {
 					continue;
 				}
 
-				BaseEntity entity = (BaseEntity) value;
+				T entity = (T) value;
 
-				JpaRepository repository = findRepo(entity.getClass());
+				JpaRepository<T, ID> repository = (JpaRepository<T, ID>) findRepo(entity.getClass());
 
-				Optional result = repository.findById(entity.getId());
+				ID id = (ID) entity.getId();
+				Optional<T> result = repository.findById(id);
 
 				if (result.isPresent() == false) {
 					return false;
@@ -303,7 +304,7 @@ public class EntityRepository {
 	 * @param entityClass
 	 * @return
 	 */
-	public JpaRepository findRepo(Class<? extends BaseEntity> entityClass) {
+	public <T, ID> JpaRepository<T, ID> findRepo(Class<T > entityClass) {
 
 		log.info("will find repo by class: {}", entityClass);
 
@@ -321,7 +322,7 @@ public class EntityRepository {
 
 			if (originalEntityClass != null && originalEntityClass.equals(entityClass)) {
 				try {
-					return (JpaRepository) field.get(this);
+					return (JpaRepository<T, ID>) field.get(this);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					return null;
 				}
@@ -337,8 +338,8 @@ public class EntityRepository {
 	 * @param clazz
 	 * @return
 	 */
-	public <T> List<T> findAll(Class<? extends BaseEntity> clazz) {
-		JpaRepository repository = findRepo(clazz);
+	public <T extends BaseEntity, ID> List<T> findAll(Class<T> clazz) {
+		JpaRepository<T, ID> repository = findRepo(clazz);
 		if (repository == null) {
 			return new ArrayList<T>();
 		}
@@ -352,10 +353,10 @@ public class EntityRepository {
 	 * @param ID
 	 * @return
 	 */
-	public Object findById(Class<? extends BaseEntity> clazz, Object ID) {
-		JpaRepository repository = findRepo(clazz);
+	public <T extends BaseEntity, ID> T findById(Class<T> clazz, ID id) {
+		JpaRepository<T, ID> repository = findRepo(clazz);
 
-		Optional result = repository.findById(ID);
+		Optional<T> result = repository.findById(id);
 		if (result.isPresent()) {
 			return result.get();
 		}

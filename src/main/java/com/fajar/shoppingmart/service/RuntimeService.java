@@ -1,7 +1,6 @@
 package com.fajar.shoppingmart.service;
 
 import java.rmi.Remote;
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -46,11 +45,11 @@ public class RuntimeService {
 	 * @param key
 	 * @return
 	 */
-	public <T> T getModel(String key) {
+	public <T extends Remote> T getModel(String key) {
 		try {
-			T object = (T) registry.get(key);
+			Remote object = registry.get(key);
 			log.info("==registry model: " + object);
-			return object;
+			return (T) object;
 //		} catch (RemoteException | NotBoundException e) {
 //			log.info("key not bound");
 //			return null;
@@ -116,7 +115,7 @@ public class RuntimeService {
 		
 		if (getModel(PAGE_REQUEST) != null) {
 			
-			RegistryModel model = getModel(PAGE_REQUEST);
+			RegistryModel model = (RegistryModel) getModel(PAGE_REQUEST);
 			model.getTokens().put(pageRequestId, cookie);
 			
 			if (set(PAGE_REQUEST, model)) {
@@ -124,18 +123,13 @@ public class RuntimeService {
 			}
 
 		} else { 
-			try {
+			 
 				RegistryModel	model = new  RegistryModel();
 				model.setTokens(new HashMap<String, Object>() {{put(pageRequestId, cookie);}});  
 				
 				if (set(PAGE_REQUEST, model)) {
 					return pageRequestId;
-				}
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
+				} 
 		}
 		return null;
 
@@ -150,7 +144,7 @@ public class RuntimeService {
 	public boolean validatePageRequest(HttpServletRequest req) {
 		log.info("Will validate page request");
 		try {
-			RegistryModel model = getModel(PAGE_REQUEST);
+			RegistryModel model = (RegistryModel) getModel(PAGE_REQUEST);
 
 			if (null == model) {
 				return false;

@@ -1,18 +1,12 @@
 package com.fajar.shoppingmart.dto;
 
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+import java.rmi.Remote;
 import java.util.HashMap;
 
 import com.fajar.shoppingmart.entity.User;
 
  
-public class RegistryModel extends UnicastRemoteObject   {
-	public RegistryModel() throws RemoteException {
-		
-		super();
-		// TODO Auto-generated constructor stub
-	}
+public class RegistryModel implements Remote{
 	/**
 	 * 
 	 */

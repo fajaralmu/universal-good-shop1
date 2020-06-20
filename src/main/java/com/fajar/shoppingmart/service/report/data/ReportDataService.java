@@ -2,7 +2,6 @@ package com.fajar.shoppingmart.service.report.data;
 
 import static com.fajar.shoppingmart.util.EntityUtil.cloneSerializable;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,7 +11,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -377,7 +375,7 @@ public class ReportDataService {
 		for(int i = 1; i <= 12; i++) {
 			Filter monthFilter = Filter.builder().month(i).year(year).build();
 			getTransactionRecords(monthFilter); 
-			Map<ReportCategory, ReportRowData> dailyReportSummaryCloned = (Map<ReportCategory, ReportRowData>) SerializationUtils.clone((Serializable) dailyReportSummary);
+			Map<ReportCategory, ReportRowData> dailyReportSummaryCloned = EntityUtil.cloneSerializable(dailyReportSummary);
 			monthyReportContent.put(i,  dailyReportSummaryCloned);
 			 
 		}

@@ -43,7 +43,7 @@ public class EntityService {
 	public static final String ORIGINAL_PREFFIX = "{ORIGINAL>>";
 	  
 	@Autowired
-	private RepositoryCustomImpl repositoryCustom;   
+	private RepositoryCustomImpl<BaseEntity> repositoryCustom;   
 	@Autowired
 	private EntityRepository entityRepository; 
 	
@@ -214,12 +214,11 @@ public class EntityService {
 		return findAll(Unit.class);
 	}
 
-
 	public List<Capital> getAllCapitalType() { 
 		return findAll(Capital.class);
 	}
 
-	private <T> List<T> findAll(Class<? extends BaseEntity> _class){
+	private <T extends BaseEntity> List<T> findAll(Class<T> _class){
 		List<T> resultList = entityRepository.findAll(_class);
 		
 		if(null == resultList) {
