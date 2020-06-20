@@ -1,6 +1,7 @@
 package com.fajar.shoppingmart.util;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -24,7 +25,7 @@ import com.fajar.shoppingmart.entity.setting.EntityProperty;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class  EntityUtil {
+public class EntityUtil {
 
 	public static EntityProperty createEntityProperty(Class<?> clazz, HashMap<String, List> listObject) {
 		if (clazz == null || getClassAnnotation(clazz, Dto.class) == null) {
@@ -34,28 +35,28 @@ public class  EntityUtil {
 		Dto dto = (Dto) getClassAnnotation(clazz, Dto.class);
 		final boolean ignoreBaseField = dto.ignoreBaseField();
 
-		EntityProperty entityProperty = EntityProperty.builder().ignoreBaseField(ignoreBaseField).entityName(clazz.getSimpleName().toLowerCase())
-				.build();
+		EntityProperty entityProperty = EntityProperty.builder().ignoreBaseField(ignoreBaseField)
+				.entityName(clazz.getSimpleName().toLowerCase()).build();
 		try {
 
 			List<Field> fieldList = getDeclaredFields(clazz);
 			List<EntityElement> entityElements = new ArrayList<>();
 			List<String> fieldNames = new ArrayList<>();
-			String fieldToShowDetail = ""; 
+			String fieldToShowDetail = "";
 
 			for (Field field : fieldList) {
 
 				final EntityElement entityElement = new EntityElement(field, entityProperty, listObject);
-				 
+
 				if (false == entityElement.build()) {
 					continue;
-				} 
-				if(entityElement.isDetailField()) {
+				}
+				if (entityElement.isDetailField()) {
 					fieldToShowDetail = entityElement.getId();
 				}
-				
-				fieldNames.add(entityElement.getId());  
-				entityElements.add(entityElement);				
+
+				fieldNames.add(entityElement.getId());
+				entityElements.add(entityElement);
 			}
 
 			entityProperty.setAlias(dto.value().isEmpty() ? clazz.getSimpleName() : dto.value());
@@ -78,17 +79,17 @@ public class  EntityUtil {
 		return null;
 	}
 
-	public static <T> T getClassAnnotation(Class<?> entityClass, Class annotation) {
+	public static <T extends Annotation> T getClassAnnotation(Class<?> entityClass, Class<T> annotation) {
 		try {
-			return (T) entityClass.getAnnotation(annotation);
+			return entityClass.getAnnotation(annotation);
 		} catch (Exception e) {
 			return null;
 		}
 	}
 
-	public static <T> T getFieldAnnotation(Field field, Class  annotation) {
+	public static <T extends Annotation> T getFieldAnnotation(Field field, Class<T> annotation) {
 		try {
-			return (T) field.getAnnotation(annotation);
+			return field.getAnnotation(annotation);
 		} catch (Exception e) {
 			return null;
 		}
@@ -205,7 +206,7 @@ public class  EntityUtil {
 			if (field.getAnnotation(Id.class) != null && !withId) {
 				continue;
 			}
-			if(isStaticField(field)) {
+			if (isStaticField(field)) {
 				continue;
 			}
 
@@ -216,7 +217,7 @@ public class  EntityUtil {
 
 			currentField.setAccessible(true);
 			field.setAccessible(true);
-			
+
 			try {
 				currentField.set(targetObject, field.get(source));
 
@@ -240,12 +241,12 @@ public class  EntityUtil {
 			validateDefaultValue(entities.get(i));
 		}
 	}
-	
+
 	public static boolean isStaticField(Field field) {
 		return Modifier.isStatic(field.getModifiers());
 	}
 
-	public static <T extends BaseEntity> T validateDefaultValue(BaseEntity baseEntity) {
+	public static <T extends BaseEntity> T validateDefaultValue(T baseEntity) {
 		List<Field> fields = EntityUtil.getDeclaredFields(baseEntity.getClass());
 
 		for (Field field : fields) {
@@ -310,19 +311,19 @@ public class  EntityUtil {
 				e.printStackTrace();
 			}
 		}
-		return (T) baseEntity;
+		return baseEntity;
 	}
 
-	public static <T> T validateDefaultValue(List<BaseEntity> entities) {
-		for (BaseEntity baseEntity : entities) {
+	public static <T extends BaseEntity> List<T> validateDefaultValue(List<T> entities) {
+		for (T baseEntity : entities) {
 			baseEntity = validateDefaultValue(baseEntity);
 		}
-		return (T) entities;
+		return entities;
 	}
 
-	public static <T> T getObjectFromListByFieldName(final String fieldName, final Object value, final List list) {
+	public static <T> T getObjectFromListByFieldName(final String fieldName, final Object value, final List<T> list) {
 
-		for (Object object : list) {
+		for (T object : list) {
 			Field field = EntityUtil.getDeclaredField(object.getClass(), fieldName);
 			field.setAccessible(true);
 			try {
@@ -341,32 +342,34 @@ public class  EntityUtil {
 		return null;
 	}
 
-	public static boolean existInList(Object o, List list) {
-		if(null == list) {
+	public static <T> boolean existInList(T o, List<T> list) {
+		if (null == list) {
 			log.error("LIST IS NULL");
 			return false;
 		}
-		for (Object object : list) {
+		for (T object : list) {
 			if (object.equals(o)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Clone Serializable Object
+	 * 
 	 * @param <T>
 	 * @param serializable
 	 * @return
 	 */
-	public static <T> T cloneSerializable(Object serializable) {
+	public static <T extends Serializable> T cloneSerializable(T serializable) {
 		try {
-			return (T) SerializationUtils.clone((Serializable)serializable);
-		}catch (Exception e) {
+			return SerializationUtils.clone( serializable);
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
+
 
 }

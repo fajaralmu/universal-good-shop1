@@ -327,7 +327,7 @@ public class ExcelReportUtil {
 				if(null != fmt)
 					cell.getCellStyle().setDataFormat( fmt.getFormat("#,##0") );
 			}else if(value instanceof NumericCell) {
-				value = (Double.parseDouble(((CustomCell)value).getValue().toString() )); 
+				value = (Double.parseDouble(((NumericCell)value).getValue().toString() )); 
 				cell.setCellValue((Double) value);
 			}
 			

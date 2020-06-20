@@ -60,8 +60,8 @@ public class ReportDataService {
 	 * daily report
 	 */
 	private final Map<Integer, List<FinancialEntity>> dailyTransactions = new HashMap<>();
-	private final Map<ReportCategory, ReportRowData> dailyReportSummary = new HashMap<>();
-	private final List<ReportRowData > dailyReportRows = new LinkedList<>();
+	private final HashMap<ReportCategory, ReportRowData> dailyReportSummary = new HashMap<>();
+	private final LinkedList<ReportRowData > dailyReportRows = new LinkedList<>();
 	private ReportRowData dailyReportRowTotal = new ReportRowData();
 	private CashBalance dailyReportInitialBalance = new CashBalance();
 	

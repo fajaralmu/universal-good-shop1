@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
-import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Category;
 import com.fajar.shoppingmart.entity.Menu;
 import com.fajar.shoppingmart.entity.Page;
@@ -78,7 +77,7 @@ public class ComponentService {
 	
 	public List<Menu> getDashboardMenus(HttpServletRequest request) {
 		List<Menu> menus = menuRepository.findByPageStartsWith("HOME");
-		List<BaseEntity> entities = new ArrayList<BaseEntity>();
+		List<Menu> entities = new ArrayList<Menu>();
 		menus = getAvailableMenusForUser(userSessionService.getUserFromSession(request), menus);
 		for (Menu menu : menus) {
 			menu.setUrl(request.getContextPath() + menu.getUrl());
