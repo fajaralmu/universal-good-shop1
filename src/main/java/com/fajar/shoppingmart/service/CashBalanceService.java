@@ -19,7 +19,7 @@ public class CashBalanceService {
 	private CashBalanceRepository cashBalanceRepository; 
 	
 	public CashBalance getBalanceByTransactionItem(FinancialEntity baseEntity) {
-		BalanceJournalInfo journalInfo = baseEntity.getBalanceJournalInfo();
+		BalanceJournalInfo<? extends FinancialEntity> journalInfo = baseEntity.getBalanceJournalInfo();
 		log.info("getBalanceByTransactionItem: {} {}", journalInfo.getId(), baseEntity.getClass());
 	 
 		CashBalance balance = cashBalanceRepository.findTop1ByTypeAndReferenceId(journalInfo.getCashType(), 
@@ -59,7 +59,7 @@ public class CashBalanceService {
 	 */
 	public static CashBalance mapCashBalance(FinancialEntity baseEntity) {
 		
-		BalanceJournalInfo journalInfo = baseEntity.getBalanceJournalInfo();
+		BalanceJournalInfo<? extends FinancialEntity> journalInfo = baseEntity.getBalanceJournalInfo();
 		return journalInfo.getBalanceObject();
 	}
 	

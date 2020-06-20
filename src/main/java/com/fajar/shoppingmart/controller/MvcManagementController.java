@@ -113,7 +113,7 @@ public class MvcManagementController extends BaseController {
 			e.printStackTrace();
 			return ERROR_404_PAGE;
 		}
-		HashMap<String, List> listObject = new HashMap<>();
+		HashMap<String, List<?>> listObject = new HashMap<>();
 		listObject.put("page", CollectionUtil.convertList(componentService.getAllPages()));
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(Menu.class, listObject);
 		model = constructCommonModel(request, entityProperty, model, "Menu", "management");
@@ -133,7 +133,7 @@ public class MvcManagementController extends BaseController {
 			e.printStackTrace();
 			return ERROR_404_PAGE;
 		}
-		HashMap<String, List> listObject = new HashMap<>();
+		HashMap<String, List<?>> listObject = new HashMap<>();
 		listObject.put("costType", CollectionUtil.convertList(entityService.getAllCostType()));
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(CostFlow.class, listObject);
 		model = constructCommonModel(request, entityProperty, model, "CostFlow", "management");
@@ -154,11 +154,9 @@ public class MvcManagementController extends BaseController {
 			e.printStackTrace();
 			return ERROR_404_PAGE;
 		}
-		HashMap<String, List> listObject = new HashMap<String, List>() {
-			{
-				put("capital", CollectionUtil.convertList(entityService.getAllCapitalType()));
-			}
-		};
+		HashMap<String, List<?>> listObject = new HashMap<String, List<?>>();
+		listObject.put("capital", CollectionUtil.convertList(entityService.getAllCapitalType()));
+			 
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(CapitalFlow.class, listObject);
 
 		model = constructCommonModel(request, entityProperty, model, "CapitalFlow", "management");
@@ -240,7 +238,7 @@ public class MvcManagementController extends BaseController {
 			e.printStackTrace();
 			return ERROR_404_PAGE;
 		}
-		HashMap<String, List> listObject = new HashMap<>();
+		HashMap<String, List<?>> listObject = new HashMap<>();
 		listObject.put("userRole", CollectionUtil.convertList(entityService.getAllUserRole()));
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(User.class, listObject);
 		model = constructCommonModel(request, entityProperty, model, "User", "management");

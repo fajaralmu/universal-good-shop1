@@ -62,7 +62,7 @@ public class EntityElement implements Serializable {
 	public final Field field;
 	public final boolean ignoreBaseField;
 	public EntityProperty entityProperty;
-	public Map<String, List> additionalMap; 
+	public Map<String, List<?>> additionalMap; 
 	
 	private FormField formField;
 	private BaseField baseField;
@@ -75,7 +75,7 @@ public class EntityElement implements Serializable {
 		this.entityProperty = entityProperty;
 		init();
 	}
-	public EntityElement(Field field, EntityProperty entityProperty, Map<String, List> additionalMap) {
+	public EntityElement(Field field, EntityProperty entityProperty, Map<String, List<?>> additionalMap) {
 		this.field = field;
 		this.ignoreBaseField = entityProperty.isIgnoreBaseField();
 		this.entityProperty = entityProperty;
@@ -215,7 +215,7 @@ public class EntityElement implements Serializable {
 	private void processJoinColumn(FieldType fieldType) throws Exception {
 		log.info("field {} of {} is join column", field.getName(), field.getDeclaringClass()); 
 		
-		Class referenceEntityClass = field.getType();
+		Class<?> referenceEntityClass = field.getType();
 		Field referenceEntityIdField = EntityUtil.getIdFieldOfAnObject(referenceEntityClass);
 
 		if (referenceEntityIdField == null) {

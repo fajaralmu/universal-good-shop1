@@ -317,7 +317,7 @@ public class ExcelReportUtil {
 		if(null == value) {
 			return;
 		}
-		if(value.getClass().getSuperclass().equals(CustomCell.class) && ((CustomCell)value).getValue() != null) { 
+		if(value.getClass().getSuperclass().equals(CustomCell.class) && ((CustomCell<?>)value).getValue() != null) { 
 		 
 			if(value instanceof CurrencyCell) {
 			 	String stringValue = ((CurrencyCell)value).getValue().toString();

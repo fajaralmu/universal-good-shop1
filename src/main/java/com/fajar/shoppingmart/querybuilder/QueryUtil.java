@@ -80,7 +80,7 @@ public class QueryUtil {
 	 * @param field
 	 * @return
 	 */
-	public static String createLeftJoinQueryByField(Class entityClass, Field field) { 
+	public static String createLeftJoinQueryByField(Class<?> entityClass, Field field) { 
 		log.info("Create item sql left join: " + entityClass + ", field: " + field);
 
 		JoinColumn joinColumn = EntityUtil.getFieldAnnotation(field, JoinColumn.class);
@@ -89,7 +89,7 @@ public class QueryUtil {
 			return "";
 		}
  
-		Class fieldClass 		= field.getType();
+		Class<?> fieldClass 	= field.getType();
 		Field idForeignField 	= getIdFieldOfAnObject(fieldClass);
 
 		String joinTableName 	= getTableName(fieldClass);
@@ -147,11 +147,11 @@ public class QueryUtil {
 	 * @param rootFilter
 	 * @return
 	 */
-	public static String validateRootFilter(Class entityClass, String[] rootFilter) {
+	public static String validateRootFilter(Class<? extends BaseEntity> entityClass, String[] rootFilter) {
 
 		StringBuilder stringBuilder = new StringBuilder("");
 
-		Class currentType = entityClass;
+		Class<?> currentType = entityClass;
 		Field currentField = null;
 
 		for (String string : rootFilter) {
@@ -173,7 +173,7 @@ public class QueryUtil {
 		return stringBuilder.toString();
 	}
 
-	public static String createWhereClause(Class entityClass, Map<String, Object> filter,  
+	public static String createWhereClause(Class<?> entityClass, Map<String, Object> filter,  
 		 final	boolean allItemExactSearch ) {
 
 		String tableName 						= getTableName(entityClass);
@@ -257,7 +257,7 @@ public class QueryUtil {
 		if (field.getAnnotation(JoinColumn.class) != null || isMultiKey) { 
 
 			try {
-				Class fieldClass 		= field.getType();
+				Class<?> fieldClass		= field.getType();
 				String joinTableName 	= getTableName(fieldClass); 
 				String referenceFieldName = "";
 
@@ -399,7 +399,7 @@ public class QueryUtil {
 		return null;
 	} 
   
-	public static String orderSQL(Class entityClass, String orderType, String orderBy) {
+	public static String orderSQL(Class<?> entityClass, String orderType, String orderBy) {
 
 		/**
 		 * order by field
@@ -416,7 +416,7 @@ public class QueryUtil {
 
 		if (orderByField.getAnnotation(JoinColumn.class) != null) {
 			
-			Class fieldType 	= orderByField.getType();
+			Class<?> fieldType 	= orderByField.getType();
 			FormField formField = orderByField.getAnnotation(FormField.class);
 			tableName 			= getTableName(fieldType); 
 			String joinFieldName = formField.optionItemName();
@@ -439,7 +439,7 @@ public class QueryUtil {
 		return buildString(SQL_KEYWORD_ORDERBY, orderField, orderType);
 	}
 
-	public static String getTableName(Class entityClass) {
+	public static String getTableName(Class<?> entityClass) {
 		log.info("getTableName From entity class: " + entityClass.getCanonicalName());
 		
 		Table table = getClassAnnotation(entityClass, Table.class);
