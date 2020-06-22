@@ -48,8 +48,9 @@ public class RuntimeService {
 	public <T extends Remote> T getModel(String key) {
 		try {
 			Remote object = registry.get(key);
-			log.info("==registry model: " + object);
-			return (T) object;
+			T finalObj = (T) object;
+			log.info("==registry model: " + finalObj);
+			return finalObj;
 //		} catch (RemoteException | NotBoundException e) {
 //			log.info("key not bound");
 //			return null;

@@ -42,7 +42,7 @@ public class ReportService {
 		return reportBuilder.buildReport();
 	}
 
-	public File buildEntityReport(WebRequest request) {
+	public File buildEntityReport(WebRequest request) throws Exception {
 		log.info("buildEntityReport, request: {}", request);
 		
 		ReportData reportData = reportDataService.getEntityReportData(request);

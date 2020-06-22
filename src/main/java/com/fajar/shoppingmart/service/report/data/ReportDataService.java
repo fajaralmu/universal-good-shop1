@@ -397,10 +397,11 @@ public class ReportDataService {
 	 * ===========================
 	 * 		Entity Report
 	 * ===========================
+	 *  
 	 */
 	 
 
-	public ReportData getEntityReportData(WebRequest request) { 
+	public ReportData getEntityReportData(WebRequest request) throws Exception { 
 //		request.getFilter().setLimit(0);
 		WebResponse response = entityService.filter(request);
 		
