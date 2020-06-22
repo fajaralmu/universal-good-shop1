@@ -20,10 +20,26 @@
 <script src="<c:url value="/res/js/util.js?v=1"></c:url >"></script> 
 
 <title>Error: ${errorCode }</title>
+<style>
+.container{
+	padding: 10px;
+	margin: auto;
+	width: 80%;
+	height: auto;
+	background-color: white;
+}
+
+body{
+	background-color: gray;
+}
+</style>
 </head>
 <body>
+<div class="container">
 	<h2>Sorry! Error Occured [${errorCode }]</h2>
 	<h4>${errorMessage}</h4>
 	<p>Working on it!</p>
+</div>
+	
 </body>
 </html>
