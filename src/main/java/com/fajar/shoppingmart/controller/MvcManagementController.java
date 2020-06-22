@@ -114,7 +114,7 @@ public class MvcManagementController extends BaseController {
 			return ERROR_404_PAGE;
 		}
 		HashMap<String, List<?>> listObject = new HashMap<>();
-		listObject.put("page", CollectionUtil.convertList(componentService.getAllPages()));
+		listObject.put("menuPage", CollectionUtil.convertList(componentService.getAllPages()));
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(Menu.class, listObject);
 		model = constructCommonModel(request, entityProperty, model, "Menu", "management");
 		return basePage;

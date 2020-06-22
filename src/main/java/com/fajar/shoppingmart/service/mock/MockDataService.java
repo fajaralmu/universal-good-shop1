@@ -346,15 +346,7 @@ public class MockDataService {
 		
 		return cal.getTime();
 	}
-	
-	public static List sortByDate(List list) {
-		
-		
-		List rsultList = new ArrayList<>();
-		
-		return rsultList ;
-	}
-	
+	 
 	public static BaseEntity[] urutkanListObj(List<BaseEntity> list_obj) {
 		System.out.println("WILL SORT");
 		

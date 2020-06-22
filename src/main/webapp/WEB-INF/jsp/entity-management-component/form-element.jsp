@@ -45,9 +45,8 @@
 											<script>
 												managedEntity["valueField_${element.id}"] = "${element.optionValueName}";
 												managedEntity["itemField_${element.id}"] = "${element.optionItemName}";
-												let options = ${
-													element.jsonList
-												};
+												let options = ${element.jsonList};
+												
 												for (let i = 0; i < options.length; i++) {
 													
 													let optionItem = options[i];

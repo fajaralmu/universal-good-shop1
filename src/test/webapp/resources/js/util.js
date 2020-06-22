@@ -10,6 +10,25 @@ function infoDone() {
 	document.getElementById("loading-div").innerHTML = "";
 }
 
+function createHtmlTag(object){
+	const tag = document.createElement(object.tagName);
+	tag.innerHTML = object["innerHTML"] ? object["innerHTML"] : "";
+	
+	for(let key in object){
+		if(key == "innerHTML" ){
+			continue;
+		} 
+		if(typeof(object[key]) ==  "object"){
+			const htmlObject = object[key];
+			const htmlTag = createHtmlTag(htmlObject);
+			tag.appendChild(htmlTag);
+		}else{
+			tag.setAttribute(key, object[key]);
+		}
+	}
+	return tag;
+}
+
 /** ***************COMPONENT*************** */
 function createAnchor(id, html, url){
 	var a = document.createElement("a");

@@ -213,7 +213,7 @@ public class EntityElement implements Serializable {
 	}
 	
 	private void processJoinColumn(FieldType fieldType) throws Exception {
-		log.info("field {} of {} is join column", field.getName(), field.getDeclaringClass()); 
+		log.info("field {} of {} is join column, type: {}", field.getName(), field.getDeclaringClass(), fieldType); 
 		
 		Class<?> referenceEntityClass = field.getType();
 		Field referenceEntityIdField = EntityUtil.getIdFieldOfAnObject(referenceEntityClass);
@@ -225,7 +225,8 @@ public class EntityElement implements Serializable {
 		if (fieldType.equals(FieldType.FIELD_TYPE_FIXED_LIST) && additionalMap != null) {
 			
 			List<BaseEntity> referenceEntityList = (List<BaseEntity>) additionalMap.get(field.getName()); 
-			
+			if(null == referenceEntityList)
+			log.info("Additional map with key: {} . Length: {}", field.getName(), referenceEntityList.size());
 			if (referenceEntityList != null) {
 				setOptions(referenceEntityList);
 				setJsonList(MyJsonUtil.listToJson(referenceEntityList));

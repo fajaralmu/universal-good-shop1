@@ -21,6 +21,12 @@ function createAnchor(id, html, url){
 	return a;
 }
 
+function appendElements(parent, ...childs){
+	for (var i = 0; i < childs.length; i++) {
+		parent.appendChild(childs[i]);
+	}
+}
+
 function createNavigationButton(id, html, callback){
 	var btn= createAnchor(id,html, "#");
 	btn.className = "page-link";
