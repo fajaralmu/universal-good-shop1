@@ -50,18 +50,23 @@ public class MvcUtilController extends BaseController{
 		ModelAndView errorPage = new ModelAndView("error/errorPage");
 		
 		int httpErrorCode = getErrorCode(httpRequest);
-		 errorPage.addObject("title", httpErrorCode);
-		 errorPage.addObject("errorMessage", "Error occured ("+httpErrorCode+")");
+		 errorPage.addObject("errorCode", httpErrorCode);
+		 errorPage.addObject("errorMessage", getAttribute(httpRequest, "javax.servlet.error.exception"));
 		 printHttpRequestAttrs(httpRequest);
 		return errorPage;
 	}
 	
 	private void printHttpRequestAttrs(HttpServletRequest httpRequest) {
 		Enumeration<String> attrNames = httpRequest.getAttributeNames();
+		log.debug("========= error request http attrs ========");
+		int number = 1;
 		while(attrNames.hasMoreElements()) {
 			String attrName = attrNames.nextElement();
-			System.out.println(attrName+":"+httpRequest.getAttribute(attrName));
+			Object attributeValue = httpRequest.getAttribute(attrName);
+			log.debug(number+". "+attrName+" : "+attributeValue + " || TYPE: " + ( attributeValue == null ? "" : attributeValue.getClass()));
+			number++;
 		}
+		log.debug("===== ** end ** ====");
 	}
 
 	private int getErrorCode(HttpServletRequest httpRequest) {
@@ -71,6 +76,10 @@ public class MvcUtilController extends BaseController{
 			
 			return 500;
 		}
+	}
+	
+	private Object getAttribute(HttpServletRequest httpServletRequest, String name) {
+		return httpServletRequest.getAttribute(name);
 	}
 
 	@GetMapping(value = "noaccess")

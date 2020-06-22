@@ -19,10 +19,11 @@
 <script src="<c:url value="/res/js/ajax.js?v=1"></c:url >"></script>
 <script src="<c:url value="/res/js/util.js?v=1"></c:url >"></script> 
 
-<title>Error: ${title }</title>
+<title>Error: ${errorCode }</title>
 </head>
 <body>
-	<h2>${errorMessage}</h2>
+	<h2>Sorry! Error Occured [${errorCode }]</h2>
+	<h4>${errorMessage}</h4>
 	<p>Working on it!</p>
 </body>
 </html>
