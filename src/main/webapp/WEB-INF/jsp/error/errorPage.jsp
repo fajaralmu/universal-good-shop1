@@ -39,6 +39,7 @@ body{
 	<h2>Sorry! Error Occured [${errorCode }]</h2>
 	<h4>${errorMessage}</h4>
 	<p>Working on it!</p>
+	<div style="text-align: center;"><p>${shopProfile.name } ${year }</p></div>
 </div>
 	
 </body>

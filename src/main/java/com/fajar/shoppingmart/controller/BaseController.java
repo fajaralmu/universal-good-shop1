@@ -1,6 +1,8 @@
 package com.fajar.shoppingmart.controller;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -113,6 +115,11 @@ public class BaseController {
 	public List<Page> pages(HttpServletRequest request){
 		
 		return componentService.getPages(request);
+	}
+	
+	@ModelAttribute ("year")
+	public int getCurrentYear(HttpServletRequest request) {
+		return DateUtil.getCalendarItem(new Date(), Calendar.YEAR);
 	}
 	 
 	public String activePage(HttpServletRequest request) {

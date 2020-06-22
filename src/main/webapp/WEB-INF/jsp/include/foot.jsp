@@ -4,5 +4,5 @@
 			$('[data-toggle="tooltip"]').tooltip()
 		})
 	</script>
-	<p align="center">${shopProfile.name } 2019</p>
+	<p align="center">${shopProfile.name } ${year }</p>
 </div>
