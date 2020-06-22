@@ -1,12 +1,28 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>${title }</title>
+<link rel="icon" href="<c:url value="/res/img/javaEE.ico"></c:url >"
+	type="image/x-icon">
+
+<link rel="stylesheet" type="text/css" href="<c:url value="/res/css/shop.css?version=1"></c:url>" /> 
+<link rel="stylesheet" href="<c:url value="/res/css/bootstrap.min.css" />" />
+<script src="<c:url value="/res/js/jquery-3.3.1.slim.min.js" />" ></script>
+<script src="<c:url value="/res/js/popper.min.js" />" ></script>
+<script src="<c:url value="/res/js/bootstrap.min.js"  />"></script>
+<script src="<c:url value="/res/js/sockjs-0.3.2.min.js"></c:url >"></script>
+<script src="<c:url value="/res/js/stomp.js"></c:url >"></script>
+<script src="<c:url value="/res/js/websocket-util.js"></c:url >"></script>  
+<script src="<c:url value="/res/js/ajax.js?v=1"></c:url >"></script>
+<script src="<c:url value="/res/js/util.js?v=1"></c:url >"></script> 
+
+<title>Error: ${title }</title>
 </head>
 <body>
 	<h2>${errorMessage}</h2>
+	<p>Working on it!</p>
 </body>
 </html>

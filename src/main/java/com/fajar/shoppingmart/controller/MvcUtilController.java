@@ -1,12 +1,17 @@
 package com.fajar.shoppingmart.controller;
 
 import java.io.IOException;
+import java.util.Enumeration;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,6 +43,34 @@ public class MvcUtilController extends BaseController{
 		// to the model) but see "Extending ExceptionHandlerExceptionResolver"
 		// below. 
 		return "error/notfound";
+	}
+	
+	@RequestMapping(value = "app-error", method = RequestMethod.GET)
+	public ModelAndView renderErrorPage(HttpServletRequest httpRequest) {
+		ModelAndView errorPage = new ModelAndView("error/errorPage");
+		
+		int httpErrorCode = getErrorCode(httpRequest);
+		 errorPage.addObject("title", httpErrorCode);
+		 errorPage.addObject("errorMessage", "Error occured ("+httpErrorCode+")");
+		 printHttpRequestAttrs(httpRequest);
+		return errorPage;
+	}
+	
+	private void printHttpRequestAttrs(HttpServletRequest httpRequest) {
+		Enumeration<String> attrNames = httpRequest.getAttributeNames();
+		while(attrNames.hasMoreElements()) {
+			String attrName = attrNames.nextElement();
+			System.out.println(attrName+":"+httpRequest.getAttribute(attrName));
+		}
+	}
+
+	private int getErrorCode(HttpServletRequest httpRequest) {
+		try {
+			return (Integer) httpRequest.getAttribute("javax.servlet.error.status_code");
+		}catch (Exception e) {
+			
+			return 500;
+		}
 	}
 
 	@GetMapping(value = "noaccess")

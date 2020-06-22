@@ -32,6 +32,6 @@
 	<!-- <listener> <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class> 
 		</listener> -->
 	<error-page>
-		<location>/app-error</location>
+		<location>/web/app-error</location>
 	</error-page>
 </web-app>
