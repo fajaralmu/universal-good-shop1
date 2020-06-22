@@ -62,7 +62,7 @@ public class MvcManagementController extends BaseController {
 
 	@RequestMapping(value = { "/common/{name}" })
 	public String unit(@PathVariable("name") String name, Model model, HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
+			HttpServletResponse response) throws Exception {
 
 		if (!userService.hasSession(request)) {
 			sendRedirectLogin(request, response);
@@ -79,7 +79,7 @@ public class MvcManagementController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/profile" })
-	public String profile(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String profile(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		if (!userService.hasSession(request)) {
 			sendRedirectLogin(request, response);
@@ -101,7 +101,7 @@ public class MvcManagementController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/menu" })
-	public String menu(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String menu(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		if (!userService.hasSession(request)) {
 			sendRedirectLogin(request, response);
@@ -121,7 +121,7 @@ public class MvcManagementController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/costflow" })
-	public String costflow(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String costflow(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		if (!userService.hasSession(request)) {
 			sendRedirectLogin(request, response);
@@ -142,7 +142,7 @@ public class MvcManagementController extends BaseController {
 
 	@RequestMapping(value = { "/capitalflow" })
 	public String capitalflow(Model model, HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
+			throws Exception {
 
 		if (!userService.hasSession(request)) {
 			sendRedirectLogin(request, response);
@@ -163,10 +163,11 @@ public class MvcManagementController extends BaseController {
 		return basePage;
 	}
 
-	/** RESTRICTED ACCESS **/
+	/** RESTRICTED ACCESS 
+	 * @throws Exception **/
 
 	@RequestMapping(value = { "/messages" })
-	public String messages(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String messages(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		if (!userService.hasSession(request)) {
 			sendRedirectLogin(request, response);
@@ -206,7 +207,7 @@ public class MvcManagementController extends BaseController {
 
 	@RequestMapping(value = { "/transaction", "/transaction/{option}" })
 	public String transaction(@PathVariable(required = false) String option, Model model, HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
+			HttpServletResponse response) throws Exception {
 
 		if (!userService.hasSession(request)) {
 			sendRedirectLogin(request, response);
@@ -226,7 +227,7 @@ public class MvcManagementController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/user" })
-	public String user(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String user(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		if (!userService.hasSession(request)) {
 			sendRedirectLogin(request, response);

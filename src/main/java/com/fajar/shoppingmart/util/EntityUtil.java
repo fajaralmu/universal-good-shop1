@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EntityUtil {
 
-	public static EntityProperty createEntityProperty(Class<?> clazz, HashMap<String, List<?>> listObject) {
+	public static EntityProperty createEntityProperty(Class<?> clazz, HashMap<String, List<?>> listObject) throws Exception {
 		if (clazz == null || getClassAnnotation(clazz, Dto.class) == null) {
 			return null;
 		}
@@ -75,8 +75,9 @@ public class EntityUtil {
 			return entityProperty;
 		} catch (Exception e) {
 			e.printStackTrace();
+			throw e;
 		}
-		return null;
+		 
 	}
 
 	public static <T extends Annotation> T getClassAnnotation(Class<?> entityClass, Class<T> annotation) {

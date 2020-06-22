@@ -15,6 +15,7 @@ import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
 import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.exception.InvalidValueException;
 import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.MyJsonUtil;
 import com.fajar.shoppingmart.util.StringUtil;
@@ -94,13 +95,13 @@ public class EntityElement implements Serializable {
 		hasJoinColumn = field.getAnnotation(JoinColumn.class) != null;
 	}
 	
-	public boolean build() {
+	public boolean build() throws Exception {
 		boolean result = doBuild();
 		setEntityProperty(null);
 		return result;
 	}
 
-	private boolean doBuild() {
+	private boolean doBuild() throws Exception {
 		
 		boolean formFieldIsNullOrSkip = (formField == null || skipBaseField);
 		if (formFieldIsNullOrSkip) {
@@ -120,7 +121,7 @@ public class EntityElement implements Serializable {
 			}
 		} catch (Exception e1) { 
 			e1.printStackTrace();
-			return false;
+			throw e1;
 		}
  
 
@@ -225,7 +226,9 @@ public class EntityElement implements Serializable {
 		if (fieldType.equals(FieldType.FIELD_TYPE_FIXED_LIST) && additionalMap != null) {
 			
 			List<BaseEntity> referenceEntityList = (List<BaseEntity>) additionalMap.get(field.getName()); 
-			if(null == referenceEntityList)
+			if(null == referenceEntityList || referenceEntityList.size() == 0) {
+				throw new InvalidValueException("Invalid object list provided for key: "+ field.getName()+" in EntityElement.AdditionalMap");
+			}
 			log.info("Additional map with key: {} . Length: {}", field.getName(), referenceEntityList.size());
 			if (referenceEntityList != null) {
 				setOptions(referenceEntityList);

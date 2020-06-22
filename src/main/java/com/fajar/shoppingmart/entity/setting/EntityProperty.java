@@ -100,9 +100,9 @@ public class EntityProperty implements Serializable {
 		log.warn("NO ID FIELD FOR THIS ENTITY: {}", entityName);
 	}
 	
-	public static void main(String[] args) {
-		EntityProperty prop = EntityUtil.createEntityProperty(Product.class, null);
-		System.out.println("ID FIELD: "+prop.getIdField());
-	}
+//	public static void main(String[] args) {
+//		EntityProperty prop = EntityUtil.createEntityProperty(Product.class, null);
+//		System.out.println("ID FIELD: "+prop.getIdField());
+//	}
 
 }

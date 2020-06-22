@@ -19,7 +19,7 @@ public class EntityManagementPageService {
 	@Autowired
 	private EntityRepository entityRepository;
 	
-	public Model setModel(HttpServletRequest request, Model model, String key) {
+	public Model setModel(HttpServletRequest request, Model model, String key) throws Exception {
 		
 		EntityManagementConfig entityConfig = entityRepository.getConfig(key);
 		
