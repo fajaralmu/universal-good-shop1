@@ -65,17 +65,13 @@
 	var defaultOption = "${defaultOption}";
 	
 	//filted
-	var selectOrder = document.getElementById("select-order");
+	var selectOrder = _byId("select-order");
 
 	//elements
-	var navigationPanel = document.getElementById("navigation-panel");
-	var catalogPanel = document.getElementById("catalog-panel");
-	var nameFilter = document.getElementById("search-name");
-	 
-	 
-   
-
-	 
+	var navigationPanel = _byId("navigation-panel");
+	var catalogPanel = _byId("catalog-panel");
+	var nameFilter = _byId("search-name");
+	  
 
 	function populateCatalog(entities) {
 		catalogPanel.innerHTML = "";
@@ -141,7 +137,7 @@
 	}
 
 	function loadEntity(page) {
-		this.limit = document.getElementById("select-limit").value;
+		this.limit = _byId("select-limit").value;
 		if(this.limit > 20 || this.limit < 0){
 			alert("Woooww.. our server will be confused with your choice");
 			this.limit = 10;

@@ -125,7 +125,7 @@
 		<table
 			style="layout: fixed; border-collapse: separate; border-spacing: 5px;">
 			<tr valign="top" style="width: 100%">
-				<td style="width: 20%">
+				<td style="width: 14%">
 					<!-- FILTER -->
 					<div>
 						<p>Name</p>
@@ -440,6 +440,7 @@
 			style: {'list-style':'none'},
 			ch1: {
 				tagName: 'a',
+				style: {'background-color':'gray', 'color': 'white'},
 				href: "<spring:url value="/admin/product/" />"+entity.code,
 				innerHTML: 'setting'
 			} 

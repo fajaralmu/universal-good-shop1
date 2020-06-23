@@ -39,11 +39,11 @@
 </div>
 <script type="text/javascript">
 	//filter 
-	var selectMonthFrom = document.getElementById("select-month-from");
-	var selectYearFrom = document.getElementById("select-year-from");
+	var selectMonthFrom = _byId("select-month-from");
+	var selectYearFrom = _byId("select-year-from");
 
-	var selectMonthTo = document.getElementById("select-month-to");
-	var selectYearTo = document.getElementById("select-year-to");
+	var selectMonthTo = _byId("select-month-to");
+	var selectYearTo = _byId("select-year-to");
 	
 	
 </script>

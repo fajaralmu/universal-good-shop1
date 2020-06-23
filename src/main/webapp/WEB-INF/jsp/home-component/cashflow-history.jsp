@@ -36,9 +36,9 @@
 </div>
 <script type="text/javascript">
 	//detail cashflow
-	const tableDetail = document.getElementById("detail-cashflow");
-	const monthlyDetail = document.getElementById("monthly-detail");
-	const infoDetailPeriod = document.getElementById("info-period");
+	const tableDetail = _byId("detail-cashflow");
+	const monthlyDetail = _byId("monthly-detail");
+	const infoDetailPeriod = _byId("info-period");
 	
 	var responseDetailMonthly = {};
 	var responseDetailDaily = {};
@@ -71,16 +71,16 @@
 
 					];
 					for (let i = 0; i < supplies.length; i++) {
-						let cashflowSupplies = supplies[i];
-						let cashflowPurchases = purchases[i];
+						const cashflowSupplies = supplies[i];
+						const cashflowPurchases = purchases[i];
 
-						let percentSupplies = ((cashflowSupplies.amount / maxValue) * 100)
+						const percentSupplies = ((cashflowSupplies.amount / maxValue) * 100)
 								+ "%";
-						let percentPurchases = ((cashflowPurchases.amount / maxValue) * 100)
+						const percentPurchases = ((cashflowPurchases.amount / maxValue) * 100)
 								+ "%";
 
-						let month = cashflowSupplies.month;
-						let year = cashflowSupplies.year;
+						const month = cashflowSupplies.month;
+						const year = cashflowSupplies.year;
 
 						const chartLegend = "<p style=\"color:orange; font-size:0.8em;text-align:right\">"
 								+ beautifyNominal(cashflowSupplies.amount)
@@ -96,11 +96,10 @@
 						const chartBody = //supply
 						"<div class=\"rounded-right chart-item-hr\" "+
 							"style=\" width:"+percentSupplies+"; font-size:0.7em; background-color:orange\">"
-								+ "</div>"
-								+
+								+ "</div>" 
 								//purchase
-								"<div class=\"rounded-right chart-item-hr\" "+
-							"style=\" width:"+percentPurchases+"; font-size:0.7em; background-color:green\">"
+								+ "<div class=\"rounded-right chart-item-hr\" "
+								+"style=\" width:"+percentPurchases+"; font-size:0.7em; background-color:green\">"
 								+ "</div>" + "setting= <colspan>5</colspan>";
 
 						const columns = [
@@ -119,7 +118,7 @@
 	}
 
 	function showCashflowHistory() {
-		document.getElementById("btn-ok-filter-detail").onclick = function() {
+		_byId("btn-ok-filter-detail").onclick = function() {
 
 			showDetail();
 		};
