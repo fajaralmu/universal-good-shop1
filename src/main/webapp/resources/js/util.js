@@ -321,11 +321,11 @@ function createPeriodFilterInput(fieldName, type, callback){
 function createFilterInputDate(fieldName, callback){
 	const inputGroup = createDiv("input-group-"+fieldName,"input-group input-group-sm mb-3"); 
 	// input day
-	let inputDay = createPeriodFilterInput(fieldName, TYPE_DAY); 
+	let inputDay = createPeriodFilterInput(fieldName, TYPE_DAY, callback); 
 	// input month
-	let inputMonth = createPeriodFilterInput(fieldName, TYPE_MONTH); 
+	let inputMonth = createPeriodFilterInput(fieldName, TYPE_MONTH, callback); 
 	// input year
-	let inputYear = createPeriodFilterInput(fieldName, TYPE_YEAR); 
+	let inputYear = createPeriodFilterInput(fieldName, TYPE_YEAR, callback); 
 	
 	inputGroup.append(inputDay);
 	inputGroup.append(inputMonth);
@@ -400,7 +400,7 @@ function beautifyNominal(val) {
 	return result;
 }
 
-/** ******NAVIGATION******loadEntity** */
+/** ******NAVIGATION******** */
 function createNavigationButtons(navigationPanel, currentPage, totalData, limit, buttonClickCallback) {
 	navigationPanel.innerHTML = "";
 	
