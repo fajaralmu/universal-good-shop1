@@ -389,7 +389,7 @@ function createTBodyWithGivenValue(rowList){
 		const row = createElement("tr");
 		
 		for (var j = 0; j < columns.length; j++) {
-			const cell = columns[j];
+			let cell = columns[j];
 			const column = createElement("td");
 			
 			if(null!=cell && typeof(cell) == "string" && cell.includes("setting=")){
