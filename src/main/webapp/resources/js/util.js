@@ -4,21 +4,17 @@ function _byId(id){
 }
 
 function infoLoading() {
-	document.getElementById("loading-div").innerHTML = 
+	_byId("loading-div").innerHTML = 
 		"<img width='60px'  src=\""+ctxPath+"/res/img/loading-disk.gif\" />";
 }
 
 function infoDone() {
-	document.getElementById("loading-div").innerHTML = "";
+	_byId("loading-div").innerHTML = "";
 }
 
 /** ***************COMPONENT*************** */
-function createAnchor(id, html, url){
-	var a = document.createElement("a");
-	a.id = id;
-	a.innerHTML = html;
-	a.href = url
-	return a;
+function createAnchor(id, html, url){ 
+	return createHtmlTag({tagName:"a", innerHTML: html, id: id, href: url}); 
 }
 
 function appendElements(parent, ...childs){
@@ -28,51 +24,40 @@ function appendElements(parent, ...childs){
 }
 
 function createNavigationButton(id, html, callback){
-	var btn= createAnchor(id,html, "#");
+	const btn= createAnchor(id,html, "#");
 	btn.className = "page-link";
 	if(callback != null)
 		btn.onclick = function(){
 			callback(id);
 		}
-	var li = document.createElement("li");
-	li.className = "page-item";
+	const li = createHtmlTag({tagName:"li", class: "page-item" });  
 	li.append(btn);
 	return li;
 }
 
 function createButton(id, html){
-	var button = document.createElement("button");
-	button.id = id;
-	button.innerHTML = html;
-	return button;
+	return createHtmlTag({tagName:"button", innerHTML: html, id: id}); 
 }
  
 
 function createCell(val){
-	let column = document.createElement("td");
-	column.innerHTML = val;
-	return column;
+	return createHtmlTag({tagName:"td", innerHTML: val}); 
 }
 
 function createRow(val){
-	let column = document.createElement("tr");
-	column.innerHTML = val;
-	return column;
+	return createHtmlTag({tagName:"tr", innerHTML: val}); 
 }
 
 function createInputText(id, className){
-	let input = document.createElement("input");
-	input.id = id;
-	input.setAttribute("class",className);
-	return input;
+	return createInput(id, className, "text"); 
 }
 
 function hide(id){
-	document.getElementById(id).style.display = "none";
+	_byId(id).style.display = "none";
 }
 
 function show(id){
-	document.getElementById(id).style.display = "block";
+	_byId(id).style.display = "block";
 }
 	 
 
@@ -102,22 +87,18 @@ function createDiv(id, className){
 }
 
 function createInput(id, className, type){
-	let div = createElement("input", id, className); 
-	div.type = type; 
-	return div;
+	const option = { tagName:"input",  id:id, class:className, type: type};
+	return createHtmlTag(domObj);
 }
 
-function createOption(value, html){
-	let option = createElement("option", null, null);
-	option.value = value;
-	option.innerHTML = html;
-	return option;
+function createOption(value, text){  
+	const option = { tagName:"option",  innerHTML:text, value: value   };
+	return createHtmlTag(domObj); 
 }
 
 function createLabel(text){
-	let element = document.createElement("label");
-	element.innerHTML = text;
-	return element;
+	const domObj = { tagName:"label",  innerHTML:text   };
+	return createHtmlTag(domObj); 
 }
 
 function createHeading(tag ,id, className, html){
@@ -136,41 +117,54 @@ function createElement(tag, id, className){
 }
 
 function createImgTag(id, className, w, h, src){
-	let img = createElement("img", id, className);
-	img.width = w;
-	img.height = h;
 	
-	img.src = src;
-	
-	return img;
+	const domObj = {
+		tagName:"img", 
+		src:src, 
+		width: w, 
+		height:h, 
+		id: id, 
+		class: className
+	};
+	return createHtmlTag(domObj);
 }
 
 function createGridWrapper(cols, width){
-	let div = document.createElement("div");
-	div.style.display = "grid";
+	
+	let gridTemplateColumns;
 	
 	if(width == null){
-		div.style.gridTemplateColumns = "auto ".repeat(cols);
+		gridTemplateColumns = "auto ".repeat(cols);
 	}else{
-		div.style.gridTemplateColumns = (width+" ").repeat(cols);
+		gridTemplateColumns = (width+" ").repeat(cols);
 	}
-	return div;
+	const domObj = {tagName:"div", style:"display:grid, gridTemplateColumns:"+gridTemplateColumns}; 
+	return createHtmlTag(domObj);
 }
-function createHtmlTag(tagName, object){
-	var tag = document.createElement(tagName);
+
+function createBreakLine(){
+	return createHtmlTag({tagName:"br"});
+}
+
+function createHtmlTag(object){
+	const tag = document.createElement(object.tagName);
+	tag.innerHTML = object["innerHTML"] ? object["innerHTML"] : "";
 	
 	for(let key in object){
-		if(key == "innerHTML" || key == "child"){
+		if(key == "innerHTML" ){
 			continue;
+		} 
+		if(typeof(object[key]) ==  "object"){
+			const htmlObject = object[key];
+			const htmlTag = createHtmlTag(htmlObject);
+			tag.appendChild(htmlTag);
+		}else{
+			tag.setAttribute(key, object[key]);
 		}
-		tag.setAttribute(key, object[key]);
 	}
-	if(object["innerHTML"])
-		tag.innerHTML = object["innerHTML"];
-	if(object["child"])
-		tag.appendChild(object["child"]);
 	return tag;
 }
+
 
 function domToString(dom){
 	tempComponent.innerHTML = "";
@@ -414,7 +408,7 @@ function createNavigationButtons(navigationPanel,currentPage,totalData,limit,but
 	return navigationPanel;
 }
 
-/*********** CONSTANTS ***********/
+/** ********* CONSTANTS ********** */
 const monthNames = ["January", "February", "March", "April", "May", "June",
 	  "July", "August", "September", "October", "November", "December"
 	];

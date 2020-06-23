@@ -79,7 +79,7 @@
 	var filterFields = document.getElementsByClassName("filter-field");
 	
 	var entityTBody = _byId("entity-tb");
-	var entityTHead = _byId("entity-th");
+	var entityTableHead = _byId("entity-th");
 	var entitiesTable = _byId("list-table");
 	
 	var filterField = _byId("filter-field");
@@ -358,6 +358,9 @@
 		
 	}
 	
+	/**
+		returns DOM element
+	*/
 	function getEntityFinalValue(entityValue, fieldName){
 		//handle object type value
 		const isObject = typeof (entityValue) == "object" && entityValue != null;
@@ -375,7 +378,8 @@
 		//handle if currency value
 		//else if (isCurrency(fieldName)) {
 		else if(typeof (entityValue) == "number" && entityValue != null){
-			var dom = createHtmlTag("span",{
+			var dom = createHtmlTag({
+				 tagName:"span",
 				 style:"font-family:consolas",
 				 innerHTML:beautifyNominal(entityValue)
 			});
@@ -386,7 +390,8 @@
 			if (entityValue.split("~") != null) {
 				entityValue = entityValue.split("~")[0];
 			}
-			var dom = createHtmlTag("img",{
+			var dom = createHtmlTag({
+				tagName:"img", 
 				 width:30,
 				 height:30,
 				 src:"${host}${contextPath}/${imagePath}/" + (entityValue)
@@ -413,65 +418,86 @@
 		
 		return entityValue;
 	}
+		
+	function createDataTableInputFilter(fieldName){
+		const input = createInputText("filter-" + fieldName, "filter-field form-control");
+		input.setAttribute("field", fieldName); 
+		input.onkeyup = function() {
+			loadEntity();
+		} 
+		return input;
+	}
+	
+	function createSortingButton(fieldName){
+		//sorting button
+		const btnSortGroup = createDiv("btn-group-sort-"+fieldName,"btn-group btn-group-sm");
+		const ascButton = createButton("sort-asc-" + fieldName, "asc");
+		const descButton = createButton("sort-desc-" + fieldName, "desc");
+		
+		ascButton.className = "btn btn-outline-secondary btn-sm";
+		descButton.className = "btn btn-outline-secondary btn-sm";
+		descButton.onclick = function() {
+			 
+			orderType = "desc";
+			orderBy = fieldName;
+			loadEntity(page);
+		}
+		ascButton.onclick = function() {
+		 
+			orderType = "asc";
+			orderBy = fieldName;
+			loadEntity(page);
+		}
+		btnSortGroup.append(ascButton);
+		btnSortGroup.append(descButton);
+		
+		return btnSortGroup;
+	}
+	
+	function createExactCheckBox(fieldName){
+		const checkBoxExact = createElement("input", "checkbox-exact-"+fieldName, "none");
+		checkBoxExact.type="checkbox";
+		checkBoxInfo = createElement("span","cb-info-"+fieldName,"none");
+		checkBoxInfo.innerHTML = "Exact Search";
+		return checkBoxExact;
+	}
 
-	function createTableHeader() {
+	function createDataTableHeader() {
 		//HEADER
-		this.entityTHead.innerHTML = "";
+		this.entityTableHead.innerHTML = "";
 		const row = document.createElement("tr");
 		row.append(createCell("No"));
 		for (let i = 0; i < fieldNames.length; i++) {
-			const fieldName = fieldNames[i];
-			const inputGroup = createDiv("input-group-"+fieldName,"input-group input-group-sm mb-3");
-			const cell = createCell(fieldName);
-			const input = createInputText("filter-" + fieldName, "filter-field form-control");
-			input.setAttribute("field", fieldName); 
-			input.onkeyup = function() {
-				loadEntity();
-			} 
 			const isDateField = false;
+			 
+			const fieldName = fieldNames[i];
+			const cell = createCell(fieldName);
+			const input = createDataTableInputFilter(fieldName);
+			
+			const inputGroup = createDiv("input-group-"+fieldName,"input-group input-group-sm mb-3");
+			 
 			if (isDate(fieldName)) {
 				inputGroup = createFilterInputDate(inputGroup, fieldName, loadEntity);
 				isDateField = true;
-			}
-			if (!isDateField)
+			}else{
 				inputGroup.append(input);
+			}
+			
 			cell.append(inputGroup); 
 			
 			//sorting button
-			const btnSortGroup = createDiv("btn-group-sort-"+fieldName,"btn-group btn-group-sm");
-			const ascButton = createButton("sort-asc-" + fieldName, "asc");
-			const descButton = createButton("sort-desc-" + fieldName, "desc");
-			
-			ascButton.className = "btn btn-outline-secondary btn-sm";
-			descButton.className = "btn btn-outline-secondary btn-sm";
-			descButton.onclick = function() {
-				 
-				orderType = "desc";
-				orderBy = fieldName;
-				loadEntity(page);
-			}
-			ascButton.onclick = function() {
-			 
-				orderType = "asc";
-				orderBy = fieldName;
-				loadEntity(page);
-			}
-			btnSortGroup.append(ascButton);
-			btnSortGroup.append(descButton);
+			const btnSortGroup = createSortingButton(fieldName);
 			cell.append(btnSortGroup);
 			
 			//checkbox is exacts
 			//let inputGroupExact = createDiv("input-group-exact-"+fieldName,"input-group-text");
-			const checkBoxExact = createElement("input", "checkbox-exact-"+fieldName, "none");
-			checkBoxExact.type="checkbox";
-			checkBoxInfo = createElement("span","cb-info-"+fieldName,"none");
-			checkBoxInfo.innerHTML = "Exact Search";
+			const checkBoxExact = createExactCheckBox(fieldName);
 			//inputGroupExact.append(checkBoxExact);
 			//let divPrependCheckBox = createDiv("input-group-prepend-"+fieldName, "input-group-prepend");
 			//divPrependCheckBox.append(inputGroupExact);
 			
 			//let inputGroupCheckBox = createDiv("input-group mb-3"+fieldName, "input-group mb-3");
-			cell.append(document.createElement("br"));
+			cell.append(createBreakLine());
 			cell.append(checkBoxExact);
 			checkBoxInfo.setAttribute("style","font-size:0.7em");
 			cell.append(checkBoxInfo);
@@ -480,7 +506,7 @@
 			row.append(cell);
 		}
 		row.append(createCell("Option"));
-		entityTHead.append(row);
+		entityTableHead.append(row);
 	}
 
 	function createBr() {
@@ -791,7 +817,7 @@
 			});
 		}else{
 		
-			createTableHeader();
+			createDataTableHeader();
 			setDefaultOption();
 			loadEntity(page);
 		}
