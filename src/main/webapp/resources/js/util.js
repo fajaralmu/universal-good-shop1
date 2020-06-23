@@ -1,4 +1,9 @@
-const tempComponent = document.createElement("div");
+/** ********* CONSTANTS ********** */
+const tempComponent = document.createElement("div"); 
+const monthNames = ["January", "February", "March", "April", "May", "June",
+	  "July", "August", "September", "October", "November", "December"
+	];
+
 function _byId(id){
 	return document.getElementById(id);
 }
@@ -81,6 +86,10 @@ function toBase64(file, callback){
     }
 }
 
+function createEmptySpan(){
+	return createHtmlTag({tagName: "span", innerHTML: ""});
+}
+
 function createDiv(id, className){
 	let div = createElement("div", id, className); 
 	return div;
@@ -108,12 +117,13 @@ function createHeading(tag ,id, className, html){
 }
 
 function createElement(tag, id, className){
-	let div = document.createElement(tag);
+	const domObj = {tagName:tag};
 	if(className!=null)
-		div.className = className;
+		domObj.class = className;
 	if(id != null)
-		div.id  = id;
-	return div;
+		domObj.id  = id;
+	
+	return createHtmlTag(domObj);
 }
 
 function createImgTag(id, className, w, h, src){
@@ -203,6 +213,14 @@ function createTableFromRows(rows, id){
 	return table;
 }
 
+/**
+ * 
+ * @param columns
+ * @param entities
+ * @param beginNumber
+ * @param ignoreNumber
+ * @returns list of TR(s)
+ */
 function createTableBody(columns, entities, beginNumber,ignoreNumber){
 	if(beginNumber == null){
 		beginNumber = 0;
@@ -258,46 +276,57 @@ function createTableBody(columns, entities, beginNumber,ignoreNumber){
 }
 
 /** END ENTITY DETAIL* */
+const inputFormClass = "filter-field form-control";
+const TYPE_DAY = "day";
+const TYPE_MONTH = "month";
+const TYPE_YEAR = "year";
 
-function createFilterInputDate(inputGroup, fieldName, callback){
-	// input day
-	let inputDay = createInputText(
-			"filter-" + fieldName + "-day", "filter-field form-control"); 
-	inputDay.setAttribute("field", fieldName + "-day");
+function createPeriodFilterInput(fieldName, type, callback){
+	const id = "filter-" + fieldName + "-" + type;
+	 
+	const inputDay = createInputText( id, inputFormClass); 
+	inputDay.setAttribute("field", fieldName + "-"+ type);
 	inputDay.style.width = "30%";
 	inputDay.onkeyup = function() {
 		callback();
 	}
+	
+	return inputDay;
+}
+
+function createFilterInputDate(inputGroup, fieldName, callback){
+	// input day
+	let inputDay = createPeriodFilterInput(fieldName, TYPE_DAY); 
 	// input month
-	let inputMonth = createInputText("filter-" + fieldName
-			+ "-month", "filter-field form-control");
-	inputMonth.setAttribute("field", fieldName + "-month");
-	inputMonth.style.width = "30%"; 
-	inputMonth.onkeyup = function() {
-		callback();
-	}
+	let inputMonth = createPeriodFilterInput(fieldName, TYPE_MONTH); 
 	// input year
-	let inputYear = createInputText(
-			"filter-" + fieldName + "-year", "filter-field form-control");
-	inputYear.setAttribute("field", fieldName + "-year"); 
-	inputYear.style.width = "30%";
-	inputYear.onkeyup = function() {
-		callback();
-	}
+	let inputYear = createPeriodFilterInput(fieldName, TYPE_YEAR); 
+	
 	inputGroup.append(inputDay);
 	inputGroup.append(inputMonth);
 	inputGroup.append(inputYear);
 	return inputGroup;
 }
+var index = 0;
+function randomID(){
+	 
+	let string = "";
+	string = new Date().getUTCMilliseconds();
+	index++;
+	return index + "-" + string;
+}
 
 function createTBodyWithGivenValue(rowList){
-	let tbody = createElement("tbody","id",null);
+	const tbody = createElement("tbody",randomID(),null);
+	
 	for (var i = 0; i < rowList.length; i++) {
-		var columns = rowList[i];
-		let row = document.createElement("tr");
+		const columns = rowList[i];
+		const row = createElement("tr");
+		
 		for (var j = 0; j < columns.length; j++) {
-			var cell = columns[j];
-			let column = document.createElement("td");
+			const cell = columns[j];
+			const column = createElement("td");
+			
 			if(null!=cell && typeof(cell) == "string" && cell.includes("setting=")){
 				var setting = cell.split("setting=")[1];
 				// colspan
@@ -347,21 +376,26 @@ function beautifyNominal(val) {
 }
 
 /** ******NAVIGATION******loadEntity** */
-function createNavigationButtons(navigationPanel,currentPage,totalData,limit,buttonClickCallback) {
+function createNavigationButtons(navigationPanel, currentPage, totalData, limit, buttonClickCallback) {
 	navigationPanel.innerHTML = "";
+	
 	var buttonCount = Math.ceil(totalData / limit);
-	let prevPage = currentPage == 0 ? 0 : currentPage - 1;
+	let prevPage = getPreviousPage(currentPage, buttonCount);
 	// prev and first button
-	navigationPanel.append(createNavigationButton(0, "|<",buttonClickCallback));
-	navigationPanel.append(createNavigationButton(prevPage, "<",buttonClickCallback));
+	const buttonFirstPage = createNavigationButton(0, "|<",buttonClickCallback);
+	const buttonPrevPage = createNavigationButton(prevPage, "<",buttonClickCallback);
+	
+	appendElements(navigationPanel, buttonFirstPage, buttonPrevPage);
 
 	/* DISPLAYED BUTTONS */
-	let displayed_buttons = new Array();
+	const displayed_buttons = new Array();
 	let min = currentPage - 2;
 	let max = currentPage + 2;
+	
 	for (let i = min; i <= max; i++) {
 		displayed_buttons.push(i);
 	}
+	
 	let firstSeparated = false;
 	let lastSeparated = false;
 
@@ -373,19 +407,16 @@ function createNavigationButtons(navigationPanel,currentPage,totalData,limit,but
 				included = true;
 			}
 		}
-		if (!lastSeparated && currentPage < i - 2
-				&& (i * 1 + 1) == (buttonCount - 1)) {
+		if (!lastSeparated && currentPage < i - 2 && (i * 1 + 1) == (buttonCount - 1)) {
 			// console.log("btn id",btn.id,"MAX",max,"LAST",(jumlahTombol-1));
 			lastSeparated = true;
-			var lastSeparator = document.createElement("span");
-			lastSeparator.innerHTML = "...";
+			const lastSeparator = createEmptySpan();
 	// navigationPanel.appendChild(lastSeparator);
 
 		}
 		if (!included && i != 0 && !firstSeparated) {
 			firstSeparated = true;
-			var firstSeparator = document.createElement("span");
-			firstSeparator.innerHTML = "...";
+			var firstSeparator = createEmptySpan();
 		// navigationPanel.appendChild(firstSeparator);
 
 		}
@@ -393,7 +424,7 @@ function createNavigationButtons(navigationPanel,currentPage,totalData,limit,but
 			continue;
 		}
 
-		let button = createNavigationButton(i, buttonValue,buttonClickCallback);
+		const button = createNavigationButton(i, buttonValue, buttonClickCallback);
 		if (i == page) {
 			button.className = button.className.replace("active", "");
 			button.className = button.className + " active ";
@@ -401,14 +432,23 @@ function createNavigationButtons(navigationPanel,currentPage,totalData,limit,but
 		navigationPanel.append(button);
 	}
 
-	let nextPage = currentPage == buttonCount - 1 ? currentPage : currentPage + 1;
+	let nextPage = getNextPage(currentPage, buttonCount);
 	// next & last button
-	navigationPanel.append(createNavigationButton(nextPage, ">",buttonClickCallback));
-	navigationPanel.append(createNavigationButton(buttonCount - 1, ">|",buttonClickCallback));
+	const buttonNextPage = createNavigationButton(nextPage, ">",buttonClickCallback);
+	const buttonLastPage = createNavigationButton(buttonCount - 1, ">|",buttonClickCallback);
+
+	appendElements(navigationPanel, buttonNextPage, buttonLastPage); 
 	return navigationPanel;
 }
 
-/** ********* CONSTANTS ********** */
-const monthNames = ["January", "February", "March", "April", "May", "June",
-	  "July", "August", "September", "October", "November", "December"
-	];
+function getPreviousPage(currentPage, buttonCount){
+	const currentPageIsFirstPage = currentPage == 0;
+	return currentPageIsFirstPage ? 0 : currentPage - 1;
+}
+
+function getNextPage(currentPage, buttonCount){
+	const currentPageIsLastPage =  currentPage == buttonCount - 1;
+	return currentPageIsLastPage ? currentPage : currentPage + 1;
+}
+
+
