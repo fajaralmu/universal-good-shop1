@@ -201,8 +201,11 @@ function createHtmlTag(object){
 		const isNotNull = object[key] != null;
 		const isStyle = key == "style";
 		const isObject = isNotNull && typeof(object[key]) ==  "object";
+		const isHtmlElement = isNotNull && value instanceof HTMLElement;
 		
-		if(isObject){
+		if(isHtmlElement){
+			tag.appendChild(value);
+		}else if(isObject){
 			if(isStyle){
 				tag.setAttribute(key, stringifyStyleObject(value));
 			}else{ // Html DOM
