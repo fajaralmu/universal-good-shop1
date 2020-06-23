@@ -120,15 +120,15 @@
 		var currentProductFlow;
 		var currentProduct;
 		var currentCustomer;
-		var inputProductField = document.getElementById("input-product");
-		var stockIdField = document.getElementById("stock-id");
-		var totalPriceLabel = document.getElementById("total-price");
-		var productListDropDown = document.getElementById("product-dropdown");
-		var productFlowTable = document.getElementById("product-flows");
-		var tableReceipt = document.getElementById("table-receipt");
+		var inputProductField = _byId("input-product");
+		var stockIdField = _byId("stock-id");
+		var totalPriceLabel = _byId("total-price");
+		var productListDropDown = _byId("product-dropdown");
+		var productFlowTable = _byId("product-flows");
+		var tableReceipt = _byId("table-receipt");
 		
-		var inputCustomerField = document.getElementById("input-customer");
-		var customerListDropDown = document.getElementById("customer-dropdown");
+		var inputCustomerField = _byId("input-customer");
+		var customerListDropDown = _byId("customer-dropdown");
 		function send() {
 			if(!confirm("Are You Ready To Submit Transaction?"))
 				return;
@@ -152,18 +152,18 @@
 		}
 		
 		function showReceipt(transaction){
-			let tableColumns = [
+			const tableColumns = [
 				["Code", transaction.code,""],
 				["Date", new Date(transaction.transactionDate),""],
 				["Type", transaction.type,""],
 				["Customer", transaction.customer.name,""]
 			];
 			
-			let tbody  = createTBodyWithGivenValue(tableColumns);
+			const tbody  = createTBodyWithGivenValue(tableColumns);
 			tableReceipt.innerHTML = "";
 			tableReceipt.innerHTML = tbody.innerHTML;
 			
-			var requestDetailFlows = {
+			const requestDetailFlows = {
 				    "entity": "productFlow",
 				    "filter": {
 				        "limit": 0, 
@@ -174,7 +174,7 @@
 				        }
 				    }
 				};
-			var detailFields = ["NO","Product","ID","Expiry Date","Qty","Unit","Price","Total Price"];
+			const detailFields = ["NO","Product","ID","Expiry Date","Qty","Unit","Price","Total Price"];
 			
 			doGetDetail("<spring:url value="/api/entity/get" />",requestDetailFlows,detailFields, populateProductFlowDetail);
 			
@@ -183,13 +183,13 @@
 		}
 		
 		function populateProductFlowDetail(entities,detailFields){
-			var tableColumns = [];
+			const tableColumns = [];
 			tableColumns.push(detailFields);
 			var summaryPrice = 0;
 			for (let i = 0; i < entities.length; i++) {
-				let productFlow = entities[i];
-				let totalPrice = productFlow.count*1 * productFlow.price*1;
-				let columns = [
+				const productFlow = entities[i];
+				const totalPrice = productFlow.count*1 * productFlow.price*1;
+				const columns = [
 					i+1,
 					productFlow.product.name, productFlow.id, productFlow.expiryDate, productFlow.count,
 					productFlow.product.unit.name, productFlow.price, totalPrice
@@ -197,7 +197,7 @@
 				summaryPrice += totalPrice;
 				tableColumns.push(columns);
 			}
-			let tbody  = createTBodyWithGivenValue(tableColumns);
+			const tbody  = createTBodyWithGivenValue(tableColumns);
 			tableReceipt.innerHTML+="<tr><td>Transaction Amount</td><td style=\"text-align:left\" colspan=\"2\"><u>"+beautifyNominal(summaryPrice)+"</u></td></tr>";
 			tableReceipt.innerHTML+="<tr><td style=\"text-align:center\" colspan=\"7\"><h3>Products</h3></td></tr>";
 			tableReceipt.innerHTML+=tbody.innerHTML;
@@ -208,7 +208,7 @@
 
 		function loadCustomerList() {
 			customerListDropDown.innerHTML = "";
-			var requestObject = {
+			const requestObject = {
 				"entity" : "customer",
 				"filter" : {
 					"page" : 0,
@@ -223,15 +223,18 @@
 					requestObject,
 					function(entities) {
 						for (let i = 0; i < entities.length; i++) {
-							let entity = entities[i];
-							let option = document.createElement("option");
-							option.value = entity["id"];
-							option.innerHTML = entity["name"];
+							const entity = entities[i];
+							const option = createHtmlTag({
+								tagName: "option",
+								value: entity["id"], 
+								innerHTML : entity["name"]
+							});
+							
 							option.onclick = function() {
 								inputCustomerField.value = option.innerHTML;
-								document.getElementById("customer-name").innerHTML = entity.name;
-								/* document.getElementById("customer-address").innerHTML = entity.address;
-								document.getElementById("customer-contact").innerHTML = entity.contact; */
+								_byId("customer-name").innerHTML = entity.name;
+								/* _byId("customer-address").innerHTML = entity.address;
+								_byId("customer-contact").innerHTML = entity.contact; */
 								currentCustomer = entity;
 							}
 							customerListDropDown.append(option);
@@ -266,10 +269,10 @@
 
 		/***COMPONENT OPERATION***/
 		
-		var priceField = document.getElementById("product-price");
-		var quantityField = document.getElementById("stock-quantity");
-		var inputQuantityField = document.getElementById("product-quantity");
-		var expiryDateField = document.getElementById("product-exp-date");
+		var priceField = _byId("product-price");
+		var quantityField = _byId("stock-quantity");
+		var inputQuantityField = _byId("product-quantity");
+		var expiryDateField = _byId("product-exp-date");
 
 		function addToChart() {
 			if (currentProduct == null) {
@@ -304,28 +307,28 @@
 		}
 		
 		function calculateChange(){
-			var totalPrice=document.getElementById("total-price-label").value; 
-			var puchaseValue = document.getElementById("purchase-price").value;
-			document.getElementById("total-change-label").value = puchaseValue - totalPrice;
+			var totalPrice=_byId("total-price-label").value; 
+			var puchaseValue = _byId("purchase-price").value;
+			_byId("total-change-label").value = puchaseValue - totalPrice;
 		}
 
 		function clearProduct() {
 			inputProductField.value = "";
-			document.getElementById("unit-name").innerHTML = "";
-			document.getElementById("product-dropdown").innerHTML = "";
+			_byId("unit-name").innerHTML = "";
+			_byId("product-dropdown").innerHTML = "";
 			priceField.value = "";
 			quantityField.value = "";
 			inputQuantityField.value = "";
 			expiryDateField.value = "";
 			stockIdField.value = "";
-			//document.getElementById("total-price-label").value = "";
-			document.getElementById("total-change-label").value = "";
-			document.getElementById("purchase-price").value = "";
+			//_byId("total-price-label").value = "";
+			_byId("total-change-label").value = "";
+			_byId("purchase-price").value = "";
 		}
 
 		function setCurrentProduct(entity, loadNewStock) {
 			inputProductField.value = entity.product.name;
-			document.getElementById("unit-name").innerHTML = entity.product.unit.name;
+			_byId("unit-name").innerHTML = entity.product.unit.name;
 			currentProduct = entity.product;
 			priceField.value = beautifyNominal(entity.product.price);
 			inputQuantityField.value = entity.count;
@@ -419,7 +422,7 @@
 			}
 
 			totalPriceLabel.innerHTML = beautifyNominal(totalPrice);
-			document.getElementById("total-price-label").value = totalPrice;
+			_byId("total-price-label").value = totalPrice;
 		}
 
 		function setCurrentProductFlow(entity) {
@@ -433,8 +436,8 @@
 	</script>
 <c:if test="${requestCode != null }">
 	<script type="text/javascript">
-		var requestTransactionCode = "${requestCode}";
-		var requestObject = {
+		const requestTransactionCode = "${requestCode}";
+		const requestObject = {
 			    "entity": "transaction",
 			    "filter": {
 			        "limit": 1,

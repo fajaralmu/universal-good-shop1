@@ -159,6 +159,21 @@ function createGridWrapper(cols, width){
 function createBreakLine(){
 	return createHtmlTag({tagName:"br"});
 }
+ 
+/**
+ * 
+ * @param styleObject
+ * @returns string of ';' joined style items
+ */
+function stringifyStyleObject(styleObject){
+	const keyValueArrays = new Array();
+	
+	for(key in styleObject){
+		const keyValue  = key+":"+styleObject[key];
+		keyValueArrays.push(keyValue);
+	}
+	return keyValueArrays.join(';');
+}
 
 /**
  * 
@@ -172,13 +187,21 @@ function createHtmlTag(object){
 	for(let key in object){
 		if(key == "innerHTML" ){
 			continue;
-		} 
-		if(typeof(object[key]) ==  "object"){
-			const htmlObject = object[key];
-			const htmlTag = createHtmlTag(htmlObject);
-			tag.appendChild(htmlTag);
+		}  
+		const value = object[key];
+		const isStyle = key == "style";
+		const isObject = typeof(object[key]) ==  "object";
+		
+		if(isObject){
+			if(isStyle){
+				tag.setAttribute(key, stringifyStyleObject(value));
+			}else{ //Html DOM
+				const htmlObject = value;
+				const htmlTag = createHtmlTag(htmlObject);
+				tag.appendChild(htmlTag);
+			}
 		}else{
-			tag.setAttribute(key, object[key]);
+			tag.setAttribute(key, value);
 		}
 	}
 	return tag;
@@ -340,6 +363,7 @@ function randomID(){
 	index++;
 	return index + "-" + string;
 }
+
 
 function createTBodyWithGivenValue(rowList){
 	const tbody = createElement("tbody",randomID(),null);

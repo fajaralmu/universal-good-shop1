@@ -55,14 +55,14 @@
 
 	function populateTable(entities) {
 
-		let table = _byId("app-sessions");
+		const table = _byId("app-sessions");
 
 		table.innerHTML = "";
 
-		let header = createTableHeaderByColumns([ "ID", "Referer","IP Address", "Requested Date",
+		const header = createTableHeaderByColumns([ "ID", "Referer","IP Address", "Requested Date",
 				"User Agent", "Option" ])
 		table.appendChild(header);
-		let rows = createTableBody([ "requestId", "referrer", "ipAddress", "created", "userAgent" ],
+		const rows = createTableBody([ "requestId", "referrer", "ipAddress", "created", "userAgent" ],
 				entities);
 		for (var i = 0; i < rows.length; i++) {
 			const row = rows[i];
@@ -143,11 +143,11 @@
 		if (_byId(response.code)) {
 			_byId(response.code).innerHTML = "<button class=\"btn btn-secondary\" id=\"do-toggle-msg"+response.code+"\" >Toggle Chat("
 					+ response.entities.length + ")</button>";
-			let messages = response.entities;
+			const messages = response.entities;
 
 			for (var i = 0; i < messages.length; i++) {
-				let message = messages[i];
-				let dateComponent = "<span style=\"font-size:0.7em\">at "
+				const message = messages[i];
+				const dateComponent = "<span style=\"font-size:0.7em\">at "
 						+ message.date + "</span>";
 				if (message.admin == 1) {
 					message.text = "ADMIN "

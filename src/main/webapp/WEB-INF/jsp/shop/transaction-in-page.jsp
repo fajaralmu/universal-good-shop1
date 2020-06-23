@@ -105,14 +105,14 @@
 	var currentProductFlow;
 	var currentProduct;
 	var currentSupplier;
-	var inputProductField = document.getElementById("input-product");
-	var totalPriceLabel = document.getElementById("total-price");
-	var productListDropDown = document.getElementById("product-dropdown");
-	var productFlowTable = document.getElementById("product-flows");
-	var tableReceipt = document.getElementById("table-receipt");
+	var inputProductField = _byId("input-product");
+	var totalPriceLabel = _byId("total-price");
+	var productListDropDown = _byId("product-dropdown");
+	var productFlowTable = _byId("product-flows");
+	var tableReceipt = _byId("table-receipt");
 
-	var inputSupplierField = document.getElementById("input-supplier");
-	var supplierListDropDown = document.getElementById("supplier-dropdown");
+	var inputSupplierField = _byId("input-supplier");
+	var supplierListDropDown = _byId("supplier-dropdown");
 	function send() {
 		if (!confirm("Are You Ready To Submit Transaction?"))
 			return;
@@ -213,9 +213,9 @@
 						option.innerHTML = entity["name"];
 						option.onclick = function() {
 							inputSupplierField.value = option.innerHTML;
-							document.getElementById("supplier-name").innerHTML = entity.name;
-							document.getElementById("supplier-address").innerHTML = entity.address;
-							document.getElementById("supplier-contact").innerHTML = entity.contact;
+							_byId("supplier-name").innerHTML = entity.name;
+							_byId("supplier-address").innerHTML = entity.address;
+							_byId("supplier-contact").innerHTML = entity.contact;
 							currentSupplier = entity;
 						}
 						supplierListDropDown.append(option);
@@ -252,9 +252,9 @@
 
 	/***COMPONENT OPERATION***/
 
-	var priceField = document.getElementById("product-price");
-	var quantityField = document.getElementById("product-quantity");
-	var expiryDateField = document.getElementById("product-exp-date");
+	var priceField = _byId("product-price");
+	var quantityField = _byId("product-quantity");
+	var expiryDateField = _byId("product-exp-date");
 
 	function addToChart() {
 		if (currentProduct == null) {
@@ -286,8 +286,8 @@
 
 	function clearProduct() {
 		inputProductField.value = "";
-		document.getElementById("unit-name").innerHTML = "";
-		document.getElementById("product-dropdown").innerHTML = "";
+		_byId("unit-name").innerHTML = "";
+		_byId("product-dropdown").innerHTML = "";
 		priceField.value = "";
 		quantityField.value = "";
 		expiryDateField.value = "";
@@ -295,7 +295,7 @@
 
 	function setCurrentProduct(entity) {
 		inputProductField.value = entity.name;
-		document.getElementById("unit-name").innerHTML = entity.unit.name;
+		_byId("unit-name").innerHTML = entity.unit.name;
 		currentProduct = entity;
 
 	}
@@ -311,10 +311,10 @@
 
 	function populateProductFlow(productFlows) {
 		productFlowTable.innerHTML = "";
-		let totalPrice = 0;
+		var totalPrice = 0;
 		for (let i = 0; i < productFlows.length; i++) {
-			let productFlow = productFlows[i];
-			let row = document.createElement("tr");
+			const productFlow = productFlows[i];
+			const row = document.createElement("tr");
 			row.append(createCell((i * 1 + 1) + ""));
 			row.append(createCell(productFlow.id));
 			row.append(createCell(productFlow.product.name));
@@ -322,10 +322,9 @@
 			row.append(createCell(productFlow.count));
 			row.append(createCell(beautifyNominal(productFlow.price)));
 
-			let optionCell = createCell("");
-			let btnEdit = createButton("edit-" + productFlow.id, "edit");
-
-			let btnDelete = createButton("delete-" + productFlow.id, "delete");
+			const optionCell = createCell("");
+			const btnEdit = createButton("edit-" + productFlow.id, "edit"); 
+			const btnDelete = createButton("delete-" + productFlow.id, "delete");
 			btnEdit.onclick = function() {
 				setCurrentProductFlow(productFlow);
 			}
