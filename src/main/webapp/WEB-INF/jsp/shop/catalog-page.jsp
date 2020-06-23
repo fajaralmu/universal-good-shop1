@@ -342,6 +342,111 @@
 				});
 	}
 
+	function createListGroup(entity){
+		 return createHtmlTag({
+				tagName: "ul",
+				id: "list-group-" + entity.id,
+				class: "list-group",
+				style: {color: '#000000'}
+			});
+	}
+	
+	function createListItemCount(entity){
+		const listClass = "list-group-item d-flex justify-content-between align-items-center";
+		const listItem = createHtmlTag({
+			tagName: "li",
+			id: "list-item-count-" + entity.id,
+			class: listClass,
+			ch1: { tagName:"span", innerHTML : "Stock" },
+			ch2: {tagName: "br"},
+			ch3: { 
+				tagName: "span",
+				class: "badge badge-primary badge-pill",
+				innerHTML: entity.count,
+				id: "product-count-"+entity.id
+			} 
+		});
+		 
+		return listItem;
+	}
+	
+	function createProductCardTitle(entity){
+		const html = createHtmlTag({ 
+			tagName: 'h5', 
+			id: 'title-'+entity.id,
+			ch1: {
+				tagName:'small', 
+				style: { 'background-color':'rgb(224,224,224)'},
+				class: 'text-muted',
+				innerHTML: (entity.newProduct?"(NEW)":"")
+			}, 
+		}); 
+		html.onclick = function() {
+			loadDetail(entity.code);
+		}
+		return html;
+	}
+	
+	function createCategoryTag(entity){
+		const html = createHtmlTag({
+			tagName: 'h5',
+			id: 'category-'+entity.id,
+			ch1:{
+				tagName: 'span',
+				class: 'badge badge-secondary',
+				innerHTML: entity.category.name
+			}
+		}); 
+		return html;
+	}
+	
+	function createProductIconElement(entity){
+		const imageUrl = entity.imageUrl; 
+		const src = "${host}/${contextPath}/${imagePath}/"
+				+ imageUrl.split("~")[0]; 
+		const elementId = "icon-" + entity.id;
+		
+		const iconImage = createImgTag(elementId, "card-img-top", "100", "150", src);
+		iconImage.setAttribute("alt", entity.name);
+		
+		return iconImage;
+	}
+	
+	function createListItemPrice(entity){
+		const id = "list-item-price-" + entity.id;
+		const className = "list-group-item d-flex justify-content-between align-items-center";
+		const html = createHtmlTag({
+			tagName: 'li',
+			id: id,
+			class: className,
+			ch1: {tagName: 'span', innerHTML: 'Price'},
+			ch2: {tagName: 'br'},
+			ch3: {
+				tagName: 'span', 
+				class: 'text-warning', 
+				id: "product-price-"+entity.id,
+				innerHTML: beautifyNominal(entity.price)
+				}
+			
+		}); 
+		return html;
+	}
+	
+	function createListItemDetailLink(entity){
+		const id = "list-item-detail-link-" + entity.id;
+		const className = "list-group-item d-flex justify-content-between align-items-center";
+		const html = createHtmlTag({
+			tagName: 'li',
+			style: {'list-style':'none'},
+			ch1: {
+				tagName: 'a',
+				href: "<spring:url value="/admin/product/" />"+entity.code,
+				innerHTML: 'setting'
+			} 
+		});
+		return html;
+	}
+	
 	function populateCatalog(entities) {
 		catalogPanel.innerHTML = "";
 		for (let i = 0; i < entities.length; i++) {
@@ -350,63 +455,38 @@
 			//create col
 			const colDiv = createDiv("col-" + entity.id, "col-sm-3");
 			//create card
-			const cardDiv = createDiv("card-" + entity.id, "card");
-			cardDiv.style.width = "100%";
-			cardDiv.style.backgroundColor = entity.color;
-			cardDiv.style.color = entity.fontColor;
-			//create icon tag
-			const imageUrl = entity.imageUrl;
-
-			const src = "${host}/${contextPath}/${imagePath}/"
-					+ imageUrl.split("~")[0];
-			const iconImage = createImgTag("icon-" + entity.id, "card-img-top",
-					"100", "150", src);
-			iconImage.setAttribute("alt", entity.name);
-
-			//card body
+			const cardDiv = createHtmlTag({
+				tagName: "div",
+				id : "card-" + entity.id,
+				class: "card",
+				style: {'width': '100%', 'background-color': entity.color, 'color': entity.color}
+			});  
+			 
+			const iconImage = createProductIconElement(entity); 
+			const categoryTag = createCategoryTag(entity); 
 			const cardBody = createDiv("card-body-" + entity.id, "card-body");
 			/* <div class="card-body"> */
 			//card  title
-			const cardTitle = createHeading("h5", "title-" + entity.id,
-					"card-title", entity.name + " <small style=\"background-color:rgb(224,224,224)\" class=\"text-muted\">"
-							+ (entity.newProduct?"(NEW)":"")+ "</small>");
-			cardTitle.onclick = function() {
-				loadDetail(entity.code);
-			}
+			const cardTitle = createProductCardTitle(entity); 
 
-			//list group
-			const listGroup = createElement("ul", "list-group-" + entity.id,
-					"list-group");
-			listGroup.style.color = "#000000";
-			//item list #1
-			const listItemCount = createElement("li", "list-item-count-"
-					+ entity.id,
-					"list-group-item d-flex justify-content-between align-items-center");
-			listItemCount.innerHTML = "Stock<br> <span class=\"badge badge-primary badge-pill\" "+
-			" id=\"product-count-"+entity.id+"\">"
-					+ entity.count + "</span>";
-
-			//item list #2
-			const listItemPrice = createElement("li", "list-item-price-"
-					+ entity.id,
-					"list-group-item d-flex justify-content-between align-items-center");
-			listItemPrice.innerHTML = "Price<br> <span class=\"text-warning\" id=\"product-price-"+entity.id+"\">"
-					+ beautifyNominal(entity.price) + "</span>";
+			///LIST GROUP///
+			const listGroup = createListGroup(entity);
+			 
+			//////////LIST ITEMS//////////
+			const listItemCount = createListItemCount(entity);  
+			const listItemPrice = createListItemPrice(entity);
+			
 			listGroup.append(listItemCount);
 			listGroup.append(listItemPrice);
 			
 			<% if(request.getSession().getAttribute("user")  != null && request.getSession().getAttribute("user") instanceof User) {%>
-				let listItemDetailLink = createElement("li", "list-item-detail-link-"
-					+ entity.id,
-					"list-group-item d-flex justify-content-between align-items-center");
-				listItemDetailLink.innerHTML = "<a href=\"<spring:url value="/admin/product/" />"+entity.code+"\">setting</a>";
+				const listItemDetailLink = createListItemDetailLink(entity);
 				listGroup.append(listItemDetailLink);
 			<%}	%>
 
 			//populate cardbody
 			cardBody.append(cardTitle);
-			cardBody.append(listGroup);
-			let categoryTag = createHeading("h5","category-"+entity.id, "", "<span class=\"badge badge-secondary\">"+entity.category.name+"</span>" );
+			cardBody.append(listGroup); 
 			cardBody.append(categoryTag);
 			//populate overall card
 			cardDiv.append(iconImage);

@@ -66,6 +66,7 @@ public class ProductUpdateService extends BaseEntityUpdateService{
 						}
 						if (null != imageName)
 							imageUrls[i] = (imageName);
+						
 					} catch (IOException e) {
 
 						product.setImageUrl(null);

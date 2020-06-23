@@ -187,11 +187,14 @@ function stringifyStyleObject(styleObject){
  * @returns <DOM>
  */
 function createHtmlTag(object){
+	if(null == object){
+		object = { tagName: 'span', innerHTML: 'invalid DOM info', style:{color: 'red'}};
+	} 
 	const tag = document.createElement(object.tagName);
 	tag.innerHTML = object["innerHTML"] ? object["innerHTML"] : "";
 	
 	for(let key in object){
-		if(key == "innerHTML" ){
+		if(key == 'innerHTML' || key == 'tagName'){
 			continue;
 		}  
 		const value = object[key];
@@ -212,6 +215,7 @@ function createHtmlTag(object){
 			tag.setAttribute(key, value);
 		}
 	}
+	tag.setAttribute("dynamictag", object.tagName);
 	return tag;
 }
 
