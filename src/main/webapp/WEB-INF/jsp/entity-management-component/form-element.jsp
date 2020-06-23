@@ -45,8 +45,9 @@
 											<script>
 												managedEntity["valueField_${element.id}"] = "${element.optionValueName}";
 												managedEntity["itemField_${element.id}"] = "${element.optionItemName}";
-												let options = ${element.jsonList};
-												
+												let options = ${
+													element.jsonList
+												};
 												for (let i = 0; i < options.length; i++) {
 													
 													let optionItem = options[i];
@@ -174,8 +175,7 @@
 					<button id="btn-submit"  
 						class="btn btn-primary">Save Changes</button>
 					<c:if test="${singleRecord == false }">
-						<input  type="reset" id="btn-clear" 
-							value="Clear" />
+						<button class="btn" id="btn-clear" >Clear</button>
 					</c:if>
 				</c:if>
 				<c:if test="${singleRecord == false }">
