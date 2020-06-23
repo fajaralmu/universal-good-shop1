@@ -9,8 +9,12 @@ function _byId(id){
 }
 
 function infoLoading() {
-	_byId("loading-div").innerHTML = 
-		"<img width='60px'  src=\""+ctxPath+"/res/img/loading-disk.gif\" />";
+	_byId("loading-div").innerHTML = "";
+	const loadingImg = createHtmlTag({
+		tagName: "img",
+		src: ctxPath+"res/img/loading-disk.gif"
+	}); 
+	_byId("loading-div").appendChild(loadingImg);
 }
 
 function infoDone() {
@@ -148,7 +152,7 @@ function createGridWrapper(cols, width){
 	}else{
 		gridTemplateColumns = (width+" ").repeat(cols);
 	}
-	const domObj = {tagName:"div", style:"display:grid, gridTemplateColumns:"+gridTemplateColumns}; 
+	const domObj = {tagName:"div", style:{display:grid, gridTemplateColumns:gridTemplateColumns}}; 
 	return createHtmlTag(domObj);
 }
 
@@ -195,7 +199,7 @@ function createHtmlTag(object){
 		if(isObject){
 			if(isStyle){
 				tag.setAttribute(key, stringifyStyleObject(value));
-			}else{ //Html DOM
+			}else{ // Html DOM
 				const htmlObject = value;
 				const htmlTag = createHtmlTag(htmlObject);
 				tag.appendChild(htmlTag);
@@ -237,7 +241,8 @@ function createTableHeaderByColumns(columns, ignoreNumber){
  * @param columns
  * @param entities
  * @param ignoreNumber
- * @returns list of <tr>
+ * @returns list of
+ *          <tr>
  */
 function createTableBody(columns, entities ,ignoreNumber){
 	 createTableBody(columns, entities, 0,ignoreNumber);
@@ -245,7 +250,9 @@ function createTableBody(columns, entities ,ignoreNumber){
 
 /**
  * 
- * @param rows list of <tr>
+ * @param rows
+ *            list of
+ *            <tr>
  * @param id
  * @returns <table>
  */
@@ -263,7 +270,8 @@ function createTableFromRows(rows, id){
  * @param entities
  * @param beginNumber
  * @param ignoreNumber
- * @returns list of <tr>
+ * @returns list of
+ *          <tr>
  */
 function createTableBody(columns, entities, beginNumber,ignoreNumber){
 	if(beginNumber == null){

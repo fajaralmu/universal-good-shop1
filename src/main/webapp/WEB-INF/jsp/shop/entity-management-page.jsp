@@ -380,7 +380,7 @@
 		else if(typeof (entityValue) == "number" && entityValue != null){
 			var dom = createHtmlTag({
 				 tagName:"span",
-				 style:"font-family:consolas",
+				 style:{ 'font-family' :'consolas' },
 				 innerHTML:beautifyNominal(entityValue)
 			});
 			entityValue = domToString(dom);//"<span style=\"font-family:consolas\">"+ beautifyNominal(entityValue) +"</span>";
@@ -410,9 +410,14 @@
 				entityValue = entityValue.substring(0, 35) + "...";
 			}
 			if(isUrl){
-				entityValue  ="<a href=\""+entityValue+"\">"+entityValue+"</a>";
+				entityValue  = createAnchor(null, entityValue, entityValue)//"<a href=\""+entityValue+"\">"+entityValue+"</a>";
 			}else if(isColor){
-				entityValue = "<span style=\"color:"+entityValue+"; font-size: 1.3em \"><b>"+entityValue+"</b></span>";
+				entityValue = createHtmlTag({
+					tagName: 'span',
+					style: { 'color': entityValue, 'font-size': '1.3em'},
+					ch1: { tagName: 'b', innerHTML: entityValue}
+				});
+				 
 			}
 		}
 		
