@@ -345,29 +345,29 @@
 	function populateCatalog(entities) {
 		catalogPanel.innerHTML = "";
 		for (let i = 0; i < entities.length; i++) {
-			let entity = entities[i];
+			const entity = entities[i];
 
 			//create col
-			let colDiv = createDiv("col-" + entity.id, "col-sm-3");
+			const colDiv = createDiv("col-" + entity.id, "col-sm-3");
 			//create card
-			let cardDiv = createDiv("card-" + entity.id, "card");
+			const cardDiv = createDiv("card-" + entity.id, "card");
 			cardDiv.style.width = "100%";
 			cardDiv.style.backgroundColor = entity.color;
 			cardDiv.style.color = entity.fontColor;
 			//create icon tag
-			let imageUrl = entity.imageUrl;
+			const imageUrl = entity.imageUrl;
 
-			let src = "${host}/${contextPath}/${imagePath}/"
+			const src = "${host}/${contextPath}/${imagePath}/"
 					+ imageUrl.split("~")[0];
-			let iconImage = createImgTag("icon-" + entity.id, "card-img-top",
+			const iconImage = createImgTag("icon-" + entity.id, "card-img-top",
 					"100", "150", src);
 			iconImage.setAttribute("alt", entity.name);
 
 			//card body
-			let cardBody = createDiv("card-body-" + entity.id, "card-body");
+			const cardBody = createDiv("card-body-" + entity.id, "card-body");
 			/* <div class="card-body"> */
 			//card  title
-			let cardTitle = createHeading("h5", "title-" + entity.id,
+			const cardTitle = createHeading("h5", "title-" + entity.id,
 					"card-title", entity.name + " <small style=\"background-color:rgb(224,224,224)\" class=\"text-muted\">"
 							+ (entity.newProduct?"(NEW)":"")+ "</small>");
 			cardTitle.onclick = function() {
@@ -375,11 +375,11 @@
 			}
 
 			//list group
-			let listGroup = createElement("ul", "list-group-" + entity.id,
+			const listGroup = createElement("ul", "list-group-" + entity.id,
 					"list-group");
 			listGroup.style.color = "#000000";
 			//item list #1
-			let listItemCount = createElement("li", "list-item-count-"
+			const listItemCount = createElement("li", "list-item-count-"
 					+ entity.id,
 					"list-group-item d-flex justify-content-between align-items-center");
 			listItemCount.innerHTML = "Stock<br> <span class=\"badge badge-primary badge-pill\" "+
@@ -387,7 +387,7 @@
 					+ entity.count + "</span>";
 
 			//item list #2
-			let listItemPrice = createElement("li", "list-item-price-"
+			const listItemPrice = createElement("li", "list-item-price-"
 					+ entity.id,
 					"list-group-item d-flex justify-content-between align-items-center");
 			listItemPrice.innerHTML = "Price<br> <span class=\"text-warning\" id=\"product-price-"+entity.id+"\">"

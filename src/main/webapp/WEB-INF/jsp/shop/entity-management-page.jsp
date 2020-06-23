@@ -420,12 +420,14 @@
 	}
 		
 	function createDataTableInputFilter(fieldName){
+		const inputGroup = createDiv("input-group-"+fieldName,"input-group input-group-sm mb-3"); 	
 		const input = createInputText("filter-" + fieldName, "filter-field form-control");
 		input.setAttribute("field", fieldName); 
 		input.onkeyup = function() {
 			loadEntity();
 		} 
-		return input;
+		inputGroup.appendChild(input);
+		return inputGroup;
 	}
 	
 	function createSortingButton(fieldName){
@@ -468,22 +470,21 @@
 		const row = document.createElement("tr");
 		row.append(createCell("No"));
 		for (let i = 0; i < fieldNames.length; i++) {
-			const isDateField = false;
-			 
-			const fieldName = fieldNames[i];
-			const cell = createCell(fieldName);
-			const input = createDataTableInputFilter(fieldName);
 			
-			const inputGroup = createDiv("input-group-"+fieldName,"input-group input-group-sm mb-3");
+			const fieldName = fieldNames[i];
+			const isDateField = isDate(fieldName);
+			const cell = createCell(fieldName); 
+			
+			var filterInputGroup;
 			 
-			if (isDate(fieldName)) {
-				inputGroup = createFilterInputDate(inputGroup, fieldName, loadEntity);
-				isDateField = true;
+			if (isDateField) {
+				filterInputGroup = createFilterInputDate( fieldName, loadEntity);
+				 
 			}else{
-				inputGroup.append(input);
+				filterInputGroup = createDataTableInputFilter(fieldName);  
 			}
 			
-			cell.append(inputGroup); 
+			cell.append(filterInputGroup); 
 			
 			//sorting button
 			const btnSortGroup = createSortingButton(fieldName);
@@ -542,7 +543,7 @@
 		const enableDetail = isShowDetail(elementField); 
 		const isMultipleSelect = isMultipleSelectField(elementField);
 		const isImageField = isImage(fieldName);
-		const isDateField = isDate(fieldName);
+		var isDateField = isDate(fieldName);
 		
 		const isObject = typeof (entityValue) == "object";
 

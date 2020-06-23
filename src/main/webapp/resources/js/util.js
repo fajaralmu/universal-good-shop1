@@ -96,12 +96,12 @@ function createDiv(id, className){
 }
 
 function createInput(id, className, type){
-	const option = { tagName:"input",  id:id, class:className, type: type};
+	const domObj = { tagName:"input",  id:id, class:className, type: type};
 	return createHtmlTag(domObj);
 }
 
 function createOption(value, text){  
-	const option = { tagName:"option",  innerHTML:text, value: value   };
+	const domObj = { tagName:"option",  innerHTML:text, value: value   };
 	return createHtmlTag(domObj); 
 }
 
@@ -111,9 +111,9 @@ function createLabel(text){
 }
 
 function createHeading(tag ,id, className, html){
-	let option = createElement(tag,id, className);
-	option.innerHTML = html;
-	return option;
+	const heading = createElement(tag,id, className);
+	heading.innerHTML = html;
+	return heading;
 }
 
 function createElement(tag, id, className){
@@ -152,10 +152,19 @@ function createGridWrapper(cols, width){
 	return createHtmlTag(domObj);
 }
 
+/**
+ * 
+ * @returns <br/>
+ */
 function createBreakLine(){
 	return createHtmlTag({tagName:"br"});
 }
 
+/**
+ * 
+ * @param object
+ * @returns <DOM>
+ */
 function createHtmlTag(object){
 	const tag = document.createElement(object.tagName);
 	tag.innerHTML = object["innerHTML"] ? object["innerHTML"] : "";
@@ -200,11 +209,23 @@ function createTableHeaderByColumns(columns, ignoreNumber){
 	return row;
 }
 
-// return array of TR !!!!
+/**
+ * 
+ * @param columns
+ * @param entities
+ * @param ignoreNumber
+ * @returns list of <tr>
+ */
 function createTableBody(columns, entities ,ignoreNumber){
 	 createTableBody(columns, entities, 0,ignoreNumber);
 }
 
+/**
+ * 
+ * @param rows list of <tr>
+ * @param id
+ * @returns <table>
+ */
 function createTableFromRows(rows, id){
 	let table = createElement	("table", id, "table");
 	for (var i = 0; i < rows.length; i++) {
@@ -219,7 +240,7 @@ function createTableFromRows(rows, id){
  * @param entities
  * @param beginNumber
  * @param ignoreNumber
- * @returns list of TR(s)
+ * @returns list of <tr>
  */
 function createTableBody(columns, entities, beginNumber,ignoreNumber){
 	if(beginNumber == null){
@@ -284,17 +305,21 @@ const TYPE_YEAR = "year";
 function createPeriodFilterInput(fieldName, type, callback){
 	const id = "filter-" + fieldName + "-" + type;
 	 
-	const inputDay = createInputText( id, inputFormClass); 
-	inputDay.setAttribute("field", fieldName + "-"+ type);
-	inputDay.style.width = "30%";
-	inputDay.onkeyup = function() {
-		callback();
-	}
+	const inputDay = createHtmlTag({
+		'tagName': "input",
+		'id': id, 
+		'class': inputFormClass,
+		'type': "text",
+		'field': fieldName + "-"+ type,
+		'style': "width: 30%"
+	});
+	inputDay.onkeyup = function() { callback(); }
 	
 	return inputDay;
 }
 
-function createFilterInputDate(inputGroup, fieldName, callback){
+function createFilterInputDate(fieldName, callback){
+	const inputGroup = createDiv("input-group-"+fieldName,"input-group input-group-sm mb-3"); 
 	// input day
 	let inputDay = createPeriodFilterInput(fieldName, TYPE_DAY); 
 	// input month
@@ -388,13 +413,7 @@ function createNavigationButtons(navigationPanel, currentPage, totalData, limit,
 	appendElements(navigationPanel, buttonFirstPage, buttonPrevPage);
 
 	/* DISPLAYED BUTTONS */
-	const displayed_buttons = new Array();
-	let min = currentPage - 2;
-	let max = currentPage + 2;
-	
-	for (let i = min; i <= max; i++) {
-		displayed_buttons.push(i);
-	}
+	const displayed_buttons = getDisplayedButtonIndexes(currentPage); 
 	
 	let firstSeparated = false;
 	let lastSeparated = false;
@@ -439,6 +458,17 @@ function createNavigationButtons(navigationPanel, currentPage, totalData, limit,
 
 	appendElements(navigationPanel, buttonNextPage, buttonLastPage); 
 	return navigationPanel;
+}
+
+function getDisplayedButtonIndexes( currentPage){
+	const displayed_buttons = new Array();
+	let min = currentPage - 2;
+	let max = currentPage + 2;
+	
+	for (let i = min; i <= max; i++) {
+		displayed_buttons.push(i);
+	}
+	return displayed_buttons;
 }
 
 function getPreviousPage(currentPage, buttonCount){
