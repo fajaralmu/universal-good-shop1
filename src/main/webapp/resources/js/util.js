@@ -10,9 +10,11 @@ function _byId(id){
 
 function infoLoading() {
 	_byId("loading-div").innerHTML = "";
+	const imagePath = ctxPath+"/res/img/loading-disk.gif";
 	const loadingImg = createHtmlTag({
 		tagName: "img",
-		src: ctxPath+"res/img/loading-disk.gif"
+		src: imagePath,
+		style: {height: '70px', width: '70px'}
 	}); 
 	_byId("loading-div").appendChild(loadingImg);
 }
@@ -193,13 +195,15 @@ function createHtmlTag(object){
 			continue;
 		}  
 		const value = object[key];
+		const isNotNull = object[key] != null;
 		const isStyle = key == "style";
-		const isObject = typeof(object[key]) ==  "object";
+		const isObject = isNotNull && typeof(object[key]) ==  "object";
 		
 		if(isObject){
 			if(isStyle){
 				tag.setAttribute(key, stringifyStyleObject(value));
 			}else{ // Html DOM
+				console.debug("will create HTML DOM of :", key);
 				const htmlObject = value;
 				const htmlTag = createHtmlTag(htmlObject);
 				tag.appendChild(htmlTag);

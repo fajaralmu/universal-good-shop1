@@ -43,6 +43,14 @@ public class CollectionUtil {
 		return list ;
 	}
 
+	public  static <T> void printArray(T[] array) {
+		log.debug("******* PRINT ARRAY *********");
+		for (int i = 0; i < array.length; i++) { 
+			log.debug("array {}: {}", i, array[i]);
+		}
+		log.debug("******* END ARRAY *********");
+	}
+	
 	public static void main(String[] args) {
 		List<Object> list = listOf("a", "1", "2");
 		System.out.println(listToArray(list));

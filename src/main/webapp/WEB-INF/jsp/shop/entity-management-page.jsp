@@ -410,13 +410,15 @@
 				entityValue = entityValue.substring(0, 35) + "...";
 			}
 			if(isUrl){
-				entityValue  = createAnchor(null, entityValue, entityValue)//"<a href=\""+entityValue+"\">"+entityValue+"</a>";
+				const anchor = createAnchor(null, entityValue, entityValue)//"<a href=\""+entityValue+"\">"+entityValue+"</a>";
+				entityValue  = domToString(anchor);
 			}else if(isColor){
-				entityValue = createHtmlTag({
+				const span = createHtmlTag({
 					tagName: 'span',
 					style: { 'color': entityValue, 'font-size': '1.3em'},
 					ch1: { tagName: 'b', innerHTML: entityValue}
 				});
+				entityValue = domToString(span);
 				 
 			}
 		}
@@ -462,11 +464,14 @@
 	}
 	
 	function createExactCheckBox(fieldName){
+		const wrapper = createHtmlTag({tagName:"div"});
 		const checkBoxExact = createElement("input", "checkbox-exact-"+fieldName, "none");
 		checkBoxExact.type="checkbox";
-		checkBoxInfo = createElement("span","cb-info-"+fieldName,"none");
+		const checkBoxInfo = createElement("span","cb-info-"+fieldName,"none");
 		checkBoxInfo.innerHTML = "Exact Search";
-		return checkBoxExact;
+		checkBoxInfo.setAttribute("style","font-size:0.7em");
+		appendElements(wrapper, checkBoxExact, checkBoxInfo);
+		return wrapper;
 	}
 
 	function createDataTableHeader() {
@@ -504,9 +509,7 @@
 			
 			//let inputGroupCheckBox = createDiv("input-group mb-3"+fieldName, "input-group mb-3");
 			cell.append(createBreakLine());
-			cell.append(checkBoxExact);
-			checkBoxInfo.setAttribute("style","font-size:0.7em");
-			cell.append(checkBoxInfo);
+			cell.append(checkBoxExact);  
 			//cell.append(inputGroupCheckBox);
 			
 			row.append(cell);

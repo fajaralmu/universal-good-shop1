@@ -16,7 +16,10 @@ import com.fajar.shoppingmart.repository.ProductRepository;
 import com.fajar.shoppingmart.service.ProductInventoryService;
 import com.fajar.shoppingmart.util.CollectionUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ProductUpdateService extends BaseEntityUpdateService{
 
 	@Autowired
@@ -37,6 +40,8 @@ public class ProductUpdateService extends BaseEntityUpdateService{
 
 		String imageData = product.getImageUrl();
 		if (imageData != null && !imageData.equals("")) {
+			log.info("product image will be updated");
+			
 			String[] base64Images = imageData.split("~");
 			if (base64Images != null && base64Images.length > 0) {
 				String[] imageUrls = new String[base64Images.length];
@@ -70,13 +75,16 @@ public class ProductUpdateService extends BaseEntityUpdateService{
 
 				List<String> validUrls = removeNullItemFromArray(imageUrls);
 				String[] arrayOfString = CollectionUtil.toArrayOfString(validUrls);
-
+				
+				CollectionUtil.printArray(arrayOfString);
+				
 				String imageUrl = String.join("~", arrayOfString);
 				product.setImageUrl(imageUrl);
 
 			}
 
 		} else {
+			log.info("Product image wont be updated");
 			if (!newRecord) {
 				Optional<Product> dbProduct = productRepository.findById(product.getId());
 				if (dbProduct.isPresent()) {
@@ -84,6 +92,8 @@ public class ProductUpdateService extends BaseEntityUpdateService{
 				}
 			}
 		}
+		 
+		
 		Product newProduct = productRepository.save(product);
 		
 		if(newRecord) {
