@@ -17,7 +17,7 @@
 		mapping="/WebAsset/**"></mvc:resources>
 	<mvc:interceptors>
 		<bean id="handlerInterceptor"
-			class="com.fajar.schoolmanagement.config.MyHandlerInterceptor" />
+			class="com.fajar.shoppingmart.config.MyHandlerInterceptor" />
 	</mvc:interceptors>
 	<jpa:repositories
 		base-package="com.fajar.shoppingmart.repository" />

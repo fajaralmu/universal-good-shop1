@@ -231,7 +231,7 @@ public class UserSessionService {
 	 * @return
 	 */
 	public String getToken(HttpServletRequest httpRequest) {
-		User user = getUserFromSession(httpRequest);
+		User user = getLoggedUser(httpRequest);
 		log.info("==loggedUser: "+ (user == null? null : user.getUsername()));
 		
 		if(user == null)
