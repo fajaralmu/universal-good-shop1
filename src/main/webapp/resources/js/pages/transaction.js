@@ -152,8 +152,26 @@ function doPopulateProductFlow(productFlows, rowCreationFunction) {
 //	_byId("total-price-label").value = totalPrice;
 }
 
+function processReceipt(transaction){
+	const requestDetailFlows = {
+		    "entity": "productFlow",
+		    "filter": {
+		        "limit": 0, 
+		        "contains": false,
+		        "exacts": true, 
+		        "fieldsFilter": {
+		            "transaction":transaction.code
+		        }
+		    }
+		};
+	doGetDetail(ENTITY_GET_URL ,requestDetailFlows, populateReceiptProductDetail); 
+	
+	show("content-receipt");
+	hide("content-form");
+}
+
 function populateReceiptProductDetail(entities){
-	const transaction = entities[0].transaction;
+	 
 	const tableColumns = [];
 	const detailFields = ["NO","Product","ID","Expiry Date","Qty","Unit","Price","Total Price"];
 	

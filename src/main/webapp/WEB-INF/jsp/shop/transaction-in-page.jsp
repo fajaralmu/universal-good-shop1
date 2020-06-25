@@ -157,22 +157,7 @@
 		const tbody  = createTBodyWithGivenValue(tableColumns);
 		tableReceipt.innerHTML = tbody.innerHTML; 
 		
-		var requestDetailFlows = {
-			    "entity": "productFlow",
-			    "filter": {
-			        "limit": 0, 
-			        "contains": false,
-			        "exacts": true, 
-			        "fieldsFilter": {
-			            "transaction":transaction.code
-			        }
-			    }
-			}; 
-		
-		doGetDetail("<spring:url value="/api/entity/get" />",requestDetailFlows, populateReceiptProductDetail);
-		
-		show("content-receipt");
-		hide("content-form");
+		processReceipt(transaction); 
 	} 
 	
 	function loadSupplierList() {

@@ -168,27 +168,10 @@
 				["Customer", transaction.customer.name,""]
 			];
 			
-			const tbody  = createTBodyWithGivenValue(tableColumns);
-			tableReceipt.innerHTML = "";
-			tableReceipt.innerHTML = tbody.innerHTML;
+			const tbody  = createTBodyWithGivenValue(tableColumns); 
+			tableReceipt.innerHTML = tbody.innerHTML; 
 			
-			const requestDetailFlows = {
-				    "entity": "productFlow",
-				    "filter": {
-				        "limit": 0, 
-				        "contains": false,
-				        "exacts": true, 
-				        "fieldsFilter": {
-				            "transaction":transaction.code
-				        }
-				    }
-				};
-			
-			
-			doGetDetail("<spring:url value="/api/entity/get" />",requestDetailFlows, populateReceiptProductDetail);
-			
-			show("content-receipt");
-			hide("content-form");
+			processReceipt(transaction); 
 		}		
 
 		function loadCustomerList() {
