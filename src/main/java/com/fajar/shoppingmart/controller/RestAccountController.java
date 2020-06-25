@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fajar.shoppingmart.annotation.Authenticated;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.LogProxyFactory;
@@ -49,7 +50,7 @@ public class RestAccountController extends BaseController{
 		WebResponse response = accountService.login(request, httpRequest,httpResponse);
 		return response;
 	}
-	@PostMapping(value = "/logout", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/logout", produces = MediaType.APPLICATION_JSON_VALUE) 
 	public WebResponse logout(  HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		 
@@ -61,12 +62,9 @@ public class RestAccountController extends BaseController{
 		return WebResponse.builder().code(success?"00":"01").message("SUCCESS LOGOUT: "+success).build();
 	}
 	@PostMapping(value = "/getprofile", produces = MediaType.APPLICATION_JSON_VALUE)
+	@Authenticated
 	public WebResponse getprpfile(  HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
-		 
-		if (!userSessionService.hasSession(httpRequest, false)) {
-			return WebResponse.failedResponse();
-		}
+			HttpServletResponse httpResponse) throws IOException { 
 		 
 		return userSessionService.getProfile(httpRequest);
 	}

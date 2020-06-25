@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fajar.shoppingmart.annotation.Authenticated;
 import com.fajar.shoppingmart.entity.CapitalFlow;
 import com.fajar.shoppingmart.entity.CostFlow;
 import com.fajar.shoppingmart.entity.Menu;
@@ -41,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Controller
 @RequestMapping("management")
+@Authenticated
 public class MvcManagementController extends BaseController {
 
 	@Autowired

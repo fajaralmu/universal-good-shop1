@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.shoppingmart.entity.Page;
 import com.fajar.shoppingmart.service.LogProxyFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,6 +28,7 @@ public class MvcPagesController extends BaseController{
 	
 	@PostConstruct
 	public void init() {
+		ObjectMapper dd;
 		basePage = webAppConfiguration.getBasePage();
 		LogProxyFactory.setLoggers(this);
 	}

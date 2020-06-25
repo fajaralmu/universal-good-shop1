@@ -103,7 +103,8 @@
 	
 	<bean id="persistenceProvider"
 		class="org.hibernate.jpa.HibernatePersistenceProvider" />
-
+	
+	<bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper" />
 
 
 </beans>

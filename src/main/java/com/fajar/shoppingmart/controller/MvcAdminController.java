@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fajar.shoppingmart.annotation.Authenticated;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
@@ -34,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Controller
 @RequestMapping("admin")
+@Authenticated
 public class MvcAdminController extends BaseController { 
 
 	public MvcAdminController() {

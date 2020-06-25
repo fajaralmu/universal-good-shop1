@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fajar.shoppingmart.annotation.Authenticated;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.LogProxyFactory;
@@ -23,6 +24,7 @@ import com.fajar.shoppingmart.service.MessagingService;
 
 @CrossOrigin
 @RestController
+@Authenticated
 @RequestMapping("/api/admin")
 public class RestAdminController extends BaseController {
 	Logger log = LoggerFactory.getLogger(RestAdminController.class);

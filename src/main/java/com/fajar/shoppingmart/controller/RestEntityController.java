@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fajar.shoppingmart.annotation.Authenticated;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.EntityService;
@@ -25,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/entity")
 @Slf4j
+@Authenticated
 public class RestEntityController extends BaseController{ 
 	 
 	@Autowired
@@ -42,20 +44,14 @@ public class RestEntityController extends BaseController{
 	@PostMapping(value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse add(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("add entity {}", request);
-		if(!accountService.validateToken(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+		log.info("add entity {}", request); 
 		return entityService.saveEntity(request,httpRequest, true); 
 	}
 	
 	@PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse update(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("register update {}", request);
-		if(!accountService.validateToken(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+		log.info("register update {}", request); 
 		return entityService.saveEntity(request,httpRequest, false);
 		 
 	}
@@ -63,10 +59,7 @@ public class RestEntityController extends BaseController{
 	@PostMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse get(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("get entity {}", request);
-		if(!accountService.validateToken(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+		log.info("get entity {}", request); 
 		return entityService.filter(request );
 		 
 	}
@@ -74,10 +67,7 @@ public class RestEntityController extends BaseController{
 	@PostMapping(value = "/delete", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse delete(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		log.info("delete entity {}", request);
-		if(!accountService.validateToken(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+		log.info("delete entity {}", request); 
 		return entityService.delete(request ); 
 	}
 

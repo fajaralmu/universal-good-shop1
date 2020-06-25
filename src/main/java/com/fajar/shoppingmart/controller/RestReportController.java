@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fajar.shoppingmart.annotation.Authenticated;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.report.data.ReportService;
@@ -25,7 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin
 @Controller
 @RequestMapping("/api/report")
-@Slf4j
+@Slf4j 
+@Authenticated
 public class RestReportController {
 	
 	@Autowired

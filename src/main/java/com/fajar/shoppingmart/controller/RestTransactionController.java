@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fajar.shoppingmart.annotation.Authenticated;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.LogProxyFactory;
@@ -26,7 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin
 @RestController
 @RequestMapping("/api/transaction")
-@Slf4j
+@Slf4j 
+@Authenticated
 public class RestTransactionController extends BaseController{
 	
 	@Autowired
@@ -47,9 +49,7 @@ public class RestTransactionController extends BaseController{
 	public WebResponse addSupply(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("supply {}", request);
-		if(!userSessionService.hasSession(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+		 
 		WebResponse response = transactionService.supplyProduct(request, httpRequest,httpRequest.getHeader("requestId"));
 		return response;
 	}
@@ -58,9 +58,7 @@ public class RestTransactionController extends BaseController{
 	public WebResponse purchase(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("purchase {}", request);
-		if(!userSessionService.hasSession(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+	 
 		WebResponse response = transactionService.addPurchaseTransaction(request, httpRequest,httpRequest.getHeader("requestId"));
 		return response;
 	}
@@ -69,9 +67,7 @@ public class RestTransactionController extends BaseController{
 	public WebResponse purchasev2(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("purchase {}", request);
-		if(!userSessionService.hasSession(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+		 
 		WebResponse response = transactionService.addPurchaseTransactionV2(request, httpRequest,httpRequest.getHeader("requestId"));
 		return response;
 	}
@@ -91,9 +87,7 @@ public class RestTransactionController extends BaseController{
 	public WebResponse stockInfo(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("stockinfo {}", request);
-		if(!userSessionService.hasSession(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+		 
 		WebResponse response = transactionService.stockInfo(request);
 		return response;
 	}
@@ -102,9 +96,7 @@ public class RestTransactionController extends BaseController{
 	public WebResponse cashflowinfo(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("cashflowinfo {}", request);
-		if(!userSessionService.hasSession(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+		 
 		WebResponse response = transactionService.getCashFlow(request);
 		return response;
 	}
@@ -113,9 +105,7 @@ public class RestTransactionController extends BaseController{
 	public WebResponse detailcashflow(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("cashflowdetail {}", request);
-		if(!userSessionService.hasSession(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+		 
 		WebResponse response = transactionService.getCashflowDetail(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
@@ -124,9 +114,7 @@ public class RestTransactionController extends BaseController{
 	public WebResponse monthlyDetailCasflow(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("monthlycashflow {}", request);
-		if(!userSessionService.hasSession(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+		 
 		WebResponse response = transactionService.getCashflowMonthly(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
@@ -135,9 +123,7 @@ public class RestTransactionController extends BaseController{
 	public WebResponse dailycashflow(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("monthlycashflow {}", request);
-		if(!userSessionService.hasSession(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+		 
 		WebResponse response = transactionService.getCashflowDaily(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
@@ -146,9 +132,7 @@ public class RestTransactionController extends BaseController{
 	public WebResponse productsales(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("productsales {}", request);
-		if(!userSessionService.hasSession(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+		 
 		WebResponse response = productService.getProductSales(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
@@ -157,9 +141,7 @@ public class RestTransactionController extends BaseController{
 	public WebResponse productsalesdetail(@PathVariable(required = true, name="id") Long productId,@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("productsales {}", request);
-		if(!userSessionService.hasSession(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+		 
 		WebResponse response = productService.getProductSalesDetail(request,productId, httpRequest.getHeader("requestId"));
 		return response;
 	}

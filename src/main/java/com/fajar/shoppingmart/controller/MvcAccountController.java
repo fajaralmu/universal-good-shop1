@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fajar.shoppingmart.annotation.Authenticated;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,7 @@ public class MvcAccountController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/logout" })
+	@Authenticated
 	public String logout(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if (userSessionService.hasSession(request, false)) {
 			userSessionService.logout(request);
