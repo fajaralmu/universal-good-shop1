@@ -1,5 +1,7 @@
 package com.fajar.shoppingmart.service;
 
+import static com.fajar.shoppingmart.service.UserSessionService.ATTR_REQUEST_URI;
+
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -94,9 +96,9 @@ public class UserAccountService {
 		
 		log.info("LOGIN SUCCESS");
 		
-		if(httpRequest.getSession(false).getAttribute(UserSessionService.ATTR_REQUEST_URI) != null) {
-			log.info("WILL REDIRECT TO REQUESTED URI: "+httpRequest.getSession(false).getAttribute(UserSessionService.ATTR_REQUEST_URI));
-			response.setRedirectUrl(httpRequest.getSession(false).getAttribute(UserSessionService.ATTR_REQUEST_URI).toString());			
+		if(httpRequest.getSession(false).getAttribute(ATTR_REQUEST_URI) != null) {
+			log.info("WILL REDIRECT TO REQUESTED URI: "+httpRequest.getSession(false).getAttribute(ATTR_REQUEST_URI));
+			response.setRedirectUrl(httpRequest.getSession(false).getAttribute(ATTR_REQUEST_URI).toString());			
 		}
 		response.setMessage(reqIdGenerated.getMessage());
 		return response;

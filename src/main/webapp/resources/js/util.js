@@ -46,10 +46,35 @@ function createNavigationButton(id, html, callback){
 	return li;
 }
 
-function createButton(id, html){
-	return createHtmlTag({tagName:"button", innerHTML: html, id: id}); 
+function createButton(id, html, onclick){
+	return createHtmlTag({tagName:"button", innerHTML: html, id: id, onclick: onclick}); 
 }
  
+
+function clearElement(...elements){
+	for (let i = 0; i < elements.length; i++) {
+		let element = elements[i];
+		if(!element){
+			continue;
+		}
+		
+		if(typeof(element) == "string"){
+			if(_byId(element)){
+				element = _byId(element);
+			}
+		}
+		
+		if(!element){
+			continue;
+		}
+		
+		if(element.tagName == "input" || element.tagName == "textarea"){
+			element.value = "";
+		}else{
+			element.innerHTML = "";
+		}
+	}
+}
 
 function createCell(val){
 	return createHtmlTag({tagName:"td", innerHTML: val}); 
@@ -200,12 +225,13 @@ function createHtmlTag(object){
 		const value = object[key];
 		const isNotNull = object[key] != null;
 		const isStyle = key == "style";
-		const isObject = isNotNull && typeof(object[key]) ==  "object";
+		const isObject = isNotNull && typeof(value) ==  "object";
 		const isHtmlElement = isNotNull && value instanceof HTMLElement;
+		const isFunction = isNotNull && typeof(value) ==  "function";
 		
 		if(isHtmlElement){
 			tag.appendChild(value);
-		}else if(isObject){
+		}else if(isObject && !isFunction){
 			if(isStyle){
 				tag.setAttribute(key, stringifyStyleObject(value));
 			}else{ // Html DOM
@@ -214,6 +240,10 @@ function createHtmlTag(object){
 				const htmlTag = createHtmlTag(htmlObject);
 				tag.appendChild(htmlTag);
 			}
+		}else if(isFunction){
+			 
+			tag[key] = function(e){ value(e) };
+			 
 		}else{
 			tag.setAttribute(key, value);
 		}

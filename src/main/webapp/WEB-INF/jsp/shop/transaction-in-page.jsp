@@ -34,6 +34,9 @@
 							<p>
 								Unit :<span id="unit-name"></span>
 							</p>
+							<p>
+								Current Price :<span id="current-price"></span>
+							</p>
 							<p>Qty</p>
 							<input type="number" class="form-control" id="product-quantity"
 								required="required" />
@@ -182,7 +185,7 @@
 			summaryPrice += totalPrice;
 			tableColumns.push(columns);
 		}
-		let tbody  = createTBodyWithGivenValue(tableColumns);
+		const tbody  = createTBodyWithGivenValue(tableColumns);
 		tableReceipt.innerHTML+="<tr><td>Transaction Amount</td><td style=\"text-align:left\" colspan=\"2\"><u>"+beautifyNominal(summaryPrice)+"</u></td></tr>";
 		tableReceipt.innerHTML+="<tr><td style=\"text-align:center\" colspan=\"7\"><h3>Products</h3></td></tr>";
 		tableReceipt.innerHTML+=tbody.innerHTML;
@@ -207,17 +210,19 @@
 				requestObject,
 				function(entities) {
 					for (let i = 0; i < entities.length; i++) {
-						let entity = entities[i];
-						let option = document.createElement("option");
-						option.value = entity["id"];
-						option.innerHTML = entity["name"];
-						option.onclick = function() {
-							inputSupplierField.value = option.innerHTML;
-							_byId("supplier-name").innerHTML = entity.name;
-							_byId("supplier-address").innerHTML = entity.address;
-							_byId("supplier-contact").innerHTML = entity.contact;
-							currentSupplier = entity;
-						}
+						const entity = entities[i];
+						const option = createHtmlTag({
+							tagName: 'option',
+							value: entity["id"],
+							innerHTML:  entity["name"],
+							onclick :  function() {
+								inputSupplierField.value = option.innerHTML;
+								_byId("supplier-name").innerHTML = entity.name;
+								_byId("supplier-address").innerHTML = entity.address;
+								_byId("supplier-contact").innerHTML = entity.contact;
+								currentSupplier = entity;
+							}
+						});
 						supplierListDropDown.append(option);
 					}
 				});
@@ -238,13 +243,15 @@
 		loadEntityList("<spring:url value="/api/entity/get" />", requestObject,
 				function(entities) {
 					for (let i = 0; i < entities.length; i++) {
-						let entity = entities[i];
-						let option = document.createElement("option");
-						option.value = entity["id"];
-						option.innerHTML = entity["name"];
-						option.onclick = function() {
-							setCurrentProduct(entity);
-						}
+						const entity = entities[i];
+						const option = createHtmlTag({
+							tagName: 'option',
+							id:  entity["id"],
+							innerHTML : entity['name'],
+							onclick : function() {
+								setCurrentProduct(entity);
+							}  
+						}); 
 						productListDropDown.append(option);
 					}
 				});
@@ -252,9 +259,9 @@
 
 	/***COMPONENT OPERATION***/
 
-	var priceField = _byId("product-price");
-	var quantityField = _byId("product-quantity");
-	var expiryDateField = _byId("product-exp-date");
+	const priceField = _byId("product-price");
+	const quantityField = _byId("product-quantity");
+	const expiryDateField = _byId("product-exp-date");
 
 	function addToChart() {
 		if (currentProduct == null) {
@@ -267,7 +274,7 @@
 			ID = currentProductFlow.id;
 			removeFromProductFlowsById(ID);
 		}
-		let productFlow = {
+		const productFlow = {
 			"id" : ID,
 			"product" : currentProduct,
 			"price" : currentProduct.price,
@@ -285,25 +292,22 @@
 	}
 
 	function clearProduct() {
-		inputProductField.value = "";
-		_byId("unit-name").innerHTML = "";
-		_byId("product-dropdown").innerHTML = "";
-		priceField.value = "";
-		quantityField.value = "";
-		expiryDateField.value = "";
+		clearElement(inputProductField, priceField, quantityField, expiryDateField);
+		clearElement("unit-name", "product-dropdown", "current-price"); 
 	}
 
 	function setCurrentProduct(entity) {
 		inputProductField.value = entity.name;
 		_byId("unit-name").innerHTML = entity.unit.name;
+		_byId("current-price").innerHTML = beautifyNominal(entity.price);
 		currentProduct = entity;
 
 	}
 
 	function removeFromProductFlowsById(ID) {
 		productFlowTable.innerHTML = "";
-		for (let i = 0; i < productFlows.length; i++) {
-			let productFlow = productFlows[i];
+		for (var i = 0; i < productFlows.length; i++) {
+			const productFlow = productFlows[i];
 			if (productFlow.id == ID)
 				productFlows.splice(i, 1);
 		}
@@ -323,18 +327,17 @@
 			row.append(createCell(beautifyNominal(productFlow.price)));
 
 			const optionCell = createCell("");
-			const btnEdit = createButton("edit-" + productFlow.id, "edit"); 
-			const btnDelete = createButton("delete-" + productFlow.id, "delete");
-			btnEdit.onclick = function() {
+			const btnEdit = createButton("edit-" + productFlow.id, "edit", function() {
 				setCurrentProductFlow(productFlow);
-			}
-			btnDelete.onclick = function() {
+			}); 
+			const btnDelete = createButton("delete-" + productFlow.id, "delete", function() {
 				if (!confirm("Are you sure wnat to delete?")) {
 					return;
 				}
 				productFlows.splice(i, 1);
 				populateProductFlow(productFlows);
-			};
+			});
+			  
 			optionCell.append(btnEdit);
 			optionCell.append(btnDelete);
 			row.append(optionCell);
@@ -357,7 +360,7 @@
 <c:if test="${requestCode != null }">
 	<script type="text/javascript">
 		var requestTransactionCode = "${requestCode}";
-		var requestObject = {
+		const requestObject = {
 			    "entity": "transaction",
 			    "filter": {
 			        "limit": 1,
