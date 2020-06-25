@@ -104,6 +104,8 @@
 	</div>
 </div>
 <script type="text/javascript">
+	ENTITY_GET_URL = "<spring:url value="/api/entity/get" />";
+
 	var productFlows = new Array();
 	var currentProductFlow;
 	var currentProduct;
@@ -120,6 +122,11 @@
 		if (!confirm("Are You Ready To Submit Transaction?"))
 			return;
 
+		if(!currentSupplier){
+			alert("Supplier is not defined!");
+			return;
+		}
+		
 		var requestObject = {
 			"supplier" : currentSupplier,
 			"productFlows" : productFlows
@@ -171,13 +178,13 @@
 	}
 	
 	function populateProductFlowDetail(entities,detailFields){
-		var tableColumns = [];
+		const tableColumns = [];
 		tableColumns.push(detailFields);
 		var summaryPrice = 0;
 		for (let i = 0; i < entities.length; i++) {
-			let productFlow = entities[i];
-			let totalPrice = productFlow.count*1 * productFlow.price*1;
-			let columns = [
+			const productFlow = entities[i];
+			const totalPrice = productFlow.count*1 * productFlow.price*1;
+			const columns = [
 				i+1,
 				productFlow.product.name, productFlow.id, productFlow.expiryDate, productFlow.count,
 				productFlow.product.unit.name, productFlow.price, totalPrice
@@ -185,47 +192,28 @@
 			summaryPrice += totalPrice;
 			tableColumns.push(columns);
 		}
-		const tbody  = createTBodyWithGivenValue(tableColumns);
-		tableReceipt.innerHTML+="<tr><td>Transaction Amount</td><td style=\"text-align:left\" colspan=\"2\"><u>"+beautifyNominal(summaryPrice)+"</u></td></tr>";
-		tableReceipt.innerHTML+="<tr><td style=\"text-align:center\" colspan=\"7\"><h3>Products</h3></td></tr>";
-		tableReceipt.innerHTML+=tbody.innerHTML;
-		tableReceipt.innerHTML+="<tr><td style=\"text-align:right\" colspan=\"7\">Total : "+beautifyNominal(summaryPrice)+"</td></tr>";
+		const tbody  = createTBodyWithGivenValue(tableColumns);  
 		
-	}
+		clearElement(tableReceipt);
+		tableReceipt.appendChild(receiptHeaderRow(summaryPrice));
+		tableReceipt.appendChild(receiptHeaderRow2());
+		tableReceipt.appendChild(tbody);
+		tableReceipt.appendChild(receiptFooterRow(summaryPrice));
+		
+	} 
 	
 	function loadSupplierList() {
-		supplierListDropDown.innerHTML = "";
-		var requestObject = {
-			"entity" : "supplier",
-			"filter" : {
-				"page" : 0,
-				"limit" : 10
-			}
-		};
-		requestObject.filter.fieldsFilter = {};
-		requestObject.filter.fieldsFilter["name"] = inputSupplierField.value;
-
-		loadEntityList(
-				"<spring:url value="/api/entity/get" />",
-				requestObject,
-				function(entities) {
-					for (let i = 0; i < entities.length; i++) {
-						const entity = entities[i];
-						const option = createHtmlTag({
-							tagName: 'option',
-							value: entity["id"],
-							innerHTML:  entity["name"],
-							onclick :  function() {
-								inputSupplierField.value = option.innerHTML;
-								_byId("supplier-name").innerHTML = entity.name;
-								_byId("supplier-address").innerHTML = entity.address;
-								_byId("supplier-contact").innerHTML = entity.contact;
-								currentSupplier = entity;
-							}
-						});
-						supplierListDropDown.append(option);
-					}
-				});
+		 
+		const filterValue = inputSupplierField.value; 
+		
+		loadStakeHolderList(supplierListDropDown, 'supplier', 'name', filterValue, 
+				function(entity) {
+					inputSupplierField.value = entity.name;
+					_byId("supplier-name").innerHTML = entity.name;
+					_byId("supplier-address").innerHTML = entity.address;
+					_byId("supplier-contact").innerHTML = entity.contact;
+					currentSupplier = entity;
+		});
 	}
 
 	function loadPrductList() {
@@ -234,11 +222,12 @@
 			"entity" : "product",
 			"filter" : {
 				"page" : 0,
-				"limit" : 10
+				"limit" : 10,
+				"fieldsFilter": {
+					"name": inputProductField.value
+				}
 			}
-		};
-		requestObject.filter.fieldsFilter = {};
-		requestObject.filter.fieldsFilter["name"] = inputProductField.value;
+		}; 
 
 		loadEntityList("<spring:url value="/api/entity/get" />", requestObject,
 				function(entities) {
@@ -306,10 +295,10 @@
 
 	function removeFromProductFlowsById(ID) {
 		productFlowTable.innerHTML = "";
-		for (var i = 0; i < productFlows.length; i++) {
+		for (var i = 0; i < this.productFlows.length; i++) {
 			const productFlow = productFlows[i];
 			if (productFlow.id == ID)
-				productFlows.splice(i, 1);
+				this.productFlows.splice(i, 1);
 		}
 	}
 

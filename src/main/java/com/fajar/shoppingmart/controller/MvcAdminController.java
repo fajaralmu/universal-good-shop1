@@ -171,6 +171,7 @@ public class MvcAdminController extends BaseController {
 		model.addAttribute("title", "Shop::Supply");
 		model.addAttribute("pageUrl", "shop/transaction-in-page");
 		model.addAttribute("page", "transaction");
+		addJavaScriptResourcePaths(model, "transaction");
 		return basePage;
 	}
 
@@ -188,6 +189,7 @@ public class MvcAdminController extends BaseController {
 		model.addAttribute("title", "Shop::Purchase");
 		model.addAttribute("pageUrl", "shop/transaction-out-page");
 		model.addAttribute("page", "transaction");
+		addJavaScriptResourcePaths(model, "transaction");
 		return basePage;
 	}
 

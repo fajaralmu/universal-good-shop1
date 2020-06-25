@@ -6,116 +6,125 @@
 <div class="content">
 	<div id="content-receipt" style="display: none">
 		<h2>Receipt</h2>
-		
-		<table id="table-receipt" style="layout: fixed" class="table">
-			
-		</table>	
-		<button id="btn-close-receipt" class="btn btn-secondary" onclick="hide('content-receipt'); show('content-form')"
-		 >Ok</button>
-		 <button id="btn-print-receipt" class="btn btn-secondary" >Print</button>
-	</div>
-	<div id="content-form">	
-			<h2>Purchasing</h2>
-			<table style="layout: fixed" class="table">
-				<tr>
-					<td>
-						<div class="form">
-							<p>Stock ID</p>
-								<input  type="number" class="form-control"
-									id="stock-id"  required="required" />
-									<button id="search-stock" onclick ="stockInfo()">OK</button>
-							<p>Or Put ProductName</p>
-							<input id="input-product" type="text" onkeyup="loadPrductList()"
-								class="form-control" /> <br /> <select style="width: 300px"
-								id="product-dropdown" class="form-control" multiple="multiple">
-							</select>
-							<hr>
-							<p>Product Detail</p>
-							<div class="panel">
-								<p>
-									Unit :<span id="unit-name"></span>
-								</p>
-								
-								<p>Stock</p>
-								<input disabled="disabled" type="number" class="form-control"
-									id="stock-quantity" required="required" />
-								<p>Product Quantity</p>
-								<input type="number" class="form-control" id="product-quantity"
-									required="required" />
-								<p>Price @Unit</p>
-								<input disabled="disabled"  class="form-control"
-									id="product-price" required="required" />
-								<p>Expiry Date</p>
-								<input disabled="disabled" type="date" class="form-control"
-									id="product-exp-date" />
-								<p></p>
-								<button class="btn btn-submit" id="add-product" onclick="addToChart()">Add</button>
-							</div>
-						</div>
-					</td>
-					<td>
-						<div class="form">
-							<p>Customer Name</p>
-							<input id="input-customer" type="text"
-								onkeyup="loadCustomerList()" class="form-control" /> <br /> <select
-								style="width: 200px" id="customer-dropdown" class="form-control"
-								multiple="multiple">
-							</select>
-							<hr>
-							<p>Customer Detail</p>
-							<div class="panel">
-								<h3 id="customer-name"></h3>
-								<p id="customer-address"></p>
-								<p id="customer-contact"></p>
-							</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-				</tr>
-			</table>
-			<div>
-				<p>Total Price</p>
-				<input type="number" id="total-price-label" disabled="disabled" class="form-control"/>
-				<p>Purchase Price</p>
-				<input type="number" required="required" id="purchase-price" onkeyup="calculateChange()" class="form-control" />
-				<p>Change</p>
-				<input type="number" id="total-change-label" disabled="disabled" class="form-control"/>
-			</div>
-			<div>
-				<button class="btn btn-primary"  id="btn-send" onclick="send()">Submit Transaction</button>
-			</div>
-			<table class="table">
-				<thead>
-					<tr>
-						<th>No</th>
-						<th>Flow ID</th>
-						<th>Product Name</th>
-						<th>Expiry Date</th>
-						<th>Quantity</th>
-						<th>Price @Item</th>
-						<th>Reff Stock ID</th>
-						<th>Option</th>
-					</tr>
-					<tr>
-						<th> </th>
-						<th> </th>
-						<th> </th>
-						<th> </th>
-						<th> </th>
-						<th>Total:<span id="total-price"></span> </th>
-						<th></th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody id="product-flows">
 
-				</tbody>
-			</table>
+		<table id="table-receipt" style="layout: fixed" class="table">
+
+		</table>
+		<button id="btn-close-receipt" class="btn btn-secondary"
+			onclick="hide('content-receipt'); show('content-form')">Ok</button>
+		<button id="btn-print-receipt" class="btn btn-secondary">Print</button>
+	</div>
+	<div id="content-form">
+		<h2>Purchasing</h2>
+		<table style="layout: fixed" class="table">
+			<tr>
+				<td>
+					<div class="form">
+						<p>Stock ID</p>
+						<input type="number" class="form-control" id="stock-id"
+							required="required" />
+						<button id="search-stock" onclick="stockInfo()">OK</button>
+						<p>Or Put ProductName</p>
+						<input id="input-product" type="text" onkeyup="loadPrductList()"
+							class="form-control" /> <br /> <select style="width: 300px"
+							id="product-dropdown" class="form-control" multiple="multiple">
+						</select>
+						<hr>
+						<p>Product Detail</p>
+						<div class="panel">
+							<p>
+								Unit :<span id="unit-name"></span>
+							</p>
+
+							<p>Stock</p>
+							<input disabled="disabled" type="number" class="form-control"
+								id="stock-quantity" required="required" />
+							<p>Product Quantity</p>
+							<input type="number" class="form-control" id="product-quantity"
+								required="required" />
+							<p>Price @Unit</p>
+							<input disabled="disabled" class="form-control"
+								id="product-price" required="required" />
+							<p>Expiry Date</p>
+							<input disabled="disabled" type="date" class="form-control"
+								id="product-exp-date" />
+							<p></p>
+							<button class="btn btn-submit" id="add-product"
+								onclick="addToChart()">Add</button>
+						</div>
+					</div>
+				</td>
+				<td>
+					<div class="form">
+						<p>Customer Name</p>
+						<input id="input-customer" type="text"
+							onkeyup="loadCustomerList()" class="form-control" /> <br /> <select
+							style="width: 200px" id="customer-dropdown" class="form-control"
+							multiple="multiple">
+						</select>
+						<hr>
+						<p>Customer Detail</p>
+						<div class="panel">
+							<h3 id="customer-name"></h3>
+							<p id="customer-address"></p>
+							<p id="customer-contact"></p>
+						</div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+			</tr>
+		</table>
+		<div>
+			<p>Total Price</p>
+			<input type="number" id="total-price-label" disabled="disabled"
+				class="form-control" />
+			<p>Purchase Price</p>
+			<input type="number" required="required" id="purchase-price"
+				onkeyup="calculateChange()" class="form-control" />
+			<p>Change</p>
+			<input type="number" id="total-change-label" disabled="disabled"
+				class="form-control" />
+		</div>
+		<div>
+			<button class="btn btn-primary" id="btn-send" onclick="send()">Submit
+				Transaction</button>
+		</div>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>No</th>
+					<th>Flow ID</th>
+					<th>Product Name</th>
+					<th>Expiry Date</th>
+					<th>Quantity</th>
+					<th>Price @Item</th>
+					<th>Reff Stock ID</th>
+					<th>Option</th>
+				</tr>
+				<tr>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th>Total:<span id="total-price"></span>
+					</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody id="product-flows">
+
+			</tbody>
+		</table>
 	</div>
 </div>
 
-	<script type="text/javascript">
+<script type="text/javascript">
+
+		ENTITY_GET_URL = "<spring:url value="/api/entity/get" />";
+
 		var productFlows = new Array();
 		var currentProductFlow;
 		var currentProduct;
@@ -198,48 +207,26 @@
 				tableColumns.push(columns);
 			}
 			const tbody  = createTBodyWithGivenValue(tableColumns);
-			tableReceipt.innerHTML+="<tr><td>Transaction Amount</td><td style=\"text-align:left\" colspan=\"2\"><u>"+beautifyNominal(summaryPrice)+"</u></td></tr>";
-			tableReceipt.innerHTML+="<tr><td style=\"text-align:center\" colspan=\"7\"><h3>Products</h3></td></tr>";
-			tableReceipt.innerHTML+=tbody.innerHTML;
-			tableReceipt.innerHTML+="<tr><td style=\"text-align:right\" colspan=\"7\">Total : "+beautifyNominal(summaryPrice)+"</td></tr>";
 			
+			clearElement(tableReceipt);
+			tableReceipt.appendChild(receiptHeaderRow(summaryPrice));
+			tableReceipt.appendChild(receiptHeaderRow2());
+			tableReceipt.appendChild(tbody);
+			tableReceipt.appendChild(receiptFooterRow(summaryPrice));
 		}
 		
 
 		function loadCustomerList() {
-			customerListDropDown.innerHTML = "";
-			const requestObject = {
-				"entity" : "customer",
-				"filter" : {
-					"page" : 0,
-					"limit" : 10
-				}
-			};
-			requestObject.filter.fieldsFilter = {};
-			requestObject.filter.fieldsFilter["name"] = inputCustomerField.value;
-
-			loadEntityList(
-					"<spring:url value="/api/entity/get" />",
-					requestObject,
-					function(entities) {
-						for (let i = 0; i < entities.length; i++) {
-							const entity = entities[i];
-							const option = createHtmlTag({
-								tagName: "option",
-								value: entity["id"], 
-								innerHTML : entity["name"]
-							});
-							
-							option.onclick = function() {
-								inputCustomerField.value = option.innerHTML;
-								_byId("customer-name").innerHTML = entity.name;
-								/* _byId("customer-address").innerHTML = entity.address;
-								_byId("customer-contact").innerHTML = entity.contact; */
-								currentCustomer = entity;
-							}
-							customerListDropDown.append(option);
-						}
-					});
+			const filterValue = inputCustomerField.value;
+			
+			loadStakeHolderList(customerListDropDown, 'customer', 'name', filterValue, 
+					function(entity) {
+							inputCustomerField.value = entity.name;
+							_byId("customer-name").innerHTML = entity.name;
+							/* _byId("customer-address").innerHTML = entity.address;
+							_byId("customer-contact").innerHTML = entity.contact; */
+							currentCustomer = entity;
+			}); 
 		}
 
 		function loadPrductList() {
@@ -253,15 +240,17 @@
 			loadEntityList("<spring:url value="/api/transaction/stocks" />",
 					requestObject, function(entities) {
 						for (let i = 0; i < entities.length; i++) {
-							let flowEntity = entities[i];
-							let entity = flowEntity.product;
-							let option = document.createElement("option");
-							option.value = entity["id"];
-							option.innerHTML = flowEntity.id + "-"
-									+ entity["name"];
-							option.onclick = function() {
-								setCurrentProduct(flowEntity, true);
-							}
+							const flowEntity = entities[i];
+							const entity = flowEntity.product;
+							const option = createHtmlTag({
+								tagName: 'option',
+								value: entity['id'],
+								innerHTML: flowEntity.id + "-" + entity["name"],
+								onclick : function() {
+									setCurrentProduct(flowEntity, true);
+								}
+							})
+							 
 							productListDropDown.append(option);
 						}
 					});
@@ -288,7 +277,7 @@
 				ID = currentProductFlow.id;
 				removeFromProductFlowsById(ID);
 			}
-			let productFlow = {
+			const productFlow = {
 				"id" : ID,
 				"product" : currentProduct,
 				"price" : currentProduct.price,
@@ -313,17 +302,8 @@
 		}
 
 		function clearProduct() {
-			inputProductField.value = "";
-			_byId("unit-name").innerHTML = "";
-			_byId("product-dropdown").innerHTML = "";
-			priceField.value = "";
-			quantityField.value = "";
-			inputQuantityField.value = "";
-			expiryDateField.value = "";
-			stockIdField.value = "";
-			//_byId("total-price-label").value = "";
-			_byId("total-change-label").value = "";
-			_byId("purchase-price").value = "";
+			clearElement(inputProductField, priceField, quantityField, inputQuantityField, expiryDateField, stockIdField);
+			clearElement("unit-name", "product-dropdown", "total-change-label", "purchase-price"); 
 		}
 
 		function setCurrentProduct(entity, loadNewStock) {
@@ -376,10 +356,10 @@
 
 		function removeFromProductFlowsById(ID) {
 			productFlowTable.innerHTML = "";
-			for (let i = 0; i < productFlows.length; i++) {
-				let productFlow = productFlows[i];
+			for (let i = 0; i < this.productFlows.length; i++) {
+				const productFlow = this.productFlows[i];
 				if (productFlow.id == ID)
-					productFlows.splice(i, 1);
+					this.productFlows.splice(i, 1);
 			}
 		}
 
@@ -387,8 +367,8 @@
 			productFlowTable.innerHTML = "";
 			let totalPrice = 0;
 			for (let i = 0; i < productFlows.length; i++) {
-				let productFlow = productFlows[i];
-				let row = document.createElement("tr");
+				const productFlow = productFlows[i];
+				const row = document.createElement("tr");
 				row.append(createCell((i * 1 + 1) + ""));
 				row.append(createCell(productFlow.id));
 				row.append(createCell(productFlow.product.name));
@@ -397,21 +377,19 @@
 				row.append(createCell(beautifyNominal(productFlow.price)));
 				row.append(createCell(productFlow.flowReferenceId));
 				
-				let optionCell = createCell("");
+				const optionCell = createCell("");
 				
-				let btnEdit = createButton("edit-" + productFlow.id, "edit");
-				let btnDelete = createButton("delete-" + productFlow.id,
-						"delete");
-				btnEdit.onclick = function() {
+				const btnEdit = createButton("edit-" + productFlow.id, "edit", function() {
 					setCurrentProductFlow(productFlow, true);
-				}
-				btnDelete.onclick = function() {
+				});
+				const btnDelete = createButton("delete-" + productFlow.id, "delete", function() {
 					if (!confirm("Are you sure wnat to delete?")) {
 						return;
 					}
 					productFlows.splice(i, 1);
 					populateProductFlow(productFlows);
-				};
+				});
+				 
 				optionCell.append(btnEdit);
 				optionCell.append(btnDelete);
 				row.append(optionCell);

@@ -23,6 +23,15 @@
 <script src="<c:url value="/res/js/websocket-util.js"></c:url >"></script>  
 <script src="<c:url value="/res/js/ajax.js?v=1"></c:url >"></script>
 <script src="<c:url value="/res/js/util.js?v=1"></c:url >"></script> 
+
+<c:forEach var="stylePath" items="${additionalStylePaths }">
+	<link rel="stylesheet" href="<c:url value="/res/css/pages/${ stylePath.value}.css?version=1"></c:url >" />
+</c:forEach>
+<c:forEach var="scriptPath" items="${additionalScriptPaths }">
+	<script src="<c:url value="/res/js/pages/${scriptPath.value }.js?v=1"></c:url >"></script> 
+</c:forEach>
+
+
 <style>
 	.container{
 		display: grid;

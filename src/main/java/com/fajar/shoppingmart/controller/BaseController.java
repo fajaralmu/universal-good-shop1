@@ -1,6 +1,7 @@
 package com.fajar.shoppingmart.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -12,8 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import com.fajar.shoppingmart.dto.KeyValue;
 import com.fajar.shoppingmart.entity.Page;
 import com.fajar.shoppingmart.entity.ShopProfile;
 import com.fajar.shoppingmart.entity.User;
@@ -169,5 +172,20 @@ public class BaseController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private static void addResourcePaths(Model model, String resourceName, String...paths) {
+		List<KeyValue> resoucePaths = new ArrayList<>();
+		for (int i = 0; i < paths.length; i++) {
+			resoucePaths.add(KeyValue.builder().value(paths[i]).build());
+		}
+		model.addAttribute(resourceName, resoucePaths);
+	}
+	
+	public static void addStylePaths(Model model, String...paths) {
+		addResourcePaths(model, "additionalStylePaths", paths);
+	}
+	public static void addJavaScriptResourcePaths(Model model, String...paths) {
+		addResourcePaths(model, "additionalScriptPaths", paths);
 	}
 }

@@ -413,7 +413,11 @@ function randomID(){
 	return index + "-" + string;
 }
 
-
+/**
+ * 
+ * @param rowList
+ * @returns <tbody>
+ */
 function createTBodyWithGivenValue(rowList){
 	const tbody = createElement("tbody",randomID(),null);
 	
