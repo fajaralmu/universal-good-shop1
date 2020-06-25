@@ -147,16 +147,15 @@
 	}
 
 	function showReceipt(transaction){
-		let tableColumns = [
+		const tableColumns = [
 			["Code", transaction.code,""],
 			["Date", new Date(transaction.transactionDate),""],
 			["Type", transaction.type,""],
 			["Supplier", transaction.supplier.name,""]
 		];
 		
-		let tbody  = createTBodyWithGivenValue(tableColumns);
-		tableReceipt.innerHTML = "";
-		tableReceipt.innerHTML = tbody.innerHTML;
+		const tbody  = createTBodyWithGivenValue(tableColumns);
+		tableReceipt.innerHTML = tbody.innerHTML; 
 		
 		var requestDetailFlows = {
 			    "entity": "productFlow",
@@ -168,38 +167,12 @@
 			            "transaction":transaction.code
 			        }
 			    }
-			};
-		var detailFields = ["NO","Product","ID","Expiry Date","Qty","Unit","Price","Total Price"];
+			}; 
 		
-		doGetDetail("<spring:url value="/api/entity/get" />",requestDetailFlows,detailFields, populateProductFlowDetail);
+		doGetDetail("<spring:url value="/api/entity/get" />",requestDetailFlows, populateReceiptProductDetail);
 		
 		show("content-receipt");
 		hide("content-form");
-	}
-	
-	function populateProductFlowDetail(entities,detailFields){
-		const tableColumns = [];
-		tableColumns.push(detailFields);
-		var summaryPrice = 0;
-		for (let i = 0; i < entities.length; i++) {
-			const productFlow = entities[i];
-			const totalPrice = productFlow.count*1 * productFlow.price*1;
-			const columns = [
-				i+1,
-				productFlow.product.name, productFlow.id, productFlow.expiryDate, productFlow.count,
-				productFlow.product.unit.name, productFlow.price, totalPrice
-				];
-			summaryPrice += totalPrice;
-			tableColumns.push(columns);
-		}
-		const tbody  = createTBodyWithGivenValue(tableColumns);  
-		
-		clearElement(tableReceipt);
-		tableReceipt.appendChild(receiptHeaderRow(summaryPrice));
-		tableReceipt.appendChild(receiptHeaderRow2());
-		tableReceipt.appendChild(tbody);
-		tableReceipt.appendChild(receiptFooterRow(summaryPrice));
-		
 	} 
 	
 	function loadSupplierList() {
@@ -294,39 +267,14 @@
 	}
  
 	function populateProductFlow(productFlows) {
-		productFlowTable.innerHTML = "";
-		var totalPrice = 0;
-		for (let i = 0; i < productFlows.length; i++) {
-			const productFlow = productFlows[i];
-			const row = document.createElement("tr");
+		doPopulateProductFlow(productFlows, function(i, productFlow, row){
 			row.append(createCell((i * 1 + 1) + ""));
 			row.append(createCell(productFlow.id));
 			row.append(createCell(productFlow.product.name));
 			row.append(createCell(productFlow.expiryDate));
 			row.append(createCell(productFlow.count));
 			row.append(createCell(beautifyNominal(productFlow.price)));
-
-			const optionCell = createCell("");
-			const btnEdit = createButton("edit-" + productFlow.id, "edit", function() {
-				setCurrentProductFlow(productFlow);
-			}); 
-			const btnDelete = createButton("delete-" + productFlow.id, "delete", function() {
-				if (!confirm("Are you sure wnat to delete?")) {
-					return;
-				}
-				productFlows.splice(i, 1);
-				populateProductFlow(productFlows);
-			});
-			  
-			optionCell.append(btnEdit);
-			optionCell.append(btnDelete);
-			row.append(optionCell);
-			productFlowTable.append(row);
-
-			totalPrice = totalPrice * 1
-					+ (productFlow.price * productFlow.count);
-		}
-		totalPriceLabel.innerHTML = beautifyNominal(totalPrice);
+		}); 
 	}
 
 	function setCurrentProductFlow(entity) {

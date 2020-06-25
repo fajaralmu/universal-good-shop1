@@ -90,9 +90,11 @@ function loadStakeHolderList(entityDropDown, entityName, entityFieldName, filter
 function removeFromProductFlowsById(ID) {
 	if(productFlows == null){
 		alert("productFlows is not defined!");
+		return;
 	}
 	if(productFlowTable == null){
 		alert("productFlowTable is not defined!");
+		return;
 	}
 	
 	productFlowTable.innerHTML = "";
@@ -101,4 +103,78 @@ function removeFromProductFlowsById(ID) {
 		if (productFlow.id == ID)
 			productFlows.splice(i, 1);
 	}
+}
+
+function containsNull(...objects){
+	for (var i = 0; i < objects.length; i++) {
+		if(null == objects[i]){
+			return true;
+		}
+	}
+	return false;
+}
+
+function doPopulateProductFlow(productFlows, rowCreationFunction) {
+	if(containsNull(productFlowTable, productFlows, totalPriceLabel)){
+		alert("One of variables: productFlowTable, productFlows, totalPriceLabel is null!!");
+		return;
+	}
+	
+	productFlowTable.innerHTML = "";
+	let totalPrice = 0;
+	for (let i = 0; i < productFlows.length; i++) {
+		const productFlow = productFlows[i];
+		const row = document.createElement("tr");
+		rowCreationFunction(index, productFlow, row); 
+		
+		const optionCell = createCell(""); 
+		const btnEdit = createButtonWarning("edit-" + productFlow.id, "edit", function() {
+			setCurrentProductFlow(productFlow);
+		});
+		const btnDelete = createButtonDanger("delete-" + productFlow.id, "delete", function() {
+			if (!confirm("Are you sure wnat to delete?")) {
+				return;
+			}
+			productFlows.splice(i, 1);
+			populateProductFlow(productFlows);
+		});
+		 
+		optionCell.append(btnEdit);
+		optionCell.append(btnDelete);
+		row.append(optionCell);
+		productFlowTable.append(row);
+
+		totalPrice = totalPrice*1+(productFlow.price * productFlow.count);
+
+	}
+
+	totalPriceLabel.innerHTML = beautifyNominal(totalPrice);
+//	_byId("total-price-label").value = totalPrice;
+}
+
+function populateReceiptProductDetail(entities){
+	const transaction = entities[0].transaction;
+	const tableColumns = [];
+	const detailFields = ["NO","Product","ID","Expiry Date","Qty","Unit","Price","Total Price"];
+	
+	tableColumns.push(detailFields);
+	var summaryPrice = 0;
+	for (let i = 0; i < entities.length; i++) {
+		const productFlow = entities[i];
+		const totalPrice = productFlow.count*1 * productFlow.price*1;
+		const columns = [
+			i+1,
+			productFlow.product.name, productFlow.id, productFlow.expiryDate, productFlow.count,
+			productFlow.product.unit.name, productFlow.price, totalPrice
+			];
+		summaryPrice += totalPrice;
+		tableColumns.push(columns);
+	}
+	const tbody  = createTBodyWithGivenValue(tableColumns);
+	
+	//clearElement(tableReceipt);
+	tableReceipt.appendChild(receiptHeaderRow(summaryPrice));
+	tableReceipt.appendChild(receiptHeaderRow2());
+	tableReceipt.appendChild(tbody);
+	tableReceipt.appendChild(receiptFooterRow(summaryPrice));
 }

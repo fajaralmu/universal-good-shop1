@@ -47,9 +47,20 @@ function createNavigationButton(id, html, callback){
 }
 
 function createButton(id, html, onclick){
-	return createHtmlTag({tagName:"button", innerHTML: html, id: id, onclick: onclick}); 
+	return createHtmlTag({tagName:"button", class: "btn btn-default", innerHTML: html, id: id, onclick: onclick}); 
 }
  
+function createButtonWarning(id, html, onclick){
+	const btn = createButton(id, html, onclick);
+	btn.setAttribute('class', 'btn btn-warning');
+	return btn;
+}
+
+function createButtonDanger(id, html, onclick){
+	const btn = createButton(id, html, onclick);
+	btn.setAttribute('class', 'btn btn-danger');
+	return btn;
+}
 
 function clearElement(...elements){
 	for (let i = 0; i < elements.length; i++) {

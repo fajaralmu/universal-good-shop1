@@ -754,7 +754,7 @@
 			
 			console.log("request more detail", requestObject);
 		 
-			doGetDetail("<spring:url value="/api/entity/get" />", requestObject,detailFields, function(entities,detailFields){
+			doGetDetail("<spring:url value="/api/entity/get" />", requestObject, function(entities){
 				const bodyRows = createTableBody(detailFields, entities, this.currentDetailOffset*5);
 				 
 				for (var i = 0; i < bodyRows.length; i++) {
@@ -788,7 +788,9 @@
 		console.log("request", requestObject);
 		detailTable.innerHTML = "";
 
-		doGetDetail("<spring:url value="/api/entity/get" />", requestObject, detailFields, populateDetailModal);
+		doGetDetail("<spring:url value="/api/entity/get" />", requestObject, function(entities){
+			populateDetailModal(entities, detailFields);
+		});
 		
 	}
 	

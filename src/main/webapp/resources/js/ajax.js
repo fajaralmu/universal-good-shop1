@@ -112,7 +112,7 @@ function doSubmit(url, requestObject, callback){
 			});
 }
 
-function doGetDetail(url,requestObject,detailFields, callback){
+function doGetDetail(url,requestObject, callback){
 	postReq(
 			url,
 			requestObject,
@@ -120,7 +120,7 @@ function doGetDetail(url,requestObject,detailFields, callback){
 				var response = (xhr.data);
 				var entities = response.entities;
 				if (entities != null && entities[0] != null) {
-					callback(entities,detailFields);
+					callback(entities);
 				} else {
 					alert("data not found");
 				}
