@@ -352,16 +352,7 @@
 								alert("server error");
 							}
 						});
-		}
-
-		function removeFromProductFlowsById(ID) {
-			productFlowTable.innerHTML = "";
-			for (let i = 0; i < this.productFlows.length; i++) {
-				const productFlow = this.productFlows[i];
-				if (productFlow.id == ID)
-					this.productFlows.splice(i, 1);
-			}
-		}
+		} 
 
 		function populateProductFlow(productFlows) {
 			productFlowTable.innerHTML = "";

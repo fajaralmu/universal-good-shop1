@@ -78,11 +78,27 @@ function loadStakeHolderList(entityDropDown, entityName, entityFieldName, filter
 						tagName: 'option',
 						value: entity["id"],
 						innerHTML:  entity[entityFieldName],
-						onclick :  function(entity) {
+						onclick :  function() {
 							onOptionClick(entity);
 						}
 					});
 					entityDropDown.append(option);
 				}
 			});
+}
+
+function removeFromProductFlowsById(ID) {
+	if(productFlows == null){
+		alert("productFlows is not defined!");
+	}
+	if(productFlowTable == null){
+		alert("productFlowTable is not defined!");
+	}
+	
+	productFlowTable.innerHTML = "";
+	for (let i = 0; i < productFlows.length; i++) {
+		const productFlow = productFlows[i];
+		if (productFlow.id == ID)
+			productFlows.splice(i, 1);
+	}
 }
