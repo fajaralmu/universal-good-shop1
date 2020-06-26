@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SessionData implements Remote, Serializable{
+public class SessionData implements Serializable{
 
 	/**
 	 * 

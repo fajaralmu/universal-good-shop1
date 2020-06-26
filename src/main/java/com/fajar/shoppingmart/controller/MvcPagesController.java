@@ -13,44 +13,40 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.shoppingmart.entity.Page;
 import com.fajar.shoppingmart.service.LogProxyFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping("webmart")
 @Slf4j
-public class MvcPagesController extends BaseController{  
-	
+public class MvcPagesController extends BaseController {
+
 	public MvcPagesController() {
 		log.info("---------------------------Mvc Pages Controller------------------------------");
 	}
-	
+
 	@PostConstruct
 	public void init() {
-		ObjectMapper dd;
+
 		basePage = webAppConfiguration.getBasePage();
 		LogProxyFactory.setLoggers(this);
 	}
- 
-	 
+
 	@RequestMapping(value = { "/page/{code}" })
-	public String suppliers(@PathVariable(name = "code") String code,  Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-		
+	public String suppliers(@PathVariable(name = "code") String code, Model model, HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+
 		Page page = componentService.getPage(code, request);
-		
-		if(null == page) {
+
+		if (null == page) {
 			sendRedirect(response, request.getContextPath() + "/account/login");
 			return basePage;
 		}
 		setActivePage(request);
 		model.addAttribute("pageUrl", "shop/master-common-page");
-		model.addAttribute("page", page); 
+		model.addAttribute("page", page);
 		return basePage;
 
 	}
-	
-	
-	
 
 }

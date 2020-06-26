@@ -54,14 +54,14 @@ public class RestTransactionController extends BaseController{
 		return response;
 	}
 	
-	@PostMapping(value = "/purchase", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse purchase(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
-		log.info("purchase {}", request);
-	 
-		WebResponse response = transactionService.addPurchaseTransaction(request, httpRequest,httpRequest.getHeader("requestId"));
-		return response;
-	}
+//	@PostMapping(value = "/purchase", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//	public WebResponse purchase(@RequestBody WebRequest request, HttpServletRequest httpRequest,
+//			HttpServletResponse httpResponse) throws IOException {
+//		log.info("purchase {}", request);
+//	 
+//		WebResponse response = transactionService.addPurchaseTransaction(request, httpRequest,httpRequest.getHeader("requestId"));
+//		return response;
+//	}
 	
 	@PostMapping(value = "/purchasev2", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse purchasev2(@RequestBody WebRequest request, HttpServletRequest httpRequest,

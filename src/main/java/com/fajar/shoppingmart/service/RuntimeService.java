@@ -1,10 +1,11 @@
 package com.fajar.shoppingmart.service;
 
-import java.rmi.Remote;
+import static com.fajar.shoppingmart.util.SessionUtil.PAGE_REQUEST;
+
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
@@ -13,8 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.controller.BaseController;
-import com.fajar.shoppingmart.dto.RegistryModel;
 import com.fajar.shoppingmart.dto.SessionData;
+import com.fajar.shoppingmart.dto.UserSessionModel;
+import com.fajar.shoppingmart.util.SessionUtil;
+import com.fajar.shoppingmart.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,15 +25,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RuntimeService {
 
-	public static final String PAGE_REQUEST = "page_req_id";
-
-	public static final String PAGE_REQUEST_ID = "requestId";
-
-	public static final String JSESSSIONID = "JSESSIONID";
+//	public static final String PAGE_REQUEST = "page_req_id";
+//
+//	public static final String PAGE_REQUEST_ID = "requestId";
+//
+//	public static final String JSESSSIONID = "JSESSIONID";
 
 //	@Autowired
 //	private Registry registry;
-	private final Map<String, Remote> registry = new LinkedHashMap<>();
+	private final Map<String, Serializable> SESSION_MAP = new LinkedHashMap<>();
 
 	@PostConstruct
 	public void init() {
@@ -39,21 +42,20 @@ public class RuntimeService {
 	}
 
 	/**
-	 * get remote object
+	 * 
 	 * 
 	 * @param <T>
 	 * @param key
 	 * @return
 	 */
-	public <T extends Remote> T getModel(String key) {
+	public <T extends Serializable> T getModel(String key) {
 		try {
-			Remote object = registry.get(key);
-			T finalObj = (T) object;
+			Serializable serializable = SESSION_MAP.get(key);
+			T finalObj = (T) serializable;
+			
 			log.info("==registry model: " + finalObj);
 			return finalObj;
-//		} catch (RemoteException | NotBoundException e) {
-//			log.info("key not bound");
-//			return null;
+			
 		} catch (Exception ex) {
 			log.info("Unexpected error");
 			ex.printStackTrace();
@@ -61,25 +63,15 @@ public class RuntimeService {
 		}
 	}
 
-	/**
-	 * set registry remote object
-	 * 
+	/**  
 	 * @param key
 	 * @param registryModel
 	 * @return
 	 */
-	public boolean set(String key, Remote registryModel) {
-		try {
-//			if (getModel(key) == null) {
-				registry.put(key, registryModel);
-//			} else {
-//				registry.rebind(key, registryModel);
-//			}
-			return true;
-//		} catch (RemoteException e) {
-//			e.printStackTrace();
-//		} catch (AlreadyBoundException e) {
-//			e.printStackTrace();
+	public boolean set(String key, Serializable registryModel) {
+		try { 
+			SESSION_MAP.put(key, registryModel); 
+			return true; 
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -87,85 +79,89 @@ public class RuntimeService {
 	}
 
 	/**
-	 * unbind remote object
-	 * 
 	 * @param key
 	 * @return
 	 */
-	public boolean unbind(String key) {
+	public boolean remove(String key) {
 		try {
-			registry.remove(key);
-			return true;
-//		} catch (RemoteException | NotBoundException e) {
-//			e.printStackTrace();
-		}catch (Exception e) {
+			SESSION_MAP.remove(key);
+			return true; 
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		return false;
 
 	}
 
-	/**
-	 * register new page request to request list
-	 * 
-	 * @param cookie
+	/**  
+	 * @param value
 	 * @return
 	 */
-	public String addPageRequest(String cookie) {
-		String pageRequestId = UUID.randomUUID().toString();
-		
+	public String addPageRequest(String value) {
+		String pageRequestId = generateIdKey();
+
+		UserSessionModel model;
 		if (getModel(PAGE_REQUEST) != null) {
-			
-			RegistryModel model = (RegistryModel) getModel(PAGE_REQUEST);
-			model.getTokens().put(pageRequestId, cookie);
-			
-			if (set(PAGE_REQUEST, model)) {
-				return pageRequestId;
-			}
 
-		} else { 
-			 
-				RegistryModel	model = new  RegistryModel();
-				model.setTokens(new HashMap<String, Object>() {{put(pageRequestId, cookie);}});  
-				
-				if (set(PAGE_REQUEST, model)) {
-					return pageRequestId;
-				} 
+			model = (UserSessionModel) getModel(PAGE_REQUEST);
+			model.getTokens().put(pageRequestId, value); 
+
+		} else {
+
+			model = new UserSessionModel();
+			model.setTokens(new HashMap<String, Object>() {
+				{
+					put(pageRequestId, value);
+				}
+			}); 
 		}
-		return null;
+		if (set(PAGE_REQUEST, model)) {
+			return pageRequestId;
+		}else {
+			return null;
+		}
 
+	}
+
+	private String generateIdKey() {
+
+		return StringUtil.generateRandomNumber(15);
 	}
 
 	/**
 	 * check page request against cookie jsessionID
 	 * 
-	 * @param req
+	 * @param httpServletRequest
 	 * @return
 	 */
-	public boolean validatePageRequest(HttpServletRequest req) {
+	public boolean validatePageRequest(HttpServletRequest httpServletRequest) {
 		log.info("Will validate page request");
+		
 		try {
-			RegistryModel model = (RegistryModel) getModel(PAGE_REQUEST);
+			UserSessionModel model = (UserSessionModel) getModel(PAGE_REQUEST);
 
 			if (null == model) {
 				return false;
 			}
 
-			Cookie jsessionCookie = BaseController.getCookie(JSESSSIONID, req.getCookies());
-			String pageRequestId = req.getHeader(PAGE_REQUEST_ID);
+			Cookie jsessionCookie = BaseController.getCookie(SessionUtil.JSESSSIONID, httpServletRequest.getCookies());
+			String pageRequestId = SessionUtil.getPageRequestId(httpServletRequest);  
+			
 			boolean exist = model.getTokens().get(pageRequestId) != null;
+			
 			if (exist) {
-				String reuqestIdValue = (String) model.getTokens().get(pageRequestId);
+				String requestIdValue = (String) model.getTokens().get(pageRequestId); 
+				
+				boolean requestIdMatchCookie = requestIdValue.equals(jsessionCookie.getValue());
 
-				log.info(" . . . . . Request ID value: " + reuqestIdValue + " vs JSessionId: "
-						+ jsessionCookie.getValue());
-
-				return reuqestIdValue.equals(jsessionCookie.getValue());
+				log.info(" Request ID value: {} vs JSessionId: {}",  requestIdValue + jsessionCookie.getValue());
+				log.info("requestIdMatchCookie: {}", requestIdMatchCookie);
+				
+				return requestIdMatchCookie;
 			} else {
 				log.info("x x x x Request ID not found x x x x");
-			}
-
-			return false;
+				return false;
+			} 
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return false;

@@ -29,11 +29,13 @@ import com.fajar.shoppingmart.service.UserSessionService;
 import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.util.DateUtil;
 import com.fajar.shoppingmart.util.MvcUtil;
-@Controller 
+import com.fajar.shoppingmart.util.SessionUtil;
+
+@Controller
 public class BaseController {
-	
+
 	protected String basePage;
-	
+
 	@Autowired
 	protected WebConfigService webAppConfiguration;
 	@Autowired
@@ -41,7 +43,7 @@ public class BaseController {
 	@Autowired
 	protected UserAccountService accountService;
 	@Autowired
-	protected RuntimeService registryService; 
+	protected RuntimeService registryService;
 	@Autowired
 	protected UserSessionService userService;
 	@Autowired
@@ -49,123 +51,123 @@ public class BaseController {
 	@Autowired
 	protected ProductService productService;
 	@Autowired
-	protected ComponentService componentService; 
- 
-
+	protected ComponentService componentService;
 
 	@ModelAttribute("shopProfile")
 	public ShopProfile getProfile(HttpServletRequest request) {
 //		System.out.println("Has Session: "+userSessionService.hasSession(request, false));
 		return webAppConfiguration.getProfile();
 	}
-	
+
 	@ModelAttribute("timeGreeting")
 	public String timeGreeting(HttpServletRequest request) {
 		return DateUtil.getTimeGreeting();
 	}
-	
+
 	@ModelAttribute("loggedUser")
 	public User getLoggedUser(HttpServletRequest request) {
-		if(userSessionService.hasSession(request, false)) {
+		if (userSessionService.hasSession(request, false)) {
 			return userSessionService.getUserFromSession(request);
-		}
-		else return null;
-	} 
-	
+		} else
+			return null;
+	}
+
 	@ModelAttribute("host")
 	public String getHost(HttpServletRequest request) {
 		return MvcUtil.getHost(request);
 	}
-	
+
 	@ModelAttribute("contextPath")
 	public String getContextPath(HttpServletRequest request) {
 		return request.getContextPath();
 	}
-	
+
 	@ModelAttribute("fullImagePath")
 	public String getFullImagePath(HttpServletRequest request) {
-		return getHost(request)+ getContextPath(request)+"/"+getUploadedImagePath(request)+"/";
+		return getHost(request) + getContextPath(request) + "/" + getUploadedImagePath(request) + "/";
 	}
-	
+
 	@ModelAttribute("imagePath")
 	public String getUploadedImagePath(HttpServletRequest request) {
 		return webAppConfiguration.getUploadedImagePath();
 	}
-	
+
 	@ModelAttribute("pageToken")
 	public String pageToken(HttpServletRequest request) {
-		  return userSessionService.getToken(request);
+		return userSessionService.getToken(request);
 	}
-	
+
 	@ModelAttribute("requestId")
 	public String getPublicRequestId(HttpServletRequest request) {
-		Cookie cookie = getCookie(RuntimeService.JSESSSIONID, request.getCookies());
-		String cookieValue = cookie == null ? UUID.randomUUID().toString():cookie.getValue();
-		return	registryService.addPageRequest(  cookieValue);
-		 
+		Cookie cookie = getCookie(SessionUtil.JSESSSIONID, request.getCookies());
+		String cookieValue = cookie == null ? UUID.randomUUID().toString() : cookie.getValue();
+		return registryService.addPageRequest(cookieValue);
+
 	}
-	
+
 	@ModelAttribute("registeredRequestId")
 	public String getRegisteredRequestId(HttpServletRequest request) {
-		try {
-			return (String) request.getSession().getAttribute(UserAccountService.ATTR_REGISTERED_REQUEST_ID);
-		}catch (Exception e) {
-			return "INVALID ARG";
-		}
+
+		return SessionUtil.getSessionRegisteredRequest(request);
 	}
-	
+
 	@ModelAttribute("pages")
-	public List<Page> pages(HttpServletRequest request){
-		
+	public List<Page> pages(HttpServletRequest request) {
+
 		return componentService.getPages(request);
 	}
-	
-	@ModelAttribute ("year")
+
+	@ModelAttribute("year")
 	public int getCurrentYear(HttpServletRequest request) {
 		return DateUtil.getCalendarItem(new Date(), Calendar.YEAR);
 	}
-	 
+
 	public String activePage(HttpServletRequest request) {
 		return userSessionService.getPageCode(request);
 	}
-	
-	public void setActivePage(HttpServletRequest request ) {
-		
+
+	public void setActivePage(HttpServletRequest request) {
+
 		String pageCode = componentService.getPageCode(request);
 		userSessionService.setActivePage(request, pageCode);
 	}
-	
+
 	/**
-	 * ======================================================
-	 * 				     	Statics
+	 * ====================================================== Statics
 	 * ======================================================
 	 * 
 	 */
-	
+
 	public static Cookie getCookie(String name, Cookie[] cookies) {
 		try {
 			for (Cookie cookie : cookies) {
-				if(cookie.getName().equals(name)) { return cookie; }
+				if (cookie.getName().equals(name)) {
+					return cookie;
+				}
 			}
-		}catch(Exception ex) { ex.printStackTrace(); }
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		return null;
 	}
-	
+
 	/**
 	 * send to login page URL
+	 * 
 	 * @param request
 	 * @param response
 	 */
 	public static void sendRedirectLogin(HttpServletRequest request, HttpServletResponse response) {
 		sendRedirect(response, request.getContextPath() + "/account/login");
 	}
-	
+
 	/**
 	 * send to specified URL
+	 * 
 	 * @param response
 	 * @param url
 	 */
-	public static void sendRedirect(HttpServletResponse response ,String url)  {
+	public static void sendRedirect(HttpServletResponse response, String url) {
 		try {
 			response.sendRedirect(url);
 		} catch (IOException e) {
@@ -173,19 +175,20 @@ public class BaseController {
 			e.printStackTrace();
 		}
 	}
-	
-	private static void addResourcePaths(Model model, String resourceName, String...paths) {
+
+	private static void addResourcePaths(Model model, String resourceName, String... paths) {
 		List<KeyValue> resoucePaths = new ArrayList<>();
 		for (int i = 0; i < paths.length; i++) {
 			resoucePaths.add(KeyValue.builder().value(paths[i]).build());
 		}
 		model.addAttribute(resourceName, resoucePaths);
 	}
-	
-	public static void addStylePaths(Model model, String...paths) {
+
+	public static void addStylePaths(Model model, String... paths) {
 		addResourcePaths(model, "additionalStylePaths", paths);
 	}
-	public static void addJavaScriptResourcePaths(Model model, String...paths) {
+
+	public static void addJavaScriptResourcePaths(Model model, String... paths) {
 		addResourcePaths(model, "additionalScriptPaths", paths);
 	}
 }

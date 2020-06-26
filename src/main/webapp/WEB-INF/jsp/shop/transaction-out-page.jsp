@@ -138,6 +138,8 @@
 		
 		var inputCustomerField = _byId("input-customer");
 		var customerListDropDown = _byId("customer-dropdown");
+		
+		
 		function send() {
 			if(!confirm("Are You Ready To Submit Transaction?"))
 				return;
@@ -145,7 +147,7 @@
 				"customer" : currentCustomer,
 				"productFlows" : productFlows
 			}
-			postReq("<spring:url value="/api/transaction/purchase" />",
+			postReq("<spring:url value="/api/transaction/purchasev2" />",
 					requestObject, function(xhr) {
 						var response = (xhr.data);
 						var code = response.code;

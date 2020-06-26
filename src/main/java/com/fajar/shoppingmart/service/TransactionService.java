@@ -304,6 +304,7 @@ public class TransactionService {
 	 * @param httpRequest
 	 * @return
 	 */
+	@Deprecated
 	public WebResponse addPurchaseTransaction(WebRequest request, HttpServletRequest httpRequest,
 			String requestId) {
 		
