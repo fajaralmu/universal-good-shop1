@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -32,7 +31,10 @@ import com.fajar.shoppingmart.util.DateUtil;
 import com.fajar.shoppingmart.util.MvcUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Controller
+@Slf4j
 public class BaseController {
 
 	protected String basePage;
@@ -181,8 +183,9 @@ public class BaseController {
 		List<KeyValue> resoucePaths = new ArrayList<>();
 		for (int i = 0; i < paths.length; i++) {
 			resoucePaths.add(KeyValue.builder().value(paths[i]).build());
+			log.info("{}. Add {} to {} , value: {}", i, resourceName, modelAndView.getViewName(), paths[i]);
 		}
-		modelAndView.addObject(resourceName, resoucePaths);
+		modelAndView.getModel().put(resourceName, resoucePaths);
 	}
 
 	public static void addStylePaths(ModelAndView modelAndView, String... paths) {

@@ -101,7 +101,8 @@ public class InterceptorProcessor {
 			// TODO: handle exception
 		}
 		try {
-			annotationObject = (T) handlerMethod.getBeanType().getAnnotation(annotation);
+			if(!found)
+				annotationObject = (T) handlerMethod.getBeanType().getAnnotation(annotation);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -154,9 +155,11 @@ public class InterceptorProcessor {
 	public void addResources(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler,
 			ModelAndView modelAndView) {
 		
+		log.debug("Add resourcePaths to WebPage");
 		ResourcePath resourcePath = getResoucePathAnnotation(handler);
 
 		if(null == resourcePath) {
+			log.debug("{} does not have resourcePath", request.getRequestURI());
 			return;
 		}
 		BaseController.addJavaScriptResourcePaths(modelAndView, resourcePath.scriptPaths());
