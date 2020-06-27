@@ -42,7 +42,11 @@ public class MyHandlerInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception { 
-
+		
+		if(null != modelAndView && handler instanceof HandlerMethod) {
+			interceptorProcessor.addResources(request, response, (HandlerMethod) handler, modelAndView);
+		}
+		
 		super.postHandle(request, response, handler, modelAndView); 
 	} 
 	

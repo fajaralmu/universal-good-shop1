@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.fajar.shoppingmart.dto.KeyValue;
 import com.fajar.shoppingmart.entity.Page;
@@ -171,24 +172,30 @@ public class BaseController {
 		try {
 			response.sendRedirect(url);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	}
 
-	private static void addResourcePaths(Model model, String resourceName, String... paths) {
+	private static void addResourcePaths(ModelAndView modelAndView, String resourceName, String... paths) {
 		List<KeyValue> resoucePaths = new ArrayList<>();
 		for (int i = 0; i < paths.length; i++) {
 			resoucePaths.add(KeyValue.builder().value(paths[i]).build());
 		}
-		model.addAttribute(resourceName, resoucePaths);
+		modelAndView.addObject(resourceName, resoucePaths);
 	}
 
-	public static void addStylePaths(Model model, String... paths) {
-		addResourcePaths(model, "additionalStylePaths", paths);
+	public static void addStylePaths(ModelAndView modelAndView, String... paths) {
+		if(null == paths) {
+			return;
+		}
+		addResourcePaths(modelAndView, "additionalStylePaths", paths);
 	}
 
-	public static void addJavaScriptResourcePaths(Model model, String... paths) {
-		addResourcePaths(model, "additionalScriptPaths", paths);
+	public static void addJavaScriptResourcePaths(ModelAndView modelAndView, String... paths) {
+		if(null == paths) {
+			return;
+		}
+		addResourcePaths(modelAndView, "additionalScriptPaths", paths);
 	}
 }

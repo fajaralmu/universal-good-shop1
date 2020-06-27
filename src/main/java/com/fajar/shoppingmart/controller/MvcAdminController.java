@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.shoppingmart.annotation.Authenticated;
+import com.fajar.shoppingmart.annotation.ResourcePath;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
@@ -158,6 +159,7 @@ public class MvcAdminController extends BaseController {
 //	}
 
 	@RequestMapping(value = { "/transaction/in", "/transaction/in/", "/transaction/in/{transactionCode}" })
+	@ResourcePath(scriptPaths = {"transaction"})
 	public String incomingTransaction(@PathVariable(required = false) String transactionCode, Model model,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -171,11 +173,12 @@ public class MvcAdminController extends BaseController {
 		model.addAttribute("title", "Shop::Supply");
 		model.addAttribute("pageUrl", "shop/transaction-in-page");
 		model.addAttribute("page", "transaction");
-		addJavaScriptResourcePaths(model, "transaction");
+	
 		return basePage;
 	}
 
 	@RequestMapping(value = { "/transaction/out", "/transaction/out/", "/transaction/out/{transactionCode}" })
+	@ResourcePath(scriptPaths = {"transaction"})
 	public String outTransaction(@PathVariable(required = false) String transactionCode, Model model,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -189,7 +192,7 @@ public class MvcAdminController extends BaseController {
 		model.addAttribute("title", "Shop::Purchase");
 		model.addAttribute("pageUrl", "shop/transaction-out-page");
 		model.addAttribute("page", "transaction");
-		addJavaScriptResourcePaths(model, "transaction");
+	
 		return basePage;
 	}
 
