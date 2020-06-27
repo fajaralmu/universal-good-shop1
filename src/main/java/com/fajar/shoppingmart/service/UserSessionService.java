@@ -134,12 +134,12 @@ public class UserSessionService {
 				log.error("==========USER NOT EQUALS==========");
 				throw new Exception();
 			}
-			log.info("USER HAS SESSION");
+			log.info("USER HAS SESSION, return true");
 			return true;
 
 		} catch (Exception ex) {
-			log.info("USER DOES NOT HAVE SESSION");
-			ex.printStackTrace();
+			log.info("USER DOES NOT HAVE SESSION, return FALSE");
+//			ex.printStackTrace();
 			return false;
 		}
 	}

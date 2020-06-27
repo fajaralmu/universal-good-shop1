@@ -156,6 +156,9 @@ public class InterceptorProcessor {
 		
 		ResourcePath resourcePath = getResoucePathAnnotation(handler);
 
+		if(null == resourcePath) {
+			return;
+		}
 		BaseController.addJavaScriptResourcePaths(modelAndView, resourcePath.scriptPaths());
 		BaseController.addStylePaths(modelAndView, resourcePath.stylePaths());
 		
