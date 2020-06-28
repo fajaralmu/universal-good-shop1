@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.shoppingmart.annotation.Authenticated;
+import com.fajar.shoppingmart.annotation.ResourcePath;
 import com.fajar.shoppingmart.entity.CapitalFlow;
 import com.fajar.shoppingmart.entity.CostFlow;
 import com.fajar.shoppingmart.entity.Menu;
@@ -143,8 +144,7 @@ public class MvcManagementController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/capitalflow" })
-	public String capitalflow(Model model, HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
+	public String capitalflow(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		if (!userService.hasSession(request)) {
 			sendRedirectLogin(request, response);
@@ -158,15 +158,18 @@ public class MvcManagementController extends BaseController {
 		}
 		HashMap<String, List<?>> listObject = new HashMap<String, List<?>>();
 		listObject.put("capital", CollectionUtil.convertList(entityService.getAllCapitalType()));
-			 
+
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(CapitalFlow.class, listObject);
 
 		model = constructCommonModel(request, entityProperty, model, "CapitalFlow", "management");
 		return basePage;
 	}
 
-	/** RESTRICTED ACCESS 
-	 * @throws Exception **/
+	/**
+	 * RESTRICTED ACCESS
+	 * 
+	 * @throws Exception
+	 **/
 
 	@RequestMapping(value = { "/messages" })
 	public String messages(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -272,6 +275,7 @@ public class MvcManagementController extends BaseController {
 	 */
 
 	@RequestMapping(value = { "/appsession" })
+	@ResourcePath(title = "Apps Sessions", pageUrl = "shop/app-session")
 	public String appsession(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
@@ -284,8 +288,7 @@ public class MvcManagementController extends BaseController {
 			e.printStackTrace();
 			return ERROR_404_PAGE;
 		}
-		model.addAttribute("title", "Apps Sessions");
-		model.addAttribute("pageUrl", "shop/app-session");
+
 		model.addAttribute("page", "management");
 		return basePage;
 	}

@@ -1,7 +1,6 @@
 package com.fajar.shoppingmart.dto;
 
 import java.io.Serializable;
-import java.rmi.Remote;
 import java.util.HashMap;
 import java.util.Map;
 

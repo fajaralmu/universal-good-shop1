@@ -11,5 +11,8 @@ public @interface ResourcePath {
 	
 	public String[] stylePaths() default {};
 	public String[] scriptPaths() default {};
+	public String pageUrl() default "";
+	public String title() default "";
+	
 
 }

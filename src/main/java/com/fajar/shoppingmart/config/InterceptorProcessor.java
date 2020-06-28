@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +35,7 @@ public class InterceptorProcessor {
 	@Autowired
 	private ObjectMapper objectMapper;
 	@Autowired
-	private org.springframework.context.ApplicationContext appContext;
+	private ApplicationContext appContext;
 	@Autowired
 	private UserAccountService userAccountService;
 
@@ -98,14 +99,13 @@ public class InterceptorProcessor {
 			annotationObject = (T) handlerMethod.getMethod().getAnnotation(annotation);
 			found = true;
 		} catch (Exception e) {
-			// TODO: handle exception
 		}
 		try {
-			if(!found)
+			if (!found)
 				annotationObject = (T) handlerMethod.getBeanType().getAnnotation(annotation);
 		} catch (Exception e) {
-			// TODO: handle exception
 		}
+
 		return annotationObject;
 	}
 
@@ -124,13 +124,12 @@ public class InterceptorProcessor {
 		try {
 			RequestMappingHandlerMapping req2HandlerMapping = (RequestMappingHandlerMapping) appContext
 					.getBean("org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping");
-			// Map<RequestMappingInfo, HandlerMethod> handlerMethods =
-			// req2HandlerMapping.getHandlerMethods();
+			
 			HandlerExecutionChain handlerExeChain = req2HandlerMapping.getHandler(request);
 			if (Objects.nonNull(handlerExeChain)) {
 				handlerMethod = (HandlerMethod) handlerExeChain.getHandler();
 
-				log.info("[handler method] {}", handlerMethod.getClass());
+				log.debug("[handler method] {}", handlerMethod.getClass());
 				return handlerMethod;
 			}
 		} catch (Exception e) {
@@ -154,17 +153,18 @@ public class InterceptorProcessor {
 
 	public void addResources(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler,
 			ModelAndView modelAndView) {
-		
+
 		log.debug("Add resourcePaths to WebPage");
 		ResourcePath resourcePath = getResoucePathAnnotation(handler);
 
-		if(null == resourcePath) {
+		if (null == resourcePath) {
 			log.debug("{} does not have resourcePath", request.getRequestURI());
 			return;
 		}
 		BaseController.addJavaScriptResourcePaths(modelAndView, resourcePath.scriptPaths());
 		BaseController.addStylePaths(modelAndView, resourcePath.stylePaths());
-		
-		
+		BaseController.addTitle(modelAndView, resourcePath.title());
+		BaseController.addPageUrl(modelAndView, resourcePath.pageUrl());
+
 	}
 }

@@ -185,7 +185,12 @@ public class BaseController {
 			resoucePaths.add(KeyValue.builder().value(paths[i]).build());
 			log.info("{}. Add {} to {} , value: {}", i, resourceName, modelAndView.getViewName(), paths[i]);
 		}
-		modelAndView.getModel().put(resourceName, resoucePaths);
+		setModelAttribute(modelAndView, resourceName, resoucePaths);
+	}
+	
+	private static void setModelAttribute(ModelAndView modelAndView, String attrName, Object attrValue) {
+		if(null == attrValue) { return ; }
+		modelAndView.getModel().put(attrName, attrValue);
 	}
 
 	public static void addStylePaths(ModelAndView modelAndView, String... paths) {
@@ -200,5 +205,14 @@ public class BaseController {
 			return;
 		}
 		addResourcePaths(modelAndView, "additionalScriptPaths", paths);
+	}
+
+	public static void addTitle(ModelAndView modelAndView, String title) {
+		setModelAttribute(modelAndView, "title", title);
+	}
+
+	public static void addPageUrl(ModelAndView modelAndView, String pageUrl) {
+		setModelAttribute(modelAndView, "pageUrl", pageUrl);
+		
 	}
 }
