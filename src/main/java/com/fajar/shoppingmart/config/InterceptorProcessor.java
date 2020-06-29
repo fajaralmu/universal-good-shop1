@@ -79,6 +79,21 @@ public class InterceptorProcessor {
 
 		return true;
 	}
+	
+	public static void main(String[] args) throws  Exception {
+	
+//		MvcManagementController controller = new MvcManagementController();
+//		Method method = controller.getClass().getMethod("commonPage", String.class, Model.class, HttpServletRequest.class, HttpServletResponse.class);
+//		method.setAccessible(true);
+//		HandlerMethod hm = new HandlerMethod(controller, method);
+//		
+//		InterceptorProcessor ip = new InterceptorProcessor();
+//		Authenticated annotation = ip.getAuthenticationAnnotation(hm);
+//		
+//		Class<?> _class = hm.getBeanType();
+//		Authenticated ano = _class.getAnnotation(Authenticated.class);
+//		log.info("annotation: {}", annotation);
+	}
 
 	private Authenticated getAuthenticationAnnotation(HandlerMethod handlerMethod) {
 
@@ -93,17 +108,28 @@ public class InterceptorProcessor {
 	}
 
 	private <T> T getHandlerAnnotation(HandlerMethod handlerMethod, Class annotation) {
+		log.debug("Get annotation: {}", annotation);
 		T annotationObject = null;
 		boolean found = false;
 		try {
+			//log.debug("handlerMethod.getMethod(): {}", handlerMethod.getMethod());
+			
 			annotationObject = (T) handlerMethod.getMethod().getAnnotation(annotation);
-			found = true;
+			found = annotationObject != null;
 		} catch (Exception e) {
+			
+			log.error("Error get annotation ({}) from method", annotation);
+			e.printStackTrace();
 		}
 		try {
-			if (!found)
+			if (!found) {
+				//log.debug("handlerMethod.getBeanType(): {}", handlerMethod.getBeanType());
 				annotationObject = (T) handlerMethod.getBeanType().getAnnotation(annotation);
+			}
 		} catch (Exception e) {
+			
+			log.error("Error get annotation ({}) from class", annotation);
+			e.printStackTrace();
 		}
 
 		return annotationObject;
