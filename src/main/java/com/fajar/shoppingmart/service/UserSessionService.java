@@ -377,7 +377,7 @@ public class UserSessionService {
 	 */
 	public WebResponse getAvailableSessions() {
 
-		List<BaseEntity> appSessions = getAvailableSessionList();
+		List<BaseEntity> appSessions = CollectionUtil.convertList(getAvailableSessionList());
 
 		for (BaseEntity appSession : appSessions) {
 			List<BaseEntity> messages = messagingService.getMessages(((RegisteredRequest) appSession).getRequestId());
@@ -386,7 +386,7 @@ public class UserSessionService {
 		return WebResponse.builder().code("00").entities(appSessions).build();
 	}
 
-	private List<BaseEntity> getAvailableSessionList() {
+	private List<RegisteredRequest> getAvailableSessionList() {
 		SessionData sessionData = registryService.getModel(SESSION_DATA);
 
 		if (null == sessionData) {
@@ -401,7 +401,7 @@ public class UserSessionService {
 			log.info("sessionData found: {}", sessionData);
 		}
 
-		List<BaseEntity> appSessions = CollectionUtil.mapToList(sessionData.getRegisteredApps());
+		List<RegisteredRequest> appSessions = CollectionUtil.mapToList(sessionData.getRegisteredApps());
 
 		return appSessions;
 	}

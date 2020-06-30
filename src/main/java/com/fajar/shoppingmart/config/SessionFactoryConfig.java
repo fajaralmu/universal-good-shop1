@@ -45,10 +45,6 @@ public class SessionFactoryConfig {
 			 */
 			configuration.addAnnotatedClass(User.class);
 			configuration.addAnnotatedClass(UserRole.class);
-//			configuration.addAnnotatedClass(MyCashflowCategory.class); 
-//			configuration.addAnnotatedClass(PFMTransactionSummary.class);
-//			configuration.addAnnotatedClass(PFMUserConfig.class);
-//			configuration.addAnnotatedClass(PFMBudget.class);
 
 			factory = configuration./* setInterceptor(new HibernateInterceptor()). */buildSessionFactory(); 
 			log.info("Session Factory has been initialized");
