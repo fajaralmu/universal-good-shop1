@@ -82,7 +82,7 @@
 		<property name="username" value="root" />
 		<property name="password" value="" />
 	</bean>
-	<bean id="dataSource_CLOUD"
+	<!-- <bean id="dataSource_CLOUD"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName"
 			value="com.mysql.jdbc.Driver" />
@@ -90,7 +90,7 @@
 			value="jdbc:mysql://remotemysql.com:3306/YcnBC2qXWF" />
 		<property name="username" value="YcnBC2qXWF" />
 		<property name="password" value="lkuEobwbqC" />
-	</bean>
+	</bean> -->
 
 
 	<bean id="entityManagerFactory"

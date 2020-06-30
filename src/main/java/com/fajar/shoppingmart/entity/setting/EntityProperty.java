@@ -7,8 +7,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fajar.shoppingmart.annotation.Dto;
-import com.fajar.shoppingmart.entity.Product;
-import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.MyJsonUtil;
 
 import lombok.AllArgsConstructor;
