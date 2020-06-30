@@ -1,7 +1,6 @@
 package com.fajar.shoppingmart.repository;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -17,6 +16,7 @@ import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.Repository;
 import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.entity.BaseEntity;
@@ -42,6 +42,7 @@ import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.UserRole;
 import com.fajar.shoppingmart.entity.Voucher;
 import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
+import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.service.entity.BaseEntityUpdateService;
 import com.fajar.shoppingmart.service.entity.CapitalFlowUpdateService;
 import com.fajar.shoppingmart.service.entity.CommonUpdateService;
@@ -51,6 +52,7 @@ import com.fajar.shoppingmart.service.entity.ProductUpdateService;
 import com.fajar.shoppingmart.service.entity.ShopProfileUpdateService;
 import com.fajar.shoppingmart.service.entity.UserUpdateService;
 import com.fajar.shoppingmart.service.entity.VoucherUpdateService;
+import com.sun.beans.TypeResolver;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -63,56 +65,10 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 public class EntityRepository {
 
-	/**
-	 * Jpa Repositories
-	 */
-	@Autowired
-	private RegisteredRequestRepository registeredRequestRepository;
-	@Autowired
-	private CategoryRepository categoryRepository;
-	@Autowired
-	private CustomerRepository customerRepository;
-	@Autowired
-	private InventoryItemRepository inventoryItemRepository;
-	@Autowired
-	private MenuRepository menuRepository;
-	@Autowired
-	private MessageRepository messageRepository;
-	@Autowired
-	private ProductFlowRepository productFlowRepository;
-	@Autowired
-	private ProductRepository productRepository;
-	@Autowired
-	private ShopProfileRepository shopProfileRepository;
-	@Autowired
-	private SupplierRepository supplierRepository;
-	@Autowired
-	private TransactionRepository transactionRepository;
-	@Autowired
-	private UnitRepository unitRepository;
-	@Autowired
-	private CostRepository costRepository;
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private UserRoleRepository userRoleRepository;
-	@Autowired
-	private CostFlowRepository costFlowRepository;
-	@Autowired
-	private VoucherRepository voucherRepository;
-	@Autowired
-	private CustomerVoucherRepository customerVoucherRepository;
-	@Autowired
-	private CapitalRepository capitalRepository;
-	@Autowired
-	private CapitalFlowRepository capitalFlowRepository;
-	@Autowired
-	private PageRepository pageRepository;
-
-	/**
-	 * end jpa repos
-	 */
-
+	 
+	@Autowired 
+	private WebConfigService webConfigService;
+	
 	@Autowired
 	private CommonUpdateService commonUpdateService;
 	@Autowired
@@ -304,28 +260,22 @@ public class EntityRepository {
 	 * @param entityClass
 	 * @return
 	 */
-	public <T, ID> JpaRepository<T, ID> findRepo(Class<T > entityClass) {
+	public < T extends BaseEntity> JpaRepository findRepo(Class<T> entityClass) {
 
-		log.info("will find repo by class: {}", entityClass);
-
-		Class<?> clazz = this.getClass();
-		Field[] fields = clazz.getDeclaredFields();
-
-		for (Field field : fields) {
-
-			if (field.getAnnotation(Autowired.class) == null) {
-				continue;
-			}
-
-			Class<?> fieldClass = field.getType();
-			Class<?> originalEntityClass = getGenericClassIndexZero(fieldClass);
+		log.info("will find repo by class: {}", entityClass); 
+		
+		List<JpaRepository<?, ?>> jpaRepositories = webConfigService.getJpaRepositories();
+		int index = 0;
+		
+		for (JpaRepository<?, ?> jpaObject : jpaRepositories) {
+			log.info("{}-Repo : {}", index, jpaObject);
+			Class<?> beanType = jpaObject.getClass();
+			Type originalEntityClass = getJpaRepositoryFirstTypeArgument(beanType, entityClass);
 
 			if (originalEntityClass != null && originalEntityClass.equals(entityClass)) {
-				try {
-					return (JpaRepository<T, ID>) field.get(this);
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					return null;
-				}
+
+				return (JpaRepository ) jpaObject;
+
 			}
 		}
 
@@ -363,32 +313,41 @@ public class EntityRepository {
 		return null;
 	}
 
-	public static <T> T getGenericClassIndexZero(Class<?> clazz) {
+	public static Type getJpaRepositoryFirstTypeArgument(Class<?> clazz, Class<?> entityClass) {
 		Type[] interfaces = clazz.getGenericInterfaces();
 
+		log.debug("Check if {} is the meant repository");
 		if (interfaces == null) {
-			log.info("interfaces is null");
+			log.info("{} interfaces is null", clazz);
 			return null;
 		}
 
-		log.info("interfaces size: {}", interfaces.length);
-
+		log.debug("clazz {} interfaces size: {}", clazz, interfaces.length);
+		//CollectionUtil.printArray(interfaces);
+		
 		for (Type type : interfaces) {
 
-			boolean isJpaRepository = type.getTypeName().startsWith(JpaRepository.class.getCanonicalName());
+			boolean isJpaRepository = type.getTypeName().startsWith(Repository.class.getCanonicalName());
 
 			if (isJpaRepository) {
-				ParameterizedType parameterizedType = (ParameterizedType) type;
-
-				if (parameterizedType.getActualTypeArguments() != null
-						&& parameterizedType.getActualTypeArguments().length > 0) {
-					return (T) parameterizedType.getActualTypeArguments()[0];
+				Type _type = TypeResolver.resolve(clazz, entityClass);
+				log.debug("_type: {}", _type);
+				if(_type.equals(entityClass)) {
+					return _type;
 				}
+//				ParameterizedType parameterizedType = (ParameterizedType) type;
+//
+//				if (parameterizedType.getActualTypeArguments() != null
+//						&& parameterizedType.getActualTypeArguments().length > 0) {
+//					return (T) parameterizedType.getActualTypeArguments()[0];
+//				}
+				
 			}
 		}
 
 		return null;
 	}
+
 
 	/**
 	 * delete entity by id

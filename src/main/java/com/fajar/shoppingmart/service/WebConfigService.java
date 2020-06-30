@@ -4,11 +4,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.entity.ShopProfile;
@@ -16,6 +20,7 @@ import com.fajar.shoppingmart.repository.ShopProfileRepository;
 import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * this class is autowired via XML
@@ -23,12 +28,15 @@ import lombok.Data;
  * @author Republic Of Gamers
  *
  */
-@Dto
+ 
 @Data 
+@Slf4j
 public class WebConfigService {
 
 	@Autowired
 	private ShopProfileRepository shopProfileRepository;
+	@Autowired
+	private ApplicationContext applicationContext;
 
 	private String basePage;
 	private String uploadedImageRealPath;
@@ -36,10 +44,41 @@ public class WebConfigService {
 	private String reportPath;
 	private String martCode;  
 	
+	private List<JpaRepository<?, ?>> jpaRepositories = new ArrayList<>();
+	
+	@PostConstruct
+	public void init() {
+		LogProxyFactory.setLoggers(this);
+		ShopProfile dbProfile = shopProfileRepository.findByMartCode(martCode);
+		if (null == dbProfile) {
+			shopProfileRepository.save(defaultProfile());
+		}
+		getJpaReporitoriesBean();
+	} 
+	
 	@PreDestroy
 	public void preDestroy() {
 		System.out.println("========= will destroy ========");
 		
+	}
+	
+	private void getJpaReporitoriesBean() {
+		log.info("//////////////GET JPA REPOSITORIES BEANS///////////////");
+		jpaRepositories.clear();
+		String[] beanNames = applicationContext.getBeanNamesForType(JpaRepository.class);
+		if (null == beanNames)
+			return;
+		
+		log.info("JPA REPOSITORIES COUNT: " + beanNames.length);
+		for (int i = 0; i < beanNames.length; i++) {
+			String beanName = beanNames[i];
+			JpaRepository<?, ?> beanObject = (JpaRepository<?, ?>) applicationContext.getBean(beanName);
+			
+			if(null == beanObject) continue;
+			
+			jpaRepositories.add(beanObject);
+			log.info(i + "." + beanName);
+		}
 	}
 	
 	public static String readFile(String path) throws IOException {
@@ -117,14 +156,7 @@ public class WebConfigService {
 		return result;
 	}
 
-	@PostConstruct
-	public void init() {
-		LogProxyFactory.setLoggers(this);
-		ShopProfile dbProfile = shopProfileRepository.findByMartCode(martCode);
-		if (null == dbProfile) {
-			shopProfileRepository.save(defaultProfile());
-		}
-	} 
+	
 	
 	public ShopProfile getProfile() {
 		ShopProfile dbProfile = shopProfileRepository.findByMartCode(martCode);

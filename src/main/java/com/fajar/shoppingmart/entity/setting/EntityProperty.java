@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.entity.Product;
 import com.fajar.shoppingmart.util.EntityUtil;
@@ -98,6 +100,13 @@ public class EntityProperty implements Serializable {
 		}
 		
 		log.warn("NO ID FIELD FOR THIS ENTITY: {}", entityName);
+	}
+	
+	public String getGridTemplateColumns() {
+		if(2 == formInputColumn) {
+			return "20% 75%";
+		}
+		return StringUtils.repeat("auto ", formInputColumn);
 	}
 	
 //	public static void main(String[] args) {

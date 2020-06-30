@@ -193,4 +193,21 @@ public class InterceptorProcessor {
 		BaseController.addPageUrl(modelAndView, resourcePath.pageUrl());
 
 	}
+	
+	public static void validateStylePaths(String[] paths) {
+		if(null == paths) return;
+		for (int i = 0; i < paths.length; i++) {
+			if(paths[i].toString().toLowerCase().endsWith(".css") == false) {
+				paths[i]+=".css?version=1";
+			}
+		}
+	}
+	public static void validateScriptPaths(String[] paths) {
+		if(null == paths) return;
+		for (int i = 0; i < paths.length; i++) {
+			if(paths[i].toString().toLowerCase().endsWith(".js") == false) {
+				paths[i]+=".js?v=1";
+			}
+		}
+	}
 }
