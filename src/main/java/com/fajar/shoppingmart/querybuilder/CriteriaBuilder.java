@@ -12,12 +12,18 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.SimpleExpression;
 import org.hibernate.type.IntegerType;
 
 import com.fajar.shoppingmart.dto.KeyValue;
 import com.fajar.shoppingmart.entity.Category;
+import com.fajar.shoppingmart.entity.Customer;
 import com.fajar.shoppingmart.entity.Product;
+import com.fajar.shoppingmart.entity.Supplier;
+import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.Unit;
+import com.fajar.shoppingmart.entity.User;
+import com.fajar.shoppingmart.entity.UserRole;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 
@@ -36,6 +42,11 @@ public class CriteriaBuilder {
 		configuration.addAnnotatedClass(Product.class);
 		configuration.addAnnotatedClass(Unit.class);
 		configuration.addAnnotatedClass(Category.class);
+		configuration.addAnnotatedClass(Transaction.class);
+		configuration.addAnnotatedClass(Supplier.class);
+		configuration.addAnnotatedClass(Customer.class);
+		configuration.addAnnotatedClass(User.class);
+		configuration.addAnnotatedClass(UserRole.class);
 //		addAnnotatedClass(configuration);
 
 		factory = configuration./* setInterceptor(new HibernateInterceptor()). */buildSessionFactory();
@@ -100,7 +111,8 @@ public class CriteriaBuilder {
 			Criterion dateFilterSql = getDateFilter(rawKey, currentKey, entityDeclaredFields, filter);
 
 			if (null != dateFilterSql) {
-
+				log.info(" {} is date ", rawKey);
+				criteria.add(dateFilterSql);
 				continue;
 			}
 
@@ -119,34 +131,37 @@ public class CriteriaBuilder {
 				if (joinColumnResult.isValid()) {
 
 					criteria.createAlias(entityName + "." + fieldName, fieldName);
-					criteria.add(Restrictions.like(fieldName + "." + joinColumnResult.getValue(),
-							"%"+filter.get(rawKey)+"%"));
-//					filterTableName = joinColumnResult.getKey().toString();
-//					filterColumnName = joinColumnResult.getValue().toString();
+					criteria.add(restrictionsLike(fieldName + "." + joinColumnResult.getValue(), filter.get(rawKey)));
 				} else {
 					continue;
 				}
 			}else {
-				criteria.add(Restrictions.like(currentKey, "%"+filter.get(rawKey)+"%"));
+				criteria.add(restrictionsLike(currentKey, filter.get(rawKey)));
 			}
-
-//			queryItem.setTableName(filterTableName);
-//			queryItem.setColumnName(filterColumnName);
-//			queryItem.setValue(filter.get(rawKey));
-//			sqlFilters.add(queryItem);
+ 
 		}
 
 		return criteria;
 
 	}
+	
+	
+	static SimpleExpression restrictionsLike(String fieldName, Object value) {
+		return Restrictions.like(fieldName, likeExp(value));
+	}
+	static String likeExp(Object value) {
+		return "%"+value+"%";
+	}
 
 	public static void main(String[] args) {
 		Map<String, Object> filter = new HashMap<String, Object>() {
 			{
-				put("unit", "");
+				 
+				put("transactionDate-month", 2);
 			}
 		};
-		Criteria criteria = createWhereClause(Product.class, filter, false);
+		Criteria criteria = createWhereClause(Transaction.class, filter, false);
+		criteria.setMaxResults(2);
 		System.out.println("CRITERIA BUILT");
 		List list = criteria.list();
 		CollectionUtil.printArray(list.toArray());
@@ -177,10 +192,12 @@ public class CriteriaBuilder {
 				mode = QueryUtil.FILTER_DATE_YEAR;
 
 			}
+			Field field = EntityUtil.getObjectFromListByFieldName("name", fieldName, entityDeclaredFields);
 			Object value = filter.get(key);
-
-			Criterion restriction = Restrictions.sqlRestriction(mode + "(" + fieldName + ")=", value,
-					IntegerType.INSTANCE);
+			String columnName = QueryUtil.getColumnName(field);
+			log.info("mode: {}. value: {}", mode, value);
+			Criterion restriction = Restrictions.sqlRestriction(mode + "(" + columnName + ")="+value);
+			
 			return restriction;
 		}
 

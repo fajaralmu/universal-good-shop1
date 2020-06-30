@@ -19,7 +19,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.fajar.shoppingmart.entity.ShopProfile;
-import com.fajar.shoppingmart.repository.ProductRepository;
 import com.fajar.shoppingmart.repository.ShopProfileRepository;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
