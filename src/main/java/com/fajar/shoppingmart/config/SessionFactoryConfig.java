@@ -44,9 +44,6 @@ public class SessionFactoryConfig {
 
 			configuration.setProperties(additionalProperties());
 			
-			/**
-			 * adding persistence classes
-			 */ 
 			addAnnotatedClass(configuration);
 
 			factory = configuration./* setInterceptor(new HibernateInterceptor()). */buildSessionFactory(); 

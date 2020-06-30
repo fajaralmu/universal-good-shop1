@@ -7,8 +7,17 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.transaction.SystemException;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Order;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fajar.shoppingmart.annotation.CustomEntity;
+import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.querybuilder.QueryHolder;
 import com.fajar.shoppingmart.util.EntityUtil;
 
@@ -20,8 +29,52 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 
 	@PersistenceContext
 	private EntityManager entityManager;
+	@Autowired
+	private SessionFactory sessionFactory;
+	@Autowired
+	private Session hibernateSession;
 
 	public RepositoryCustomImpl() {
+	}
+
+	public void testHibernateSession(Class<? extends BaseEntity> entityClass)
+			throws IllegalStateException, SystemException {
+		Transaction tx = null;
+		try {
+
+			hibernateSession = sessionFactory.openSession();
+
+			tx = hibernateSession.beginTransaction();
+
+			Criteria criteria = hibernateSession.createCriteria(entityClass, entityClass.getSimpleName())
+			// .createAlias("transactionHistory.myCashflowCategory", "myCashflowCategory")
+//					.add(Restrictions.naturalId()
+//							//.set("cifNumber", cif)							
+//							.set("myCashflowCategory.module", module)
+////							.set("sessionIdentifier", UUID.randomUUID().toString())
+//					)
+//					.addOrder(orderDate);
+			;
+			Order orderDate = Order.desc("date");
+//				criteria.setMaxResults(limit);
+//				criteria.setFirstResult(offset);
+
+			List resultList = criteria.list();
+
+			tx.commit();
+
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+
+			log.error("Error fetching from DB: {}", e);
+			return;
+
+		} finally {
+
+			if (hibernateSession.isOpen())
+				hibernateSession.close();
+		}
 	}
 
 	@Override
@@ -88,14 +141,14 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 
 	private <O> O fillObject(O object, Object[] propertiesArray, String[] propertyOrder)
 			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		
+
 		for (int j = 0; j < propertiesArray.length; j++) {
 			String propertyName = propertyOrder[j];
 			Object propertyValue = propertiesArray[j];
 			Field field = EntityUtil.getDeclaredField(object.getClass(), propertyName);
 //					object.getClass().getDeclaredField(propertyName);
 //			field.setAccessible(true);
-			
+
 			if (field != null && propertyValue != null) {
 				final Class<?> fieldType = field.getType();
 				if (fieldType.equals(Integer.class) || fieldType.equals(int.class)) {

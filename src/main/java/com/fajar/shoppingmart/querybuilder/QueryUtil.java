@@ -248,7 +248,7 @@ public class QueryUtil {
 	 * @param field
 	 * @return
 	 */
-	private static KeyValue checkIfJoinColumn(String currentKey, Field field) {
+	public static KeyValue checkIfJoinColumn(String currentKey, Field field) {
 		String multiKeyColumnName = getMultiKeyColumnName(currentKey);
 		KeyValue keyValue = new KeyValue();
 		boolean isMultiKey 	= null != multiKeyColumnName; 
@@ -291,6 +291,7 @@ public class QueryUtil {
 		} 
 		
 		keyValue.setValid(validColumn);
+		log.info("keyValue: {}", keyValue);
 		return keyValue;
 	}
 
