@@ -1,5 +1,7 @@
 package com.fajar.shoppingmart.config;
 
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
@@ -16,7 +18,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.fajar.shoppingmart.entity.User;
-import com.fajar.shoppingmart.entity.UserRole;
+import com.fajar.shoppingmart.service.WebConfigService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +31,9 @@ public class SessionFactoryConfig {
 	private DriverManagerDataSource driverManagerDataSource;
 	@Autowired
 	private EntityManagerFactory entityManagerFactoryBean;
-
+	@Autowired
+	private WebConfigService webConfigService;
+	
 	@Bean
 	@Primary
 	public SessionFactory generateSession() {
@@ -42,9 +46,8 @@ public class SessionFactoryConfig {
 			
 			/**
 			 * adding persistence classes
-			 */
-			configuration.addAnnotatedClass(User.class);
-			configuration.addAnnotatedClass(UserRole.class);
+			 */ 
+			addAnnotatedClass(configuration);
 
 			factory = configuration./* setInterceptor(new HibernateInterceptor()). */buildSessionFactory(); 
 			log.info("Session Factory has been initialized");
@@ -55,6 +58,16 @@ public class SessionFactoryConfig {
 			throw new ExceptionInInitializerError(ex);
 		}
 
+	}
+	
+	private void addAnnotatedClass(org.hibernate.cfg.Configuration configuration) {
+		
+		List<Type> entities = webConfigService.getEntityClassess();
+		for (Type type : entities) {
+			log.info("addAnnotatedClass: {}", type);
+			configuration.addAnnotatedClass((Class) type);
+		}
+		
 	}
 
 	
