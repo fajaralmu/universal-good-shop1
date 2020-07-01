@@ -150,7 +150,9 @@ public class CriteriaBuilderService {
 
 	}
 	
-	public Criteria createRowCountCriteria(Class<?> _class, Filter filter) {
+	public Criteria createRowCountCriteria(Class<?> _class, final Filter rawFilter) {
+		Filter filter = EntityUtil.cloneSerializable(rawFilter);
+		
 		filter.setLimit(0);
 		filter.setPage(0);
 		filter.setOrderBy(null);

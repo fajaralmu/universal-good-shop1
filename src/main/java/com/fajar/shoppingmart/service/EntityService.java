@@ -22,7 +22,6 @@ import com.fajar.shoppingmart.entity.Cost;
 import com.fajar.shoppingmart.entity.Unit;
 import com.fajar.shoppingmart.entity.UserRole;
 import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
-import com.fajar.shoppingmart.querybuilder.CriteriaBuilderService;
 import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.service.entity.BaseEntityUpdateService;
@@ -44,9 +43,7 @@ public class EntityService {
 	@Autowired
 	private RepositoryCustomImpl repositoryCustom;   
 	@Autowired
-	private EntityRepository entityRepository; 
-	@Autowired
-	private CriteriaBuilderService criteriaBuilderService;
+	private EntityRepository entityRepository;  
 	
 	@PostConstruct
 	public void init() {
@@ -107,7 +104,7 @@ public class EntityService {
 	public WebResponse filter(WebRequest request) {
 		Class<? extends BaseEntity> entityClass = null;
 		
-		Filter filter = request.getFilter();
+		Filter filter = EntityUtil.cloneSerializable(request.getFilter());
 
 		if (filter == null) {
 			filter = new Filter();
@@ -136,7 +133,7 @@ public class EntityService {
 			return WebResponse.builder().
 					entities(EntityUtil.validateDefaultValue(entityResult.entities)).
 					totalData(entityResult.count).
-					filter(filter).entityClass(entityClass).
+					filter(request.getFilter()).entityClass(entityClass).
 					build();
 			
 		} catch (Exception ex) {
