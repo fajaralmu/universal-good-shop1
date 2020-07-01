@@ -24,6 +24,7 @@ public class BaseEntity implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 5713292970611528372L;
+	
 	@Column(name = "created_date")
 	@JsonIgnore
 //	@FormField
@@ -37,9 +38,9 @@ public class BaseEntity implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@FormField
-	@Column
+	@Column()
 	@BaseField
-	private Long id;
+	private long id;
 	@Column(name = "general_color")
 	@FormField(type = FieldType.FIELD_TYPE_COLOR, defaultValue = "green")
 	private String color;

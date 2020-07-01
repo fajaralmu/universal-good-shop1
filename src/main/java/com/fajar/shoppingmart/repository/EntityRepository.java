@@ -101,7 +101,7 @@ public class EntityRepository {
 		 * commons
 		 */
 		toCommonUpdateService(Unit.class, Customer.class, RegisteredRequest.class, CustomerVoucher.class,
-				UserRole.class, Capital.class, Cost.class, Page.class, Supplier.class, Category.class);
+				UserRole.class, Capital.class, Cost.class, Page.class, Supplier.class, Category.class, ProductFlow.class);
 
 		/**
 		 * special

@@ -8,6 +8,8 @@ import java.util.Properties;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.NaturalIdentifier;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -25,6 +27,7 @@ import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.Unit;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.UserRole;
+import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -71,16 +74,39 @@ public class CriteriaBuilderService {
 		properties.setProperty("hibernate.current_session_context_class", "thread");
 		properties.setProperty("hibernate.show_sql", "true");
 		properties.setProperty("hibernate.connection.pool_size", "1");
-		properties.setProperty("hbm2ddl.auto", ddlAuto);
+		properties.setProperty("hbm2ddl.auto", ddlAuto); 
+		
 		return properties;
 	}
+	
+	public static NaturalIdentifier restrictionEquals(Class<?> entityClass, String fieldName, Object fieldValue) {
+		String entityName = entityClass.getSimpleName();
+		Field field = EntityUtil.getDeclaredField(entityClass, fieldName);
+		Object validatedValue = validateFieldValue(field, fieldValue);
+		return Restrictions.naturalId().set(entityName+'.'+fieldName, validatedValue);
+	}
 
-	public Criteria createCriteria(Class<?> entityClass, Filter filter, final boolean allItemExactSearch) {
+	private static Object validateFieldValue(Field field, Object fieldValue) {
+		if(null == fieldValue) { return fieldValue; }
+		
+		Class<?> fieldType = field.getType();
+		if(EntityUtil.isNumericField(field)) {
+			if(fieldType.equals(Long.class)) {
+				long value = Long.parseLong(fieldValue.toString());
+				
+				return value;
+			}
+		}
+		return fieldValue;
+	}
+
+	public Criteria createCriteria(Class<?> entityClass, Filter filter, final boolean _allItemExactSearch) {
 		Map<String, Object> fieldsFilter = filter.getFieldsFilter();
 		List<Field> entityDeclaredFields = EntityUtil.getDeclaredFields(entityClass);
-
+		
 		log.info("=======FILTER: {}", fieldsFilter);
-
+		boolean allItemExactSearch = filter.isExacts();
+		
 		String entityName = entityClass.getSimpleName();
 		Criteria criteria = hibernateSession.createCriteria(entityClass, entityName);
 
@@ -97,13 +123,10 @@ public class CriteriaBuilderService {
 			if (null != finalNameAfterExactChecking) {
 				currentKey = finalNameAfterExactChecking;
 				itemExacts = true;
-				criteria.add(Restrictions.naturalId().set(currentKey, fieldsFilter.get(rawKey)));
+				criteria.add(restrictionEquals(entityClass, currentKey, fieldsFilter.get(rawKey)));
 			}
 
-			log.info("Raw key: {} Now KEY: {}", rawKey, currentKey);
-
-			QueryFilterItem queryItem = new QueryFilterItem();
-			queryItem.setExacts(itemExacts);
+			log.info("Raw key: {} Now KEY: {}", rawKey, currentKey); 
 
 			// check if date
 			Criterion dateFilterSql = getDateFilter(rawKey, currentKey, entityDeclaredFields, fieldsFilter);
@@ -129,12 +152,16 @@ public class CriteriaBuilderService {
 
 					criteria.createAlias(entityName + "." + fieldName, fieldName);
 					criteria.add(
-							restrictionsLike(fieldName + "." + joinColumnResult.getValue(), fieldsFilter.get(rawKey)));
+							restrictionLike(fieldName + "." + joinColumnResult.getValue(), field.getType(), fieldsFilter.get(rawKey)));
 				} else {
 					continue;
 				}
 			} else {
-				criteria.add(restrictionsLike(currentKey, fieldsFilter.get(rawKey)));
+				if(itemExacts) {
+					criteria.add(restrictionEquals(entityClass, currentKey, fieldsFilter.get(rawKey)));
+				}else {
+					criteria.add(restrictionLike(entityName + "." +currentKey, entityClass, fieldsFilter.get(rawKey)));
+				}
 			}
 
 		}
@@ -183,15 +210,26 @@ public class CriteriaBuilderService {
 
 	}
 
-	static SimpleExpression restrictionsLike(String fieldName, Object value) {
-		return Restrictions.like(fieldName, likeExp(value));
+	static SimpleExpression restrictionLike(final String fieldName, Class<?> _class, Object value) {
+		String extractedFieldName = fieldName;
+		if(fieldName.contains(".") && fieldName.split("\\.").length == 2) {
+			extractedFieldName = fieldName.split("\\.")[1];
+		}
+		Field field = EntityUtil.getDeclaredField(_class, extractedFieldName);
+		
+		Object validatedValue = validateFieldValue(field, value);
+		return Restrictions.like(fieldName, likeExp(validatedValue) , MatchMode.ANYWHERE);
 	}
 
 	static String likeExp(Object value) {
-		return "%" + value + "%";
+		if(null == value) return "";
+		return value.toString();
+//		return "%" + value + "%";
 	}
 
 	public static void main(String[] args) {
+		String name = "kk.ll";
+		log.info("contains: {}", name.contains("."));
 //		Map<String, Object> filter = new HashMap<String, Object>() {
 //			{
 //				 

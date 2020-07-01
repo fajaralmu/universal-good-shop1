@@ -27,7 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EntityUtil {
 
-	public static EntityProperty createEntityProperty(Class<?> clazz, HashMap<String, List<?>> listObject) throws Exception {
+	public static EntityProperty createEntityProperty(Class<?> clazz, HashMap<String, List<?>> listObject)
+			throws Exception {
 		if (clazz == null || getClassAnnotation(clazz, Dto.class) == null) {
 			return null;
 		}
@@ -77,7 +78,7 @@ public class EntityUtil {
 			e.printStackTrace();
 			throw e;
 		}
-		 
+
 	}
 
 	public static <T extends Annotation> T getClassAnnotation(Class<?> entityClass, Class<T> annotation) {
@@ -175,9 +176,24 @@ public class EntityUtil {
 	}
 
 	public static boolean isNumericField(Field field) {
-		return field.getType().equals(Integer.class) || field.getType().equals(Double.class)
-				|| field.getType().equals(Long.class) || field.getType().equals(BigDecimal.class)
-				|| field.getType().equals(BigInteger.class);
+		Class<?> superClass = field.getType().getSuperclass();
+		if (null == superClass) {
+			return false;
+		}
+		return superClass.equals(Number.class);
+		/**
+		 * return MapUtil.objectEquals(field.getType(), Integer.class, Double.class,
+		 * Long.class, BigDecimal.class, BigInteger.class, Short.class);
+		 **/
+	}
+
+	public static boolean isBoolean(Field field) {
+		return field.getType().equals(Boolean.class);
+	}
+
+	public static void main(String[] args) {
+		Class<?> cls = Integer.class;
+		System.out.println(cls.getSuperclass());
 	}
 
 	/**
@@ -365,12 +381,11 @@ public class EntityUtil {
 	 */
 	public static <T extends Serializable> T cloneSerializable(T serializable) {
 		try {
-			return SerializationUtils.clone( serializable);
+			return SerializationUtils.clone(serializable);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-
 
 }
