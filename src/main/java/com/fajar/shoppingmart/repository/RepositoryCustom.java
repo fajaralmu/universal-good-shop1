@@ -4,18 +4,25 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import com.fajar.shoppingmart.querybuilder.QueryHolder; 
+import com.fajar.shoppingmart.dto.Filter;
+import com.fajar.shoppingmart.querybuilder.QueryHolder;
 
-public interface RepositoryCustom<T> {
+public interface RepositoryCustom {
 
-	 
-	List<T> filterAndSort(String q, Class<? extends T> objectClass);
+	public <T> List<T> filterAndSort(String q, Class<? extends T> objectClass);
+
+	public <T> List<T> filterAndSort(QueryHolder queryHolder, Class<? extends T> objectClass);
+
+	public Object getSingleResult(QueryHolder queryHolder);
+
+	public Object getSingleResult(String q);
+
+	public Query createNativeQuery(String sql);
+
+	public <T> T getCustomedObjectFromNativeQuery(String sql, Class<T> objectClass);
 	
-	List<T> filterAndSort(QueryHolder queryHolder, Class<? extends T> objectClass);
-	Object getSingleResult(QueryHolder queryHolder);
-	Object getSingleResult(String q); 
+	public <T> List<T> filterAndSortv2(Class<T> _class, Filter filter);
 	
-	Query createNativeQuery(String sql);
+	public long getRowCount(Class<?> _class, Filter filter);
 
-	public <O> O getCustomedObjectFromNativeQuery(String sql, Class<O> objectClass);
 }

@@ -2,7 +2,6 @@ package com.fajar.shoppingmart.service;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +10,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
-import org.hibernate.Criteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +22,7 @@ import com.fajar.shoppingmart.entity.Cost;
 import com.fajar.shoppingmart.entity.Unit;
 import com.fajar.shoppingmart.entity.UserRole;
 import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
-import com.fajar.shoppingmart.querybuilder.CRUDQueryHolder;
 import com.fajar.shoppingmart.querybuilder.CriteriaBuilderService;
-import com.fajar.shoppingmart.querybuilder.QueryUtil;
 import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.service.entity.BaseEntityUpdateService;
@@ -46,7 +42,7 @@ public class EntityService {
 	public static final String ORIGINAL_PREFFIX = "{ORIGINAL>>";
 	  
 	@Autowired
-	private RepositoryCustomImpl<BaseEntity> repositoryCustom;   
+	private RepositoryCustomImpl repositoryCustom;   
 	@Autowired
 	private EntityRepository entityRepository; 
 	@Autowired
@@ -149,17 +145,13 @@ public class EntityService {
 		}
 	}  
   
-	private <T extends BaseEntity> EntityResult filterEntities(Filter filter, Class<T > entityClass) {
+	private <T extends BaseEntity> EntityResult filterEntities(Filter filter, Class<T > entityClass) { 
+		 
+		List<T> entities = repositoryCustom.filterAndSortv2(entityClass, filter);  
 
-		CRUDQueryHolder generatedQueryString = QueryUtil.generateSqlByFilter(filter, entityClass); 
-		Criteria criteria = criteriaBuilderService.createCriteria(entityClass, filter, false);
-		List<T> entities = criteria.list();// repositoryCustom.filterAndSort(generatedQueryString, entityClass);
-
-		Object countResult = repositoryCustom.getSingleResult(generatedQueryString);
-
-		int count = countResult == null? 0: ((BigInteger) countResult).intValue(); 
+		Long countResult = repositoryCustom.getRowCount(entityClass, filter); 
 		
-		return EntityResult.builder().entities(CollectionUtil.convertList(entities)).count(count).build();
+		return EntityResult.builder().entities(CollectionUtil.convertList(entities)).count(countResult.intValue()).build();
 	}
 
 

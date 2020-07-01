@@ -17,7 +17,9 @@ import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fajar.shoppingmart.annotation.CustomEntity;
+import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.querybuilder.CriteriaBuilderService;
 import com.fajar.shoppingmart.querybuilder.QueryHolder;
 import com.fajar.shoppingmart.util.EntityUtil;
 
@@ -25,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 //@Service
-public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
+public class RepositoryCustomImpl implements RepositoryCustom {
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -33,6 +35,8 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 	private SessionFactory sessionFactory;
 	@Autowired
 	private Session hibernateSession;
+	@Autowired
+	private CriteriaBuilderService criteriaBuilderService;
 
 	public RepositoryCustomImpl() {
 	}
@@ -78,7 +82,7 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 	}
 
 	@Override
-	public List<T> filterAndSort(String sql, Class<? extends T> clazz) {
+	public <T> List<T> filterAndSort(String sql, Class<? extends T> clazz) {
 
 		log.info("==============GET LIST FROM NATIVE SQL: " + sql);
 		List<T> resultList = entityManager.createNativeQuery(sql, clazz).getResultList();
@@ -170,7 +174,7 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 	}
 
 	@Override
-	public List<T> filterAndSort(QueryHolder queryHolder, Class<? extends T> objectClass) {
+	public <T> List<T> filterAndSort(QueryHolder queryHolder, Class<? extends T> objectClass) {
 
 		return filterAndSort(queryHolder.getSqlSelect(), objectClass);
 	}
@@ -179,6 +183,36 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 	public Object getSingleResult(QueryHolder queryHolder) {
 
 		return getSingleResult(queryHolder.getSqlSingleResult());
+	}
+
+	@Override
+	public <T> List<T> filterAndSortv2(Class<T> _class, Filter filter) {
+		try {
+			Criteria criteria = criteriaBuilderService.createCriteria(_class, filter, false);
+			List<T> resultList = criteria.list();
+
+			if (null == resultList) {
+				resultList = new ArrayList<>();
+			}
+
+			log.info("resultList length: {}", resultList.size());
+			return resultList;
+		} catch (Exception e) {
+			log.error("Error filter and sort v2: {}", e);
+			e.printStackTrace();
+		}
+		return new ArrayList<>();
+	}
+
+	@Override
+	public long getRowCount(Class<?> _class, Filter filter) {
+
+		try {
+			Criteria criteria = criteriaBuilderService.createRowCountCriteria(_class, filter);
+			return (long) criteria.uniqueResult();
+		} catch (Exception e) {
+			return 0;
+		}
 	}
 
 }

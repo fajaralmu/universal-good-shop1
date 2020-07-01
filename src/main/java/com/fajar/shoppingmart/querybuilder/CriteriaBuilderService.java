@@ -9,6 +9,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,6 +148,16 @@ public class CriteriaBuilderService {
 
 		return criteria;
 
+	}
+	
+	public Criteria createRowCountCriteria(Class<?> _class, Filter filter) {
+		filter.setLimit(0);
+		filter.setPage(0);
+		filter.setOrderBy(null);
+		
+		Criteria criteria = createCriteria(_class, filter, false);
+		criteria.setProjection(Projections.rowCount());
+		return criteria;
 	}
 
 	private static void addOrderOffsetLimit(Criteria criteria, Filter filter) {

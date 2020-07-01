@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.fajar.shoppingmart.dto.TransactionType;
 import com.fajar.shoppingmart.entity.ProductFlow;
 
-public interface ProductFlowRepository extends JpaRepository<ProductFlow, Long>, RepositoryCustom<ProductFlow> {
+public interface ProductFlowRepository extends JpaRepository<ProductFlow, Long>, RepositoryCustom {
 	List<ProductFlow> findByTransaction_Type(TransactionType type);
 
 	Optional<ProductFlow> findByIdAndTransaction_Type(Long id, TransactionType type);
