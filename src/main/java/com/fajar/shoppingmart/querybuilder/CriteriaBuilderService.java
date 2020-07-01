@@ -124,6 +124,7 @@ public class CriteriaBuilderService {
 				currentKey = finalNameAfterExactChecking;
 				itemExacts = true;
 				criteria.add(restrictionEquals(entityClass, currentKey, fieldsFilter.get(rawKey)));
+				continue;
 			}
 
 			log.info("Raw key: {} Now KEY: {}", rawKey, currentKey); 
@@ -148,8 +149,7 @@ public class CriteriaBuilderService {
 			KeyValue joinColumnResult = QueryUtil.checkIfJoinColumn(currentKey, field, false);
 
 			if (null != joinColumnResult) {
-				if (joinColumnResult.isValid()) {
-
+				if (joinColumnResult.isValid()) { 
 					criteria.createAlias(entityName + "." + fieldName, fieldName);
 					criteria.add(
 							restrictionLike(fieldName + "." + joinColumnResult.getValue(), field.getType(), fieldsFilter.get(rawKey)));
@@ -219,14 +219,17 @@ public class CriteriaBuilderService {
 		boolean stringTypeField = field.getType().equals(String.class);  
 		Object validatedValue = validateFieldValue(field, value);
 		
-		if(!stringTypeField) {
+		//if(!stringTypeField) {
 			
 			return nonStringLikeExp(field, _class, validatedValue);
-		}
-
-		SimpleExpression likeExp = Restrictions.like(fieldName, String.valueOf(validatedValue), MatchMode.ANYWHERE);
-		
-		return likeExp;
+		/*
+		 * }
+		 * 
+		 * SimpleExpression likeExp = Restrictions.like(fieldName,
+		 * String.valueOf(validatedValue), MatchMode.ANYWHERE);
+		 * 
+		 * return likeExp;
+		 */
 	}
 
 	 
@@ -234,7 +237,7 @@ public class CriteriaBuilderService {
 	private static Criterion nonStringLikeExp(Field field, Class<?> _class, Object value) {
 		
 		String columnName = field.getName();//QueryUtil.getColumnName(field);
-		String tableName = _class.getName();// QueryUtil.getTableName(_class);
+		String tableName = _class.getName();// QueryUtil.getTableName(_class); NOW USING ALIAS
 		
 		Criterion sqlRestriction = Restrictions.sqlRestriction("{alias}."+columnName+" LIKE '%"+value+"%'");
 		

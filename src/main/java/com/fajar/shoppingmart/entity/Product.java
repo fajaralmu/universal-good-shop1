@@ -9,6 +9,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
@@ -43,6 +45,7 @@ public class Product extends BaseEntity {
 	private String description;
 	@Column
 	@FormField(type = FieldType.FIELD_TYPE_CURRENCY)
+	@Type(type = "org.hibernate.type.LongType")
 	private long price;
 	@Column
 	@FormField
