@@ -9,7 +9,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.NaturalIdentifier;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -34,11 +33,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class CriteriaBuilderService {
- 
-	
+
 	@Autowired
 	private Session hibernateSession;
-	
+
 	static {
 
 		org.hibernate.cfg.Configuration configuration = new org.hibernate.cfg.Configuration();
@@ -73,26 +71,40 @@ public class CriteriaBuilderService {
 		properties.setProperty("hibernate.current_session_context_class", "thread");
 		properties.setProperty("hibernate.show_sql", "true");
 		properties.setProperty("hibernate.connection.pool_size", "1");
-		properties.setProperty("hbm2ddl.auto", ddlAuto); 
-		
+		properties.setProperty("hbm2ddl.auto", ddlAuto);
+
 		return properties;
 	}
-	
-	public static NaturalIdentifier restrictionEquals(Class<?> entityClass, String fieldName, Object fieldValue) {
+
+	public static Criterion restrictionEquals(Class<?> entityClass, String fieldName, Object fieldValue) {
 		String entityName = entityClass.getSimpleName();
 		Field field = EntityUtil.getDeclaredField(entityClass, fieldName);
+
+		if (field.getType().equals(String.class) == false) {
+			return nonStringEqualsExp(entityClass, fieldName, fieldValue);
+		}
+
 		Object validatedValue = validateFieldValue(field, fieldValue);
-		return Restrictions.naturalId().set(entityName+'.'+fieldName, validatedValue);
+		return Restrictions.naturalId().set(entityName + '.' + fieldName, validatedValue);
+	}
+
+	private static Criterion nonStringEqualsExp(Class<?> entityClass, String fieldName, Object value) {
+
+		Criterion sqlRestriction = Restrictions.sqlRestriction("{alias}." + fieldName + " = '" + value + "'");
+
+		return sqlRestriction;
 	}
 
 	private static Object validateFieldValue(Field field, Object fieldValue) {
-		if(null == fieldValue) { return 0; }
-		
+		if (null == fieldValue) {
+			return 0;
+		}
+
 		Class<?> fieldType = field.getType();
-		if(EntityUtil.isNumericField(field)) {
-			if(fieldType.equals(Long.class)) {
+		if (EntityUtil.isNumericField(field)) {
+			if (fieldType.equals(Long.class)) {
 				long value = Long.parseLong(fieldValue.toString());
-				
+
 				return value;
 			}
 		}
@@ -102,13 +114,12 @@ public class CriteriaBuilderService {
 	public Criteria createCriteria(Class<?> entityClass, Filter filter, final boolean _allItemExactSearch) {
 		Map<String, Object> fieldsFilter = filter.getFieldsFilter();
 		List<Field> entityDeclaredFields = EntityUtil.getDeclaredFields(entityClass);
-		
+
 		log.info("=======FILTER: {}", fieldsFilter);
 		boolean allItemExactSearch = filter.isExacts();
-		
+
 		String entityName = entityClass.getSimpleName();
 		Criteria criteria = hibernateSession.createCriteria(entityClass, entityName);
-	 
 
 		for (final String rawKey : fieldsFilter.keySet()) {
 			log.info("##" + rawKey + ":" + fieldsFilter.get(rawKey));
@@ -127,7 +138,7 @@ public class CriteriaBuilderService {
 				continue;
 			}
 
-			log.info("Raw key: {} Now KEY: {}", rawKey, currentKey); 
+			log.info("Raw key: {} Now KEY: {}", rawKey, currentKey);
 
 			// check if date
 			Criterion dateFilterSql = getDateFilter(rawKey, currentKey, entityDeclaredFields, fieldsFilter);
@@ -149,18 +160,18 @@ public class CriteriaBuilderService {
 			KeyValue joinColumnResult = QueryUtil.checkIfJoinColumn(currentKey, field, false);
 
 			if (null != joinColumnResult) {
-				if (joinColumnResult.isValid()) { 
+				if (joinColumnResult.isValid()) {
 					criteria.createAlias(entityName + "." + fieldName, fieldName);
-					criteria.add(
-							restrictionLike(fieldName + "." + joinColumnResult.getValue(), field.getType(), fieldsFilter.get(rawKey)));
+					criteria.add(restrictionLike(fieldName + "." + joinColumnResult.getValue(), field.getType(),
+							fieldsFilter.get(rawKey)));
 				} else {
 					continue;
 				}
 			} else {
-				if(itemExacts) {
+				if (itemExacts) {
 					criteria.add(restrictionEquals(entityClass, currentKey, fieldsFilter.get(rawKey)));
-				}else {
-					criteria.add(restrictionLike(entityName + "." +currentKey, entityClass, fieldsFilter.get(rawKey)));
+				} else {
+					criteria.add(restrictionLike(entityName + "." + currentKey, entityClass, fieldsFilter.get(rawKey)));
 				}
 			}
 
@@ -168,7 +179,7 @@ public class CriteriaBuilderService {
 
 		try {
 			addOrderOffsetLimit(criteria, filter);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Error adding order/offset/limit");
 			e.printStackTrace();
 		}
@@ -176,14 +187,14 @@ public class CriteriaBuilderService {
 		return criteria;
 
 	}
-	
+
 	public Criteria createRowCountCriteria(Class<?> _class, final Filter rawFilter) {
 		Filter filter = EntityUtil.cloneSerializable(rawFilter);
-		
+
 		filter.setLimit(0);
 		filter.setPage(0);
 		filter.setOrderBy(null);
-		
+
 		Criteria criteria = createCriteria(_class, filter, false);
 		criteria.setProjection(Projections.rowCount());
 		return criteria;
@@ -198,10 +209,10 @@ public class CriteriaBuilderService {
 		}
 		if (null != filter.getOrderBy()) {
 			Order order;
-			
-			if (filter.getOrderType().toLowerCase().equals("desc")) { 
+
+			if (filter.getOrderType().toLowerCase().equals("desc")) {
 				order = Order.desc(filter.getOrderBy());
-			}else {
+			} else {
 				order = Order.asc(filter.getOrderBy());
 			}
 
@@ -212,35 +223,31 @@ public class CriteriaBuilderService {
 
 	static Criterion restrictionLike(final String fieldName, Class<?> _class, Object value) {
 		String extractedFieldName = fieldName;
-		if(fieldName.contains(".") && fieldName.split("\\.").length == 2) {
+		if (fieldName.contains(".") && fieldName.split("\\.").length == 2) {
 			extractedFieldName = fieldName.split("\\.")[1];
 		}
 		Field field = EntityUtil.getDeclaredField(_class, extractedFieldName);
-		boolean stringTypeField = field.getType().equals(String.class);  
+		boolean stringTypeField = field.getType().equals(String.class);
 		Object validatedValue = validateFieldValue(field, value);
-		
-		//if(!stringTypeField) {
-			
+
+		if (!stringTypeField) {
+
 			return nonStringLikeExp(field, _class, validatedValue);
-		/*
-		 * }
-		 * 
-		 * SimpleExpression likeExp = Restrictions.like(fieldName,
-		 * String.valueOf(validatedValue), MatchMode.ANYWHERE);
-		 * 
-		 * return likeExp;
-		 */
+		}
+
+		SimpleExpression likeExp = Restrictions.like(fieldName, String.valueOf(validatedValue), MatchMode.ANYWHERE);
+
+		return likeExp;
+
 	}
 
-	 
-
 	private static Criterion nonStringLikeExp(Field field, Class<?> _class, Object value) {
-		
-		String columnName = field.getName();//QueryUtil.getColumnName(field);
+
+		String columnName = field.getName();// QueryUtil.getColumnName(field);
 		String tableName = _class.getName();// QueryUtil.getTableName(_class); NOW USING ALIAS
-		
-		Criterion sqlRestriction = Restrictions.sqlRestriction("{alias}."+columnName+" LIKE '%"+value+"%'");
-		
+
+		Criterion sqlRestriction = Restrictions.sqlRestriction("{alias}." + columnName + " LIKE '%" + value + "%'");
+
 		return sqlRestriction;
 	}
 
