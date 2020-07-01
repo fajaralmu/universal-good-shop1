@@ -221,7 +221,7 @@ public class QueryUtil {
 			}
 			
 			String filterColumnName = getColumnName(field); 
-			KeyValue joinColumnResult = checkIfJoinColumn(currentKey, field, true);
+			KeyValue joinColumnResult = checkIfJoinColumn(currentKey, field, false);
 			
 			if(null != joinColumnResult) {
 				if(joinColumnResult.isValid()) {

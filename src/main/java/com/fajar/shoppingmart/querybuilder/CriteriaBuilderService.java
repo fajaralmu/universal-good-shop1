@@ -122,7 +122,7 @@ public class CriteriaBuilderService {
 			}
 
 			String fieldName = field.getName();
-			KeyValue joinColumnResult = QueryUtil.checkIfJoinColumn(currentKey, field, true);
+			KeyValue joinColumnResult = QueryUtil.checkIfJoinColumn(currentKey, field, false);
 
 			if (null != joinColumnResult) {
 				if (joinColumnResult.isValid()) {
