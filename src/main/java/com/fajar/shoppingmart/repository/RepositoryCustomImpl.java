@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fajar.shoppingmart.annotation.CustomEntity;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.entity.BaseEntity;
-import com.fajar.shoppingmart.querybuilder.CriteriaBuilderService;
+import com.fajar.shoppingmart.querybuilder.CriteriaBuilder;
 import com.fajar.shoppingmart.querybuilder.QueryHolder;
 import com.fajar.shoppingmart.util.EntityUtil;
 
@@ -34,9 +34,7 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	@Autowired
 	private SessionFactory sessionFactory;
 	@Autowired
-	private Session hibernateSession;
-	@Autowired
-	private CriteriaBuilderService criteriaBuilderService;
+	private Session hibernateSession; 
 
 	public RepositoryCustomImpl() {
 	}
@@ -188,7 +186,8 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	@Override
 	public <T> List<T> filterAndSortv2(Class<T> _class, Filter filter) {
 		try {
-			Criteria criteria = criteriaBuilderService.createCriteria(_class, filter, false);
+			CriteriaBuilder criteriaBuilder = new CriteriaBuilder(hibernateSession);
+			Criteria criteria = criteriaBuilder.createCriteria(_class, filter, false);
 			List<T> resultList = criteria.list();
 
 			if (null == resultList) {
@@ -208,7 +207,8 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	public long getRowCount(Class<?> _class, Filter filter) {
 
 		try {
-			Criteria criteria = criteriaBuilderService.createRowCountCriteria(_class, filter);
+			CriteriaBuilder criteriaBuilder = new CriteriaBuilder(hibernateSession);
+			Criteria criteria = criteriaBuilder.createRowCountCriteria(_class, filter);
 			return (long) criteria.uniqueResult();
 		} catch (Exception e) {
 			return 0;

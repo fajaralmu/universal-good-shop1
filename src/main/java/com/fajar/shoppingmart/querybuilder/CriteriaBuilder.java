@@ -13,8 +13,6 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.KeyValue;
@@ -31,13 +29,15 @@ import com.fajar.shoppingmart.util.EntityUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
-public class CriteriaBuilderService {
+public class CriteriaBuilder {
 
-	@Autowired
-	private Session hibernateSession;
+	private final Session hibernateSession;
 
-	static {
+	public CriteriaBuilder(Session hibernateSession) {
+		this.hibernateSession = hibernateSession;
+	}
+
+	{
 
 		org.hibernate.cfg.Configuration configuration = new org.hibernate.cfg.Configuration();
 
@@ -56,7 +56,7 @@ public class CriteriaBuilderService {
 //		session = factory.openSession();
 	}
 
-	private static Properties additionalProperties() {
+	private Properties additionalProperties() {
 
 		String dialect = "org.hibernate.dialect.MySQLDialect";
 		String ddlAuto = "update";
@@ -76,7 +76,7 @@ public class CriteriaBuilderService {
 		return properties;
 	}
 
-	public static Criterion restrictionEquals(Class<?> entityClass, String fieldName, Object fieldValue) {
+	public Criterion restrictionEquals(Class<?> entityClass, String fieldName, Object fieldValue) {
 		String entityName = entityClass.getSimpleName();
 		Field field = EntityUtil.getDeclaredField(entityClass, fieldName);
 
@@ -88,14 +88,14 @@ public class CriteriaBuilderService {
 		return Restrictions.naturalId().set(entityName + '.' + fieldName, validatedValue);
 	}
 
-	private static Criterion nonStringEqualsExp(Class<?> entityClass, String fieldName, Object value) {
+	private Criterion nonStringEqualsExp(Class<?> entityClass, String fieldName, Object value) {
 
 		Criterion sqlRestriction = Restrictions.sqlRestriction("{alias}." + fieldName + " = '" + value + "'");
 
 		return sqlRestriction;
 	}
 
-	private static Object validateFieldValue(Field field, Object fieldValue) {
+	private Object validateFieldValue(Field field, Object fieldValue) {
 		if (null == fieldValue) {
 			return 0;
 		}
@@ -200,7 +200,7 @@ public class CriteriaBuilderService {
 		return criteria;
 	}
 
-	private static void addOrderOffsetLimit(Criteria criteria, Filter filter) {
+	private void addOrderOffsetLimit(Criteria criteria, Filter filter) {
 		if (filter.getLimit() > 0) {
 			criteria.setMaxResults(filter.getLimit());
 		}
@@ -221,7 +221,7 @@ public class CriteriaBuilderService {
 
 	}
 
-	static Criterion restrictionLike(final String fieldName, Class<?> _class, Object value) {
+	Criterion restrictionLike(final String fieldName, Class<?> _class, Object value) {
 		String extractedFieldName = fieldName;
 		if (fieldName.contains(".") && fieldName.split("\\.").length == 2) {
 			extractedFieldName = fieldName.split("\\.")[1];
@@ -241,7 +241,7 @@ public class CriteriaBuilderService {
 
 	}
 
-	private static Criterion nonStringLikeExp(Field field, Class<?> _class, Object value) {
+	private Criterion nonStringLikeExp(Field field, Class<?> _class, Object value) {
 
 		String columnName = field.getName();// QueryUtil.getColumnName(field);
 		String tableName = _class.getName();// QueryUtil.getTableName(_class); NOW USING ALIAS
@@ -251,7 +251,7 @@ public class CriteriaBuilderService {
 		return sqlRestriction;
 	}
 
-	public static void main(String[] args) {
+	public void main(String[] args) {
 		String name = "kk.ll";
 		log.info("contains: {}", name.contains("."));
 //		Map<String, Object> filter = new HashMap<String, Object>() {
@@ -268,7 +268,7 @@ public class CriteriaBuilderService {
 //		System.out.println(criteria.getClass());
 	}
 
-	private static Criterion getDateFilter(String rawKey, String key, List<Field> entityDeclaredFields,
+	private Criterion getDateFilter(String rawKey, String key, List<Field> entityDeclaredFields,
 			Map<String, Object> filter) {
 		boolean dayFilter = rawKey.endsWith(QueryUtil.DAY_SUFFIX);
 		boolean monthFilter = rawKey.endsWith(QueryUtil.MONTH_SUFFIX);
@@ -304,7 +304,7 @@ public class CriteriaBuilderService {
 		return null;
 	}
 
-	private static String currentItemExact(String rawKey) {
+	private String currentItemExact(String rawKey) {
 		if (rawKey.endsWith("[EXACTS]")) {
 			String finalKey = rawKey.split("\\[EXACTS\\]")[0];
 			log.info("{} exact search", finalKey);
