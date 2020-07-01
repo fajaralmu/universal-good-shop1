@@ -221,7 +221,7 @@ public class QueryUtil {
 			}
 			
 			String filterColumnName = getColumnName(field); 
-			KeyValue joinColumnResult = checkIfJoinColumn(currentKey, field);
+			KeyValue joinColumnResult = checkIfJoinColumn(currentKey, field, true);
 			
 			if(null != joinColumnResult) {
 				if(joinColumnResult.isValid()) {
@@ -246,9 +246,10 @@ public class QueryUtil {
 	 * return keyValue of tableName and columnName of the referenced entity
 	 * @param currentKey
 	 * @param field
+	 * @param actualColumnName
 	 * @return
 	 */
-	public static KeyValue checkIfJoinColumn(String currentKey, Field field) {
+	public static KeyValue checkIfJoinColumn(String currentKey, Field field, boolean actualColumnName) {
 		String multiKeyColumnName = getMultiKeyColumnName(currentKey);
 		KeyValue keyValue = new KeyValue();
 		boolean isMultiKey 	= null != multiKeyColumnName; 
@@ -268,7 +269,7 @@ public class QueryUtil {
 				}
 
 				Field 	referenceEntityField 	= getDeclaredField(fieldClass, referenceFieldName);
-				String 	fieldColumnName 		= getColumnName(referenceEntityField);
+				String 	fieldColumnName 		= actualColumnName ? getColumnName(referenceEntityField)  : referenceFieldName;
 
 				if (fieldColumnName == null || fieldColumnName.equals("")) {
 					validColumn = false;

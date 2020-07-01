@@ -9,15 +9,11 @@ import javax.persistence.EntityManagerFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
 
-import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.service.WebConfigService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,14 +27,16 @@ public class SessionFactoryConfig {
 	private DriverManagerDataSource driverManagerDataSource;
 	@Autowired
 	private EntityManagerFactory entityManagerFactoryBean;
-	@Autowired
+//	@Autowired
 	private WebConfigService webConfigService;
+	@Autowired
+	private ApplicationContext applicationContext;
 	
-	@Bean
-	@Primary
+	@Bean 
 	public SessionFactory generateSession() {
+		webConfigService = (WebConfigService) applicationContext.getBean("webAppConfig");
 		
-		log.info("=============SESSION FACTORY==========");
+		log.info("=============SESSION FACTORY========== webConfigService:{}",webConfigService);
 		try {
 			org.hibernate.cfg.Configuration configuration = new org.hibernate.cfg.Configuration();
 
@@ -88,19 +86,19 @@ public class SessionFactoryConfig {
 		return properties;
 	}
 
-	@Bean
-	public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
-		
-		JpaTransactionManager transactionManager = new JpaTransactionManager();
-		transactionManager.setEntityManagerFactory(entityManagerFactory);
-
-		return transactionManager;
-	}
-
-	@Bean
-	public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
-		return new PersistenceExceptionTranslationPostProcessor();
-	}
+//	@Bean
+//	public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+//		
+//		JpaTransactionManager transactionManager = new JpaTransactionManager();
+//		transactionManager.setEntityManagerFactory(entityManagerFactory);
+//
+//		return transactionManager;
+//	}
+//
+//	@Bean
+//	public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
+//		return new PersistenceExceptionTranslationPostProcessor();
+//	}
 
 	@Bean
 	public Session hibernateSession(SessionFactory sessionFactory) {

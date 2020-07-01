@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.hibernate.Criteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +25,12 @@ import com.fajar.shoppingmart.entity.Unit;
 import com.fajar.shoppingmart.entity.UserRole;
 import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
 import com.fajar.shoppingmart.querybuilder.CRUDQueryHolder;
+import com.fajar.shoppingmart.querybuilder.CriteriaBuilderService;
 import com.fajar.shoppingmart.querybuilder.QueryUtil;
 import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.service.entity.BaseEntityUpdateService;
+import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.AllArgsConstructor;
@@ -46,6 +49,8 @@ public class EntityService {
 	private RepositoryCustomImpl<BaseEntity> repositoryCustom;   
 	@Autowired
 	private EntityRepository entityRepository; 
+	@Autowired
+	private CriteriaBuilderService criteriaBuilderService;
 	
 	@PostConstruct
 	public void init() {
@@ -144,17 +149,17 @@ public class EntityService {
 		}
 	}  
   
-	private EntityResult filterEntities(Filter filter, Class<? extends BaseEntity> entityClass) {
+	private <T extends BaseEntity> EntityResult filterEntities(Filter filter, Class<T > entityClass) {
 
 		CRUDQueryHolder generatedQueryString = QueryUtil.generateSqlByFilter(filter, entityClass); 
-
-		List<BaseEntity> entities = repositoryCustom.filterAndSort(generatedQueryString, entityClass);
+		Criteria criteria = criteriaBuilderService.createCriteria(entityClass, filter, false);
+		List<T> entities = criteria.list();// repositoryCustom.filterAndSort(generatedQueryString, entityClass);
 
 		Object countResult = repositoryCustom.getSingleResult(generatedQueryString);
 
 		int count = countResult == null? 0: ((BigInteger) countResult).intValue(); 
 		
-		return EntityResult.builder().entities(entities).count(count).build();
+		return EntityResult.builder().entities(CollectionUtil.convertList(entities)).count(count).build();
 	}
 
 
