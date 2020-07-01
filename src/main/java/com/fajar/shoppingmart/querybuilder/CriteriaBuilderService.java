@@ -27,7 +27,6 @@ import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.Unit;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.UserRole;
-import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -87,7 +86,7 @@ public class CriteriaBuilderService {
 	}
 
 	private static Object validateFieldValue(Field field, Object fieldValue) {
-		if(null == fieldValue) { return fieldValue; }
+		if(null == fieldValue) { return 0; }
 		
 		Class<?> fieldType = field.getType();
 		if(EntityUtil.isNumericField(field)) {
@@ -109,6 +108,7 @@ public class CriteriaBuilderService {
 		
 		String entityName = entityClass.getSimpleName();
 		Criteria criteria = hibernateSession.createCriteria(entityClass, entityName);
+	 
 
 		for (final String rawKey : fieldsFilter.keySet()) {
 			log.info("##" + rawKey + ":" + fieldsFilter.get(rawKey));
@@ -210,21 +210,35 @@ public class CriteriaBuilderService {
 
 	}
 
-	static SimpleExpression restrictionLike(final String fieldName, Class<?> _class, Object value) {
+	static Criterion restrictionLike(final String fieldName, Class<?> _class, Object value) {
 		String extractedFieldName = fieldName;
 		if(fieldName.contains(".") && fieldName.split("\\.").length == 2) {
 			extractedFieldName = fieldName.split("\\.")[1];
 		}
 		Field field = EntityUtil.getDeclaredField(_class, extractedFieldName);
-		
+		boolean stringTypeField = field.getType().equals(String.class);  
 		Object validatedValue = validateFieldValue(field, value);
-		return Restrictions.like(fieldName, likeExp(validatedValue) , MatchMode.ANYWHERE);
+		
+		if(!stringTypeField) {
+			
+			return nonStringLikeExp(field, _class, validatedValue);
+		}
+
+		SimpleExpression likeExp = Restrictions.like(fieldName, String.valueOf(validatedValue), MatchMode.ANYWHERE);
+		
+		return likeExp;
 	}
 
-	static String likeExp(Object value) {
-		if(null == value) return "";
-		return value.toString();
-//		return "%" + value + "%";
+	 
+
+	private static Criterion nonStringLikeExp(Field field, Class<?> _class, Object value) {
+		
+		String columnName = field.getName();//QueryUtil.getColumnName(field);
+		String tableName = _class.getName();// QueryUtil.getTableName(_class);
+		
+		Criterion sqlRestriction = Restrictions.sqlRestriction("{alias}."+columnName+" LIKE '%"+value+"%'");
+		
+		return sqlRestriction;
 	}
 
 	public static void main(String[] args) {
