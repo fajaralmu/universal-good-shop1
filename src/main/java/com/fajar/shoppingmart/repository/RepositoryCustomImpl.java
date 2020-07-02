@@ -186,9 +186,9 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	}
 
 	@Override
-	public <T> List<T> filterAndSortv2(Class<T> _class, Filter filter) {
+	public <T extends BaseEntity> List<T> filterAndSortv2(Class<T> _class, Filter filter) {
 		try {
-			CriteriaBuilder criteriaBuilder = new CriteriaBuilder(hibernateSession);
+			CriteriaBuilder criteriaBuilder = new CriteriaBuilder(hibernateSession, _class);
 			Criteria criteria = criteriaBuilder.createCriteria(_class, filter, false);
 			List<T> resultList = criteria.list();
 
@@ -206,10 +206,10 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	}
 
 	@Override
-	public long getRowCount(Class<?> _class, Filter filter) {
+	public long getRowCount(Class<? extends BaseEntity> _class, Filter filter) {
 
 		try {
-			CriteriaBuilder criteriaBuilder = new CriteriaBuilder(hibernateSession);
+			CriteriaBuilder criteriaBuilder = new CriteriaBuilder(hibernateSession, _class);
 			Criteria criteria = criteriaBuilder.createRowCountCriteria(_class, filter);
 			return (long) criteria.uniqueResult();
 		} catch (Exception e) {
@@ -218,7 +218,7 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	}
 
 	private <T extends BaseEntity> T validateJoinColumns(T rawEntity) throws Exception {
-		List<Field> joinColumnFields = QueryUtil.getJoinColumnFields(entity.getClass());
+		List<Field> joinColumnFields = QueryUtil.getJoinColumnFields(rawEntity.getClass());
 		
 		T entity = EntityUtil.cloneSerializable(rawEntity);
 		

@@ -28,7 +28,7 @@ public class ShopProfile extends BaseEntity {
 	* 
 	*/
 	private static final long serialVersionUID = 4095664637854922384L;
-	@Column(unique = true)
+	@Column 
 	@FormField
 	private String name;
 	@Column(name = "mart_code", unique = true)

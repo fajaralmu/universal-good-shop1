@@ -229,7 +229,7 @@ public class WebConfigService {
 
 	private ShopProfile defaultProfile() {
 		ShopProfile profile = new ShopProfile();
-		profile.setName("Universal Good Shop");
+		profile.setName("Universal Good Shop [Generated]");
 		profile.setAddress("Spring Mvc, Java Virtual Machine, Win 10 64");
 		profile.setContact("087737666614");
 		profile.setWebsite("http://localhost:8080/universal-good-shop");

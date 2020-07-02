@@ -16,6 +16,7 @@ import org.hibernate.criterion.SimpleExpression;
 
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.KeyValue;
+import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Category;
 import com.fajar.shoppingmart.entity.Customer;
 import com.fajar.shoppingmart.entity.Product;
@@ -24,6 +25,7 @@ import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.Unit;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.UserRole;
+import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +37,11 @@ public class CriteriaBuilder {
 
 	private String currentAlias;
 	private int joinIndex;
+	private final Class<? extends BaseEntity> _class;
 
-	public CriteriaBuilder(Session hibernateSession) {
+	public CriteriaBuilder(Session hibernateSession, Class<? extends BaseEntity> _class) {
 		this.hibernateSession = hibernateSession;
+		this._class = _class;
 	}
 
 	{
@@ -81,14 +85,30 @@ public class CriteriaBuilder {
 
 	public Criterion restrictionEquals(Class<?> entityClass, String fieldName, Object fieldValue) {
 		String entityName = entityClass.getSimpleName();
-		Field field = EntityUtil.getDeclaredField(entityClass, fieldName);
+		String columnName;
+		boolean multiKey = fieldName.contains(",");
+		Field field;
+		
+		if (multiKey) {
+			Field hisField = EntityUtil.getDeclaredField(entityClass, fieldName.split(",")[0]);
+			field = EntityUtil.getDeclaredField(hisField.getType(), fieldName.split(",")[1]);
+			 
+			fieldName = fieldName.replace(",", ".");
+			fieldName = fieldName.replace( fieldName.split("\\.")[0], this.currentAlias);
+			columnName = fieldName;
+			
+			return Restrictions.sqlRestriction(columnName+"='"+fieldValue+"'");
+		} else {
+			field = EntityUtil.getDeclaredField(entityClass, fieldName);
+			columnName = entityName + '.' + fieldName;
+		}
 
 		if (field.getType().equals(String.class) == false) {
 			return nonStringEqualsExp(entityClass, fieldName, fieldValue);
 		}
 
 		Object validatedValue = validateFieldValue(field, fieldValue);
-		return Restrictions.naturalId().set(entityName + '.' + fieldName, validatedValue);
+		return Restrictions.naturalId().set(columnName, validatedValue);
 	}
 
 	private Criterion nonStringEqualsExp(Class<?> entityClass, String fieldName, Object value) {
@@ -121,13 +141,25 @@ public class CriteriaBuilder {
 		if (aliasName.equals("this")) {
 			this.currentAlias = "this_";
 		} else {
-			joinIndex++;
-			if(aliasName.length() > 10) {
+
+			joinIndex = getJoinColumnIndex(aliasName) + 1;
+			
+			if (aliasName.length() > 10) {
 				aliasName = aliasName.substring(0, 10);
 			}
-			
+
 			this.currentAlias = aliasName.toLowerCase() + joinIndex + '_';
 		}
+	}
+	
+	private int getJoinColumnIndex(String fieldName) {
+		List<Field> joinColumns = QueryUtil.getJoinColumnFields(_class);
+		for (int i = 0; i < joinColumns.size(); i++) {
+			if(joinColumns.get(i).getName().equals(fieldName)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	public Criteria createCriteria(Class<?> entityClass, Filter filter, final boolean _allItemExactSearch) {
@@ -154,8 +186,15 @@ public class CriteriaBuilder {
 			String finalNameAfterExactChecking = currentItemExact(rawKey);
 
 			if (null != finalNameAfterExactChecking) {
+				
 				currentKey = finalNameAfterExactChecking;
 				itemExacts = true;
+				boolean multiKey = currentKey.contains(",");
+				
+				if(multiKey) {
+					setCurrentAlias(currentKey.split(",")[0]);
+				}
+				
 				criteria.add(restrictionEquals(entityClass, currentKey, fieldsFilter.get(rawKey)));
 				continue;
 			}
@@ -171,7 +210,15 @@ public class CriteriaBuilder {
 				continue;
 			}
 
-			Field field = QueryUtil.getFieldByName(currentKey, entityDeclaredFields);
+			boolean multiKey = rawKey.contains(",");
+
+			Field field;
+			if (multiKey) {
+				Field hisField = EntityUtil.getDeclaredField(entityClass, rawKey.split(",")[0]);
+				field = EntityUtil.getDeclaredField(hisField.getType(), rawKey.split(",")[1]);
+			} else {
+				field = QueryUtil.getFieldByName(currentKey, entityDeclaredFields);
+			}
 
 			if (field == null) {
 				log.warn("Field Not Found :" + currentKey + " !");
@@ -231,7 +278,7 @@ public class CriteriaBuilder {
 				criteria.setFirstResult(filter.getPage() * filter.getLimit());
 			}
 		}
-		
+
 		if (null != filter.getOrderBy()) {
 			Order order;
 
@@ -271,7 +318,8 @@ public class CriteriaBuilder {
 		String columnName = field.getName();// QueryUtil.getColumnName(field);
 		String tableName = _class.getName();// QueryUtil.getTableName(_class); NOW USING ALIAS
 
-		Criterion sqlRestriction = Restrictions.sqlRestriction(currentAlias+"." + columnName + " LIKE '%" + value + "%'");
+		Criterion sqlRestriction = Restrictions
+				.sqlRestriction(currentAlias + "." + columnName + " LIKE '%" + value + "%'");
 
 		return sqlRestriction;
 	}
@@ -281,6 +329,7 @@ public class CriteriaBuilder {
 		log.info("contains: {}", name.contains("."));
 		String str = "capitaltype"; // 10 digits
 		System.out.println(str.substring(0, 10));
+		System.out.println(str.replace("e", "."));
 
 //		Map<String, Object> filter = new HashMap<String, Object>() {
 //			{

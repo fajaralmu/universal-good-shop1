@@ -22,9 +22,9 @@ public interface RepositoryCustom {
 
 	public <T> T getCustomedObjectFromNativeQuery(String sql, Class<T> objectClass);
 	
-	public <T> List<T> filterAndSortv2(Class<T> _class, Filter filter);
+	public <T extends BaseEntity> List<T> filterAndSortv2(Class<T> _class, Filter filter);
 	
-	public long getRowCount(Class<?> _class, Filter filter);
+	public long getRowCount(Class<? extends BaseEntity> _class, Filter filter);
 	
 	public <T extends BaseEntity> T saveObject(T entity);
 

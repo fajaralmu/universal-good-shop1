@@ -250,6 +250,7 @@ public class QueryUtil {
 	 * @return
 	 */
 	public static KeyValue checkIfJoinColumn(String currentKey, Field field, boolean actualColumnName) {
+		
 		String multiKeyColumnName = getMultiKeyColumnName(currentKey);
 		KeyValue keyValue = new KeyValue();
 		boolean isMultiKey 	= null != multiKeyColumnName; 
@@ -300,6 +301,8 @@ public class QueryUtil {
 		String[] multiKey 	= currentKey.split(",");
 		boolean isMultiKey 	= multiKey.length == 2;
 		if (isMultiKey) {
+			log.info("Multi Key: {}", currentKey);
+			log.info("key name: {}", multiKey[1]);
 			return  multiKey[1]; 
 		} 
 		else {
@@ -477,11 +480,19 @@ public class QueryUtil {
 		return StringUtil.doubleQuoteMysql(str.toString());
 	}  
 	
+	/**
+	 * 
+	 * @param <T>
+	 * @param _class
+	 * @return fields having BaseEntity superClass type and @JoinColumn annotation
+	 */
 	public static  <T extends BaseEntity> List<Field> getJoinColumnFields(Class<T> _class){
 		List<Field> joinColumns = new ArrayList<>();
+		
 		List<Field> fields = EntityUtil.getDeclaredFields(_class);
 		for (int i = 0; i < fields.size(); i++) {
-			Field field = fields.get(i);
+			final Field field = fields.get(i);
+			
 			JoinColumn joinColumn = field.getAnnotation(JoinColumn.class);
 			if(null != joinColumn && field.getType().getSuperclass().equals(BaseEntity.class)) {
 				field.setAccessible(true);
