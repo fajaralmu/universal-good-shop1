@@ -227,10 +227,11 @@ public class CriteriaBuilder {
 	private void addOrderOffsetLimit(Criteria criteria, Filter filter) {
 		if (filter.getLimit() > 0) {
 			criteria.setMaxResults(filter.getLimit());
+			if (filter.getPage() > 0) {
+				criteria.setFirstResult(filter.getPage() * filter.getLimit());
+			}
 		}
-		if (filter.getPage() > 0) {
-			criteria.setFirstResult(filter.getPage());
-		}
+		
 		if (null != filter.getOrderBy()) {
 			Order order;
 

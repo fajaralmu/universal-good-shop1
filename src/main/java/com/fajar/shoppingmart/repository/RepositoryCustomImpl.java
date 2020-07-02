@@ -228,10 +228,13 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 				Long newId = (Long) hibernateSession.save(entity);
 				result = entity;
 				result.setId(newId);
+				
+				log.debug("success add new record of {} with new ID: {}", entity.getClass(), newId);
 			}else {
 				result = (T) hibernateSession.merge(entity);
-			}
-			
+				
+				log.debug("success update record of {}", entity.getClass());
+			} 
 			
 			transaction.commit();
 			
@@ -241,6 +244,7 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 			log.error("Error save object: {}", e);
 
 			if (transaction != null) {
+				log.info("Rolling back.... ");
 				transaction.rollback();
 			}
 
