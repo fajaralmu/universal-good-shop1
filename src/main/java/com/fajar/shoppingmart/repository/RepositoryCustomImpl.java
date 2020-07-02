@@ -39,14 +39,18 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	@Autowired
 	private Session hibernateSession;
 
-	boolean removeCurrentTransaction = true;
+	boolean removeTransactionAfterPersistence = true;
 	
-	public void keepCurrentTransaction() {
-		this.removeCurrentTransaction = false;
+	public boolean isTransactionNotKept() {
+		return removeTransactionAfterPersistence;
 	}
 	
-	public void removeCurrentTransaction() {
-		this.removeCurrentTransaction = true;
+	public void keepTransaction() {
+		this.removeTransactionAfterPersistence = false;
+	}
+	
+	public void notKeepingTransaction() {
+		this.removeTransactionAfterPersistence = true;
 	}
 
 	private Transaction currentTransaction;
@@ -324,11 +328,12 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 
 			T result = persistenceOperation.doPersist(hibernateSession);
 
-			if(removeCurrentTransaction)
+			if(isTransactionNotKept())
 				currentTransaction.commit();
 
-			log.info("success persist operation commited: {}", removeCurrentTransaction);
+			log.info("success persist operation commited: {}", removeTransactionAfterPersistence);
 			return result;
+			
 		} catch (Exception e) {
 			log.error("Error persist operation: {}", e);
 
@@ -336,11 +341,12 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 				log.info("Rolling back.... ");
 				currentTransaction.rollback();
 			}
-			removeCurrentTransaction = true;
+			notKeepingTransaction(); 
+			
 			e.printStackTrace();
 		} finally {
 			
-			if(removeCurrentTransaction) {
+			if(isTransactionNotKept()) {
 				currentTransaction = null;
 			}
 		}

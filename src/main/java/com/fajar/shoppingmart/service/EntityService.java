@@ -143,19 +143,21 @@ public class EntityService {
 		final List<T> entities = new ArrayList<>();
 		final Map<String, Long> count = new HashMap<>();
 		try {
-			Thread thread = ThreadUtil.run(() -> {
+//			Thread thread = ThreadUtil.run(() -> {
 				List<T> resultList = repositoryCustom.filterAndSortv2(entityClass, filter);
 				entities.addAll(resultList);
-			});
-			Thread thread2 = ThreadUtil.run(() -> {
+//			});
+//			Thread thread2 = ThreadUtil.run(() -> {
 				long resultCount = repositoryCustom.getRowCount(entityClass, filter);
 				count.put("value", resultCount);
-			});
-			thread.join();
-			thread2.join();
+//			});
+//			thread.join();
+//			thread2.join();
 			
 		}catch (Exception e) {
+			log.error("Error filterEntities: {}", e.getCause() );
 			count.put("value", 0L);
+			e.printStackTrace();
 		}
 		return EntityResult.builder().entities(CollectionUtil.convertList(entities)).count(count.get("value").intValue())
 				.build();

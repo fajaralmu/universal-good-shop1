@@ -82,7 +82,7 @@ public class ProductInventoryService {
 			Supplier supplier, Date transactionData) {
 		final Transaction transaction = buildTransactionObject(TYPE_IN, user, null, supplier, transactionData);
 
-		repositoryCustom.keepCurrentTransaction();
+		repositoryCustom.keepTransaction();
 		PersistenceOperation<Transaction> persistenceOperation = new PersistenceOperation<Transaction>() {
 
 			@Override
@@ -138,7 +138,7 @@ public class ProductInventoryService {
 		};
 
 		repositoryCustom.pesistOperation(persistenceOperation);
-		repositoryCustom.removeCurrentTransaction();
+		repositoryCustom.notKeepingTransaction();
 		transaction.setProductFlows(productFlows);
 		return transaction;
 
@@ -244,7 +244,7 @@ public class ProductInventoryService {
 		}
 		final Transaction transaction = buildTransactionObject(TYPE_OUT, user, customer, null, transactionDate);
 
-		repositoryCustom.keepCurrentTransaction();
+		repositoryCustom.keepTransaction();
 		PersistenceOperation<Transaction> persistenceOperation = new PersistenceOperation<Transaction>() {
 
 			@Override
@@ -303,7 +303,7 @@ public class ProductInventoryService {
 
 					purchasedProduct++;
 					progressService.sendProgress(1, productFlows.size(), 30, false, requestId); 
-					repositoryCustom.removeCurrentTransaction();
+					repositoryCustom.notKeepingTransaction();
 				}
 				
 				return transaction;
