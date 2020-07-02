@@ -228,6 +228,8 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 		for (Field field : joinColumnFields) {
 			BaseEntity fieldValue = (BaseEntity)field.get(entity);
 			//check from DB
+			log.info("check join column field: {}->value: {}", field.getName(), fieldValue);
+			if(null == fieldValue) continue;
 			Object dbValue = hibernateSession.get(fieldValue.getClass(), fieldValue.getId());
 			
 			if(null == dbValue) continue;
