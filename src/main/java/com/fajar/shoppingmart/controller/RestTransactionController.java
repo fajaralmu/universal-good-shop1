@@ -45,39 +45,25 @@ public class RestTransactionController extends BaseController{
 	public void init() {
 		LogProxyFactory.setLoggers(this);
 	}
-	
-	@PostMapping(value = "/supply", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	 
+	@PostMapping(value = "/purchasing", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@CustomRequestInfo(withRealtimeProgress = true)
-	public WebResponse _purchaseProduct(@RequestBody WebRequest request, HttpServletRequest httpRequest,
+	public WebResponse purchaseProduct(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("supply {}", request);
 		 
 		WebResponse response = transactionService.purchaseProduct(request, httpRequest);
 		return response;
-	}
-	
-	@PostMapping(value = "/purchasing", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@CustomRequestInfo(withRealtimeProgress = true)
-	public WebResponse purchaseProduct(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
-		return _purchaseProduct(request, httpRequest, httpResponse);
-	}
-	
-	@PostMapping(value = "/purchasev2", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@CustomRequestInfo(withRealtimeProgress = true)
-	public WebResponse _sellProduct(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
-		log.info("purchase {}", request);
-		 
-		WebResponse response = transactionService.sellProduct(request, httpRequest);
-		return response;
-	}
+	} 
 	
 	@PostMapping(value = "/selling", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@CustomRequestInfo(withRealtimeProgress = true)
 	public WebResponse sell(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		return _sellProduct(request, httpRequest, httpResponse);
+		log.info("purchase {}", request);
+		 
+		WebResponse response = transactionService.sellProduct(request, httpRequest);
+		return response;
 	}
 	
 	@PostMapping(value = "/stocks", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
