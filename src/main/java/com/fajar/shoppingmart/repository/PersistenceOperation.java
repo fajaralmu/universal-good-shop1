@@ -2,8 +2,8 @@ package com.fajar.shoppingmart.repository;
 
 import org.hibernate.Session;
 
-public interface PersistenceOperation {
+public interface PersistenceOperation<T> {
 	
-	public void doPersist(Session hibernateSession);
+	public T doPersist(Session hibernateSession);
 
 }

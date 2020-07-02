@@ -224,7 +224,7 @@
 		const productFlow = {
 			"id" : ID,
 			"product" : currentProduct,
-			"price" : currentProduct.price,
+			"price" : priceField.value,
 			"count" : quantityField.value,
 			"expiryDate" : expiryDateField.value
 

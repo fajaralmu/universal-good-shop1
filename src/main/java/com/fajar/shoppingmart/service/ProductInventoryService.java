@@ -82,13 +82,13 @@ public class ProductInventoryService {
 			Supplier supplier, Date transactionData) {
 		final Transaction transaction = buildTransactionObject(TYPE_IN, user, null, supplier, transactionData);
 
-		PersistenceOperation persistenceOperation = new PersistenceOperation() {
+		repositoryCustom.keepCurrentTransaction();
+		PersistenceOperation<Transaction> persistenceOperation = new PersistenceOperation<Transaction>() {
 
 			@Override
-			public void doPersist(Session hibernateSession) {
-
-				Long newTransactionId = (Long) hibernateSession.save(transaction);
-				transaction.setId(newTransactionId);
+			public Transaction doPersist(Session hibernateSession) {
+ 
+				RepositoryCustomImpl.saveNewRecord(transaction, hibernateSession);
 
 				progressService.sendProgress(1, 1, 10, false, requestId);
 
@@ -97,8 +97,8 @@ public class ProductInventoryService {
 					productFlow.setId(null);// never update
 					// IMPORTANT!!
 					productFlow.setTransaction(transaction);
-					Long productFlowId = (Long) hibernateSession.save(productFlow);
-					productFlow.setId(productFlowId);
+					
+					RepositoryCustomImpl.saveNewRecord(productFlow, hibernateSession); 
 
 					/**
 					 * update cash balance
@@ -132,10 +132,13 @@ public class ProductInventoryService {
 
 					progressService.sendProgress(1, productFlows.size(), 40, false, requestId);
 				}
+				 
+				return transaction;
 			}
 		};
 
 		repositoryCustom.pesistOperation(persistenceOperation);
+		repositoryCustom.removeCurrentTransaction();
 		transaction.setProductFlows(productFlows);
 		return transaction;
 
@@ -241,12 +244,13 @@ public class ProductInventoryService {
 		}
 		final Transaction transaction = buildTransactionObject(TYPE_OUT, user, customer, null, transactionDate);
 
-		PersistenceOperation persistenceOperation = new PersistenceOperation() {
+		repositoryCustom.keepCurrentTransaction();
+		PersistenceOperation<Transaction> persistenceOperation = new PersistenceOperation<Transaction>() {
 
 			@Override
-			public void doPersist(Session hibernateSession) {
-				Long newTransactionId = (Long) hibernateSession.save(transaction);
-				transaction.setId(newTransactionId);
+			public Transaction doPersist(Session hibernateSession) { 
+				
+				RepositoryCustomImpl.saveNewRecord(transaction, hibernateSession);
 
 				progressService.sendProgress(1, 1, 10, false, requestId);
 				int purchasedProduct = 0;
@@ -276,8 +280,7 @@ public class ProductInventoryService {
 					/**
 					 * save NEW productFlow record to database
 					 */
-					Long productFlowId = (Long) hibernateSession.save(productFlow);
-					productFlow.setId(productFlowId);
+					RepositoryCustomImpl.saveNewRecord(productFlow, hibernateSession); 
 
 					/**
 					 * update cash balance
@@ -299,8 +302,11 @@ public class ProductInventoryService {
 					hibernateSession.merge(inventoryItemV2);
 
 					purchasedProduct++;
-					progressService.sendProgress(1, productFlows.size(), 30, false, requestId);
+					progressService.sendProgress(1, productFlows.size(), 30, false, requestId); 
+					repositoryCustom.removeCurrentTransaction();
 				}
+				
+				return transaction;
 			}
 		}; 
 		

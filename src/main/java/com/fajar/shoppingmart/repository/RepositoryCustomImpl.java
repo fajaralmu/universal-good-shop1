@@ -39,6 +39,18 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	@Autowired
 	private Session hibernateSession;
 
+	boolean removeCurrentTransaction = true;
+	
+	public void keepCurrentTransaction() {
+		this.removeCurrentTransaction = false;
+	}
+	
+	public void removeCurrentTransaction() {
+		this.removeCurrentTransaction = true;
+	}
+
+	private Transaction currentTransaction;
+
 	public RepositoryCustomImpl() {
 	}
 
@@ -245,72 +257,94 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 
 	@Override
 	@Transactional
-	public <T extends BaseEntity> T saveObject(T entity) {
-		Transaction transaction = null;
-		try {
-			transaction = hibernateSession.beginTransaction();
-			T result;
+	public <T extends BaseEntity> T saveObject(final T rawEntity) {
 
-			entity = validateJoinColumns(entity);
+		PersistenceOperation<T> persistenceOperation = new PersistenceOperation<T>() {
 
-			if (entity.getId() == null) {
-				log.debug("Will save new entity ");
-				Long newId = (Long) hibernateSession.save(entity);
-				result = entity;
-				result.setId(newId);
+			@Override
+			public T doPersist(Session hibernateSession) {
+				T result, entity;
+				try {
+					entity = validateJoinColumns(rawEntity);
+				} catch (Exception e) {
+					entity = rawEntity;
+					e.printStackTrace();
+				}
 
-				log.debug("success add new record of {} with new ID: {}", entity.getClass(), newId);
-			} else {
-				log.debug("Will update entity ");
-				result = (T) hibernateSession.merge(entity);
+				if (entity.getId() == null) {
+					log.debug("Will save new entity ");
+					Long newId = (Long) hibernateSession.save(entity);
+					result = entity;
+					result.setId(newId);
 
-				log.debug("success update record of {}", entity.getClass());
+					log.debug("success add new record of {} with new ID: {}", entity.getClass(), newId);
+				} else {
+					log.debug("Will update entity ");
+					result = (T) hibernateSession.merge(entity);
+
+					log.debug("success update record of {}", entity.getClass());
+				}
+
+				log.info("success save Object: {}", entity.getClass());
+				return result;
 			}
+		};
 
-			transaction.commit();
-
-			log.info("success save Object: {}", entity.getClass());
-			return result;
-		} catch (Exception e) {
-			log.error("Error save object: {}", e);
-
-			if (transaction != null) {
-				log.info("Rolling back.... ");
-				transaction.rollback();
-			}
-
-			e.printStackTrace();
-		} finally {
-
+		T result = this.pesistOperation(persistenceOperation);
+		if (null != result) {
+			log.info("success save Object: {}", result.getClass());
 		}
-		return null;
+
+		return result;
+	}
+
+	/**
+	 * save and add new inserted Id
+	 * 
+	 * @param <T>
+	 * @param entity
+	 * @param hibernateSession
+	 */
+	public static <T extends BaseEntity> void saveNewRecord(T entity, Session hibernateSession) {
+
+		Long id = (Long) hibernateSession.save(entity);
+		entity.setId(id);
 	}
 
 	@Override
-	public boolean pesistOperation(PersistenceOperation persistenceOperation) {
-		Transaction transaction = null;
-		try {
-			transaction = hibernateSession.beginTransaction();
-			
-			persistenceOperation.doPersist(hibernateSession);
-			
-			transaction.commit();
+	public <T> T pesistOperation(PersistenceOperation<T> persistenceOperation) {
 
-			log.info("success persist operation");
-			return true;
+		try {
+			if (null == persistenceOperation) {
+				throw new Exception("persistenceOperation must not be NULL");
+			}
+			if (null == currentTransaction) {
+				currentTransaction = hibernateSession.beginTransaction();
+			}
+
+			T result = persistenceOperation.doPersist(hibernateSession);
+
+			if(removeCurrentTransaction)
+				currentTransaction.commit();
+
+			log.info("success persist operation commited: {}", removeCurrentTransaction);
+			return result;
 		} catch (Exception e) {
 			log.error("Error persist operation: {}", e);
 
-			if (transaction != null) {
+			if (currentTransaction != null) {
 				log.info("Rolling back.... ");
-				transaction.rollback();
+				currentTransaction.rollback();
 			}
-
+			removeCurrentTransaction = true;
 			e.printStackTrace();
 		} finally {
-
+			
+			if(removeCurrentTransaction) {
+				currentTransaction = null;
+			}
 		}
-		return false;
+		return null;
 	}
 
 }

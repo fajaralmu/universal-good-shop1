@@ -28,6 +28,6 @@ public interface RepositoryCustom {
 	
 	public <T extends BaseEntity> T saveObject(T entity);
 	
-	public boolean pesistOperation(PersistenceOperation persistenceOperation);
+	public <T> T pesistOperation(PersistenceOperation<T> persistenceOperation);
 
 }
