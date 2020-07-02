@@ -224,13 +224,15 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 			transaction = hibernateSession.beginTransaction();
 			T result;
 			
-			if(entity.getId() != null) {
+			if(entity.getId() == null) {
+				log.debug("Will save new entity ");
 				Long newId = (Long) hibernateSession.save(entity);
 				result = entity;
 				result.setId(newId);
 				
 				log.debug("success add new record of {} with new ID: {}", entity.getClass(), newId);
 			}else {
+				log.debug("Will update entity ");
 				result = (T) hibernateSession.merge(entity);
 				
 				log.debug("success update record of {}", entity.getClass());
