@@ -8,9 +8,6 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.fajar.shoppingmart.service.ProgressService;
-import com.fajar.shoppingmart.util.SessionUtil;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -22,11 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MyHandlerInterceptor extends HandlerInterceptorAdapter {
 
-	
 	@Autowired
 	private InterceptorProcessor interceptorProcessor;
-	@Autowired
-	private ProgressService progressService;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -46,23 +40,21 @@ public class MyHandlerInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-			ModelAndView modelAndView) throws Exception { 
-		
-		if(null != modelAndView && handler instanceof HandlerMethod) {
-			interceptorProcessor.addResources(request, response, (HandlerMethod) handler, modelAndView);
+			ModelAndView modelAndView) throws Exception {
+
+		if (handler instanceof HandlerMethod) {
+			interceptorProcessor.postHandle(request, response, (HandlerMethod) handler, modelAndView);
+
 		}
-		
-		super.postHandle(request, response, handler, modelAndView); 
-	} 
-	
+
+		super.postHandle(request, response, handler, modelAndView);
+	}
 
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
 
-		progressService.sendComplete(SessionUtil.getPageRequestId(request));
 		super.afterCompletion(request, response, handler, ex);
 	}
 
-	
 }

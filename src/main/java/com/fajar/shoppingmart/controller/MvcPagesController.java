@@ -11,7 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.fajar.shoppingmart.annotation.ResourcePath;
+import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.entity.Page;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 
@@ -34,7 +34,7 @@ public class MvcPagesController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/page/{code}" })
-	@ResourcePath(pageUrl = "shop/master-common-page")
+	@CustomRequestInfo(pageUrl = "shop/master-common-page")
 	public String suppliers(@PathVariable(name = "code") String code, Model model, HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 

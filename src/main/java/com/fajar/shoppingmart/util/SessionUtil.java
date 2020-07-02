@@ -20,8 +20,8 @@ public class SessionUtil {
 	public static final String HEADER_LOGIN_KEY = "loginKey";
 	public static final String ACCESS_CONTROL_EXPOSE_HEADER = "Access-Control-Expose-Headers";
 	public static final String ATTR_REQUEST_URI = "requestURI";
-	public static final String ATTR_REGISTERED_REQUEST_ID = "registered_request_id"; 
-	public static final String PAGE_CODE = "page-code";  
+	public static final String ATTR_REGISTERED_REQUEST_ID = "registered_request_id";
+	public static final String PAGE_CODE = "page-code";
 	public static final String HEADER_REQUEST_TOKEN = "requestToken";
 
 	public static String getPageRequestId(HttpServletRequest httpServletRequest) {
@@ -104,7 +104,7 @@ public class SessionUtil {
 		try {
 			return request.getSession().getAttribute(PAGE_CODE).toString();
 		} catch (Exception e) {
-			 
+
 			return null;
 		}
 	}
@@ -115,21 +115,35 @@ public class SessionUtil {
 	}
 
 	public static String getRequestToken(HttpServletRequest httpRequest) {
-		 try {
-			 return httpRequest.getHeader(HEADER_REQUEST_TOKEN).toString();
-		 }catch (Exception e) {
+		try {
+			return httpRequest.getHeader(HEADER_REQUEST_TOKEN).toString();
+		} catch (Exception e) {
 			return null;
 		}
 	}
 
 	public static String getSessionRegisteredRequest(HttpServletRequest request) {
-		
+
 		try {
 			return request.getSession().getAttribute(ATTR_REGISTERED_REQUEST_ID).toString();
-		}catch (Exception e) {
-			 
+		} catch (Exception e) {
+
 		}
 		return null;
+	}
+
+	public static void setUserInRequest(HttpServletRequest request, User authenticatedUser) {
+		String requestId = getPageRequestId(request);
+		authenticatedUser.setRequestId(requestId);
+		request.setAttribute(ATTR_USER, authenticatedUser);
+	}
+
+	public static User getUserFromRequest(HttpServletRequest request) {
+		try {
+			return (User) request.getAttribute(ATTR_USER);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 }

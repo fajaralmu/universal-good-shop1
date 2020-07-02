@@ -208,7 +208,7 @@ public class UserSessionService {
 	 * @param request
 	 * @return
 	 */
-	private User getLoggedUser(HttpServletRequest request) {
+	public User getLoggedUser(HttpServletRequest request) {
 		User user = getUserFromSession(request);
 
 		try {

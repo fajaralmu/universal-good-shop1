@@ -64,9 +64,7 @@ public class ProductService {
 	 * @param requestId
 	 * @return
 	 */
-	public WebResponse getProductsCatalog(WebRequest request, String requestId) {
-		
-		progressService.init(requestId); 
+	public WebResponse getProductsCatalog(WebRequest request, String requestId) { 
 		
 		Map<String, Object> filter = request.getFilter().getFieldsFilter();
 		
@@ -194,9 +192,7 @@ public class ProductService {
 	 * @param requestId
 	 * @return
 	 */
-	public WebResponse getProductSales(WebRequest request, String requestId) {
-		
-		progressService.init(requestId);
+	public WebResponse getProductSales(WebRequest request, String requestId) { 
 		
 		WebResponse response = new WebResponse();
 		Filter filter = request.getFilter();
@@ -220,8 +216,7 @@ public class ProductService {
 			productSalesList.add(productSales );
 			progressService.sendProgress(1, products.size(), 100, false, requestId);
 		}
-		
-		progressService.sendComplete(requestId);
+		 
 		response.setEntities(convertList(productSalesList));
 		response.setFilter(request.getFilter());
 		return response;
@@ -278,9 +273,7 @@ public class ProductService {
 	 * @param requestId
 	 * @return
 	 */
-	public WebResponse getProductSalesDetail(WebRequest request, Long productId, String requestId) {
-
-		progressService.init(requestId);
+	public WebResponse getProductSalesDetail(WebRequest request, Long productId, String requestId) { 
 
 		Optional<Product> productOpt = productRepository.findById(productId);
 		Product product = null;

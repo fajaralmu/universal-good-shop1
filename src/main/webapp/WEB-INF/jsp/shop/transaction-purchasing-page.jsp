@@ -131,7 +131,7 @@
 			"supplier" : currentSupplier,
 			"productFlows" : productFlows
 		}
-		postReq("<spring:url value="/api/transaction/supply" />",
+		postReq("<spring:url value="/api/transaction/purchasing" />",
 				requestObject, function(xhr) {
 					var response = (xhr.data);
 					var code = response.code;

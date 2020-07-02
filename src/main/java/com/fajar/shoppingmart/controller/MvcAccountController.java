@@ -12,7 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.shoppingmart.annotation.Authenticated;
-import com.fajar.shoppingmart.annotation.ResourcePath;
+import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class MvcAccountController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/login" })
-	@ResourcePath(title="Login", pageUrl = "shop/login-page")
+	@CustomRequestInfo(title="Login", pageUrl = "shop/login-page")
 	public String login(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if (userSessionService.hasSession(request, false)) {
 			response.sendRedirect(request.getContextPath() + "/admin/home");

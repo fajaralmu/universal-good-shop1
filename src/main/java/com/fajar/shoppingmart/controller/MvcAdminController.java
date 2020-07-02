@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.shoppingmart.annotation.Authenticated;
-import com.fajar.shoppingmart.annotation.ResourcePath;
+import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
@@ -50,7 +50,7 @@ public class MvcAdminController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/home" })
-	@ResourcePath(title = "Dashboard", pageUrl = "shop/home-page")
+	@CustomRequestInfo(title = "Dashboard", pageUrl = "shop/home-page")
 	public String menuDashboard(Model model, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 		Calendar cal = Calendar.getInstance();
@@ -76,7 +76,7 @@ public class MvcAdminController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/product/{code}" })
-	@ResourcePath(pageUrl = "shop/product-detail-page")
+	@CustomRequestInfo(pageUrl = "shop/product-detail-page")
 	public String productDetail(@PathVariable(required = true) String code, Model model, HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 		Calendar cal = Calendar.getInstance();
@@ -162,8 +162,8 @@ public class MvcAdminController extends BaseController {
 //	}
 
 	@RequestMapping(value = { "/transaction/in", "/transaction/in/", "/transaction/in/{transactionCode}" })
-	@ResourcePath(scriptPaths = { "transaction" }, title = "Purchase", pageUrl = "shop/transaction-in-page")
-	public String incomingTransaction(@PathVariable(required = false) String transactionCode, Model model,
+	@CustomRequestInfo(scriptPaths = { "transaction" }, title = "Purchase", pageUrl = "shop/transaction-purchasing-page")
+	public String purchasingTransaction(@PathVariable(required = false) String transactionCode, Model model,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {
@@ -179,8 +179,8 @@ public class MvcAdminController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/transaction/out", "/transaction/out/", "/transaction/out/{transactionCode}" })
-	@ResourcePath(scriptPaths = { "transaction" }, title = "Selling", pageUrl = "shop/transaction-out-page")
-	public String outTransaction(@PathVariable(required = false) String transactionCode, Model model,
+	@CustomRequestInfo(scriptPaths = { "transaction" }, title = "Selling", pageUrl = "shop/transaction-selling-page")
+	public String sellingTransaction(@PathVariable(required = false) String transactionCode, Model model,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {

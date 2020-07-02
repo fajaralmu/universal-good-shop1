@@ -301,10 +301,7 @@ public class ReportingService {
 	 * @param requestId
 	 * @return
 	 */
-	public WebResponse getCashflowDetail(WebRequest request, String requestId) {
-
-		progressService.init(requestId);
-
+	public WebResponse getCashflowDetail(WebRequest request, String requestId) { 
 		int monthFrom = request.getFilter().getMonth();
 		int yearFrom = request.getFilter().getYear();
 		int monthTo = request.getFilter().getMonthTo();
@@ -352,9 +349,7 @@ public class ReportingService {
 		response.setMaxValue(maxValue);
 		response.setSupplies(supplies);
 		response.setPurchases(purchases);
-		
-		progressService.sendComplete(requestId);
-		
+		 
 		return response;
 	}
 	

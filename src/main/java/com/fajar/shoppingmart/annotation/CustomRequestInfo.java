@@ -7,12 +7,13 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-public @interface ResourcePath {
+public @interface CustomRequestInfo {
 	
 	public String[] stylePaths() default {};
 	public String[] scriptPaths() default {};
 	public String pageUrl() default "";
 	public String title() default "";
+	public boolean withRealtimeProgress() default false;
 	
 
 }

@@ -13,7 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.fajar.shoppingmart.annotation.ResourcePath;
+import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.ProductService;
 
@@ -37,7 +37,7 @@ public class MvcPublicController extends BaseController{
 	}
 
 	@RequestMapping(value = { "/", "index" })
-	@ResourcePath(title="Shopping Mart Application", pageUrl = "index")
+	@CustomRequestInfo(title="Shopping Mart Application", pageUrl = "index")
 	public String index(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String imagebasePath = getFullImagePath(request);
 
@@ -51,7 +51,7 @@ public class MvcPublicController extends BaseController{
 	
 	
 	@RequestMapping(value = { "/public/catalog","/public/catalog/", "/public/catalog/{option}" })
-	@ResourcePath(title = "Product Catalog", pageUrl = "shop/catalog-page")
+	@CustomRequestInfo(title = "Product Catalog", pageUrl = "shop/catalog-page")
 	public String catalog(@PathVariable(required = false)String option, Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		model.addAttribute("page", "main");
@@ -62,7 +62,7 @@ public class MvcPublicController extends BaseController{
 	}
 	
 	@RequestMapping(value = { "/public/about" })
-	@ResourcePath(title="About Us", pageUrl = "shop/about-page")
+	@CustomRequestInfo(title="About Us", pageUrl = "shop/about-page")
 	public String about(  Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		setActivePage(request );
@@ -73,7 +73,7 @@ public class MvcPublicController extends BaseController{
 	}
 	
 	@RequestMapping(value = { "/public/suppliers" })
-	@ResourcePath(title="Our Suppliers", pageUrl = "shop/supplier-page")
+	@CustomRequestInfo(title="Our Suppliers", pageUrl = "shop/supplier-page")
 	public String suppliers(  Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		model.addAttribute("page", "main"); 

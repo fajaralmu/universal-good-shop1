@@ -17,11 +17,14 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import com.fajar.shoppingmart.annotation.Authenticated;
-import com.fajar.shoppingmart.annotation.ResourcePath;
+import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.controller.BaseController;
 import com.fajar.shoppingmart.dto.WebResponse;
+import com.fajar.shoppingmart.entity.User;
+import com.fajar.shoppingmart.service.ProgressService;
 import com.fajar.shoppingmart.service.UserAccountService;
 import com.fajar.shoppingmart.service.UserSessionService;
+import com.fajar.shoppingmart.util.SessionUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +40,9 @@ public class InterceptorProcessor {
 	@Autowired
 	private ApplicationContext appContext;
 	@Autowired
-	private UserAccountService userAccountService; 
+	private UserAccountService userAccountService;
+	@Autowired
+	private ProgressService progressService;
 
 	public boolean interceptApiRequest(HttpServletRequest request, HttpServletResponse response,
 			HandlerMethod handlerMethod) {
@@ -57,6 +62,10 @@ public class InterceptorProcessor {
 				}
 				return false;
 			}
+			
+			
+			User authenticatedUser = getAuthenticatedUser(request);
+			SessionUtil.setUserInRequest(request, authenticatedUser);
 		}
 		return true;
 	}
@@ -77,11 +86,19 @@ public class InterceptorProcessor {
 			}
 		}
 
+		CustomRequestInfo customRequestInfo = getCustomRequestInfoAnnotation(handlerMethod);
+
+		if (null != customRequestInfo) {
+			if (customRequestInfo.withRealtimeProgress()) {
+				progressService.init(SessionUtil.getPageRequestId(request));
+			}
+		}
+
 		return true;
 	}
-	
-	public static void main(String[] args) throws  Exception {
-	
+
+	public static void main(String[] args) throws Exception {
+
 //		MvcManagementController controller = new MvcManagementController();
 //		Method method = controller.getClass().getMethod("commonPage", String.class, Model.class, HttpServletRequest.class, HttpServletResponse.class);
 //		method.setAccessible(true);
@@ -95,39 +112,39 @@ public class InterceptorProcessor {
 //		log.info("annotation: {}", annotation);
 	}
 
-	private Authenticated getAuthenticationAnnotation(HandlerMethod handlerMethod) {
+	public static Authenticated getAuthenticationAnnotation(HandlerMethod handlerMethod) {
 
 		Authenticated authenticated = getHandlerAnnotation(handlerMethod, Authenticated.class);
 		return authenticated;
 	}
 
-	private ResourcePath getResoucePathAnnotation(HandlerMethod handlerMethod) {
+	public static CustomRequestInfo getCustomRequestInfoAnnotation(HandlerMethod handlerMethod) {
 
-		ResourcePath ResourcePath = getHandlerAnnotation(handlerMethod, ResourcePath.class);
+		CustomRequestInfo ResourcePath = getHandlerAnnotation(handlerMethod, CustomRequestInfo.class);
 		return ResourcePath;
 	}
 
-	private <T> T getHandlerAnnotation(HandlerMethod handlerMethod, Class annotation) {
+	public static <T> T getHandlerAnnotation(HandlerMethod handlerMethod, Class annotation) {
 		log.debug("Get annotation: {}", annotation);
 		T annotationObject = null;
 		boolean found = false;
 		try {
-			//log.debug("handlerMethod.getMethod(): {}", handlerMethod.getMethod());
-			
+			// log.debug("handlerMethod.getMethod(): {}", handlerMethod.getMethod());
+
 			annotationObject = (T) handlerMethod.getMethod().getAnnotation(annotation);
 			found = annotationObject != null;
 		} catch (Exception e) {
-			
+
 			log.error("Error get annotation ({}) from method", annotation);
 			e.printStackTrace();
 		}
 		try {
 			if (!found) {
-				//log.debug("handlerMethod.getBeanType(): {}", handlerMethod.getBeanType());
+				// log.debug("handlerMethod.getBeanType(): {}", handlerMethod.getBeanType());
 				annotationObject = (T) handlerMethod.getBeanType().getAnnotation(annotation);
 			}
 		} catch (Exception e) {
-			
+
 			log.error("Error get annotation ({}) from class", annotation);
 			e.printStackTrace();
 		}
@@ -139,6 +156,11 @@ public class InterceptorProcessor {
 		return userAccountService.validateToken(request);
 	}
 
+	
+	private User getAuthenticatedUser(HttpServletRequest request) { 
+		return userSessionService.getLoggedUser(request);
+	}
+	
 	private boolean hasSessionToAccessWebPage(HttpServletRequest request) {
 		return userSessionService.hasSession(request);
 	}
@@ -150,7 +172,7 @@ public class InterceptorProcessor {
 		try {
 			RequestMappingHandlerMapping req2HandlerMapping = (RequestMappingHandlerMapping) appContext
 					.getBean("org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping");
-			
+
 			HandlerExecutionChain handlerExeChain = req2HandlerMapping.getHandler(request);
 			if (Objects.nonNull(handlerExeChain)) {
 				handlerMethod = (HandlerMethod) handlerExeChain.getHandler();
@@ -177,36 +199,47 @@ public class InterceptorProcessor {
 		return hasRestController || hasPostMapping;
 	}
 
-	public void addResources(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler,
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler,
 			ModelAndView modelAndView) {
 
-		log.debug("Add resourcePaths to WebPage");
-		ResourcePath resourcePath = getResoucePathAnnotation(handler);
+		CustomRequestInfo resourcePath = getCustomRequestInfoAnnotation(handler);
+		
+		if (null != modelAndView) {
 
-		if (null == resourcePath) {
-			log.debug("{} does not have resourcePath", request.getRequestURI());
-			return;
+			log.debug("Add resourcePaths to Web Page"); 
+
+			if (null == resourcePath) {
+				log.debug("{} does not have resourcePath", request.getRequestURI());
+				return;
+			}
+			BaseController.addJavaScriptResourcePaths(modelAndView, resourcePath.scriptPaths());
+			BaseController.addStylePaths(modelAndView, resourcePath.stylePaths());
+			BaseController.addTitle(modelAndView, resourcePath.title());
+			BaseController.addPageUrl(modelAndView, resourcePath.pageUrl());
 		}
-		BaseController.addJavaScriptResourcePaths(modelAndView, resourcePath.scriptPaths());
-		BaseController.addStylePaths(modelAndView, resourcePath.stylePaths());
-		BaseController.addTitle(modelAndView, resourcePath.title());
-		BaseController.addPageUrl(modelAndView, resourcePath.pageUrl());
+		
+		if(null != resourcePath && resourcePath.withRealtimeProgress()) {
+			progressService.sendComplete(SessionUtil.getPageRequestId(request));
+		}
 
 	}
-	
+
 	public static void validateStylePaths(String[] paths) {
-		if(null == paths) return;
+		if (null == paths)
+			return;
 		for (int i = 0; i < paths.length; i++) {
-			if(paths[i].toString().toLowerCase().endsWith(".css") == false) {
-				paths[i]+=".css?version=1";
+			if (paths[i].toString().toLowerCase().endsWith(".css") == false) {
+				paths[i] += ".css?version=1";
 			}
 		}
 	}
+
 	public static void validateScriptPaths(String[] paths) {
-		if(null == paths) return;
+		if (null == paths)
+			return;
 		for (int i = 0; i < paths.length; i++) {
-			if(paths[i].toString().toLowerCase().endsWith(".js") == false) {
-				paths[i]+=".js?v=1";
+			if (paths[i].toString().toLowerCase().endsWith(".js") == false) {
+				paths[i] += ".js?v=1";
 			}
 		}
 	}

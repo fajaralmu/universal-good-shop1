@@ -31,12 +31,13 @@ import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.repository.SupplierRepository;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
+import com.fajar.shoppingmart.util.SessionUtil;
 
 @Service
 public class TransactionService {
 
 	private static final boolean NOT_EXACTS = false;
-	//private static final boolean MATCH = true; 
+	// private static final boolean MATCH = true;
 	@Autowired
 	private ProductRepository productRepository;
 	@Autowired
@@ -68,40 +69,33 @@ public class TransactionService {
 	 * @param httpRequest
 	 * @return
 	 */
-	public WebResponse supplyProduct(WebRequest request, HttpServletRequest httpRequest, String requestId) {
+	public WebResponse purchaseProduct(WebRequest request, HttpServletRequest httpRequest) {  
+		User user = SessionUtil.getUserFromRequest(httpRequest);
 		
-		progressService.init(requestId);
-		
-		User user = validateUserBeforeTransaction(httpRequest); 
-		 
-		if(null == user) {
+		if (null == user) {
 			return WebResponse.invalidSession();
 		}
-		
-		/**
-		 * begin transaction
-		 */
-		
-		if (request.getProductFlows() == null || request.getProductFlows().isEmpty()  ) {
-			
-			return WebResponse.builder().code("01").message("product is empty").build();
+
+		// begin transaction
+		if (request.getProductFlows() == null || request.getProductFlows().isEmpty()) {
+
+			return WebResponse.failed("Product is empty");
 		}
 
 		try {
 			List<ProductFlow> productFlows = request.getProductFlows();
+			String requestId = user.getRequestId();
+
+			// validate supplier
+			Optional<Supplier> supplier = supplierRepository.findById(request.getSupplier().getId());
 			
-			/**
-			 * validate supplier
-			 */
-			Optional<Supplier> supplier = supplierRepository.findById(request.getSupplier().getId()); 
 			if (supplier.isPresent() == false) {
-				return WebResponse.builder().code("01").message("supplier is empty").build();
+				return WebResponse.failed("supplier is empty");
 			}
-			
+
 			sendProgress(1, 1, 10, false, requestId);
-			/**
-			 * check if product is exist
-			 */
+			
+			// check if product is exist
 			for (ProductFlow productFlow : productFlows) {
 				Optional<Product> product = productRepository.findById(productFlow.getProduct().getId());
 				sendProgress(1, productFlows.size(), 10, false, requestId);
@@ -109,55 +103,54 @@ public class TransactionService {
 					return WebResponse.failedResponse();
 				}
 				productFlow.setProduct(product.get());
-			} 
-			
-			user.setRequestId(requestId);
-			Transaction savedTransaction = productInventoryService.saveSupplyTransaction(productFlows, user,
+			}
+ 
+			Transaction savedTransaction = productInventoryService.savePurchasingTransaction(productFlows, user,
 					supplier.get(), new Date());
-			
+
 			return WebResponse.builder().transaction(savedTransaction).build();
-			
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return WebResponse.builder().code("01").message(ex.getMessage()).build();
-			
+
 		} finally {
-			progressService.sendComplete(requestId);
+			 
 		}
 	}
 
 	/**
-	 * check remaining stock of a product flow
-	 * 
+	 * check remaining stock of a product flow 
 	 * @param productFlow
 	 * @return
 	 */
 	private ProductFlowStock getSingleStock(ProductFlow productFlow) {
 
 		System.out.println("Will get single stock");
-		// validate product flow
-
+		
+		// validate product flow 
 		Optional<ProductFlow> dbProductFlow = productFlowRepository.findByIdAndTransaction_Type(productFlow.getId(),
 				TransactionType.IN);
+		
 		if (dbProductFlow.isPresent() == false) {
 			return null;
 		}
 		productFlow = dbProductFlow.get();
-		
+
 		productFlow.setTransactionId(productFlow.getTransaction().getId());
 
-		String sql 		= "select (select `count` from product_flow where id=$FLOW_ID) as total, "
-							+ "(select sum(count) as total_count from product_flow where flow_ref_id=$FLOW_ID and deleted!=1) as used ";
-		sql 			= sql.replace("$FLOW_ID", productFlow.getId().toString());
-		
-		Query query 	= repositoryCustomImpl.createNativeQuery(sql);
-		Object result 	= query.getSingleResult();
+		String sql = "select (select `count` from product_flow where id=$FLOW_ID) as total, "
+				+ "(select sum(count) as total_count from product_flow where flow_ref_id=$FLOW_ID and deleted!=1) as used ";
+		sql = sql.replace("$FLOW_ID", productFlow.getId().toString());
+
+		Query query = repositoryCustomImpl.createNativeQuery(sql);
+		Object result = query.getSingleResult();
 
 		Object[] objectList = (Object[]) result;
-		
-		Integer total 		= objectList[0] == null ? 0 : Integer.parseInt(objectList[0].toString());
-		Integer used 		= objectList[1] == null ? 0 : Integer.parseInt(objectList[1].toString());
-		Integer remaining 	= total - used;
+
+		Integer total = objectList[0] == null ? 0 : Integer.parseInt(objectList[0].toString());
+		Integer used = objectList[1] == null ? 0 : Integer.parseInt(objectList[1].toString());
+		Integer remaining = total - used;
 
 		ProductFlowStock productFlowStock = new ProductFlowStock();
 		productFlowStock.setProductFlow(productFlow);
@@ -170,26 +163,28 @@ public class TransactionService {
 
 	/**
 	 * get stock by product flow ID
+	 * 
 	 * @param request
 	 * @return
 	 */
 	public WebResponse stockInfo(WebRequest request) {
 		ProductFlowStock productFlowStock = getSingleStock(request.getProductFlow());
-		
+
 		if (productFlowStock == null) {
 			return WebResponse.failedResponse();
 		}
 
 		Product product = productFlowStock.getProductFlow().getProduct();
-		
+
 		productFlowStock.getProductFlow().getTransaction().setUser(null);
 		productFlowStock.getProductFlow().setProduct(EntityUtil.validateDefaultValue(product));
-		
+
 		return WebResponse.builder().productFlowStock(productFlowStock).build();
 	}
 
 	/**
 	 * get stock for product list
+	 * 
 	 * @param products
 	 * @param withCount
 	 * @param requestId
@@ -201,9 +196,11 @@ public class TransactionService {
 			int totalCount = 0;
 			int used = 0;
 
-			Object resultUsedProduct = productFlowRepository.findFlowCount(TransactionType.OUT.toString(), product.getId());
+			Object resultUsedProduct = productFlowRepository.findFlowCount(TransactionType.OUT.toString(),
+					product.getId());
 
-			Object resultTotalProduct = productFlowRepository.findFlowCount(TransactionType.IN.toString(), product.getId());
+			Object resultTotalProduct = productFlowRepository.findFlowCount(TransactionType.IN.toString(),
+					product.getId());
 
 			int remainingCount = 0;
 			try {
@@ -231,8 +228,7 @@ public class TransactionService {
 		return products;
 	}
 
-	public WebResponse getStocksByProductName(WebRequest request, boolean withCount, String requestId) {
-		progressService.init(requestId);
+	public WebResponse getStocksByProductName(WebRequest request, boolean withCount, String requestId) { 
 
 		List<BaseEntity> productFlows = getProductFlowsByProduct("name", request.getProduct().getName(), withCount, 20,
 				NOT_EXACTS, requestId);
@@ -273,245 +269,124 @@ public class TransactionService {
 
 	/**
 	 * get authenticated user before transaction
+	 * 
 	 * @param httpRequest
 	 * @return
 	 */
 	private User validateUserBeforeTransaction(HttpServletRequest httpRequest) {
-		
-		/**
-		 * get from HTTP session
-		 */
+
+		// get from HTTP session 
 		User user = userSessionService.getUserFromSession(httpRequest);
-		
+
 		if (null == user) {
-			/**
-			 * get from registry
-			 */
-			user = userSessionService.getUserFromRegistry(httpRequest); 
-			if (null == user) { 
+			// get from registry 
+			user = userSessionService.getUserFromRegistry(httpRequest);
+			if (null == user) {
 				return null;
-			} 
+			}
 		}
-		
+
 		boolean hasSession = userSessionService.hasSession(httpRequest);
-		
-		if(!hasSession) {
+
+		if (!hasSession) {
 			return null;
 		}
-		
+
 		return user;
 	}
-	/**
-	 * add purchase transaction
-	 * 
-	 * @param request
-	 * @param httpRequest
-	 * @return
-	 */
-//	@Deprecated
-//	public WebResponse addPurchaseTransaction(WebRequest request, HttpServletRequest httpRequest,
-//			String requestId) {
-//		
-//		progressService.init(requestId);
-//		
-//		User user = validateUserBeforeTransaction(httpRequest); 
-//		 
-//		if(null == user) {
-//			return WebResponse.invalidSession();
-//		}
-//		
-//		sendProgress(1, 1, 10, false, requestId);
-//
-//		try {
-//		
-//			/**
-//			 * validate products and customer
-//			 */
-//			Optional<Customer> dbCustomer = customerRepository.findById(request.getCustomer().getId());
-//			
-//			if (dbCustomer.isPresent() == false) {
-//				return WebResponse.builder().code("01").message("invalid Customer").build();
-//			}
-//			
-//			sendProgress(1, 1, 10, false, requestId);
-//			
-//			/**
-//			 * validate product stock
-//			 */
-//			
-//			List<ProductFlow> productFlows = request.getProductFlows();
-//			
-//			for (ProductFlow productFlow : productFlows) {
-//				Optional<ProductFlow> dbFlow = productFlowRepository.findById(productFlow.getFlowReferenceId());
-//	
-//				if (dbFlow.isPresent() == false) {
-//					// continue;
-//					/**
-//					 * skip
-//					 */
-//				} else {
-//					ProductFlow refFlow = dbFlow.get();
-//					ProductFlowStock flowStock = getSingleStock(refFlow);
-//					
-//					if (null == flowStock) {
-//						flowStock = new ProductFlowStock();
-//					}
-//					
-//					int remainingStock = flowStock.getRemainingStock();
-//					int sellingQty = productFlow.getCount();
-//					if (sellingQty > remainingStock) {
-//						// continue;
-//					} else {
-//						productFlow.setProduct(refFlow.getProduct());
-//					}
-//				}
-//				sendProgress(1, productFlows.size(), 40, false, requestId);
-//	
-//			}
-//	
-//			/**
-//			 * save to DB
-//			 */
-//		
-//			Transaction newTransaction = productInventoryService.savePurchaseTransaction(new Date(), productFlows,
-//					requestId, user, dbCustomer.get());
-//			return WebResponse.builder().transaction(newTransaction).build();
-//			
-//		} catch (Exception ex) {
-//			ex.printStackTrace();
-//			return WebResponse.builder().code("-1").message(ex.getMessage()).build();
-//			
-//		} finally {
-//			progressService.sendComplete(requestId);
-//		}
-//	}
-	
-	public WebResponse addPurchaseTransactionV2(WebRequest request, HttpServletRequest httpRequest,
-			String requestId) {
-		
-		progressService.init(requestId);
-		
-		User user = validateUserBeforeTransaction(httpRequest); 
-		 
-		if(null == user) {
+ 
+	public WebResponse sellProduct(WebRequest request, HttpServletRequest httpRequest) { 
+
+		User user = SessionUtil.getUserFromRequest(httpRequest);
+
+		if (null == user) {
 			return WebResponse.invalidSession();
-		}
-		
-		sendProgress(1, 1, 10, false, requestId);
+		} 
 
 		try {
-		
-			/**
-			 * validate products and customer
-			 */
+
+			//validate products and customer 
+			String requestId = user.getRequestId();
 			Optional<Customer> dbCustomer = customerRepository.findById(request.getCustomer().getId());
-			
+
 			if (dbCustomer.isPresent() == false) {
 				return WebResponse.builder().code("01").message("invalid Customer").build();
 			}
-			
+
 			sendProgress(1, 1, 10, false, requestId);
-			
-			/**
-			 * validate product stock
-			 */
-			
+
+			//validate product stock 
 			List<ProductFlow> productFlows = request.getProductFlows();
-			
+
 			for (ProductFlow productFlow : productFlows) {
-//				Optional<ProductFlow> dbFlow = productFlowRepository.findById(productFlow.getFlowReferenceId());
-//	
-//				if (dbFlow.isPresent() == false) {
-//					// continue;
-//					/**
-//					 * skip
-//					 */
-//				} else {
-//					ProductFlow refFlow = dbFlow.get();
-					Optional<Product> dbProduct = productRepository.findById(productFlow.getProduct().getId());
-					
-					if (dbProduct.isPresent() == false) {
-						 continue;
-//						/**
-//						 * skip
-//						 */
-					}  
-					int remainingStock = productInventoryService.getProductInventory(dbProduct.get());
-					int sellingQty = productFlow.getCount();
-//					ProductFlowStock flowStock = getSingleStock(refFlow);
-//					
-//					if (null == flowStock) {
-//						flowStock = new ProductFlowStock();
-//					}
-//					
-//					Integer remainingStock = flowStock.getRemainingStock(); 
-					
-					if (sellingQty > remainingStock) {
-						 continue;
-					} else {
-						productFlow.setProduct(dbProduct.get() );
-					}
-//				}
+
+				Optional<Product> dbProduct = productRepository.findById(productFlow.getProduct().getId());
+
+				if (dbProduct.isPresent() == false) {
+					continue;
+				}
+				int remainingStock = productInventoryService.getProductInventory(dbProduct.get());
+				int sellingQty = productFlow.getCount();
+
+				if (sellingQty > remainingStock) {
+					continue;
+				} else {
+					productFlow.setProduct(dbProduct.get());
+				} 
 				sendProgress(1, productFlows.size(), 10, false, requestId);
-	
 			}
-	
-			/**
-			 * save to DB
-			 */
-			user.setRequestId(requestId);
-			Transaction newTransaction = productInventoryService.savePurchaseTransactionV2(new Date(), productFlows,
-					user, dbCustomer.get());
+
+			// save to DB  
+			Transaction newTransaction = productInventoryService.saveSellingTransaction(new Date(), productFlows, user,
+					dbCustomer.get());
 			return WebResponse.builder().transaction(newTransaction).build();
-			
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return WebResponse.builder().code("-1").message(ex.getMessage()).build();
-			
-		} finally {
-			progressService.sendComplete(requestId);
+
+		} finally { 
 		}
 	}
 
 	private void sendProgress(int progress, int maxProgress, int percent, boolean newProgress, String requestId) {
 
 		progressService.sendProgress(progress, maxProgress, percent, newProgress, requestId);
-		
+
 	}
 
 	/**
-	 * =====================================
-	 * ============= REPORTING =============
+	 * ===================================== ============= REPORTING =============
 	 * =====================================
 	 * 
 	 */
-	
-	public List<Supplier> getProductSupplier(Long id, int limit, int offset) { 
+
+	public List<Supplier> getProductSupplier(Long id, int limit, int offset) {
 		return reportingService.getProductSupplier(id, limit, offset);
 	}
 
-	public Transaction getFirstTransaction(Long id) { 
+	public Transaction getFirstTransaction(Long id) {
 		return reportingService.getFirstTransaction(id);
 	}
 
-	public int getMinTransactionYear() { 
+	public int getMinTransactionYear() {
 		return reportingService.getMinTransactionYear();
 	}
 
-	public WebResponse getCashFlow(WebRequest request) { 
+	public WebResponse getCashFlow(WebRequest request) {
 		return reportingService.getCashFlow(request);
 	}
 
-	public WebResponse getCashflowDetail(WebRequest request, String requestId) { 
+	public WebResponse getCashflowDetail(WebRequest request, String requestId) {
 		return reportingService.getCashflowDetail(request, requestId);
 	}
 
-	public WebResponse getCashflowMonthly(WebRequest request, String requestId) { 
+	public WebResponse getCashflowMonthly(WebRequest request, String requestId) {
 		return reportingService.getCashflowMonthly(request, requestId);
-	} 
-	
+	}
+
 	public WebResponse getCashflowDaily(WebRequest request, String requestId) {
 		return reportingService.getCashflowDaily(request, requestId);
 	}
-	
+
 }

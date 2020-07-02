@@ -27,7 +27,6 @@ import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.service.entity.BaseEntityUpdateService;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
-import com.fajar.shoppingmart.util.ThreadUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

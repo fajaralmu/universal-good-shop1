@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.shoppingmart.annotation.Authenticated;
-import com.fajar.shoppingmart.annotation.ResourcePath;
+import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.entity.CapitalFlow;
 import com.fajar.shoppingmart.entity.CostFlow;
 import com.fajar.shoppingmart.entity.Menu;
@@ -275,7 +275,7 @@ public class MvcManagementController extends BaseController {
 	 */
 
 	@RequestMapping(value = { "/appsession" })
-	@ResourcePath(title = "Apps Sessions", pageUrl = "shop/app-session")
+	@CustomRequestInfo(title = "Apps Sessions", pageUrl = "shop/app-session")
 	public String appsession(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (!userService.hasSession(request)) {

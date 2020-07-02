@@ -73,7 +73,7 @@ public class ProductInventoryService {
 	 * @param transactionDate
 	 * @return
 	 */
-	public Transaction saveSupplyTransaction(List<ProductFlow> productFlows, User user, Supplier supplier,
+	public Transaction savePurchasingTransaction(List<ProductFlow> productFlows, User user, Supplier supplier,
 			Date transactionDate) {
 		final Transaction transaction = buildTransactionObject(TYPE_IN, user, null, supplier, transactionDate);
 		final String requestId = user.getRequestId();
@@ -97,7 +97,7 @@ public class ProductInventoryService {
 	 * @param customer
 	 * @return
 	 */
-	public synchronized Transaction savePurchaseTransactionV2(Date transactionDate, List<ProductFlow> productFlows,
+	public synchronized Transaction saveSellingTransaction(Date transactionDate, List<ProductFlow> productFlows,
 			User user, Customer customer) {
 		if (productFlows == null || productFlows.size() == 0) {
 			throw new RuntimeException("INVALID PRODUCTS");

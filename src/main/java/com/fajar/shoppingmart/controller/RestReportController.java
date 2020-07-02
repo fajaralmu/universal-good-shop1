@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.shoppingmart.annotation.Authenticated;
+import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.report.data.ReportService;
@@ -43,6 +44,7 @@ public class RestReportController {
 	}
 	
 	@PostMapping(value = "/daily", consumes = MediaType.APPLICATION_JSON_VALUE )
+	@CustomRequestInfo(withRealtimeProgress = true)
 	public void daily(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws Exception {
 		log.info("daily report {}", request);
@@ -71,36 +73,30 @@ public class RestReportController {
 	}
 	
 	@PostMapping(value = "/monthly", consumes = MediaType.APPLICATION_JSON_VALUE )
+	@CustomRequestInfo(withRealtimeProgress = true)
 	public void monthly(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws Exception {
-		log.info("monthly report {}", request);
-//		if(!userSessionService.hasSession(httpRequest)) {
-//			return WebResponse.failedResponse();
-//		}
+		log.info("monthly report {}", request); 
 		
 		File result = reportService.buildMonthlyReport(request);
 		
 		writeFileReponse(httpResponse, result);
 	}
 	@PostMapping(value = "/entity", consumes = MediaType.APPLICATION_JSON_VALUE )
+	@CustomRequestInfo(withRealtimeProgress = true)
 	public void entityreport(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws Exception {
-		log.info("entityreport {}", request);
-//		if(!userSessionService.hasSession(httpRequest)) {
-//			return WebResponse.failedResponse();
-//		}
+		log.info("entityreport {}", request); 
 		
 		File result = reportService.buildEntityReport(request);
 		
 		writeFileReponse(httpResponse, result);
 	}
 	@PostMapping(value = "/balance1", consumes = MediaType.APPLICATION_JSON_VALUE )
+	@CustomRequestInfo(withRealtimeProgress = true)
 	public void balanceWorkSheet(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws Exception {
-		log.info("balance work sheet {}", request);
-//		if(!userSessionService.hasSession(httpRequest)) {
-//			return WebResponse.failedResponse();
-//		}
+		log.info("balance work sheet {}", request); 
 		
 		File result = reportService.buildBalanceReport(request);
 		

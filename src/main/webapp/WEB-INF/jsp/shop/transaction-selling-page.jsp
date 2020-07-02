@@ -147,7 +147,7 @@
 				"customer" : currentCustomer,
 				"productFlows" : productFlows
 			}
-			postReq("<spring:url value="/api/transaction/purchasev2" />",
+			postReq("<spring:url value="/api/transaction/selling" />",
 					requestObject, function(xhr) {
 						var response = (xhr.data);
 						var code = response.code;
