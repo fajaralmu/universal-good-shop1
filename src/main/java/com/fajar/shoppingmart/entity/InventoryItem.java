@@ -66,4 +66,9 @@ public class InventoryItem extends BaseEntity{
 		setIncomingFlowId(productFlow.getId());
 	}
 
+	public boolean hasEnoughStock(ProductFlow productFlow2) {
+		 
+		return getCount() - productFlow.getCount() >= 0;
+	}
+
 }

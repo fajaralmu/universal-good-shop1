@@ -104,14 +104,15 @@ public class TransactionService {
 			 */
 			for (ProductFlow productFlow : productFlows) {
 				Optional<Product> product = productRepository.findById(productFlow.getProduct().getId());
-				sendProgress(1, productFlows.size(), 40, false, requestId);
+				sendProgress(1, productFlows.size(), 10, false, requestId);
 				if (!product.isPresent()) {
 					return WebResponse.failedResponse();
 				}
 				productFlow.setProduct(product.get());
 			} 
 			
-			Transaction savedTransaction = productInventoryService.saveSupplyTransaction(productFlows, requestId, user,
+			user.setRequestId(requestId);
+			Transaction savedTransaction = productInventoryService.saveSupplyTransaction(productFlows, user,
 					supplier.get(), new Date());
 			
 			return WebResponse.builder().transaction(savedTransaction).build();
@@ -451,16 +452,16 @@ public class TransactionService {
 						productFlow.setProduct(dbProduct.get() );
 					}
 //				}
-				sendProgress(1, productFlows.size(), 40, false, requestId);
+				sendProgress(1, productFlows.size(), 10, false, requestId);
 	
 			}
 	
 			/**
 			 * save to DB
 			 */
-		
+			user.setRequestId(requestId);
 			Transaction newTransaction = productInventoryService.savePurchaseTransactionV2(new Date(), productFlows,
-					requestId, user, dbCustomer.get());
+					user, dbCustomer.get());
 			return WebResponse.builder().transaction(newTransaction).build();
 			
 		} catch (Exception ex) {

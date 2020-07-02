@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
@@ -47,5 +48,8 @@ public class User extends BaseEntity {
 	@javax.persistence.Transient
 	@JsonIgnore
 	private String loginKey;
+	@Transient
+	@JsonIgnore
+	private String requestId;
 
 }
