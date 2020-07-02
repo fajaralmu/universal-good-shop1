@@ -23,6 +23,7 @@ import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.querybuilder.CriteriaBuilder;
 import com.fajar.shoppingmart.querybuilder.QueryHolder;
+import com.fajar.shoppingmart.querybuilder.QueryUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -216,6 +217,28 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 		}
 	}
 
+	private <T extends BaseEntity> T validateJoinColumns(T rawEntity) throws Exception {
+		List<Field> joinColumnFields = QueryUtil.getJoinColumnFields(entity.getClass());
+		
+		T entity = EntityUtil.cloneSerializable(rawEntity);
+		
+		if (0 == joinColumnFields.size()) {
+			return entity;
+		}
+		for (Field field : joinColumnFields) {
+			BaseEntity fieldValue = (BaseEntity)field.get(entity);
+			//check from DB
+			Object dbValue = hibernateSession.get(fieldValue.getClass(), fieldValue.getId());
+			
+			if(null == dbValue) continue;
+			
+			field.set(entity, dbValue);
+		}
+		
+		return entity;
+
+	}
+
 	@Override
 	@Transactional
 	public <T extends BaseEntity> T saveObject(T entity) {
@@ -224,22 +247,24 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 			transaction = hibernateSession.beginTransaction();
 			T result;
 			
-			if(entity.getId() == null) {
+			entity = validateJoinColumns(entity);
+			
+			if (entity.getId() == null) {
 				log.debug("Will save new entity ");
 				Long newId = (Long) hibernateSession.save(entity);
 				result = entity;
 				result.setId(newId);
-				
+
 				log.debug("success add new record of {} with new ID: {}", entity.getClass(), newId);
-			}else {
+			} else {
 				log.debug("Will update entity ");
 				result = (T) hibernateSession.merge(entity);
-				
+
 				log.debug("success update record of {}", entity.getClass());
-			} 
-			
+			}
+
 			transaction.commit();
-			
+
 			log.info("success save Object: {}", entity.getClass());
 			return result;
 		} catch (Exception e) {

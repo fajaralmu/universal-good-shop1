@@ -476,5 +476,20 @@ public class QueryUtil {
 	static String doubleQuoteMysql(Object str) {
 		return StringUtil.doubleQuoteMysql(str.toString());
 	}  
+	
+	public static  <T extends BaseEntity> List<Field> getJoinColumnFields(Class<T> _class){
+		List<Field> joinColumns = new ArrayList<>();
+		List<Field> fields = EntityUtil.getDeclaredFields(_class);
+		for (int i = 0; i < fields.size(); i++) {
+			Field field = fields.get(i);
+			JoinColumn joinColumn = field.getAnnotation(JoinColumn.class);
+			if(null != joinColumn && field.getType().getSuperclass().equals(BaseEntity.class)) {
+				field.setAccessible(true);
+				joinColumns.add(field);
+			}
+		}
+		
+		return joinColumns;
+	}
 
 }
