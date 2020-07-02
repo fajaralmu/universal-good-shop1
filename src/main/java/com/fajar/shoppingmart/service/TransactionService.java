@@ -307,83 +307,83 @@ public class TransactionService {
 	 * @param httpRequest
 	 * @return
 	 */
-	@Deprecated
-	public WebResponse addPurchaseTransaction(WebRequest request, HttpServletRequest httpRequest,
-			String requestId) {
-		
-		progressService.init(requestId);
-		
-		User user = validateUserBeforeTransaction(httpRequest); 
-		 
-		if(null == user) {
-			return WebResponse.invalidSession();
-		}
-		
-		sendProgress(1, 1, 10, false, requestId);
-
-		try {
-		
-			/**
-			 * validate products and customer
-			 */
-			Optional<Customer> dbCustomer = customerRepository.findById(request.getCustomer().getId());
-			
-			if (dbCustomer.isPresent() == false) {
-				return WebResponse.builder().code("01").message("invalid Customer").build();
-			}
-			
-			sendProgress(1, 1, 10, false, requestId);
-			
-			/**
-			 * validate product stock
-			 */
-			
-			List<ProductFlow> productFlows = request.getProductFlows();
-			
-			for (ProductFlow productFlow : productFlows) {
-				Optional<ProductFlow> dbFlow = productFlowRepository.findById(productFlow.getFlowReferenceId());
-	
-				if (dbFlow.isPresent() == false) {
-					// continue;
-					/**
-					 * skip
-					 */
-				} else {
-					ProductFlow refFlow = dbFlow.get();
-					ProductFlowStock flowStock = getSingleStock(refFlow);
-					
-					if (null == flowStock) {
-						flowStock = new ProductFlowStock();
-					}
-					
-					int remainingStock = flowStock.getRemainingStock();
-					int sellingQty = productFlow.getCount();
-					if (sellingQty > remainingStock) {
-						// continue;
-					} else {
-						productFlow.setProduct(refFlow.getProduct());
-					}
-				}
-				sendProgress(1, productFlows.size(), 40, false, requestId);
-	
-			}
-	
-			/**
-			 * save to DB
-			 */
-		
-			Transaction newTransaction = productInventoryService.savePurchaseTransaction(new Date(), productFlows,
-					requestId, user, dbCustomer.get());
-			return WebResponse.builder().transaction(newTransaction).build();
-			
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return WebResponse.builder().code("-1").message(ex.getMessage()).build();
-			
-		} finally {
-			progressService.sendComplete(requestId);
-		}
-	}
+//	@Deprecated
+//	public WebResponse addPurchaseTransaction(WebRequest request, HttpServletRequest httpRequest,
+//			String requestId) {
+//		
+//		progressService.init(requestId);
+//		
+//		User user = validateUserBeforeTransaction(httpRequest); 
+//		 
+//		if(null == user) {
+//			return WebResponse.invalidSession();
+//		}
+//		
+//		sendProgress(1, 1, 10, false, requestId);
+//
+//		try {
+//		
+//			/**
+//			 * validate products and customer
+//			 */
+//			Optional<Customer> dbCustomer = customerRepository.findById(request.getCustomer().getId());
+//			
+//			if (dbCustomer.isPresent() == false) {
+//				return WebResponse.builder().code("01").message("invalid Customer").build();
+//			}
+//			
+//			sendProgress(1, 1, 10, false, requestId);
+//			
+//			/**
+//			 * validate product stock
+//			 */
+//			
+//			List<ProductFlow> productFlows = request.getProductFlows();
+//			
+//			for (ProductFlow productFlow : productFlows) {
+//				Optional<ProductFlow> dbFlow = productFlowRepository.findById(productFlow.getFlowReferenceId());
+//	
+//				if (dbFlow.isPresent() == false) {
+//					// continue;
+//					/**
+//					 * skip
+//					 */
+//				} else {
+//					ProductFlow refFlow = dbFlow.get();
+//					ProductFlowStock flowStock = getSingleStock(refFlow);
+//					
+//					if (null == flowStock) {
+//						flowStock = new ProductFlowStock();
+//					}
+//					
+//					int remainingStock = flowStock.getRemainingStock();
+//					int sellingQty = productFlow.getCount();
+//					if (sellingQty > remainingStock) {
+//						// continue;
+//					} else {
+//						productFlow.setProduct(refFlow.getProduct());
+//					}
+//				}
+//				sendProgress(1, productFlows.size(), 40, false, requestId);
+//	
+//			}
+//	
+//			/**
+//			 * save to DB
+//			 */
+//		
+//			Transaction newTransaction = productInventoryService.savePurchaseTransaction(new Date(), productFlows,
+//					requestId, user, dbCustomer.get());
+//			return WebResponse.builder().transaction(newTransaction).build();
+//			
+//		} catch (Exception ex) {
+//			ex.printStackTrace();
+//			return WebResponse.builder().code("-1").message(ex.getMessage()).build();
+//			
+//		} finally {
+//			progressService.sendComplete(requestId);
+//		}
+//	}
 	
 	public WebResponse addPurchaseTransactionV2(WebRequest request, HttpServletRequest httpRequest,
 			String requestId) {

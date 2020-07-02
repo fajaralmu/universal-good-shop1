@@ -40,6 +40,7 @@ public class ProductInventoryService {
 
 	public static final TransactionType TYPE_OUT = TransactionType.OUT;
 	public static final TransactionType TYPE_IN = TransactionType.IN;
+	public static final boolean NEW_VERSION = Boolean.TRUE;
 
 	/**
 	 * create common transaction object
@@ -110,35 +111,42 @@ public class ProductInventoryService {
 					 */
 					InventoryItem inventoryItem = new InventoryItem(productFlow);
 					inventoryItem.addNewProduct();
-					hibernateSession.save(inventoryItem);
+					RepositoryCustomImpl.saveNewRecord(inventoryItem, hibernateSession);
 
 					/**
 					 * inventory item NEW VERSION
 					 */
 					InventoryItem inventoryItemV2 = inventoryItemRepository
-							.findTop1ByProduct_IdAndNewVersion(productFlow.getProduct().getId(), true);
+							.findTop1ByProduct_IdAndNewVersion(productFlow.getProduct().getId(), NEW_VERSION);
 
 					if (null == inventoryItemV2) {
+						log.info("add new record of inventoryItemV2");
+						
 						inventoryItemV2 = new InventoryItem();
 						inventoryItemV2.setProduct(productFlow.getProduct());
 						inventoryItemV2.setCount(productFlow.getCount());
+						RepositoryCustomImpl.saveNewRecord(inventoryItemV2, hibernateSession);
 					} else {
+						log.info("inventoryItemV2 current count: {}", inventoryItemV2.getCount());
+						log.info("productFlow count: {}", productFlow.getCount());
+						
 						int currentCount = inventoryItemV2.getCount();
 						int finalCount = currentCount + productFlow.getCount();
 						inventoryItemV2.setCount(finalCount);
+						repositoryCustom.saveObject(inventoryItemV2);
 					}
 
-					hibernateSession.merge(inventoryItemV2);
+					
 
 					progressService.sendProgress(1, productFlows.size(), 40, false, requestId);
 				}
-				 
+				repositoryCustom.notKeepingTransaction();
 				return transaction;
 			}
 		};
 
 		repositoryCustom.pesistOperation(persistenceOperation);
-		repositoryCustom.notKeepingTransaction();
+	
 		transaction.setProductFlows(productFlows);
 		return transaction;
 
@@ -154,88 +162,88 @@ public class ProductInventoryService {
 	 * @param customer
 	 * @return
 	 */
-	public synchronized Transaction savePurchaseTransaction(Date d, List<ProductFlow> productFlows, String requestId,
-			User user, Customer customer) {
-		if (productFlows == null || productFlows.size() == 0) {
-			throw new RuntimeException("INVALID PRODUCTS");
-		}
-	 
-		try {
-			Transaction transaction = buildTransactionObject(TYPE_OUT, user, customer, null, d);
-			Transaction newTransaction = entityRepository.save(transaction);
-			progressService.sendProgress(1, 1, 10, false, requestId);
-			int purchasedProduct = 0;
-			for (ProductFlow productFlow : productFlows) {
-				if (productFlow.getCount() <= 0)
-					continue;
-				/**
-				 * IMPORTANT!!
-				 * 
-				 */
-				productFlow.setTransaction(newTransaction);
-				productFlow.setPrice(productFlow.getProduct().getPrice());
-
-				/**
-				 * UPDATE inventory item row
-				 */
-				InventoryItem inventoryItem = inventoryItemRepository
-						.findByIncomingFlowId(productFlow.getFlowReferenceId());
-				InventoryItem inventoryItemV2 = inventoryItemRepository
-						.findTop1ByProduct_IdAndNewVersion(productFlow.getProduct().getId(), true);
-
-				if (null == inventoryItem) {
-					throw new RuntimeException("Inventory Item not found:" + productFlow.getFlowReferenceId());
-				}
-
-				/**
-				 * save NEW productFlow record to database
-				 */
-				productFlow = entityRepository.save(productFlow);
-
-				/**
-				 * update cash balance
-				 */
-				cashBalanceService.updateCashBalance(productFlow);
-
-				/**
-				 * update count
-				 */
-				inventoryItem.setCount(inventoryItem.getCount() - productFlow.getCount());
-
-				if (inventoryItem.getCount() < 0) {
-					// SKIP
-					continue;
-				}
-
-				entityRepository.save(inventoryItem);
-
-				/**
-				 * inventory item NEW VERSION
-				 */
-				int currentCount = inventoryItemV2.getCount();
-				int finalCount = currentCount - productFlow.getCount();
-				if (finalCount < 0) {
-					// SKIP
-					continue;
-				}
-				inventoryItemV2.setCount(finalCount);
-
-				entityRepository.save(inventoryItemV2);
-
-				purchasedProduct++;
-				progressService.sendProgress(1, productFlows.size(), 30, false, requestId);
-
-			}
-			System.out.println("PURCHASES PRODUCTS: " + purchasedProduct);
-			newTransaction.setProductFlows(productFlows);
-			return newTransaction;
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw ex;
-		} finally {
-			progressService.sendComplete(requestId);
-		}
-	}
+//	public synchronized Transaction savePurchaseTransaction(Date d, List<ProductFlow> productFlows, String requestId,
+//			User user, Customer customer) {
+//		if (productFlows == null || productFlows.size() == 0) {
+//			throw new RuntimeException("INVALID PRODUCTS");
+//		}
+//	 
+//		try {
+//			Transaction transaction = buildTransactionObject(TYPE_OUT, user, customer, null, d);
+//			Transaction newTransaction = entityRepository.save(transaction);
+//			progressService.sendProgress(1, 1, 10, false, requestId);
+//			int purchasedProduct = 0;
+//			for (ProductFlow productFlow : productFlows) {
+//				if (productFlow.getCount() <= 0)
+//					continue;
+//				/**
+//				 * IMPORTANT!!
+//				 * 
+//				 */
+//				productFlow.setTransaction(newTransaction);
+//				productFlow.setPrice(productFlow.getProduct().getPrice());
+//
+//				/**
+//				 * UPDATE inventory item row
+//				 */
+//				InventoryItem inventoryItem = inventoryItemRepository
+//						.findByIncomingFlowId(productFlow.getFlowReferenceId());
+//				InventoryItem inventoryItemV2 = inventoryItemRepository
+//						.findTop1ByProduct_IdAndNewVersion(productFlow.getProduct().getId(), true);
+//
+//				if (null == inventoryItem) {
+//					throw new RuntimeException("Inventory Item not found:" + productFlow.getFlowReferenceId());
+//				}
+//
+//				/**
+//				 * save NEW productFlow record to database
+//				 */
+//				productFlow = entityRepository.save(productFlow);
+//
+//				/**
+//				 * update cash balance
+//				 */
+//				cashBalanceService.updateCashBalance(productFlow);
+//
+//				/**
+//				 * update count
+//				 */
+//				inventoryItem.setCount(inventoryItem.getCount() - productFlow.getCount());
+//
+//				if (inventoryItem.getCount() < 0) {
+//					// SKIP
+//					continue;
+//				}
+//
+//				entityRepository.save(inventoryItem);
+//
+//				/**
+//				 * inventory item NEW VERSION
+//				 */
+//				int currentCount = inventoryItemV2.getCount();
+//				int finalCount = currentCount - productFlow.getCount();
+//				if (finalCount < 0) {
+//					// SKIP
+//					continue;
+//				}
+//				inventoryItemV2.setCount(finalCount);
+//
+//				entityRepository.save(inventoryItemV2);
+//
+//				purchasedProduct++;
+//				progressService.sendProgress(1, productFlows.size(), 30, false, requestId);
+//
+//			}
+//			System.out.println("PURCHASES PRODUCTS: " + purchasedProduct);
+//			newTransaction.setProductFlows(productFlows);
+//			return newTransaction;
+//		} catch (Exception ex) {
+//			ex.printStackTrace();
+//			throw ex;
+//		} finally {
+//			progressService.sendComplete(requestId);
+//		}
+//	}
 
 	public synchronized Transaction savePurchaseTransactionV2(Date transactionDate, List<ProductFlow> productFlows,
 			String requestId, User user, Customer customer) {
@@ -299,13 +307,14 @@ public class ProductInventoryService {
 					}
 					inventoryItemV2.setCount(finalCount);
 
-					hibernateSession.merge(inventoryItemV2);
+					repositoryCustom.saveObject(inventoryItemV2);
 
 					purchasedProduct++;
 					progressService.sendProgress(1, productFlows.size(), 30, false, requestId); 
-					repositoryCustom.notKeepingTransaction();
+					
 				}
 				
+				repositoryCustom.notKeepingTransaction();
 				return transaction;
 			}
 		}; 

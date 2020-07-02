@@ -328,8 +328,10 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 
 			T result = persistenceOperation.doPersist(hibernateSession);
 
-			if(isTransactionNotKept())
+			if(isTransactionNotKept()) {
 				currentTransaction.commit();
+				log.info("==**COMMITED Transaction**==");
+			}
 
 			log.info("success persist operation commited: {}", removeTransactionAfterPersistence);
 			return result;
