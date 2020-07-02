@@ -354,7 +354,7 @@
 	function createListItemCount(entity){
 		const listClass = "list-group-item d-flex justify-content-between align-items-center";
 		const listItem = createHtmlTag({
-			tagName: "li",
+			tagName: "li", 
 			id: "list-item-count-" + entity.id,
 			class: listClass,
 			ch1: { tagName:"span", innerHTML : "Stock" },
@@ -377,13 +377,16 @@
 			ch1: {
 				tagName:'small', 
 				style: { 'background-color':'rgb(224,224,224)'},
-				class: 'text-muted',
-				innerHTML: (entity.newProduct?"(NEW)":"")
+				class: 'text-muted clickable',
+				innerHTML: (entity.newProduct?"(NEW)":entity.name)
 			}, 
+			onclick: function() {
+				loadDetail(entity.code);
+			}
 		}); 
-		html.onclick = function() {
+		/* html.onclick = function() {
 			loadDetail(entity.code);
-		}
+		} */
 		return html;
 	}
 	
@@ -417,7 +420,7 @@
 		const className = "list-group-item d-flex justify-content-between align-items-center";
 		const html = createHtmlTag({
 			tagName: 'li',
-			id: id,
+			id: id, 
 			class: className,
 			ch1: {tagName: 'span', innerHTML: 'Price'},
 			ch2: {tagName: 'br'},
@@ -448,6 +451,22 @@
 		return html;
 	}
 	
+	/* function createProductDetailLink(entity){
+		const id = "product-info-link-" + entity.id;
+		const className = "list-group-item d-flex justify-content-between align-items-center";
+		const html = createHtmlTag({
+			tagName: 'li',
+			style: {'list-style':'none'},
+			ch1: {
+				tagName: 'a',
+				style: {'background-color':'gray', 'color': 'white'},
+				href: "<spring:url value="/public/catalog/" />"+entity.code,
+				ch1: {tagName: 'h5', innerHTML: entity.name }
+			} 
+		});
+		return html;
+	} */
+	
 	function populateCatalog(entities) {
 		catalogPanel.innerHTML = "";
 		for (let i = 0; i < entities.length; i++) {
@@ -474,9 +493,12 @@
 			const listGroup = createListGroup(entity);
 			 
 			//////////LIST ITEMS//////////
+			
+			//const productDetailLink = createProductDetailLink(entity);
 			const listItemCount = createListItemCount(entity);  
 			const listItemPrice = createListItemPrice(entity);
 			
+			//listGroup.append(productDetailLink);
 			listGroup.append(listItemCount);
 			listGroup.append(listItemPrice);
 			
@@ -484,7 +506,8 @@
 				const listItemDetailLink = createListItemDetailLink(entity);
 				listGroup.append(listItemDetailLink);
 			<%}	%>
-
+			
+			
 			//populate cardbody
 			cardBody.append(cardTitle);
 			cardBody.append(listGroup); 
