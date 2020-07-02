@@ -45,13 +45,6 @@ public class ProductInventoryService {
 
 	/**
 	 * create common transaction object
-	 * 
-	 * @param type
-	 * @param user
-	 * @param customer
-	 * @param supplier
-	 * @param date
-	 * @return
 	 */
 	private Transaction buildTransactionObject(TransactionType type, User user, Customer customer, Supplier supplier,
 			Date date) {
@@ -77,33 +70,18 @@ public class ProductInventoryService {
 	 * @param requestId
 	 * @param user
 	 * @param supplier
-	 * @param transactionData
+	 * @param transactionDate
 	 * @return
 	 */
 	public Transaction saveSupplyTransaction(List<ProductFlow> productFlows, User user, Supplier supplier,
-			Date transactionData) {
-		final Transaction transaction = buildTransactionObject(TYPE_IN, user, null, supplier, transactionData);
+			Date transactionDate) {
+		final Transaction transaction = buildTransactionObject(TYPE_IN, user, null, supplier, transactionDate);
 		final String requestId = user.getRequestId();
 
 		repositoryCustom.keepTransaction();
-		PersistenceOperation<Transaction> persistenceOperation = new PersistenceOperation<Transaction>() {
+		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId);
 
-			@Override
-			public Transaction doPersist(Session hibernateSession) {
-
-				RepositoryCustomImpl.saveNewRecord(transaction, hibernateSession);
-				progressService.sendProgress(1, 1, 10, false, requestId);
-
-				List<ProductFlow> savedProductFlows = saveProductFlows(productFlows, transaction, requestId); 
-				saveNewInventoryItems(savedProductFlows);
-				updateInventoryItems(savedProductFlows, transaction, requestId);
-				 
-				repositoryCustom.notKeepingTransaction();
-				return transaction;
-			}
-		};
-
-		repositoryCustom.pesistOperation(persistenceOperation);
+		repositoryCustom.pesistOperation(op);
 
 		transaction.setProductFlows(productFlows);
 		return transaction;
@@ -128,29 +106,38 @@ public class ProductInventoryService {
 		final Transaction transaction = buildTransactionObject(TYPE_OUT, user, customer, null, transactionDate);
 
 		repositoryCustom.keepTransaction();
-		PersistenceOperation<Transaction> persistenceOperation = new PersistenceOperation<Transaction>() {
+		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId);
+
+		repositoryCustom.pesistOperation(op);
+		transaction.setProductFlows(productFlows);
+
+		return transaction;
+	}
+
+	private PersistenceOperation<Transaction> getTransactionPersistenceOperation(final Transaction transaction,
+			List<ProductFlow> productFlows, String requestId) {
+		log.info("Persistence Operation For trasaction type: {}, code: {}", transaction.getType(), transaction.getCode());
+		
+		return new PersistenceOperation<Transaction>() {
 
 			@Override
 			public Transaction doPersist(Session hibernateSession) {
 
 				RepositoryCustomImpl.saveNewRecord(transaction, hibernateSession);
 				progressService.sendProgress(1, 1, 10, false, requestId);
-				
+
 				List<ProductFlow> savedProductFlows = saveProductFlows(productFlows, transaction, requestId);
+				saveNewInventoryItems(savedProductFlows, transaction);
 				updateInventoryItems(savedProductFlows, transaction, requestId);
-				
+
 				repositoryCustom.notKeepingTransaction();
 				return transaction;
 			}
 		};
-
-		repositoryCustom.pesistOperation(persistenceOperation);
-		transaction.setProductFlows(productFlows);
-
-		return transaction;
 	}
 
 	/**
+	 * update inventory count
 	 * 
 	 * @param savedProductFlows
 	 * @param requestId
@@ -158,27 +145,27 @@ public class ProductInventoryService {
 	private void updateInventoryItems(List<ProductFlow> savedProductFlows, Transaction transaction, String requestId) {
 		final TransactionType transactionType = transaction.getType();
 		log.info("update inentory item for: TRX {}", transactionType);
-		
+
 		for (ProductFlow productFlow : savedProductFlows) {
 			// UPDATE inventory item row
 			long productId = productFlow.getProduct().getId();
 			InventoryItem inventoryItemV2 = inventoryItemRepository.findTop1ByProduct_IdAndNewVersion(productId, true);
 
-			if(transactionType.equals(TYPE_OUT)) {
+			if (transactionType.equals(TYPE_OUT)) {
 				// Check Stock
 				if (!inventoryItemV2.hasEnoughStock(productFlow)) {
 					continue;
 				}
 				inventoryItemV2.takeProduct(productFlow.getCount());// .setCount(finalCount);
-				
-			}else if(transactionType.equals(TYPE_IN)){
-				
+
+			} else if (transactionType.equals(TYPE_IN)) {
+
 				if (null == inventoryItemV2) {
 					log.info("add new record of inventoryItemV2");
 
 					inventoryItemV2 = new InventoryItem();
 					inventoryItemV2.setProduct(productFlow.getProduct());
-					inventoryItemV2.setCount(productFlow.getCount()); 
+					inventoryItemV2.setCount(productFlow.getCount());
 				} else {
 					log.info("inventoryItemV2 current count: {}", inventoryItemV2.getCount());
 					log.info("productFlow count: {}", productFlow.getCount());
@@ -196,10 +183,14 @@ public class ProductInventoryService {
 	}
 
 	/**
+	 * add new inventory item row if new products come from supplier
 	 * 
 	 * @param savedProductFlows
 	 */
-	private void saveNewInventoryItems(List<ProductFlow> savedProductFlows) {
+	private void saveNewInventoryItems(List<ProductFlow> savedProductFlows, Transaction transaction) {
+		if (transaction.getType().equals(TYPE_OUT)) {
+			return;
+		}
 
 		for (ProductFlow productFlow : savedProductFlows) {
 

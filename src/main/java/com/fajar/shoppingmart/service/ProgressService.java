@@ -5,7 +5,10 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ProgressService {
 	
 	@Autowired
@@ -36,14 +39,12 @@ public class ProgressService {
 			currentProgress = 0.0;
 		}
 		currentProgress+=(progress/maxProgress);
-		System.out.println("| | | | |  PROGRESS: "+currentProgress+" adding :"+progress+"/"+maxProgress+", portion: "+percent+" ==> "+ currentProgress*percent);
+		log.info("%%%%%%|PROGRESS|%%%%%%% : "+currentProgress+" adding :"+progress+"/"+maxProgress+", portion: "+percent+" ==> "+ currentProgress*percent);
 		realtimeService.sendProgress(currentProgress*percent, requestId);
 	}
 
 	public void sendComplete(String requestId) {
-		System.out.println("________COMPLETE PROGRESS________");
-		realtimeService.sendProgress(98, requestId);
-		realtimeService.sendProgress(99, requestId);
+		log.info("%%%%%%|COMPLETE PROGRESS|%%%%%%% for {}", requestId); 
 		realtimeService.sendProgress(100, requestId);
 		
 	}

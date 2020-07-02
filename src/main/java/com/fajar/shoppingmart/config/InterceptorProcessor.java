@@ -20,7 +20,6 @@ import com.fajar.shoppingmart.annotation.Authenticated;
 import com.fajar.shoppingmart.annotation.ResourcePath;
 import com.fajar.shoppingmart.controller.BaseController;
 import com.fajar.shoppingmart.dto.WebResponse;
-import com.fajar.shoppingmart.service.ProgressService;
 import com.fajar.shoppingmart.service.UserAccountService;
 import com.fajar.shoppingmart.service.UserSessionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,9 +37,7 @@ public class InterceptorProcessor {
 	@Autowired
 	private ApplicationContext appContext;
 	@Autowired
-	private UserAccountService userAccountService;
-	@Autowired
-	private ProgressService progressService;
+	private UserAccountService userAccountService; 
 
 	public boolean interceptApiRequest(HttpServletRequest request, HttpServletResponse response,
 			HandlerMethod handlerMethod) {

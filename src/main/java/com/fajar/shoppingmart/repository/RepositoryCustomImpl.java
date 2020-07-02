@@ -263,6 +263,10 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	@Transactional
 	public <T extends BaseEntity> T saveObject(final T rawEntity) {
 
+		if(null == rawEntity) {
+			log.error("rawEntity IS NULL");
+		}
+		
 		PersistenceOperation<T> persistenceOperation = new PersistenceOperation<T>() {
 
 			@Override

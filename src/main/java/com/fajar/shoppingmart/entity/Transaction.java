@@ -42,10 +42,12 @@ public class Transaction extends BaseEntity {
 	@ManyToOne
 	@FormField(  optionItemName = "name", type = FieldType.FIELD_TYPE_DYNAMIC_LIST)
 	private Customer customer;
+	
 	@JoinColumn(name = "supplier_id")
 	@ManyToOne
 	@FormField(  optionItemName = "name", type = FieldType.FIELD_TYPE_DYNAMIC_LIST)
 	private Supplier supplier;
+	
 	@Column(unique = true)
 	@FormField
 	private String code;
