@@ -65,10 +65,11 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 public class EntityRepository {
 
-	 
-	@Autowired 
+	@Autowired
 	private WebConfigService webConfigService;
-	
+	@Autowired
+	private RepositoryCustomImpl repositoryCustom;
+
 	@Autowired
 	private CommonUpdateService commonUpdateService;
 	@Autowired
@@ -84,7 +85,7 @@ public class EntityRepository {
 	@Autowired
 	private CapitalFlowUpdateService capitalUpdateService;
 	@Autowired
-	private CostFlowUpdateService costFlowUpdateService;
+	private CostFlowUpdateService costFlowUpdateService; 
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -101,7 +102,8 @@ public class EntityRepository {
 		 * commons
 		 */
 		toCommonUpdateService(Unit.class, Customer.class, RegisteredRequest.class, CustomerVoucher.class,
-				UserRole.class, Capital.class, Cost.class, Page.class, Supplier.class, Category.class, ProductFlow.class);
+				UserRole.class, Capital.class, Cost.class, Page.class, Supplier.class, Category.class,
+				ProductFlow.class);
 
 		/**
 		 * special
@@ -191,15 +193,21 @@ public class EntityRepository {
 
 			throw new InvalidParameterException("JOIN COLUMN INVALID");
 		}
-
+		
 		try {
-			JpaRepository<T, ID> repository = (JpaRepository<T, ID>) findRepo(baseEntity.getClass());
-			log.info("found repo: " + repository);
-			return (T) repository.save((T) baseEntity);
+			return savev2(baseEntity);
+//			JpaRepository<T, ID> repository = (JpaRepository<T, ID>) findRepo(baseEntity.getClass());
+//			log.info("found repo: " + repository);
+//			return (T) repository.save((T) baseEntity);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw ex;
 		}
+	}
+	
+	public <T extends BaseEntity> T savev2(T entity) {
+		return repositoryCustom.saveObject(entity);
+
 	}
 
 	public <T extends BaseEntity, ID> boolean validateJoinColumn(T baseEntity) {
@@ -260,13 +268,13 @@ public class EntityRepository {
 	 * @param entityClass
 	 * @return
 	 */
-	public < T extends BaseEntity> JpaRepository findRepo(Class<T> entityClass) {
+	public <T extends BaseEntity> JpaRepository findRepo(Class<T> entityClass) {
 
-		log.info("will find repo by class: {}", entityClass); 
-		
+		log.info("will find repo by class: {}", entityClass);
+
 		List<JpaRepository<?, ?>> jpaRepositories = webConfigService.getJpaRepositories();
 		int index = 0;
-		
+
 		for (JpaRepository<?, ?> jpaObject : jpaRepositories) {
 			log.info("{}-Repo : {}", index, jpaObject);
 			Class<?> beanType = jpaObject.getClass();
@@ -274,7 +282,7 @@ public class EntityRepository {
 
 			if (originalEntityClass != null && originalEntityClass.equals(entityClass)) {
 
-				return (JpaRepository ) jpaObject;
+				return (JpaRepository) jpaObject;
 
 			}
 		}
@@ -290,11 +298,14 @@ public class EntityRepository {
 	 */
 	public <T extends BaseEntity, ID> List<T> findAll(Class<T> clazz) {
 		JpaRepository<T, ID> repository = findRepo(clazz);
+		log.info("find repo for class: {} => {}", clazz, repository);
 		if (repository == null) {
 			return new ArrayList<T>();
 		}
 		return repository.findAll();
 	}
+
+	
 
 	/**
 	 * find by id
@@ -323,8 +334,8 @@ public class EntityRepository {
 		}
 
 		log.debug("clazz {} interfaces size: {}", clazz, interfaces.length);
-		//CollectionUtil.printArray(interfaces);
-		
+		// CollectionUtil.printArray(interfaces);
+
 		for (Type type : interfaces) {
 
 			boolean isJpaRepository = type.getTypeName().startsWith(Repository.class.getCanonicalName());
@@ -332,7 +343,7 @@ public class EntityRepository {
 			if (isJpaRepository) {
 				Type _type = TypeResolver.resolve(clazz, entityClass);
 				log.debug("_type: {}", _type);
-				if(_type.equals(entityClass)) {
+				if (_type.equals(entityClass)) {
 					return _type;
 				}
 //				ParameterizedType parameterizedType = (ParameterizedType) type;
@@ -341,13 +352,12 @@ public class EntityRepository {
 //						&& parameterizedType.getActualTypeArguments().length > 0) {
 //					return (T) parameterizedType.getActualTypeArguments()[0];
 //				}
-				
+
 			}
 		}
 
 		return null;
 	}
-
 
 	/**
 	 * delete entity by id

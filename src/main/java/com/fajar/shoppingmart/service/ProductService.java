@@ -22,7 +22,9 @@ import com.fajar.shoppingmart.entity.Product;
 import com.fajar.shoppingmart.entity.ProductSales;
 import com.fajar.shoppingmart.entity.Supplier;
 import com.fajar.shoppingmart.entity.Transaction;
+import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.ProductRepository;
+import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.DateUtil;
 
@@ -48,6 +50,8 @@ public class ProductService {
 	private ProgressService progressService;
 	@Autowired
 	private ProductInventoryService productInventoryService;
+	@Autowired
+	private RepositoryCustomImpl repositoryCustomImpl;
 
 	@PostConstruct
 	public void init() {
@@ -380,7 +384,7 @@ public class ProductService {
 	 */
 	public List<String> getRandomProductImages(String imagebasePath) {
  
-		Query query = productRepository.createNativeQuery( "select product.image_url from product where product.image_url is not null limit 7");
+		Query query = repositoryCustomImpl.createNativeQuery( "select product.image_url from product where product.image_url is not null limit 7");
 		List<?> result = query.getResultList();
 		
 		if (result == null || result.size() == 0) {

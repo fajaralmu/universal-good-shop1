@@ -157,7 +157,7 @@ public class MvcManagementController extends BaseController {
 			return ERROR_404_PAGE;
 		}
 		HashMap<String, List<?>> listObject = new HashMap<String, List<?>>();
-		listObject.put("capital", CollectionUtil.convertList(entityService.getAllCapitalType()));
+		listObject.put("capitalType", CollectionUtil.convertList(entityService.getAllCapitalType()));
 
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(CapitalFlow.class, listObject);
 

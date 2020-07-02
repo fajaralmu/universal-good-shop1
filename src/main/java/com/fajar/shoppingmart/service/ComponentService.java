@@ -17,6 +17,7 @@ import com.fajar.shoppingmart.entity.Page;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.UserRole;
 import com.fajar.shoppingmart.repository.CategoryRepository;
+import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.MenuRepository;
 import com.fajar.shoppingmart.repository.PageRepository;
 import com.fajar.shoppingmart.util.CollectionUtil;
@@ -38,7 +39,9 @@ public class ComponentService {
 	@Autowired
 	private UserAccountService userAccountService;
 	@Autowired
-	private PageRepository pageRepository;
+	private PageRepository pageRepository; 
+	@Autowired
+	private EntityRepository entityRepository;
 
 	public List<Page> getPages(HttpServletRequest request){
 		
@@ -124,7 +127,7 @@ public class ComponentService {
 
 			if (pageCode.equals(SETTING)) {
 				Menu menu = defaultMenu();
-				final Menu savedMenu = menuRepository.save(menu);
+				final Menu savedMenu = entityRepository.save(menu);
 				return new ArrayList<Menu>() {
 					private static final long serialVersionUID = -6867018433722897471L;
 
@@ -220,7 +223,7 @@ public class ComponentService {
 		if (pageDB.isPresent()) {
 			Page page = pageDB.get();
 			page.setSequence(sequence);
-			pageRepository.save(page);
+			entityRepository.save(page);
 		}
 	}
 

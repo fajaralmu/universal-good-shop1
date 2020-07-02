@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class KeyValue implements Serializable{/**
+public class KeyValue<K, V> implements Serializable{/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1668484384625090190L;
 
-	private Object key;
-	private Object value;
+	private K key;
+	private V value;
 	@Builder.Default
 	private boolean valid = true;
 	

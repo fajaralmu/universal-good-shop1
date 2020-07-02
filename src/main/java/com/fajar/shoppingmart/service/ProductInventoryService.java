@@ -14,8 +14,10 @@ import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.Supplier;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.User;
+import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.InventoryItemRepository;
 import com.fajar.shoppingmart.repository.ProductFlowRepository;
+import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.repository.TransactionRepository;
 import com.fajar.shoppingmart.util.StringUtil;
 
@@ -35,6 +37,10 @@ public class ProductInventoryService {
 	private ProgressService progressService; 
 	@Autowired
 	private CashBalanceService cashBalanceService;
+	@Autowired
+	private EntityRepository entityRepository;
+	@Autowired
+	private RepositoryCustomImpl repositoryCustomImpl;
 	
 	public static final TransactionType TYPE_OUT = TransactionType.OUT;
 	public static final TransactionType TYPE_IN = TransactionType.IN;
@@ -77,7 +83,7 @@ public class ProductInventoryService {
 			Supplier supplier, Date d) {
 		try {
 			Transaction transaction = buildTransactionObject(TYPE_IN, user, null, supplier, d);  
-			Transaction newTransaction = transactionRepository.save(transaction);
+			Transaction newTransaction = entityRepository.save(transaction);
 			progressService.sendProgress(1, 1, 10, false, requestId);
 
 			 for (ProductFlow productFlow : productFlows) {
@@ -85,7 +91,7 @@ public class ProductInventoryService {
 				productFlow.setId(null);// never update
 				// IMPORTANT!!
 				productFlow.setTransaction(newTransaction);
-				productFlow = productFlowRepository.save(productFlow);
+				productFlow = entityRepository.save(productFlow);
 
 				/**
 				 * update cash balance
@@ -98,7 +104,7 @@ public class ProductInventoryService {
 				 */
 				InventoryItem inventoryItem = new InventoryItem(productFlow);
 				inventoryItem.addNewProduct();
-				inventoryItemRepository.save(inventoryItem);
+				entityRepository.save(inventoryItem);
 				
 				/**
 				 * inventory item NEW VERSION
@@ -115,7 +121,7 @@ public class ProductInventoryService {
 					inventoryItemV2.setCount(finalCount);
 				}
 
-				inventoryItemRepository.save(inventoryItemV2);
+				entityRepository.save(inventoryItemV2);
 				
 				progressService.sendProgress(1, productFlows.size(), 40, false, requestId);
 			}
@@ -147,7 +153,7 @@ public class ProductInventoryService {
  
 		try {
 			Transaction transaction = buildTransactionObject(TYPE_OUT,user,customer, null, d); 
-			Transaction newTransaction = transactionRepository.save(transaction);
+			Transaction newTransaction = entityRepository.save(transaction);
 			progressService.sendProgress(1, 1, 10, false, requestId);
 			int purchasedProduct = 0;
 			for (ProductFlow productFlow : productFlows) {
@@ -174,7 +180,7 @@ public class ProductInventoryService {
 				/**
 				 * save NEW productFlow record to database
 				 */
-				productFlow = productFlowRepository.save(productFlow); 
+				productFlow = entityRepository.save(productFlow); 
 				
 				/**
 				 * update cash balance
@@ -191,7 +197,7 @@ public class ProductInventoryService {
 					continue;
 				}
 				
-				inventoryItemRepository.save(inventoryItem);
+				entityRepository.save(inventoryItem);
 				
 				/**
 				 * inventory item NEW VERSION
@@ -204,7 +210,7 @@ public class ProductInventoryService {
 				}
 				inventoryItemV2.setCount(finalCount); 
 
-				inventoryItemRepository.save(inventoryItemV2);
+				entityRepository.save(inventoryItemV2);
 				
 				purchasedProduct++;
 				progressService.sendProgress(1, productFlows.size(), 30, false, requestId);
@@ -229,7 +235,7 @@ public class ProductInventoryService {
  
 		try {
 			Transaction transaction = buildTransactionObject(TYPE_OUT,user,customer, null, d); 
-			Transaction newTransaction = transactionRepository.save(transaction);
+			Transaction newTransaction = entityRepository.save(transaction);
 			progressService.sendProgress(1, 1, 10, false, requestId);
 			int purchasedProduct = 0;
 			for (ProductFlow productFlow : productFlows) {
@@ -256,7 +262,7 @@ public class ProductInventoryService {
 				/**
 				 * save NEW productFlow record to database
 				 */
-				productFlow = productFlowRepository.save(productFlow); 
+				productFlow = entityRepository.save(productFlow); 
 				
 				/**
 				 * update cash balance
@@ -275,7 +281,7 @@ public class ProductInventoryService {
 				}
 				inventoryItemV2.setCount(finalCount); 
 
-				inventoryItemRepository.save(inventoryItemV2);
+				entityRepository.save(inventoryItemV2);
 				
 				purchasedProduct++;
 				progressService.sendProgress(1, productFlows.size(), 30, false, requestId);
@@ -316,7 +322,7 @@ public class ProductInventoryService {
 		if(limit>0) {
 			sql += " limit "+limit;
 		}
-		return inventoryItemRepository.filterAndSort(sql, InventoryItem.class);
+		return repositoryCustomImpl.filterAndSort(sql, InventoryItem.class);
 	}
 	
 	/**
@@ -341,7 +347,7 @@ public class ProductInventoryService {
 		
 		InventoryItem inventoryItem = new InventoryItem();
 		inventoryItem.setProduct(product);
-		inventoryItemRepository.save(inventoryItem);
+		entityRepository.save(inventoryItem);
 	}
 	
 

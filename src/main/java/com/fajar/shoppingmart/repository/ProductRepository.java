@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.fajar.shoppingmart.entity.Product;
 
-public interface ProductRepository extends JpaRepository<Product, Long>, RepositoryCustom {
+public interface ProductRepository extends JpaRepository<Product, Long> {
 
 	@Query(nativeQuery = true, value = "select * from product where name like %?3% limit ?1 offset ?2")
 	public List<Product> getByLimitAndOffset(int limit, int offset, String name);
@@ -21,18 +21,18 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Reposit
 	public Object findProductSales(int month, int year, Long productId);
 
 	/**
-	 * String sql = "select sum(product_flow.count) as productCount from product_flow  "
-				+ " left join `transaction` on transaction.id = product_flow.transaction_id "
-				+ " where transaction.`type` = 'OUT' and product_flow.product_id = " + productId
-				+ " and transaction.transaction_date >= '" + period1 + "' and " + " transaction.transaction_date <= '"
-				+ period2 + "' ";
-	 *  
+	 * String sql = "select sum(product_flow.count) as productCount from
+	 * product_flow " + " left join `transaction` on transaction.id =
+	 * product_flow.transaction_id " + " where transaction.`type` = 'OUT' and
+	 * product_flow.product_id = " + productId + " and transaction.transaction_date
+	 * >= '" + period1 + "' and " + " transaction.transaction_date <= '" + period2 +
+	 * "' ";
+	 * 
 	 */
-	@Query(nativeQuery = true, 
-			value= "select sum(product_flow.count) as productCount from product_flow  "
-					+ " left join `transaction` on transaction.id = product_flow.transaction_id "
-					+ " where transaction.`type` = 'OUT' and product_flow.product_id = ?3"
-					+ " and transaction.transaction_date >= ?1 and " + " transaction.transaction_date <= ?2 ")
+	@Query(nativeQuery = true, value = "select sum(product_flow.count) as productCount from product_flow  "
+			+ " left join `transaction` on transaction.id = product_flow.transaction_id "
+			+ " where transaction.`type` = 'OUT' and product_flow.product_id = ?3"
+			+ " and transaction.transaction_date >= ?1 and " + " transaction.transaction_date <= ?2 ")
 	public BigDecimal findProductSalesBetween(String period1, String period2, Long productId);
 
 }

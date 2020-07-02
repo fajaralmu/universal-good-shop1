@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.fajar.shoppingmart.entity.CapitalFlow;
 
-public interface CapitalFlowRepository extends JpaRepository<CapitalFlow		, Long>{
+public interface CapitalFlowRepository extends JpaRepository<CapitalFlow		, Long> {
 
 	List<CapitalFlow> findByDeletedFalse();
 

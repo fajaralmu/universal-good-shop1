@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.fajar.shoppingmart.dto.TransactionType;
 import com.fajar.shoppingmart.entity.Transaction;
 
-public interface TransactionRepository extends JpaRepository<Transaction, Long>, RepositoryCustom {
+public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
 	List<Transaction> findByType(TransactionType type);
 
@@ -30,8 +30,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
 			+ "WHERE `product_flow`.product_id = ?1  and `transaction`.`type` = 'IN' "
 			+ "order by `transaction`.transaction_date asc limit 1")
 	List<Transaction> findFirstTransaction(Long productId);
-	
-	@Query(nativeQuery = true, value= "select * from `transaction`where type=?1"
+
+	@Query(nativeQuery = true, value = "select * from `transaction`where type=?1"
 			+ " and year(`transaction_date`) = ?3 and month(`transaction_date`) = ?2 ")
 	List<Transaction> findTransactionByTypeAndPeriod(String type, int month, int year);
 

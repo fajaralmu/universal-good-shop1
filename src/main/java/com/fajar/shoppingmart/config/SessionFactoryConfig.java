@@ -43,7 +43,7 @@ public class SessionFactoryConfig {
 			configuration.setProperties(additionalProperties());
 			
 			addAnnotatedClass(configuration);
-
+			
 			factory = configuration./* setInterceptor(new HibernateInterceptor()). */buildSessionFactory(); 
 			log.info("Session Factory has been initialized");
 			return factory;

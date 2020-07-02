@@ -17,6 +17,7 @@ import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Message;
 import com.fajar.shoppingmart.entity.RegisteredRequest;
+import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.MessageRepository;
 import com.fajar.shoppingmart.util.StringUtil; 
 
@@ -30,7 +31,10 @@ public class MessagingService {
 	private MessageRepository messageRepository;
 	
 	@Autowired
-	private UserSessionService userSessionService;
+	private UserSessionService userSessionService; 
+	
+	@Autowired
+	private EntityRepository entityRepository;
 	
 	private HashMap<String, List<BaseEntity>> messages = new HashMap<>();
 	
@@ -100,7 +104,7 @@ public class MessagingService {
 		}
 		currentMessages.add(message);
 		messages.put(requestId,currentMessages);
-		messageRepository.save(message);
+		entityRepository.save(message);
 	}
 
 }

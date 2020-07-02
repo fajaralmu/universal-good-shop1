@@ -38,7 +38,7 @@ public class ShopProfileUpdateService extends BaseEntityUpdateService{
 				}
 			}
 		}
-		ShopProfile newShopProfile = shopProfileRepository.save(shopProfile);
+		ShopProfile newShopProfile = entityRepository.save(shopProfile);
 		return WebResponse.builder().entity(newShopProfile).build();
 	}
 	

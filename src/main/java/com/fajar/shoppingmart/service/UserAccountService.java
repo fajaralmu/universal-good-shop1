@@ -3,8 +3,11 @@ package com.fajar.shoppingmart.service;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,8 @@ public class UserAccountService {
 	private UserRepository userRepository;
 	@Autowired
 	private UserRoleRepository userRoleRepository;
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@PostConstruct
 	public void init() {
@@ -42,6 +47,7 @@ public class UserAccountService {
 	 * @param request
 	 * @return
 	 */
+	@Transactional
 	public WebResponse registerUser(WebRequest request) {
 		WebResponse response = new WebResponse();
 		Optional<UserRole> regularRoleOpt = userRoleRepository.findById(2L);
@@ -52,8 +58,8 @@ public class UserAccountService {
 		UserRole regularRole = regularRoleOpt.get();
 
 		User user = populateUser(request, regularRole);
-		User newUser = userRepository.save(user);
-		response.setUser(newUser);
+		 entityManager.persist(user);
+		response.setUser(user);
 		return response;
 	}
 

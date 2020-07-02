@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.fajar.shoppingmart.entity.InventoryItem;
 
-public interface InventoryItemRepository extends JpaRepository<InventoryItem, Long>, RepositoryCustom{
+public interface InventoryItemRepository extends JpaRepository<InventoryItem, Long> {
 
 	InventoryItem  findByIncomingFlowId(Long flowReferenceId);
 

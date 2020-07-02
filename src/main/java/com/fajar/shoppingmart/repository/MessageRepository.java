@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.fajar.shoppingmart.entity.Message;
 
-public interface MessageRepository extends JpaRepository<Message		, Long>{
- 
+public interface MessageRepository extends JpaRepository<Message, Long> {
 
 }

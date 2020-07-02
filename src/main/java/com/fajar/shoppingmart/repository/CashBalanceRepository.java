@@ -8,7 +8,7 @@ import com.fajar.shoppingmart.entity.CashBalance;
 
 public interface CashBalanceRepository extends JpaRepository<CashBalance, Long> {
 
-	public CashBalance findTop1ByOrderByIdDesc(); 
+	public CashBalance findTop1ByOrderByIdDesc();
 
 	/**
 	 * 

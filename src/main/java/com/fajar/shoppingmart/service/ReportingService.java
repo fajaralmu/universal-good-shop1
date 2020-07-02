@@ -22,6 +22,7 @@ import com.fajar.shoppingmart.entity.Supplier;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.custom.CashFlow;
 import com.fajar.shoppingmart.repository.ProductFlowRepository;
+import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.repository.TransactionRepository;
 
 @Service
@@ -29,6 +30,8 @@ public class ReportingService {
 
 	@Autowired
 	private ProductFlowRepository productFlowRepository;
+	@Autowired
+	private RepositoryCustomImpl repositoryCustomImpl;
 	@Autowired
 	private TransactionRepository transactionRepository;
 	@Autowired
@@ -70,7 +73,7 @@ public class ReportingService {
 
 		sql = sql.replace("$YYYY", year.toString()).replace("$MODULE", module).replace("$MM", month.toString());
 
-		Object cashflow = productFlowRepository.getCustomedObjectFromNativeQuery(sql, CashFlow.class);
+		Object cashflow = repositoryCustomImpl.getCustomedObjectFromNativeQuery(sql, CashFlow.class);
 		return (CashFlow) cashflow;
 	}
 

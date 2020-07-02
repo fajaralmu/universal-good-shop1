@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.SystemException;
+import javax.transaction.Transactional;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -15,6 +16,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.annotation.CustomEntity;
 import com.fajar.shoppingmart.dto.Filter;
@@ -26,7 +28,7 @@ import com.fajar.shoppingmart.util.EntityUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-//@Service
+@Service
 public class RepositoryCustomImpl implements RepositoryCustom {
 
 	@PersistenceContext
@@ -34,7 +36,7 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	@Autowired
 	private SessionFactory sessionFactory;
 	@Autowired
-	private Session hibernateSession; 
+	private Session hibernateSession;
 
 	public RepositoryCustomImpl() {
 	}
@@ -111,8 +113,6 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	public <O> O getCustomedObjectFromNativeQuery(String sql, Class<O> objectClass) {
 		log.info("SQL for result object: {}", sql);
 		try {
-			O singleObject = objectClass.getDeclaredConstructor().newInstance();
-
 			Query result = entityManager.createNativeQuery(sql);
 			Object resultObject = result.getSingleResult();
 			log.info("object ,{}", resultObject);
@@ -131,7 +131,7 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 			Object[] propertiesArray = (Object[]) resultObject;
 			String[] propertyOrder = customEntitySetting.propOrder();
 
-			singleObject = fillObject(singleObject, propertiesArray, propertyOrder);
+			O singleObject = fillObject(objectClass, propertiesArray, propertyOrder);
 			log.info("RESULT OBJECT: {}", singleObject);
 			return singleObject;
 		} catch (Exception e) {
@@ -141,8 +141,9 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 
 	}
 
-	private <O> O fillObject(O object, Object[] propertiesArray, String[] propertyOrder)
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	public static <O> O fillObject(Class<O> objectClass, Object[] propertiesArray, String[] propertyOrder)
+			throws Exception {
+		O object = objectClass.getDeclaredConstructor().newInstance();
 
 		for (int j = 0; j < propertiesArray.length; j++) {
 			String propertyName = propertyOrder[j];
@@ -213,6 +214,41 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 		} catch (Exception e) {
 			return 0;
 		}
+	}
+
+	@Override
+	@Transactional
+	public <T extends BaseEntity> T saveObject(T entity) {
+		Transaction transaction = null;
+		try {
+			transaction = hibernateSession.beginTransaction();
+			T result;
+			
+			if(entity.getId() != null) {
+				Long newId = (Long) hibernateSession.save(entity);
+				result = entity;
+				result.setId(newId);
+			}else {
+				result = (T) hibernateSession.merge(entity);
+			}
+			
+			
+			transaction.commit();
+			
+			log.info("success save Object: {}", entity.getClass());
+			return result;
+		} catch (Exception e) {
+			log.error("Error save object: {}", e);
+
+			if (transaction != null) {
+				transaction.rollback();
+			}
+
+			e.printStackTrace();
+		} finally {
+
+		}
+		return null;
 	}
 
 }

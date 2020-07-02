@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import com.fajar.shoppingmart.dto.Filter;
+import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.querybuilder.QueryHolder;
 
 public interface RepositoryCustom {
@@ -24,5 +25,7 @@ public interface RepositoryCustom {
 	public <T> List<T> filterAndSortv2(Class<T> _class, Filter filter);
 	
 	public long getRowCount(Class<?> _class, Filter filter);
+	
+	public <T extends BaseEntity> T saveObject(T entity);
 
 }

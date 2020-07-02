@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.service.FileService;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.util.EntityUtil;
@@ -22,6 +23,8 @@ public class BaseEntityUpdateService {
 
 	@Autowired
 	protected FileService fileService;
+	@Autowired
+	protected EntityRepository entityRepository;
 	
 	@PostConstruct
 	public void init() {

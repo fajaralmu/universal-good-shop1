@@ -42,7 +42,7 @@ public class VoucherUpdateService extends BaseEntityUpdateService{
 		}
 		voucher = (Voucher) copyNewElement(baseEntity, newRecord);
 		 
-		Voucher newVoucher = voucherRepository.save(voucher);
+		Voucher newVoucher = entityRepository.save(voucher);
 		
 		if(newRecord) {
 			updateCustomerVouchers ( newVoucher);
@@ -63,7 +63,7 @@ public class VoucherUpdateService extends BaseEntityUpdateService{
 					CustomerVoucher customerVoucher = new CustomerVoucher();
 					customerVoucher.setVoucher(newVoucher);
 					customerVoucher.setMember(customer);
-					CustomerVoucherRepository.save(customerVoucher);
+					entityRepository.save(customerVoucher);
 				}
 			}
 		});

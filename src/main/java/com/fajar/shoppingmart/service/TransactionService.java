@@ -27,6 +27,7 @@ import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.repository.CustomerRepository;
 import com.fajar.shoppingmart.repository.ProductFlowRepository;
 import com.fajar.shoppingmart.repository.ProductRepository;
+import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.repository.SupplierRepository;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
@@ -52,6 +53,8 @@ public class TransactionService {
 	private ProductInventoryService productInventoryService;
 	@Autowired
 	private ReportingService reportingService;
+	@Autowired
+	private RepositoryCustomImpl repositoryCustomImpl;
 
 	@PostConstruct
 	public void init() {
@@ -146,7 +149,7 @@ public class TransactionService {
 							+ "(select sum(count) as total_count from product_flow where flow_ref_id=$FLOW_ID and deleted!=1) as used ";
 		sql 			= sql.replace("$FLOW_ID", productFlow.getId().toString());
 		
-		Query query 	= productFlowRepository.createNativeQuery(sql);
+		Query query 	= repositoryCustomImpl.createNativeQuery(sql);
 		Object result 	= query.getSingleResult();
 
 		Object[] objectList = (Object[]) result;

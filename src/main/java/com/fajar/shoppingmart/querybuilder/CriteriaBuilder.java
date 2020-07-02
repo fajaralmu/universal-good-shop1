@@ -33,6 +33,9 @@ public class CriteriaBuilder {
 
 	private final Session hibernateSession;
 
+	private String currentAlias;
+	private int joinIndex;
+
 	public CriteriaBuilder(Session hibernateSession) {
 		this.hibernateSession = hibernateSession;
 	}
@@ -111,6 +114,22 @@ public class CriteriaBuilder {
 		return fieldValue;
 	}
 
+	private void setCurrentAlias(String aliasName) {
+		if (null == aliasName)
+			return;
+
+		if (aliasName.equals("this")) {
+			this.currentAlias = "this_";
+		} else {
+			joinIndex++;
+			if(aliasName.length() > 10) {
+				aliasName = aliasName.substring(0, 10);
+			}
+			
+			this.currentAlias = aliasName.toLowerCase() + joinIndex + '_';
+		}
+	}
+
 	public Criteria createCriteria(Class<?> entityClass, Filter filter, final boolean _allItemExactSearch) {
 		Map<String, Object> fieldsFilter = filter.getFieldsFilter();
 		List<Field> entityDeclaredFields = EntityUtil.getDeclaredFields(entityClass);
@@ -120,8 +139,11 @@ public class CriteriaBuilder {
 
 		String entityName = entityClass.getSimpleName();
 		Criteria criteria = hibernateSession.createCriteria(entityClass, entityName);
+		setCurrentAlias("this");
 
 		for (final String rawKey : fieldsFilter.keySet()) {
+			setCurrentAlias("this");
+
 			log.info("##" + rawKey + ":" + fieldsFilter.get(rawKey));
 
 			if (fieldsFilter.get(rawKey) == null)
@@ -161,6 +183,8 @@ public class CriteriaBuilder {
 
 			if (null != joinColumnResult) {
 				if (joinColumnResult.isValid()) {
+
+					setCurrentAlias(fieldName);
 					criteria.createAlias(entityName + "." + fieldName, fieldName);
 					criteria.add(restrictionLike(fieldName + "." + joinColumnResult.getValue(), field.getType(),
 							fieldsFilter.get(rawKey)));
@@ -246,14 +270,17 @@ public class CriteriaBuilder {
 		String columnName = field.getName();// QueryUtil.getColumnName(field);
 		String tableName = _class.getName();// QueryUtil.getTableName(_class); NOW USING ALIAS
 
-		Criterion sqlRestriction = Restrictions.sqlRestriction("{alias}." + columnName + " LIKE '%" + value + "%'");
+		Criterion sqlRestriction = Restrictions.sqlRestriction(currentAlias+"." + columnName + " LIKE '%" + value + "%'");
 
 		return sqlRestriction;
 	}
 
-	public void main(String[] args) {
+	public static void main(String[] args) {
 		String name = "kk.ll";
 		log.info("contains: {}", name.contains("."));
+		String str = "capitaltype"; // 10 digits
+		System.out.println(str.substring(0, 10));
+
 //		Map<String, Object> filter = new HashMap<String, Object>() {
 //			{
 //				 

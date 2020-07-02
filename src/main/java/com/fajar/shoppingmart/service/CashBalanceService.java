@@ -9,6 +9,7 @@ import com.fajar.shoppingmart.entity.CashBalance;
 import com.fajar.shoppingmart.entity.custom.BalanceJournalInfo;
 import com.fajar.shoppingmart.entity.custom.FinancialEntity;
 import com.fajar.shoppingmart.repository.CashBalanceRepository;
+import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class CashBalanceService {
 	@Autowired
-	private CashBalanceRepository cashBalanceRepository; 
+	private CashBalanceRepository cashBalanceRepository;  
+	@Autowired
+	private EntityRepository entityRepository;
 	
 	public CashBalance getBalanceByTransactionItem(FinancialEntity baseEntity) {
 		BalanceJournalInfo<? extends FinancialEntity> journalInfo = baseEntity.getBalanceJournalInfo();
@@ -92,7 +95,7 @@ public class CashBalanceService {
 		cashBalance.setDate(date); 
 		cashBalance.setModifiedDate(new Date()); 
 		
-		cashBalanceRepository.save(cashBalance);
+		entityRepository.save(cashBalance);
 	}
  
 

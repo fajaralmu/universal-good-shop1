@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Product;
+import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.ProductRepository;
 import com.fajar.shoppingmart.service.ProductInventoryService;
 import com.fajar.shoppingmart.util.CollectionUtil;
@@ -95,7 +96,7 @@ public class ProductUpdateService extends BaseEntityUpdateService{
 		}
 		 
 		
-		Product newProduct = productRepository.save(product);
+		Product newProduct = entityRepository.save(product);
 		
 		if(newRecord) {
 			productInventoryService.addNewProduct(newProduct);
