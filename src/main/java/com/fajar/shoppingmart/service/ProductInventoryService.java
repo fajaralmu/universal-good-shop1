@@ -154,6 +154,7 @@ public class ProductInventoryService {
 			if (transactionType.equals(TYPE_OUT)) {
 				// Check Stock
 				if (!inventoryItemV2.hasEnoughStock(productFlow)) {
+					log.debug("stock of {} insufficient!", productFlow.getProduct().getName());
 					continue;
 				}
 				inventoryItemV2.takeProduct(productFlow.getCount());// .setCount(finalCount);
@@ -286,21 +287,33 @@ public class ProductInventoryService {
 
 		log.info("saveProductFlowsAndUpdateCashBalance, count: {}", productFlows.size());
 		List<ProductFlow> savedProductFlows = new ArrayList<ProductFlow>();
+		List<ProductFlow > skippedProductFlows = new ArrayList<>();
 
 		for (int i = 0; i < productFlows.size(); i++) {
 
 			final ProductFlow productFlow = productFlows.get(i);
-			if (productFlow.getCount() <= 0)
+			if (productFlow.getCount() <= 0) {
+				log.debug("Skipped Product Flow: productFlow.getCount() <= 0" );
+				skippedProductFlows.add(productFlow);
 				continue;
+			}
 
 			productFlow.setId(null);
 			productFlow.setTransaction(transaction);
+			Product product = productFlow.getProduct();
 
 			if (transaction.getType().equals(TYPE_OUT)) {
 				InventoryItem inventoryItemV2 = inventoryItemRepository
-						.findTop1ByProduct_IdAndNewVersion(productFlow.getProduct().getId(), NEW_VERSION);
-				if (null == inventoryItemV2 || inventoryItemV2.getCount() - productFlow.getCount() < 0)
+						.findTop1ByProduct_IdAndNewVersion(product.getId(), NEW_VERSION);
+				
+				if (null == inventoryItemV2 || inventoryItemV2.getCount() < productFlow.getCount() ) { 
+					
+					log.debug("Skipped Product Flow of {}: inventoryItemV2.getCount() < productFlow.getCount()", product.getName() );
+					log.debug("inventoryItemV2.getCount(): {} - product count: {}", inventoryItemV2 == null ? "NULL" :inventoryItemV2.getCount(), productFlow.getCount());
+					log.debug("inventoryItemV2.id: {}", inventoryItemV2 == null ? "NULL": inventoryItemV2.getId());
+					skippedProductFlows.add(productFlow);
 					continue;
+				}
 
 				productFlow.setPrice(productFlow.getProduct().getPrice());
 			}
@@ -313,7 +326,8 @@ public class ProductInventoryService {
 
 			progressService.sendProgress(1, productFlows.size(), 30, false, requestId);
 		}
-		log.info("savedProductFlows, count: {}", savedProductFlows.size());
+		log.info("Saved Product, count: {}", savedProductFlows.size());
+		log.info("Skipped Product, count: {}", skippedProductFlows.size());
 		return savedProductFlows;
 	}
 
