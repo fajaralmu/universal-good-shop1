@@ -27,5 +27,7 @@ public interface RepositoryCustom {
 	public long getRowCount(Class<? extends BaseEntity> _class, Filter filter);
 	
 	public <T extends BaseEntity> T saveObject(T entity);
+	
+	public boolean pesistOperation(PersistenceOperation persistenceOperation);
 
 }

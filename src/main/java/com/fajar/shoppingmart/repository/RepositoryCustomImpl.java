@@ -217,26 +217,28 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 		}
 	}
 
-	private <T extends BaseEntity> T validateJoinColumns(T rawEntity) throws Exception {
+	public <T extends BaseEntity> T validateJoinColumns(T rawEntity) throws Exception {
 		List<Field> joinColumnFields = QueryUtil.getJoinColumnFields(rawEntity.getClass());
-		
+
 		T entity = EntityUtil.cloneSerializable(rawEntity);
-		
+
 		if (0 == joinColumnFields.size()) {
 			return entity;
 		}
 		for (Field field : joinColumnFields) {
-			BaseEntity fieldValue = (BaseEntity)field.get(entity);
-			//check from DB
+			BaseEntity fieldValue = (BaseEntity) field.get(entity);
+			// check from DB
 			log.info("check join column field: {}->value: {}", field.getName(), fieldValue);
-			if(null == fieldValue) continue;
+			if (null == fieldValue)
+				continue;
 			Object dbValue = hibernateSession.get(fieldValue.getClass(), fieldValue.getId());
-			
-			if(null == dbValue) continue;
-			
+
+			if (null == dbValue)
+				continue;
+
 			field.set(entity, dbValue);
 		}
-		
+
 		return entity;
 
 	}
@@ -248,9 +250,9 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 		try {
 			transaction = hibernateSession.beginTransaction();
 			T result;
-			
+
 			entity = validateJoinColumns(entity);
-			
+
 			if (entity.getId() == null) {
 				log.debug("Will save new entity ");
 				Long newId = (Long) hibernateSession.save(entity);
@@ -282,6 +284,33 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 
 		}
 		return null;
+	}
+
+	@Override
+	public boolean pesistOperation(PersistenceOperation persistenceOperation) {
+		Transaction transaction = null;
+		try {
+			transaction = hibernateSession.beginTransaction();
+			
+			persistenceOperation.doPersist(hibernateSession);
+			
+			transaction.commit();
+
+			log.info("success persist operation");
+			return true;
+		} catch (Exception e) {
+			log.error("Error persist operation: {}", e);
+
+			if (transaction != null) {
+				log.info("Rolling back.... ");
+				transaction.rollback();
+			}
+
+			e.printStackTrace();
+		} finally {
+
+		}
+		return false;
 	}
 
 }
