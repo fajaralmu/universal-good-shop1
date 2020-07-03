@@ -8,12 +8,13 @@ import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
 import com.fajar.shoppingmart.dto.VoucherType;
+import com.fajar.shoppingmart.service.entity.VoucherUpdateService;
 
 import lombok.Data;
 
 @Data
 @Entity
-@Dto
+@Dto(updateService = VoucherUpdateService.class)
 @Table(name="voucher")
 public class Voucher extends BaseEntity {
  

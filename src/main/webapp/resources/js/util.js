@@ -5,30 +5,66 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
 	];
 
 function _byId(id){
+	if(id==null || id == ""){
+		console.warn("ID IS EMPTY");
+	}
 	return document.getElementById(id);
 }
 
+const loadingDiv = createDiv('loading-div','loading_div');
+
 function infoLoading() {
-	_byId("loading-div").innerHTML = "";
+	 
+	document.body.prepend(loadingDiv);
+	
+	loadingDiv.innerHTML = "";
+	const loadingText = createHtmlTag({
+		tagName:'div',
+		id:'loading-txt',
+		innerHTML:'Please Wait'
+	}); 
+	loadingDiv.appendChild(loadingText); 
 	const imagePath = ctxPath+"/res/img/loading-disk.gif";
 	const loadingImg = createHtmlTag({
 		tagName: "img",
 		src: imagePath,
-		style: {height: '70px', width: '70px'}
+		style: {height: '70px', width: '70px'},
+		onload: function(){
+			loadingText.innerHTML = "";
+		}
 	}); 
-	_byId("loading-div").appendChild(loadingImg);
+	
+	loadingDiv.appendChild(loadingImg);
 }
 
 function infoDone() {
-	_byId("loading-div").innerHTML = "";
+	try{
+		loadingDiv.parentNode.removeChild(loadingDiv);
+	}catch(e){
+		
+	}
 }
 
 /** ***************COMPONENT*************** */
+
+function htmlToElement(html) {
+    var template = document.createElement('template');
+    html = html.trim(); // Never return a text node of whitespace as the result
+    template.innerHTML = html;
+    return template.content.firstChild;
+}
+
+
 function createAnchor(id, html, url){ 
 	return createHtmlTag({tagName:"a", innerHTML: html, id: id, href: url}); 
 }
 
 function appendElements(parent, ...childs){
+	for (var i = 0; i < childs.length; i++) {
+		parent.appendChild(childs[i]);
+	}
+}
+function appendElementsArray(parent, childs){
 	for (var i = 0; i < childs.length; i++) {
 		parent.appendChild(childs[i]);
 	}
@@ -239,9 +275,15 @@ function createHtmlTag(object){
 		const isObject = isNotNull && typeof(value) ==  "object";
 		const isHtmlElement = isNotNull && value instanceof HTMLElement;
 		const isFunction = isNotNull && typeof(value) ==  "function";
+		const isArray = isNotNull && Array.isArray(value);
 		
 		if(isHtmlElement){
 			tag.appendChild(value);
+//		}else if(isArray){
+//			for (var i = 0; i < value.length; i++) {
+//				const htmlTag = createHtmlTag(value[i]);
+//				tag.appendChild(htmlTag);
+//			}
 		}else if(isObject && !isFunction){
 			if(isStyle){
 				tag.setAttribute(key, stringifyStyleObject(value));

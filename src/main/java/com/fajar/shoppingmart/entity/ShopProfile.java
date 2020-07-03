@@ -9,13 +9,14 @@ import javax.persistence.Table;
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
+import com.fajar.shoppingmart.service.entity.ShopProfileUpdateService;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Dto(ignoreBaseField = false)
+@Dto(ignoreBaseField = false, updateService = ShopProfileUpdateService.class)
 @Entity
 @Table(name = "shop_profile")
 @Data

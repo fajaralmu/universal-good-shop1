@@ -16,7 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.fajar.shoppingmart.dto.KeyValue;
+import com.fajar.shoppingmart.dto.KeyPair;
 import com.fajar.shoppingmart.entity.Page;
 import com.fajar.shoppingmart.entity.ShopProfile;
 import com.fajar.shoppingmart.entity.User;
@@ -57,9 +57,14 @@ public class BaseController {
 	protected ComponentService componentService;
 
 	@ModelAttribute("shopProfile")
-	public ShopProfile getProfile(HttpServletRequest request) {
+	@Deprecated //new @ModelAttribute = 'profile'
+	public ShopProfile getShopProfile(HttpServletRequest request) {
 //		System.out.println("Has Session: "+userSessionService.hasSession(request, false));
 		return webAppConfiguration.getProfile();
+	}
+	@ModelAttribute("profile")
+	public ShopProfile getProfile(HttpServletRequest request) {
+		return getShopProfile(request);
 	}
 
 	@ModelAttribute("timeGreeting")
@@ -180,9 +185,9 @@ public class BaseController {
 	}
 
 	private static void addResourcePaths(ModelAndView modelAndView, String resourceName, String... paths) {
-		List<KeyValue> resoucePaths = new ArrayList<>();
+		List<KeyPair> resoucePaths = new ArrayList<>();
 		for (int i = 0; i < paths.length; i++) {
-			resoucePaths.add(KeyValue.builder().value(paths[i]).build());
+			resoucePaths.add(KeyPair.builder().value(paths[i]).build());
 			log.info("{}. Add {} to {} , value: {}", i, resourceName, modelAndView.getViewName(), paths[i]);
 		}
 		setModelAttribute(modelAndView, resourceName, resoucePaths);
@@ -208,10 +213,16 @@ public class BaseController {
 	}
 
 	public static void addTitle(ModelAndView modelAndView, String title) {
+		if(null == title || title.isEmpty()) {
+			return;
+		}
 		setModelAttribute(modelAndView, "title", title);
 	}
 
 	public static void addPageUrl(ModelAndView modelAndView, String pageUrl) {
+		if(null == pageUrl || pageUrl.isEmpty()) {
+			return;
+		}
 		setModelAttribute(modelAndView, "pageUrl", pageUrl);
 		
 	}

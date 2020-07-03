@@ -19,7 +19,6 @@ import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Capital;
 import com.fajar.shoppingmart.entity.Cost;
-import com.fajar.shoppingmart.entity.Unit;
 import com.fajar.shoppingmart.entity.UserRole;
 import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
 import com.fajar.shoppingmart.repository.EntityRepository;
@@ -181,9 +180,9 @@ public class EntityService {
 				throw new Exception("Invalid entity");
 			}
 
-			entityRepository.deleteById(id, entityClass);
+			boolean result = entityRepository.deleteById(id, entityClass);
 
-			return WebResponse.builder().code("00").message("deleted successfully").build();
+			return WebResponse.builder().code("00").message("deleted :"+result).build();
 
 		} catch (Exception ex) {
 
@@ -213,16 +212,13 @@ public class EntityService {
 	public List<Cost> getAllCostType() {
 		return findAll(Cost.class);
 	}
-
-	public List<Unit> getAllUnit() {
-		return findAll(Unit.class);
-	}
+ 
 
 	public List<Capital> getAllCapitalType() {
 		return findAll(Capital.class);
 	}
 
-	private <T extends BaseEntity> List<T> findAll(Class<T> _class) {
+	public <T extends BaseEntity> List<T> findAll(Class<T> _class) {
 		List<T> resultList = entityRepository.findAll(_class);
 
 		if (null == resultList) {

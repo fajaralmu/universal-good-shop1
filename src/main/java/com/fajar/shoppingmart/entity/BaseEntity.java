@@ -16,6 +16,7 @@ import com.fajar.shoppingmart.annotation.BaseField;
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
+import com.fajar.shoppingmart.service.entity.EntityUpdateInterceptor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Dto
@@ -110,4 +111,12 @@ public class BaseEntity implements Serializable{
 		this.modifiedDate = new Date();
 	}
 
+	public EntityUpdateInterceptor updateInterceptor() {
+		return new EntityUpdateInterceptor<BaseEntity>() {
+			@Override
+			public BaseEntity preUpdate(BaseEntity baseEntity) {
+				return baseEntity;
+			}
+		};
+	}
 }

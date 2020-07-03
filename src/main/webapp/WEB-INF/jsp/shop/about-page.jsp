@@ -5,39 +5,37 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
 <div class="content">
 	<p></p>
-	<div class="card" style="width:90%">
+	<div class="card" style="width: 90%">
 		<div class="card-header">About Us</div>
 		<div class="card-body">
 
-			<table class="table">
+			<div style="display: grid; grid-template-columns: 20% 70%">
 
-				<tbody>
-					<tr>
-						<td>Name</td>
-						<td>${shopProfile.name }</td>
-					</tr>
-					<tr>
-						<td>Code</td>
-						<td>${shopProfile.martCode }</td>
-					</tr>
-					<tr>
-						<td>About</td>
-						<td>${shopProfile.about }</td>
-					</tr>
-					<tr>
-						<td>Address</td>
-						<td>${shopProfile.address }</td>
-					</tr>
-					<tr>
-						<td>Contact</td>
-						<td>${shopProfile.contact }</td>
-					</tr>
-					<tr>
-						<td>Website</td>
-						<td>${shopProfile.website }</td>
-					</tr>
-				</tbody>
-			</table>
+				<div>Name</div>
+				<div>${profile.name }</div>
+
+
+				<div>Code</div>
+				<div>${profile.martCode }</div>
+
+
+				<div>About</div>
+				<div>${profile.about }</div>
+
+
+				<div>Address</div>
+				<div>${profile.address }</div>
+
+
+				<div>Contact</div>
+				<div>${profile.contact }</div>
+
+
+				<div>Website</div>
+				<div>${profile.website }</div>
+
+
+			</div>
 		</div>
 	</div>
 </div>

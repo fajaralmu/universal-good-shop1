@@ -77,25 +77,25 @@
 		
 	</div>
 	<script type="text/javascript">
+	const websocketUrl = '${contextPath}/realtime-app';
 	function initProgressWebsocket(){
 		hide('progress-bar-wrapper');
-		var requestId = "${requestId}";
-		connectToWebsocket( function(response){
-			if(response.requestId.trim() != requestId.trim()){
-				return;
-			}
+		
+		addWebsocketRequest( '/wsResp/progress/${requestId}', function(response){
+			
 			show('progress-bar-wrapper');
-			document.getElementById('progress-bar').style.width = response.percentage+"%";
-			document.getElementById('progress-bar').setAttribute("aria-valuenow",Math.floor(response.percentage));
+			_byId('progress-bar').style.width = response.percentage+"%";
+			_byId('progress-bar').setAttribute("aria-valuenow",Math.floor(response.percentage));
+			
 			if(response.percentage>=100){
-			hide('progress-bar-wrapper');
+				hide('progress-bar-wrapper');
 			}
-		},null, null);
+		});
 	}
 	
-	document.body.onload = function (){
-		console.log("init progress websocket");
-		initProgressWebsocket();
+	document.body.onload = function (){ 
+		initProgressWebsocket(); 
+		connectToWebsocket();
 		
 	}
 	</script></body>

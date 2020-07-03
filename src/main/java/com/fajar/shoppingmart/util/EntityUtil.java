@@ -10,12 +10,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import org.apache.commons.lang3.SerializationUtils;
 
+import com.fajar.shoppingmart.annotation.AdditionalQuestionField;
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.entity.BaseEntity;
@@ -27,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EntityUtil {
 
-	public static EntityProperty createEntityProperty(Class<?> clazz, HashMap<String, List<?>> listObject)
+	public static EntityProperty createEntityProperty(Class<?> clazz, HashMap<String, List<?>> additionalObjectList)
 			throws Exception {
 		if (clazz == null || getClassAnnotation(clazz, Dto.class) == null) {
 			return null;
@@ -35,19 +38,28 @@ public class EntityUtil {
 
 		Dto dto = (Dto) getClassAnnotation(clazz, Dto.class);
 		final boolean ignoreBaseField = dto.ignoreBaseField();
+		final boolean isQuestionare = dto.quistionare();
 
 		EntityProperty entityProperty = EntityProperty.builder().ignoreBaseField(ignoreBaseField)
-				.entityName(clazz.getSimpleName().toLowerCase()).build();
+				.entityName(clazz.getSimpleName().toLowerCase()).isQuestionare(isQuestionare).build();
 		try {
 
 			List<Field> fieldList = getDeclaredFields(clazz);
+			if (isQuestionare) {
+				Map<String, List<Field>> groupedFields = sortListByQuestionareSection(fieldList);
+				fieldList = CollectionUtil.mapOfListToList(groupedFields);
+				Set<String> groupKeys = groupedFields.keySet();
+				String[] keyNames = CollectionUtil.toArrayOfString(groupKeys.toArray());
+
+				entityProperty.setGroupNames(keyNames);
+			}
 			List<EntityElement> entityElements = new ArrayList<>();
 			List<String> fieldNames = new ArrayList<>();
 			String fieldToShowDetail = "";
 
 			for (Field field : fieldList) {
 
-				final EntityElement entityElement = new EntityElement(field, entityProperty, listObject);
+				final EntityElement entityElement = new EntityElement(field, entityProperty, additionalObjectList);
 
 				if (false == entityElement.build()) {
 					continue;
@@ -78,6 +90,51 @@ public class EntityUtil {
 			e.printStackTrace();
 			throw e;
 		}
+
+	}
+
+	public static void main(String[] args) {
+//		List<Field> fields = getDeclaredFields(StudentParent.class);
+//		fields = sortListByQuestionareSection(fields);
+//		
+//		for (Field field : fields) {
+//			log.debug("{}", field.getName());
+//		}
+//		
+//		Object[] arrayOfFields = fields.toArray();
+	}
+
+	static boolean isIdField(Field field) {
+		return field.getAnnotation(Id.class) != null;
+	}
+
+	private static Map<String, List<Field>> sortListByQuestionareSection(List<Field> fieldList) {
+		Map<String, List<Field>> temp = MapUtil.singleMap(AdditionalQuestionField.DEFAULT_GROUP_NAME,
+				new ArrayList<>());
+
+		String key = AdditionalQuestionField.DEFAULT_GROUP_NAME;
+		for (Field field : fieldList) {
+			FormField formField = field.getAnnotation(FormField.class);
+			boolean isIDField = isIdField(field);
+
+			if (null == formField) {
+				continue;
+			}
+			AdditionalQuestionField additionalQuestionField = field.getAnnotation(AdditionalQuestionField.class);
+			if (null == additionalQuestionField || isIDField) {
+				key = "OTHER";
+				log.debug("{} has no additionalQuestionareField", field.getName());
+			} else {
+				key = additionalQuestionField.value();
+			}
+			if (temp.get(key) == null) {
+				temp.put(key, new ArrayList<>());
+			}
+			temp.get(key).add(field);
+			log.debug("{}: {}", key, field.getName());
+		}
+		log.debug("QUestionare Map: {}", temp);
+		return (temp);
 
 	}
 
@@ -176,24 +233,9 @@ public class EntityUtil {
 	}
 
 	public static boolean isNumericField(Field field) {
-		Class<?> superClass = field.getType().getSuperclass();
-		if (null == superClass) {
-			return false;
-		}
-		return superClass.equals(Number.class);
-		/**
-		 * return MapUtil.objectEquals(field.getType(), Integer.class, Double.class,
-		 * Long.class, BigDecimal.class, BigInteger.class, Short.class);
-		 **/
-	}
-
-	public static boolean isBoolean(Field field) {
-		return field.getType().equals(Boolean.class);
-	}
-
-	public static void main(String[] args) {
-		Class<?> cls = Integer.class;
-		System.out.println(cls.getSuperclass());
+		return field.getType().equals(Integer.class) || field.getType().equals(Double.class)
+				|| field.getType().equals(Long.class) || field.getType().equals(BigDecimal.class)
+				|| field.getType().equals(BigInteger.class);
 	}
 
 	/**

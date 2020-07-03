@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 
+import com.fajar.shoppingmart.annotation.AdditionalQuestionField;
 import com.fajar.shoppingmart.annotation.BaseField;
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
@@ -57,8 +58,8 @@ public class EntityElement implements Serializable {
 	private String detailFields;
 	private String[] defaultValues;
 	private List<Object> plainListValues;
-	
-	private boolean isGrouped;
+
+	private final boolean isGrouped;
 	private String inputGroupname;
 
 	private boolean detailField;
@@ -74,7 +75,7 @@ public class EntityElement implements Serializable {
 	private BaseField baseField;
 	private boolean skipBaseField;
 	private boolean hasJoinColumn;
-	
+
 //	public static void main(String[] args) {
 //		String json = "[{\\\"serialVersionUID\\\":\\\"4969863194918869183\\\",\\\"name\\\":\\\"Kebersihan\\\",\\\"description\\\":\\\"1111111\\t\\t\\t\\t\\t\\\",\\\"serialVersionUID\\\":\\\"-8161890497812023383\\\",\\\"id\\\":1,\\\"color\\\":null,\\\"fontColor\\\":null,\\\"createdDate\\\":\\\"2020-05-14 21:06:03.0\\\",\\\"modifiedDate\\\":\\\"2020-05-14 21:06:03.0\\\",\\\"deleted\\\":\\\"false\\\"},{\\\"serialVersionUID\\\":\\\"4969863194918869183\\\",\\\"name\\\":\\\"Mukafaah\\\",\\\"description\\\":\\\"dfdffd\\\",\\\"serialVersionUID\\\":\\\"-8161890497812023383\\\",\\\"id\\\":2,\\\"color\\\":\\\"#000000\\\",\\\"fontColor\\\":\\\"#000000\\\",\\\"createdDate\\\":\\\"2020-05-12 21:16:58.0\\\",\\\"modifiedDate\\\":\\\"2020-05-12 21:16:58.0\\\",\\\"deleted\\\":\\\"false\\\"},{\\\"serialVersionUID\\\":\\\"4969863194918869183\\\",\\\"name\\\":\\\"Alat Tulis\\\",\\\"description\\\":\\\"alat tulis kantor\\t\\t\\t\\t\\t\\t\\\",\\\"serialVersionUID\\\":\\\"-8161890497812023383\\\",\\\"id\\\":3,\\\"color\\\":null,\\\"fontColor\\\":null,\\\"createdDate\\\":\\\"2020-05-12 21:56:36.0\\\",\\\"modifiedDate\\\":\\\"2020-05-12 21:56:36.0\\\",\\\"deleted\\\":\\\"false\\\"}]";
 //		System.out.println(json.replace("\\t", ""));
@@ -84,6 +85,7 @@ public class EntityElement implements Serializable {
 		this.field = field;
 		this.ignoreBaseField = entityProperty.isIgnoreBaseField();
 		this.entityProperty = entityProperty;
+		this.isGrouped = entityProperty.isQuestionare();
 		init();
 	}
 
@@ -92,6 +94,7 @@ public class EntityElement implements Serializable {
 		this.ignoreBaseField = entityProperty.isIgnoreBaseField();
 		this.entityProperty = entityProperty;
 		this.additionalMap = additionalMap;
+		this.isGrouped = entityProperty.isQuestionare();
 		init();
 	}
 
@@ -107,11 +110,11 @@ public class EntityElement implements Serializable {
 
 		checkIfGroupedInput();
 	}
-	
+
 	public String getJsonListString(boolean removeBeginningAndEndIndex) {
 		try {
 			String jsonStringified = OBJECT_MAPPER.writeValueAsString(jsonList).trim();
-			if(removeBeginningAndEndIndex) {
+			if (removeBeginningAndEndIndex) {
 				StringBuilder stringBuilder = new StringBuilder(jsonStringified);
 				stringBuilder.setCharAt(0, ' ');
 				stringBuilder.setCharAt(jsonStringified.length() - 1, ' ');
@@ -120,18 +123,20 @@ public class EntityElement implements Serializable {
 			}
 			jsonStringified = jsonStringified.replace("\\t", "");
 			jsonStringified = jsonStringified.replace("\\r", "");
-			jsonStringified = jsonStringified.replace("\\n", ""); 
+			jsonStringified = jsonStringified.replace("\\n", "");
 			log.info("RETURN jsonStringified: {}", jsonStringified);
 			return jsonStringified;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			return "{}";
 		}
 	}
 
 	private void checkIfGroupedInput() {
-		//AdditionalQuestionField annotation = field.getAnnotation(AdditionalQuestionField.class);
-		isGrouped = false;//annotation != null;
-		inputGroupname = "0";//isGrouped ? annotation.value() : AdditionalQuestionField.DEFAULT_GROUP_NAME;
+		 
+		if (isGrouped) {
+			AdditionalQuestionField annotation = field.getAnnotation(AdditionalQuestionField.class);
+			inputGroupname = annotation != null ? annotation.value() : AdditionalQuestionField.DEFAULT_GROUP_NAME;
+		}
 	}
 
 	public boolean build() throws Exception {

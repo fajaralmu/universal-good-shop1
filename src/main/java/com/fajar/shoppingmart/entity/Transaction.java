@@ -17,6 +17,7 @@ import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
 import com.fajar.shoppingmart.dto.TransactionType;
+import com.fajar.shoppingmart.service.entity.BaseEntityUpdateService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -24,7 +25,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Dto
+@Dto(updateService = BaseEntityUpdateService.class)
 @Entity
 @Table(name="transaction")
 @Data

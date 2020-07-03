@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.fajar.shoppingmart.dto.KeyValue;
+import com.fajar.shoppingmart.dto.KeyPair;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -100,10 +100,10 @@ public class CollectionUtil {
 		return array;
 	}
 
-	public static List<KeyValue> yearArray(int min, int max){
-		List<KeyValue> years = new ArrayList<>();
+	public static List<KeyPair> yearArray(int min, int max){
+		List<KeyPair> years = new ArrayList<>();
 		for(int i = min; i <= max; i++) {
-			years.add(new KeyValue(i, i, true));
+			years.add(new KeyPair(i, i, true));
 		}
 		return years;
 	}

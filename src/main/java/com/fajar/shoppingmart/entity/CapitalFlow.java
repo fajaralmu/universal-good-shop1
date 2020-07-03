@@ -13,6 +13,7 @@ import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
 import com.fajar.shoppingmart.entity.custom.BalanceJournalInfo;
 import com.fajar.shoppingmart.entity.custom.JournalInfoCapitalFlow;
+import com.fajar.shoppingmart.service.entity.CapitalFlowUpdateService;
 import com.fajar.shoppingmart.entity.custom.FinancialEntity;
 
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Dto
+@Dto(updateService = CapitalFlowUpdateService.class)
 @Entity
 @Table(name="capital_flow")
 @Builder

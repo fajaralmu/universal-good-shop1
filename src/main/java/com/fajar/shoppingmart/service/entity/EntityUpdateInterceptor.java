@@ -3,9 +3,9 @@ package com.fajar.shoppingmart.service.entity;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Menu;
 
-public interface EntityUpdateInterceptor {
+public interface EntityUpdateInterceptor<T extends BaseEntity> {
 	
-	public void preUpdate(BaseEntity baseEntity) ;
+	public T preUpdate(T baseEntity) ;
 
 	
 	/**
@@ -13,17 +13,17 @@ public interface EntityUpdateInterceptor {
 	 *          Static Methods
 	 * =======================================
 	 */
-	public static EntityUpdateInterceptor menuInterceptor() { 
-		return new EntityUpdateInterceptor() {
-			
-			@Override
-			public void preUpdate(BaseEntity baseEntity) { 
-				Menu menu = (Menu) baseEntity;
-				if(menu.getUrl().startsWith("/") == false) {
-					menu.setUrl("/"+menu.getUrl());
-				}
-			}
-		};
-	}
+//	public static EntityUpdateInterceptor menuInterceptor() { 
+//		return new EntityUpdateInterceptor() {
+//			
+//			@Override
+//			public void preUpdate(BaseEntity baseEntity) { 
+//				Menu menu = (Menu) baseEntity;
+//				if(menu.getUrl().startsWith("/") == false) {
+//					menu.setUrl("/"+menu.getUrl());
+//				}
+//			}
+//		};
+//	}
 	
 }

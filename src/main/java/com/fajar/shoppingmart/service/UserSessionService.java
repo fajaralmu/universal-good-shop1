@@ -1,7 +1,5 @@
 package com.fajar.shoppingmart.service;
 
-import static com.fajar.shoppingmart.util.EntityUtil.getDeclaredField;
-
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +22,7 @@ import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.repository.RegisteredRequestRepository;
 import com.fajar.shoppingmart.repository.UserRepository;
 import com.fajar.shoppingmart.util.CollectionUtil;
+import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
 import com.fajar.shoppingmart.util.StringUtil;
 
@@ -296,7 +295,7 @@ public class UserSessionService {
 
 	private static void removeAttribute(Object object, String... fields) {
 		for (String fieldName : fields) {
-			Field field = getDeclaredField(object.getClass(), fieldName);
+			Field field = EntityUtil.getDeclaredField(object.getClass(), fieldName);
 
 			try {
 				field.set(object, null);
@@ -487,10 +486,11 @@ public class UserSessionService {
 			log.info("username: {} exist", dbUser.getUsername());
 		} else {
 			log.error("username: {} does not exist", requestUser.getUsername());
+			return null;
 		}
 
 		boolean passwordMatched = comparePassword(dbUser, requestUser.getPassword());
-		log.info("LOgged User Role: {}", dbUser.getRole());
+		log.info("Logged User Role: {}", dbUser.getRole());
 		return passwordMatched ? dbUser : null;
 	}
 

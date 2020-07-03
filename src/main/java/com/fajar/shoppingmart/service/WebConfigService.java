@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.ShopProfile;
 import com.fajar.shoppingmart.repository.ShopProfileRepository;
 import com.fajar.shoppingmart.util.CollectionUtil;
@@ -50,6 +53,7 @@ public class WebConfigService {
 
 	private List<JpaRepository<?, ?>> jpaRepositories = new ArrayList<>();
 	private List<Type> entityClassess = new ArrayList<>();
+	private Map<Class<? extends BaseEntity>, JpaRepository> repositoryMap = new HashMap<>();
 
 	@PostConstruct
 	public void init() {
@@ -92,6 +96,8 @@ public class WebConfigService {
 			
 			entityClassess.add(type);
 			jpaRepositories.add(beanObject);
+			
+			repositoryMap.put((Class)type, beanObject);
 			
 			log.info(i + "." + beanName + ". entity type: "+ type);
 		}
@@ -240,6 +246,16 @@ public class WebConfigService {
 		profile.setColor("green");
 		profile.setAbout("Nam libero tempore.");
 		return profile;
+	}
+
+	public <T extends BaseEntity>  JpaRepository getJpaRepository(Class<T> _entityClass) {
+		log.info("get JPA Repository for: {}", _entityClass);
+		
+		JpaRepository result = this.repositoryMap.get(_entityClass);
+		
+		log.info("found repo object: {}", result);
+		
+		return result;
 	}
 
 }

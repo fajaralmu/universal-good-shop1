@@ -52,7 +52,7 @@
 	<!-- PAGINATION -->
 	<div class="input-group mb-3"  style="width:30%">
 		<input class="form-control" value="Page" disabled="disabled">
-		<input class="form-control" type="number" id="input-page" />
+		<input class="form-control" type="number" value="1" id="input-page"   />
 		<button class="btn btn-primary" id="btn-filter-ok" onclick="setPage()">Ok</button>
 		<button class="btn btn-primary" id="btn-filter-ok" onclick="printExcel()">Print Excel</button>
 
@@ -143,12 +143,15 @@
 		doLoadDropDownItems("<spring:url value="/api/entity/get" />", requestObject, function(entities){
 			for (let i = 0; i < entities.length; i++) {
 				const entity = entities[i];
-				const option = document.createElement("option");
-				option.value = entity[valueField];
-				option.innerHTML = entity[itemField];
-				option.onclick = function() {
+				const option = createHtmlTag({
+					tagName: 'option',
+					value: entity[valueField],
+					innerHTML: entity[itemField],
+					onclick:  function() {
 					inputElement.value = option.innerHTML;
-				}
+					}
+				});
+				
 				element.append(option);
 			}
 		});
@@ -174,7 +177,15 @@
 	}
 	
 	function setPage(){
-		this.page = _byId("input-page").value;
+		const selectedPage = _byId("input-page").value - 1;
+		
+		if(selectedPage < 0){
+			alert("Invalid Page : "+selectedPage+"!!");
+			_byId("input-page").value = 1;
+			return;
+		}
+		
+		this.page = selectedPage;
 		loadEntity(this.page);
 	}
 
@@ -182,6 +193,9 @@
 		if (page < 0) {
 			page = this.page;
 		}
+		
+		console.log("Goto Page: ", page);
+		
 		const requestObject = buildRequestObject(page);
 		doLoadEntities("<spring:url value="/api/entity/get" />", requestObject, function(response){
 			
@@ -199,7 +213,7 @@
 	}
 	
 	function printExcel(){
-		const confirmed = confirm("Do you want to download excel file?");
+		const confirmed = confirm("Do you want to download excel file from row page "+this.page+"?");
 		if(!confirmed){
 			return;
 		}
@@ -440,8 +454,8 @@
 	function createSortingButton(fieldName){
 		//sorting button
 		const btnSortGroup = createDiv("btn-group-sort-"+fieldName,"btn-group btn-group-sm");
-		const ascButton = createButton("sort-asc-" + fieldName, "asc");
-		const descButton = createButton("sort-desc-" + fieldName, "desc");
+		const ascButton = createButton("sort-asc-" + fieldName, "&#8593;");
+		const descButton = createButton("sort-desc-" + fieldName, "&#8595;");
 		
 		ascButton.className = "btn btn-outline-secondary btn-sm";
 		descButton.className = "btn btn-outline-secondary btn-sm";
@@ -475,7 +489,7 @@
 	}
 
 	function createDataTableHeader() {
-		//HEADER
+		/////////HEADER//////////
 		this.entityTableHead.innerHTML = "";
 		const row = document.createElement("tr");
 		row.append(createCell("No"));
@@ -483,7 +497,8 @@
 			
 			const fieldName = fieldNames[i];
 			const isDateField = isDate(fieldName);
-			const cell = createCell(fieldName); 
+			const cell = createCell('<h5>'+extractCamelCase(fieldName)+'</h5>'); 
+			cell.setAttribute('class', 'nowrap');
 			
 			var filterInputGroup;
 			 
@@ -502,15 +517,9 @@
 			
 			//checkbox is exacts
 			//let inputGroupExact = createDiv("input-group-exact-"+fieldName,"input-group-text");
-			const checkBoxExact = createExactCheckBox(fieldName);
-			//inputGroupExact.append(checkBoxExact);
-			//let divPrependCheckBox = createDiv("input-group-prepend-"+fieldName, "input-group-prepend");
-			//divPrependCheckBox.append(inputGroupExact);
-			
-			//let inputGroupCheckBox = createDiv("input-group mb-3"+fieldName, "input-group mb-3");
+			const checkBoxExact = createExactCheckBox(fieldName); 
 			cell.append(createBreakLine());
-			cell.append(checkBoxExact);  
-			//cell.append(inputGroupCheckBox);
+			cell.append(checkBoxExact);   
 			
 			row.append(cell);
 		}

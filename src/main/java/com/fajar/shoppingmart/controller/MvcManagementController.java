@@ -44,6 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("management")
 @Authenticated
+@CustomRequestInfo(stylePaths = "entitymanagement")
 public class MvcManagementController extends BaseController {
 
 	@Autowired
@@ -66,11 +67,7 @@ public class MvcManagementController extends BaseController {
 	@RequestMapping(value = { "/common/{name}" })
 	public String unit(@PathVariable("name") String name, Model model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-
-		if (!userService.hasSession(request)) {
-			sendRedirectLogin(request, response);
-			return basePage;
-		}
+ 
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/common/" + name);
 		} catch (Exception e) {
@@ -84,10 +81,7 @@ public class MvcManagementController extends BaseController {
 	@RequestMapping(value = { "/profile" })
 	public String profile(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		if (!userService.hasSession(request)) {
-			sendRedirectLogin(request, response);
-			return basePage;
-		}
+		 
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/profile");
 		} catch (Exception e) {
@@ -106,10 +100,7 @@ public class MvcManagementController extends BaseController {
 	@RequestMapping(value = { "/menu" })
 	public String menu(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		if (!userService.hasSession(request)) {
-			sendRedirectLogin(request, response);
-			return basePage;
-		}
+		 
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/menu");
 		} catch (Exception e) {
@@ -126,10 +117,7 @@ public class MvcManagementController extends BaseController {
 	@RequestMapping(value = { "/costflow" })
 	public String costflow(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		if (!userService.hasSession(request)) {
-			sendRedirectLogin(request, response);
-			return basePage;
-		}
+		 
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/costflow");
 		} catch (Exception e) {
@@ -146,10 +134,7 @@ public class MvcManagementController extends BaseController {
 	@RequestMapping(value = { "/capitalflow" })
 	public String capitalflow(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		if (!userService.hasSession(request)) {
-			sendRedirectLogin(request, response);
-			return basePage;
-		}
+		 
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/capitalflow");
 		} catch (Exception e) {
@@ -174,10 +159,7 @@ public class MvcManagementController extends BaseController {
 	@RequestMapping(value = { "/messages" })
 	public String messages(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		if (!userService.hasSession(request)) {
-			sendRedirectLogin(request, response);
-			return basePage;
-		}
+		 
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/messages");
 		} catch (Exception e) {
@@ -214,10 +196,7 @@ public class MvcManagementController extends BaseController {
 	public String transaction(@PathVariable(required = false) String option, Model model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 
-		if (!userService.hasSession(request)) {
-			sendRedirectLogin(request, response);
-			return basePage;
-		}
+		 
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/transaction");
 		} catch (Exception e) {
@@ -234,10 +213,7 @@ public class MvcManagementController extends BaseController {
 	@RequestMapping(value = { "/user" })
 	public String user(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		if (!userService.hasSession(request)) {
-			sendRedirectLogin(request, response);
-			return basePage;
-		}
+	 
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/user");
 		} catch (Exception e) {
@@ -277,11 +253,7 @@ public class MvcManagementController extends BaseController {
 	@RequestMapping(value = { "/appsession" })
 	@CustomRequestInfo(title = "Apps Sessions", pageUrl = "shop/app-session")
 	public String appsession(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-		if (!userService.hasSession(request)) {
-			sendRedirectLogin(request, response);
-			return basePage;
-		}
+ 
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/menu");
 		} catch (Exception e) {

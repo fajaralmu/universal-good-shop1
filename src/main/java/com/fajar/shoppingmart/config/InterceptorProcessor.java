@@ -21,6 +21,7 @@ import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.controller.BaseController;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.User;
+import com.fajar.shoppingmart.service.ComponentService;
 import com.fajar.shoppingmart.service.ProgressService;
 import com.fajar.shoppingmart.service.UserAccountService;
 import com.fajar.shoppingmart.service.UserSessionService;
@@ -43,30 +44,57 @@ public class InterceptorProcessor {
 	private UserAccountService userAccountService;
 	@Autowired
 	private ProgressService progressService;
+	@Autowired
+	private ComponentService componentService;
+
+	public InterceptorProcessor() {
+		log.info(" //////////// InterceptorProcessor ///////////// ");
+	}
+
+	private void printNotAuthenticated(HttpServletResponse response, boolean loginRequired) {
+		response.setContentType("application/json");
+		try {
+			String msg;
+			if(loginRequired) {
+				msg = "User Not Authenticated";
+			}else {
+				msg = "Request Not Authenticated";
+			}
+			
+			response.getWriter()
+					.write(objectMapper.writeValueAsString(WebResponse.failed(msg)));
+			response.setHeader("error_message", "Invalid Authentication");
+		} catch (IOException e) {
+			log.error("Error writing JSON Error Response: {}", e);
+		}
+	}
 
 	public boolean interceptApiRequest(HttpServletRequest request, HttpServletResponse response,
 			HandlerMethod handlerMethod) {
 
 		log.info("intercept api handler: {}", request.getRequestURI());
 
-		boolean authenticationRequired = getAuthenticationAnnotation(handlerMethod) != null;
+		Authenticated authenticated = getAuthenticationAnnotation(handlerMethod);
+		boolean authenticationRequired = authenticated != null;
 		if (authenticationRequired) {
-			if (!tokenIsValidToAccessAPI(request)) {
-				response.setContentType("application/json");
-				try {
-					response.getWriter()
-							.write(objectMapper.writeValueAsString(WebResponse.failed("NOT AUTHENTICATED")));
-					response.setHeader("error_message", "Invalid Authentication");
-				} catch (IOException e) {
-					log.error("Error writing JSON Error Response: {}", e);
+
+			boolean loginRequired = authenticated.loginRequired();
+
+			if (loginRequired) {
+				if (!tokenIsValidToAccessAPI(request)) {
+					printNotAuthenticated(response, loginRequired);
+					return false;
 				}
-				return false;
+
+				User authenticatedUser = getAuthenticatedUser(request);
+				SessionUtil.setUserInRequest(request, authenticatedUser);
+			} else {
+				if(!userSessionService.validatePageRequest(request)) {
+					printNotAuthenticated(response, loginRequired);
+					return false;
+				}
 			}
-			
-			
-			User authenticatedUser = getAuthenticatedUser(request);
-			SessionUtil.setUserInRequest(request, authenticatedUser);
-		}
+		}  
 		return true;
 	}
 
@@ -81,7 +109,9 @@ public class InterceptorProcessor {
 		if (authenticationRequired) {
 			if (!hasSessionToAccessWebPage(request)) {
 				log.info("URI: {} not authenticated, will redirect to login page", request.getRequestURI());
-				BaseController.sendRedirectLogin(request, response);
+				response.setStatus(301);
+				response.setHeader("location", request.getContextPath()+"/account/login");
+//				BaseController.sendRedirectLogin(request, response);
 				return false;
 			}
 		}
@@ -156,11 +186,10 @@ public class InterceptorProcessor {
 		return userAccountService.validateToken(request);
 	}
 
-	
-	private User getAuthenticatedUser(HttpServletRequest request) { 
+	private User getAuthenticatedUser(HttpServletRequest request) {
 		return userSessionService.getLoggedUser(request);
 	}
-	
+
 	private boolean hasSessionToAccessWebPage(HttpServletRequest request) {
 		return userSessionService.hasSession(request);
 	}
@@ -203,10 +232,10 @@ public class InterceptorProcessor {
 			ModelAndView modelAndView) {
 
 		CustomRequestInfo resourcePath = getCustomRequestInfoAnnotation(handler);
-		
+
 		if (null != modelAndView) {
 
-			log.debug("Add resourcePaths to Web Page"); 
+			log.debug("Add resourcePaths to Web Page");
 
 			if (null == resourcePath) {
 				log.debug("{} does not have resourcePath", request.getRequestURI());
@@ -216,9 +245,12 @@ public class InterceptorProcessor {
 			BaseController.addStylePaths(modelAndView, resourcePath.stylePaths());
 			BaseController.addTitle(modelAndView, resourcePath.title());
 			BaseController.addPageUrl(modelAndView, resourcePath.pageUrl());
+
+			String pageCode = componentService.getPageCode(request);
+			userSessionService.setActivePage(request, pageCode);
 		}
-		
-		if(null != resourcePath && resourcePath.withRealtimeProgress()) {
+
+		if (null != resourcePath && resourcePath.withRealtimeProgress()) {
 			progressService.sendComplete(SessionUtil.getPageRequestId(request));
 		}
 
