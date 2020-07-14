@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.ShopProfile;
-import com.fajar.shoppingmart.repository.ShopProfileRepository;
+import com.fajar.shoppingmart.repository.AppProfileRepository;
 
 @Service
 public class ShopProfileUpdateService extends BaseEntityUpdateService{
 
 	@Autowired
-	private ShopProfileRepository shopProfileRepository;
+	private AppProfileRepository shopProfileRepository;
 	
 	@Override
 	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord,EntityUpdateInterceptor entityUpdateInterceptor) {

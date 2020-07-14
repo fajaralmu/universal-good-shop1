@@ -22,7 +22,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.ShopProfile;
-import com.fajar.shoppingmart.repository.ShopProfileRepository;
+import com.fajar.shoppingmart.repository.AppProfileRepository;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 
@@ -41,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 public class WebConfigService {
 
 	@Autowired
-	private ShopProfileRepository shopProfileRepository;
+	private AppProfileRepository shopProfileRepository;
 	@Autowired
 	private ApplicationContext applicationContext;
 
