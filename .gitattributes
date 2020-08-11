@@ -1,6 +1,4 @@
 *.java linguist-detectable=true  
-*.xml linguist-detectable=false
-*.js linguist-language=Java
 *.java linguist-language=Java
 *.sql linguist-language=Java
 
