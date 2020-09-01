@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +49,7 @@ public class InterceptorProcessor {
 	private ComponentService componentService;
 
 	public InterceptorProcessor() {
+
 		log.info(" //////////// InterceptorProcessor ///////////// ");
 	}
 
@@ -55,14 +57,13 @@ public class InterceptorProcessor {
 		response.setContentType("application/json");
 		try {
 			String msg;
-			if(loginRequired) {
+			if (loginRequired) {
 				msg = "User Not Authenticated";
-			}else {
+			} else {
 				msg = "Request Not Authenticated";
 			}
-			
-			response.getWriter()
-					.write(objectMapper.writeValueAsString(WebResponse.failed(msg)));
+			response.setStatus(400);
+			response.getWriter().write(objectMapper.writeValueAsString(WebResponse.failed(msg)));
 			response.setHeader("error_message", "Invalid Authentication");
 		} catch (IOException e) {
 			log.error("Error writing JSON Error Response: {}", e);
@@ -89,12 +90,12 @@ public class InterceptorProcessor {
 				User authenticatedUser = getAuthenticatedUser(request);
 				SessionUtil.setUserInRequest(request, authenticatedUser);
 			} else {
-				if(!userSessionService.validatePageRequest(request)) {
+				if (!userSessionService.validatePageRequest(request)) {
 					printNotAuthenticated(response, loginRequired);
 					return false;
 				}
 			}
-		}  
+		}
 		return true;
 	}
 
@@ -109,8 +110,8 @@ public class InterceptorProcessor {
 		if (authenticationRequired) {
 			if (!hasSessionToAccessWebPage(request)) {
 				log.info("URI: {} not authenticated, will redirect to login page", request.getRequestURI());
-				response.setStatus(301);
-				response.setHeader("location", request.getContextPath()+"/account/login");
+				response.setStatus(HttpStatus.FOUND.value());
+				response.setHeader("location", request.getContextPath() + "/account/login");
 //				BaseController.sendRedirectLogin(request, response);
 				return false;
 			}
@@ -124,22 +125,17 @@ public class InterceptorProcessor {
 			}
 		}
 
+		this.setActivePage(request);
 		return true;
+	}
+
+	private void setActivePage(HttpServletRequest httpServletRequest) { 
+		String pageCode = componentService.getPageCode(httpServletRequest);
+		userSessionService.setActivePage(httpServletRequest, pageCode);
 	}
 
 	public static void main(String[] args) throws Exception {
 
-//		MvcManagementController controller = new MvcManagementController();
-//		Method method = controller.getClass().getMethod("commonPage", String.class, Model.class, HttpServletRequest.class, HttpServletResponse.class);
-//		method.setAccessible(true);
-//		HandlerMethod hm = new HandlerMethod(controller, method);
-//		
-//		InterceptorProcessor ip = new InterceptorProcessor();
-//		Authenticated annotation = ip.getAuthenticationAnnotation(hm);
-//		
-//		Class<?> _class = hm.getBeanType();
-//		Authenticated ano = _class.getAnnotation(Authenticated.class);
-//		log.info("annotation: {}", annotation);
 	}
 
 	public static Authenticated getAuthenticationAnnotation(HandlerMethod handlerMethod) {
@@ -227,7 +223,8 @@ public class InterceptorProcessor {
 
 		return hasRestController || hasPostMapping;
 	}
-
+ 
+	
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler,
 			ModelAndView modelAndView) {
 
@@ -246,16 +243,15 @@ public class InterceptorProcessor {
 			BaseController.addTitle(modelAndView, resourcePath.title());
 			BaseController.addPageUrl(modelAndView, resourcePath.pageUrl());
 
-			String pageCode = componentService.getPageCode(request);
-			userSessionService.setActivePage(request, pageCode);
+		}else {
+			
 		}
 
 		if (null != resourcePath && resourcePath.withRealtimeProgress()) {
-			progressService.sendComplete(SessionUtil.getPageRequestId(request));
+			progressService.sendComplete(request);
 		}
 
-	}
-
+	} 
 	public static void validateStylePaths(String[] paths) {
 		if (null == paths)
 			return;

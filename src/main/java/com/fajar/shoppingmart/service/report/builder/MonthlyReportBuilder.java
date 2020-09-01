@@ -6,7 +6,6 @@ import static com.fajar.shoppingmart.util.ExcelReportUtil.createRow;
 import static com.fajar.shoppingmart.util.ExcelReportUtil.curr;
 import static com.fajar.shoppingmart.util.ExcelReportUtil.setBorderTop;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -20,18 +19,15 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.ReportCategory;
-import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.service.report.data.ReportData;
 import com.fajar.shoppingmart.service.report.data.ReportRowData;
 import com.fajar.shoppingmart.util.DateUtil;
-import com.fajar.shoppingmart.util.MyFileUtil;
 import com.fajar.shoppingmart.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
 
-@Slf4j
-
+@Slf4j 
 public class MonthlyReportBuilder extends ReportBuilder{   
 	 
 	private long grandTotalDebit = 0L;
@@ -41,8 +37,8 @@ public class MonthlyReportBuilder extends ReportBuilder{
 	
 	private final ReportCategory[] reportCategories = ReportCategory.values();
 	
-	public MonthlyReportBuilder(WebConfigService webConfigService,ReportData reportData, boolean  writeExcel) {
-		super(webConfigService, reportData);
+	public MonthlyReportBuilder( ReportData reportData, boolean  writeExcel) {
+		super(  reportData);
 		this.writeExcel = writeExcel;
 	}
 	public Map<ReportCategory, ReportRowData> getTotalEachCategory(){
@@ -59,21 +55,21 @@ public class MonthlyReportBuilder extends ReportBuilder{
 	 * @return
 	 */
 	@Override
-	public File buildReport() {
+	public XSSFWorkbook buildReport() {
 		Filter filter = reportData.getFilter();
 		String time = getDateTime();
 		String sheetName = "Monthly-" + filter.getYear();
 
-		String reportName = webConfigService.getReportPath() + "/" + sheetName + "_" + time + ".xlsx";
+		String reportName = /* webConfigService.getReportPath() + "/" + */ sheetName + "_" + time + ".xlsx";
 		XSSFWorkbook xwb = new XSSFWorkbook();
 		xsheet = xwb.createSheet(sheetName);
 
 		writeMonthlyReport(reportData, reportName);
 
-		File file = MyFileUtil.getFile(xwb, reportName);
+//		File file = MyFileUtil.getFile(xwb, reportName);
 		refresh();
 
-		return file;
+		return xwb;
 	}
 
 	private void refresh() {
@@ -312,6 +308,11 @@ public class MonthlyReportBuilder extends ReportBuilder{
 		}
 
 		return total;
+	}
+	@Override
+	protected void init() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

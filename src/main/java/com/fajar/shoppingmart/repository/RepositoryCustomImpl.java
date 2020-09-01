@@ -2,19 +2,23 @@ package com.fajar.shoppingmart.repository;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.transaction.SystemException;
 import javax.transaction.Transactional;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.internal.CriteriaImpl;
+import org.hibernate.internal.SessionImpl;
+import org.hibernate.loader.criteria.CriteriaQueryTranslator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,20 +39,18 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	@PersistenceContext
 	private EntityManager entityManager;
 	@Autowired
-	private SessionFactory sessionFactory;
-	@Autowired
 	private Session hibernateSession;
 
 	boolean removeTransactionAfterPersistence = true;
-	
+
 	public boolean isTransactionNotKept() {
 		return removeTransactionAfterPersistence;
 	}
-	
+
 	public void keepTransaction() {
 		this.removeTransactionAfterPersistence = false;
 	}
-	
+
 	public void notKeepingTransaction() {
 		this.removeTransactionAfterPersistence = true;
 	}
@@ -56,46 +58,6 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	private Transaction currentTransaction;
 
 	public RepositoryCustomImpl() {
-	}
-
-	public void testHibernateSession(Class<? extends BaseEntity> entityClass)
-			throws IllegalStateException, SystemException {
-		Transaction tx = null;
-		try {
-
-			hibernateSession = sessionFactory.openSession();
-
-			tx = hibernateSession.beginTransaction();
-
-			Criteria criteria = hibernateSession.createCriteria(entityClass, entityClass.getSimpleName())
-			// .createAlias("transactionHistory.myCashflowCategory", "myCashflowCategory")
-//					.add(Restrictions.naturalId()
-//							//.set("cifNumber", cif)							
-//							.set("myCashflowCategory.module", module)
-////							.set("sessionIdentifier", UUID.randomUUID().toString())
-//					)
-//					.addOrder(orderDate);
-			;
-			Order orderDate = Order.desc("date");
-//				criteria.setMaxResults(limit);
-//				criteria.setFirstResult(offset);
-
-			List resultList = criteria.list();
-
-			tx.commit();
-
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-
-			log.error("Error fetching from DB: {}", e);
-			return;
-
-		} finally {
-
-			if (hibernateSession.isOpen())
-				hibernateSession.close();
-		}
 	}
 
 	@Override
@@ -171,14 +133,13 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 
 			if (field != null && propertyValue != null) {
 				final Class<?> fieldType = field.getType();
+				log.info("Type: {} : {}", fieldType, propertyValue);
+
 				if (fieldType.equals(Integer.class) || fieldType.equals(int.class)) {
-					log.info("type integer ==========================> : {}", propertyValue);
 					propertyValue = Integer.parseInt(propertyValue.toString());
 				} else if (field.getType().equals(Long.class) || fieldType.equals(long.class)) {
-					log.info("type long ==========================> : {}", propertyValue);
 					propertyValue = Long.parseLong(propertyValue.toString());
 				} else if (field.getType().equals(Double.class) || fieldType.equals(double.class)) {
-					log.info("type double ==========================> : {}", propertyValue);
 					propertyValue = Double.parseDouble(propertyValue.toString());
 				}
 
@@ -263,10 +224,11 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	@Transactional
 	public <T extends BaseEntity> T saveObject(final T rawEntity) {
 
-		if(null == rawEntity) {
+		if (null == rawEntity) {
 			log.error("rawEntity IS NULL");
+			return null;
 		}
-		
+
 		PersistenceOperation<T> persistenceOperation = new PersistenceOperation<T>() {
 
 			@Override
@@ -281,6 +243,8 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 
 				if (entity.getId() == null) {
 					log.debug("Will save new entity ");
+					rawEntity.setCreatedDate(new Date());
+
 					Long newId = (Long) hibernateSession.save(entity);
 					result = entity;
 					result.setId(newId);
@@ -288,6 +252,8 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 					log.debug("success add new record of {} with new ID: {}", entity.getClass(), newId);
 				} else {
 					log.debug("Will update entity ");
+					entity.setModifiedDate(new Date());
+
 					result = (T) hibernateSession.merge(entity);
 
 					log.debug("success update record of {}", entity.getClass());
@@ -332,14 +298,14 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 
 			T result = persistenceOperation.doPersist(hibernateSession);
 
-			if(isTransactionNotKept()) {
+			if (isTransactionNotKept()) {
 				currentTransaction.commit();
 				log.info("==**COMMITED Transaction**==");
 			}
 
 			log.info("success persist operation commited: {}", removeTransactionAfterPersistence);
 			return result;
-			
+
 		} catch (Exception e) {
 			log.error("Error persist operation: {}", e);
 
@@ -347,18 +313,19 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 				log.info("Rolling back.... ");
 				currentTransaction.rollback();
 			}
-			notKeepingTransaction(); 
-			
+			notKeepingTransaction();
+
 			e.printStackTrace();
 		} finally {
-			
-			if(isTransactionNotKept()) {
+
+			if (isTransactionNotKept()) {
 				currentTransaction = null;
 			}
+			hibernateSession.clear();
 		}
 		return null;
 	}
-	
+
 	public boolean deleteObjectById(Class<? extends BaseEntity> _class, Long id) {
 		PersistenceOperation<Boolean> deleteOperation = new PersistenceOperation<Boolean>() {
 
@@ -366,14 +333,14 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 			public Boolean doPersist(Session hibernateSession) {
 				try {
 					Object existingObject = hibernateSession.load(_class, id);
-					if(null == existingObject) {
+					if (null == existingObject) {
 						log.info("existingObject of {} with id: {} does not exist!!", _class, id);
 						return false;
 					}
 					hibernateSession.delete(existingObject);
 					log.debug("Deleted Successfully");
 					return true;
-				}catch (Exception e) {
+				} catch (Exception e) {
 					log.error("Error deleting object!");
 					e.printStackTrace();
 					return false;
@@ -382,9 +349,73 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 		};
 		try {
 			return this.pesistOperation(deleteOperation);
-		}catch (Exception e) { 
+		} catch (Exception e) {
 			return false;
 		}
+	}
+
+	public void refresh() {
+
+		if (hibernateSession != null) {
+			hibernateSession.clear(); // internal cache clear
+		}
+	}
+
+	public <T> List<T> findBy(String key, Object value, Class<T> cls) {
+
+		List<T> res = this.pesistOperation(new PersistenceOperation<List<T>>() {
+
+			@Override
+			public List<T> doPersist(Session hibernateSession) {
+				Criteria criteria = hibernateSession.createCriteria(cls);
+				criteria.add(Restrictions.naturalId().set(key, value));
+				List list = criteria.list();
+				return list;
+			}
+
+		});
+
+		return res;
+	}
+
+	public <T> List<T> findByKeyAndValues(Class<T> entityClass, String key, Object... values) {
+		
+		if(values == null ) {
+			log.error("break findByKeyAndValues >> VALUES IS NULL");
+			return new ArrayList<>();
+		}
+		
+		log.info("findByKeyAndValues, class: {}, key: {}, values.length: {}", entityClass, key, values.length);
+		List<T> res = this.pesistOperation(new PersistenceOperation<List<T>>() {
+
+			@Override
+			public List<T> doPersist(Session hibernateSession) {
+				Criteria criteria = hibernateSession.createCriteria(entityClass);
+				Criterion[] predictates = new Criterion[values.length];
+				for (int i = 0; i < values.length; i++) {
+					predictates[i] = (Restrictions.naturalId().set(key, values[i]));
+				}
+
+				criteria.add(Restrictions.or(predictates));
+				List list = criteria.list();
+				log.info("where: {}", getWhereQuery(criteria));
+				log.info("RESULT findByKeyAndValues:{}", list == null ? "NULL" : list.size());
+				return list;
+			}
+
+		});
+
+		return res;
+	}
+
+	public static String getWhereQuery(Criteria criteria) {
+		CriteriaImpl c = (CriteriaImpl) criteria;
+		SessionImpl s = (SessionImpl) c.getSession();
+		SessionFactoryImplementor factory = (SessionFactoryImplementor) s.getSessionFactory();
+
+		String where = new CriteriaQueryTranslator(factory, c, c.getEntityOrClassName(),
+				CriteriaQueryTranslator.ROOT_SQL_ALIAS).getWhereCondition();
+		return where;
 	}
 
 }

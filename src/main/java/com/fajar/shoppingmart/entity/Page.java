@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Page extends BaseEntity  {/**
+public class Page extends BaseEntity implements Sequenced  {/**
 	 * 
 	 */
 	private static final long serialVersionUID = -4180675906997901285L;

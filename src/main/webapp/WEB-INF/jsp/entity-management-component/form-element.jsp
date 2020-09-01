@@ -8,7 +8,7 @@
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalCenterTitle">${title }</h5>
+				<h5 class="modal-title" id="exampleModalCenterTitle">${entityProperty.alias }</h5>
 				<c:if test="${singleRecord == false }">
 					<button type="button" class="close" data-dismiss="modal"
 						aria-label="Close">
@@ -36,7 +36,9 @@
 											required="${element.required }"
 											identity="${element.identity }"
 											itemValueField="${element.optionValueName}"
-											itemNameField="${element.optionItemName}">
+											itemNameField="${element.optionItemName}"
+											${element.multipleSelect?'multiple':'' }
+											>
 
 										</select>
 										<script>
@@ -44,15 +46,24 @@
 											managedEntity["itemField_${element.id}"] = "${element.optionItemName}";
 											var optionJsonString = "${element.getJsonListString(true)}";
 
-											const options = JSON
+											fixedListOptionValues["${element.id}"] = JSON
 													.parse(optionJsonString);
-											for (let i = 0; i < options.length; i++) {
-
-												const optionItem = options[i];
+											for (let i = 0; i < fixedListOptionValues["${element.id}"].length; i++) {
+												var optionItemName = managedEntity["itemField_${element.id}"];
+												var toDisplay; 
+												const optionItem = fixedListOptionValues["${element.id}"][i];
+												
+												if(optionItemName.includes(".")){
+													var raw = optionItemName.split(".");
+													toDisplay = optionItem[raw[0]][raw[1]];
+												}else{
+													toDisplay = optionItem["${element.optionItemName}"];
+												}
+												
 												const option = createHtmlTag({
 													tagName : 'option',
 													value : optionItem["${element.optionValueName}"],
-													innerHTML : optionItem["${element.optionItemName}"]
+													innerHTML : toDisplay
 												});
 
 												_byId("${element.id }").append(
@@ -69,7 +80,9 @@
 											multiple="multiple" identity="${element.identity }"
 											itemValueField="${element.optionValueName}"
 											itemNameField="${element.optionItemName}"
-											name=${element.entityReferenceClass}
+											dynamic-list="true"
+											name="${element.entityReferenceClass}"
+											 
 											>
 
 										</select>
@@ -81,7 +94,9 @@
 									<c:when test="${  element.type == 'plainlist'}">
 										<select class="input-field form-control" id="${element.id }"
 											required="${element.required }"
-											identity="${element.identity }" plainlist="true">
+											identity="${element.identity }" 
+											plainlist="true"
+											${element.multipleSelect?'multiple':'' }>
 											<c:forEach var="val" items="${element.plainListValues }">
 												<option value="${val }">${val }</option>
 											</c:forEach>

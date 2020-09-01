@@ -15,4 +15,6 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 
 	Menu findTop1ByUrl(String url);
 
+	Menu findByCode(String code);
+
 }

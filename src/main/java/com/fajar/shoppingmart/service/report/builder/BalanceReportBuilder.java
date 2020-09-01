@@ -4,7 +4,6 @@ import static com.fajar.shoppingmart.util.ExcelReportUtil.addMergedRegion;
 import static com.fajar.shoppingmart.util.ExcelReportUtil.createRow;
 import static com.fajar.shoppingmart.util.ExcelReportUtil.curr;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,11 +13,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.ReportCategory;
-import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.service.report.data.ReportData;
 import com.fajar.shoppingmart.service.report.data.ReportRowData;
 import com.fajar.shoppingmart.util.ExcelReportUtil;
-import com.fajar.shoppingmart.util.MyFileUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,8 +45,8 @@ public class BalanceReportBuilder extends ReportBuilder {
 	
 	private long businessProfit = 0L;
 
-	public BalanceReportBuilder(WebConfigService configService, ReportData reportData) {
-		super(configService, reportData);
+	public BalanceReportBuilder(  ReportData reportData) {
+		super(  reportData);
 
 	}
 	
@@ -173,7 +170,7 @@ public class BalanceReportBuilder extends ReportBuilder {
 	}
 
 	@Override
-	public File buildReport() {
+	public XSSFWorkbook buildReport() {
 
 		Filter filter = reportData.getFilter();
 		String time = getDateTime();
@@ -182,15 +179,15 @@ public class BalanceReportBuilder extends ReportBuilder {
 		setFormerBalance(reportData.getDailyReportSummary());
 		setThisYearCashflow(reportData.getMonthyReportContent().get(filter.getYear()));
 
-		String reportName = webConfigService.getReportPath() + "/" + sheetName + "_" + time + ".xlsx";
+		String reportName = /* webConfigService.getReportPath() + "/" + */ sheetName + "_" + time + ".xlsx";
 		XSSFWorkbook xwb = new XSSFWorkbook();
 		xsheet = xwb.createSheet(sheetName);
 
 		writeBalanceReport(reportData);
 
-		File file = MyFileUtil.getFile(xwb, reportName);
+//		File file = MyFileUtil.getFile(xwb, reportName);
 		 
-		return file;
+		return xwb;
 	}
 
 	private void writeBalanceReport(ReportData reportData) {
@@ -357,10 +354,14 @@ public class BalanceReportBuilder extends ReportBuilder {
 		for (int i = 2; i < colInfos.length; i++) {
 			colInfos[i] = i % 2 == 0 ? "D" : "K";
 		}
-		createRow(xsheet, infoRowNum, colOffset, colInfos);
+		createRow(xsheet, infoRowNum, colOffset, colInfos); 
 
+	}
+
+	@Override
+	protected void init() {
+		// TODO Auto-generated method stub
 		
-
 	}
 
 }

@@ -2,10 +2,11 @@ package com.fajar.shoppingmart.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.fajar.shoppingmart.entity.ShopProfile;
+import com.fajar.shoppingmart.entity.Profile;
 
-public interface AppProfileRepository extends JpaRepository<ShopProfile, Long> {
+public interface AppProfileRepository extends JpaRepository<Profile, Long> {
+ 
 
-	ShopProfile findByMartCode(String martCode);
+	Profile findByAppCode(String appCode); 
 
 }

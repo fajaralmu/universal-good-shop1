@@ -21,10 +21,12 @@ import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
+import com.fajar.shoppingmart.entity.Page;
 import com.fajar.shoppingmart.entity.Product;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.DateUtil;
+import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,13 +55,7 @@ public class MvcAdminController extends BaseController {
 	@CustomRequestInfo(title = "Dashboard", pageUrl = "shop/home-page")
 	public String menuDashboard(Model model, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-		Calendar cal = Calendar.getInstance();
-
-		if (!userService.hasSession(request)) {
-			sendRedirectLogin(request, response);
-			return basePage;
-		}
-
+		Calendar cal = Calendar.getInstance(); 
 		setActivePage(request);
 
 		model.addAttribute("menus", componentService.getDashboardMenus(request));
@@ -71,7 +67,7 @@ public class MvcAdminController extends BaseController {
 		model.addAttribute("minYear", minYear);
 		model.addAttribute("maxYear", cal.get(Calendar.YEAR));
 		model.addAttribute("months", DateUtil.months());
-		model.addAttribute("years", CollectionUtil.yearArray(minYear, cal.get(Calendar.YEAR)));
+		model.addAttribute("years",DateUtil.yearArray(minYear, cal.get(Calendar.YEAR)));
 		return basePage;
 	}
 
@@ -80,12 +76,7 @@ public class MvcAdminController extends BaseController {
 	public String productDetail(@PathVariable(required = true) String code, Model model, HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 		Calendar cal = Calendar.getInstance();
-
-		if (!userService.hasSession(request)) {
-			sendRedirectLogin(request, response);
-			return basePage;
-		}
-
+ 
 		Map<String, Object> fieldsFilter = new HashMap<String, Object>();
 		fieldsFilter.put("code", code);
 		fieldsFilter.put("withStock", true);
@@ -165,11 +156,7 @@ public class MvcAdminController extends BaseController {
 	@CustomRequestInfo(scriptPaths = { "transaction" }, title = "Purchase", pageUrl = "shop/transaction-purchasing-page")
 	public String purchasingTransaction(@PathVariable(required = false) String transactionCode, Model model,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-		if (!userService.hasSession(request)) {
-			sendRedirectLogin(request, response);
-			return basePage;
-		}
+ 
 		if (null != transactionCode) {
 			model.addAttribute("requestCode", transactionCode);
 		}
@@ -182,11 +169,7 @@ public class MvcAdminController extends BaseController {
 	@CustomRequestInfo(scriptPaths = { "transaction" }, title = "Selling", pageUrl = "shop/transaction-selling-page")
 	public String sellingTransaction(@PathVariable(required = false) String transactionCode, Model model,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-		if (!userService.hasSession(request)) {
-			sendRedirectLogin(request, response);
-			return basePage;
-		}
+ 
 		if (null != transactionCode) {
 			model.addAttribute("requestCode", transactionCode);
 		}
@@ -194,6 +177,21 @@ public class MvcAdminController extends BaseController {
 		model.addAttribute("page", "transaction");
 
 		return basePage;
+	}
+	
+	@RequestMapping(value = { "/sidemenudisplayorder" })
+	@CustomRequestInfo(title = "Menu Sequence Order", pageUrl = "shop/sequenceordering", stylePaths = { "sequenceordering" })
+	public String sideMenuDisplayOrder(Model model, HttpServletRequest request, HttpServletResponse response)  {
+
+//		model.addAttribute("pages", componentService.getAllPages());
+		model.addAttribute("idField", EntityUtil.getIdFieldOfAnObject(Page.class).getName());
+		model.addAttribute("displayField", "name");
+		model.addAttribute("entityName", "page");
+		model.addAttribute("withAdditionalSetting", true);
+		model.addAttribute("resetSequenceLink", "/account/websetting?action=resetmenu");
+		setActivePage(request, "admin");
+		return basePage;
+
 	}
 
 }

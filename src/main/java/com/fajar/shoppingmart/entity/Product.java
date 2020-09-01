@@ -53,7 +53,7 @@ public class Product extends BaseEntity {
 	private String type;
 	
 	@Column(name = "image_url", unique = true)
-	@FormField(type = FieldType.FIELD_TYPE_IMAGE, required = false, multiple = true, defaultValue = "Default.BMP")
+	@FormField(type = FieldType.FIELD_TYPE_IMAGE, required = false, multipleImage = true, defaultValue = "Default.BMP")
 	private String imageUrl; // type:BLOB
 	
 	@JoinColumn(name = "unit_id", nullable = false)

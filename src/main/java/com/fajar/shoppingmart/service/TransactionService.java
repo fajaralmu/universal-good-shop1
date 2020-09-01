@@ -177,7 +177,7 @@ public class TransactionService {
 		Product product = productFlowStock.getProductFlow().getProduct();
 
 		productFlowStock.getProductFlow().getTransaction().setUser(null);
-		productFlowStock.getProductFlow().setProduct(EntityUtil.validateDefaultValue(product));
+		productFlowStock.getProductFlow().setProduct(EntityValidation.validateDefaultValue(product, null));
 
 		return WebResponse.builder().productFlowStock(productFlowStock).build();
 	}

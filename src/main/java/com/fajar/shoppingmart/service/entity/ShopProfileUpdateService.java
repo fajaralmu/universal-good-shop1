@@ -8,18 +8,18 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
-import com.fajar.shoppingmart.entity.ShopProfile;
+import com.fajar.shoppingmart.entity.Profile;
 import com.fajar.shoppingmart.repository.AppProfileRepository;
 
 @Service
-public class ShopProfileUpdateService extends BaseEntityUpdateService{
+public class ShopProfileUpdateService extends BaseEntityUpdateService<Profile>{
 
 	@Autowired
 	private AppProfileRepository shopProfileRepository;
 	
 	@Override
-	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord,EntityUpdateInterceptor entityUpdateInterceptor) {
-		ShopProfile shopProfile = (ShopProfile) copyNewElement(baseEntity, newRecord);
+	public WebResponse saveEntity(Profile baseEntity, boolean newRecord){
+		Profile shopProfile = (Profile) copyNewElement(baseEntity, newRecord);
 		String base64Image = shopProfile.getIconUrl();
 		if (base64Image != null && !base64Image.equals("")) {
 			try {
@@ -32,13 +32,13 @@ public class ShopProfileUpdateService extends BaseEntityUpdateService{
 			}
 		} else {
 			if (!newRecord) {
-				Optional<ShopProfile> dbShopProfile = shopProfileRepository.findById(shopProfile.getId());
+				Optional<Profile> dbShopProfile = shopProfileRepository.findById(shopProfile.getId());
 				if (dbShopProfile.isPresent()) {
 					shopProfile.setIconUrl(dbShopProfile.get().getIconUrl());
 				}
 			}
 		}
-		ShopProfile newShopProfile = entityRepository.save(shopProfile);
+		Profile newShopProfile = entityRepository.save(shopProfile);
 		return WebResponse.builder().entity(newShopProfile).build();
 	}
 	

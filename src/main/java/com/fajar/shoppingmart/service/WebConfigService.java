@@ -3,7 +3,6 @@ package com.fajar.shoppingmart.service;
 import static com.fajar.shoppingmart.util.CollectionUtil.emptyArray;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
@@ -14,15 +13,23 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.fajar.shoppingmart.entity.BaseEntity;
-import com.fajar.shoppingmart.entity.ShopProfile;
+import com.fajar.shoppingmart.entity.Menu;
+import com.fajar.shoppingmart.entity.Page;
+import com.fajar.shoppingmart.entity.Profile;
+import com.fajar.shoppingmart.entity.User;
+import com.fajar.shoppingmart.entity.UserRole;
 import com.fajar.shoppingmart.repository.AppProfileRepository;
+import com.fajar.shoppingmart.repository.MenuRepository;
+import com.fajar.shoppingmart.repository.PageRepository;
+import com.fajar.shoppingmart.repository.UserRepository;
+import com.fajar.shoppingmart.repository.UserRoleRepository;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 
@@ -40,16 +47,41 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WebConfigService {
 
+	public static final String DEFAULT_ROLE = "00";
+	public static final String SETTING = "setting";
+	public static final String MENU = "menu";
+	public static final String PAGE = "page";
+	public static final String ADMIN = "admin";
+	public static final String ABOUT = "about";
+
 	@Autowired
-	private AppProfileRepository shopProfileRepository;
+	private AppProfileRepository ProfileRepository;
 	@Autowired
 	private ApplicationContext applicationContext;
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private UserRoleRepository userRoleRepository;
+	@Autowired
+	private PageRepository pageRepository;
+	@Autowired
+	private MenuRepository menuRepository;
 
+	/////////////// VARIABLES REGISTERED VIA XML ////////////////
 	private String basePage;
 	private String uploadedImageRealPath;
 	private String uploadedImagePath;
 	private String reportPath;
-	private String martCode;
+	private String appCode;
+	private String DEFAULT_USER_NAME;
+	private String DEFAULT_USER_PWD;
+
+	private Menu defaultMenuManagementMenu, defaultPageManagementMenu;
+	private Page defaultSettingPage, defaultManagementPage, defaultAdminPage, defaultAboutPage;
+	private User defaultUser;
+	private UserRole defaultUserRole;
+	private Profile defaultProfile;
+	/////////////////////////////////////////////////////////////
 
 	private List<JpaRepository<?, ?>> jpaRepositories = new ArrayList<>();
 	private List<Type> entityClassess = new ArrayList<>();
@@ -57,18 +89,56 @@ public class WebConfigService {
 
 	@PostConstruct
 	public void init() {
+		log.info("WebConfigService INITIALIZE");
+
 		LogProxyFactory.setLoggers(this);
-		ShopProfile dbProfile = shopProfileRepository.findByMartCode(martCode);
-		if (null == dbProfile) {
-			shopProfileRepository.save(defaultProfile());
-		}
+
 		getJpaReporitoriesBean();
+		checkUser();
+		checkDefaultProfile();
+		checkDefaultPages();
 	}
 
-	@PreDestroy
-	public void preDestroy() {
-		System.out.println("========= will destroy ========");
+	private void checkDefaultPages() {
 
+		defaultAdminPage();
+		defaultAboutPage();
+	}
+
+	private Page defaultAboutPage() {
+		return getPage(ABOUT, defaultAboutPage);
+	}
+
+	private void checkUser() {
+		UserRole userRole = userRoleRepository.findByCode(DEFAULT_ROLE);
+		if (null == userRole) {
+			userRole = defaultRole();
+		}
+		User user = userRepository.findByUsername(DEFAULT_USER_NAME);
+		if (null == user) {
+			user = defaultUser();
+		}
+	}
+
+	private User defaultUser() {
+		User user = userRepository.findByUsername(DEFAULT_USER_NAME);
+		if (null != user) {
+			return user;
+		}
+		user = defaultUser;
+		user.setRole(defaultRole());
+
+		return userRepository.save(user);
+	}
+
+	public UserRole defaultRole() {
+		UserRole userRole = userRoleRepository.findByCode(DEFAULT_ROLE);
+		if (null != userRole) {
+			return userRole;
+		}
+		userRole = defaultUserRole;
+
+		return userRoleRepository.save(userRole);
 	}
 
 	private void getJpaReporitoriesBean() {
@@ -86,55 +156,150 @@ public class WebConfigService {
 
 			if (null == beanObject)
 				continue;
-			Class<?>[] interfaces = beanObject.getClass().getInterfaces(); 
-			
+			Class<?>[] interfaces = beanObject.getClass().getInterfaces();
+
 			log.info("beanObject: {}", beanObject);
 			if (null == interfaces)
 				continue;
- 
+
 			Type type = getTypeArgument(interfaces[0], 0);
-			
+
 			entityClassess.add(type);
 			jpaRepositories.add(beanObject);
-			
-			repositoryMap.put((Class)type, beanObject);
-			
-			log.info(i + "." + beanName + ". entity type: "+ type);
+
+			repositoryMap.put((Class) type, beanObject);
+
+			log.info(i + "." + beanName + ". entity type: " + type);
 		}
 	}
-	 
-	public static void main (String[] args) throws IOException {
-//		Class _class = ProductRepository.class;
-//		Type[] interfaces = _class.getGenericInterfaces();
-//		CollectionUtil.printArray(interfaces);
-//		Type type = interfaces[0];
-//		System.out.println("type: "+type);
-//		ParameterizedType parameterizedType = (ParameterizedType) type;
-//		log.info("parameterizedType: {}", parameterizedType );
+
+	public Profile getProfile() {
+		return checkDefaultProfile();
 	}
-	
+
+	public Menu getMenu(String code, Menu defaultMenuIfNotExist, Page menuPage) {
+		Page eixsitingPage = getPage(menuPage.getCode(), menuPage);
+		Menu menu = menuRepository.findByCode(code);
+		if (null != menu) {
+			log.info("menu: {} FOUND!", code);
+			return menu;
+		}
+
+		log.info("WILL SAVE menu with :{}", code);
+
+		menu = defaultMenuIfNotExist;
+		menu.setMenuPage(eixsitingPage);
+
+		return menuRepository.save(menu);
+	}
+
+	public Menu checkDefaultMenu() {
+		return getMenu(MENU, defaultMenuManagementMenu, defaultSettingPage());
+	}
+
+	public Menu checkPageManagementMenu() {
+		return getMenu(PAGE, defaultPageManagementMenu, defaultSettingPage());
+	}
+
+	private Page getPage(String code, Page defaultPageIfNotExist) {
+		Page page = pageRepository.findByCode(code);
+		if (null != page) {
+			log.info("page with code: {} FOUND!", code);
+			return page;
+		}
+		log.info("WILL SAVE page : {}...", code);
+		return pageRepository.save(defaultPageIfNotExist);
+	}
+
+	public Page defaultAdminPage() {
+		return getPage(ADMIN, defaultAdminPage);
+	}
+
+	public Page defaultSettingPage() {
+
+		return getPage(SETTING, defaultSettingPage);
+
+	}
+
+	static final Object[] names = new Object[] { "A1", "B2", "C3", "D4", "E5", "F6", "G7" };
+	static final Object[] DAYS = new Object[] { "Sen ", "Sel ", "Rab ", "Kam ", "JUm ", "Sab ", "Min " };
+
+	static int suffleCount = 0;
+
+	public static void main(String[] args) throws IOException {
+		String Dayparams = StringUtils.repeat("{}    ", DAYS.length);
+		log.info(Dayparams, DAYS);
+		for (int i = 0; i < 50; i++) {
+//			System.out.println(suffleCount);
+			String params = StringUtils.repeat("{} {} | ", 7);
+
+			log.info(params, suffle());
+		}
+
+	}
+
+	static boolean sufflePaused = false;
+
+	static Object[] suffle() {
+		if (!sufflePaused)
+			suffleCount++;
+
+		if (suffleCount > 4) {
+			suffleCount = 0;
+		}
+//		System.out.println("suffleCount: "+suffleCount);
+		Object[] result = new Object[14];
+		for (int i = 0; i < 5; i++) {
+
+			int newIndex = i + suffleCount;
+
+			if (newIndex > 4) {
+				newIndex = newIndex - 5;
+				sufflePaused = true;
+			}
+			if (sufflePaused && i == 4) {
+				sufflePaused = false;
+			}
+//			System.out.println(newIndex+"vs"+i);
+//			System.out.println( result[newIndex]+" "+ names[i]);
+			result[i * 2] = names[newIndex];// + "_" + newIndex;
+			int nextIdx = i * 2 + 3;
+			if(nextIdx > 9) {
+				nextIdx = 1;
+			}
+			result[nextIdx] = names[newIndex];
+		}
+		result[10] = names[5];
+		result[11] = names[6];
+		result[12] = names[5];
+		result[13] = names[6];
+		return result;
+	}
+
 	private ParameterizedType getJpaRepositoryType(Class<?> _class) {
 		Type[] genericInterfaces = _class.getGenericInterfaces();
-		if(CollectionUtil.emptyArray(genericInterfaces)) return null;
-		
+		if (CollectionUtil.emptyArray(genericInterfaces))
+			return null;
+
 		try {
 			for (int i = 0; i < genericInterfaces.length; i++) {
 				Type genericInterface = genericInterfaces[i];
-				if(genericInterface.getTypeName().startsWith("org.springframework.data.jpa.repository.JpaRepository")) {
+				if (genericInterface.getTypeName()
+						.startsWith("org.springframework.data.jpa.repository.JpaRepository")) {
 					return (ParameterizedType) genericInterface;
 				}
 			}
 			return null;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
 
 	private Type getTypeArgument(Class<?> _class, int argNo) {
 		try {
-			 
+
 			ParameterizedType jpaRepositoryType = getJpaRepositoryType(_class);
-			
+
 			Type[] typeArguments = jpaRepositoryType.getActualTypeArguments();// type.getTypeParameters();
 			CollectionUtil.printArray(typeArguments);
 
@@ -170,91 +335,23 @@ public class WebConfigService {
 		}
 	}
 
-	public static void main2(String[] args) throws IOException {
-		String path = "C:\\Users\\Republic Of Gamers\\Documents\\ORCALE_DUMPS\\";
-		File folder = new File(path);
-		File[] listOfFiles = folder.listFiles();
-
-		for (int i = 0; i < listOfFiles.length; i++) {
-			File file = listOfFiles[i];
-			if (file.isFile()) {
-				// System.out.println(path+file.getName());
-				String content = readFile(path + file.getName());
-
-				if (!file.getName().startsWith("MASTER_PFM_DETAIL")) {
-					continue;
-				}
-				filter(content);
-			} else if (file.isDirectory()) {
-				System.out.println("Directory " + listOfFiles[i].getName());
-			}
+	public Profile checkDefaultProfile() {
+		Profile dbProfile = ProfileRepository.findByAppCode(appCode);
+		if (null == dbProfile) {
+			ProfileRepository.save(defaultProfile);
 		}
+		dbProfile = ProfileRepository.findByAppCode(appCode);
+
+		/* return getProfileFromSession(); */ return EntityValidation.validateDefaultValue(dbProfile, null);
 	}
 
-	public static String filter(String content) {
-		String[] lines = (content.split("\n"));
-		String result = "";
-		String firstLine = lines[0].trim();
-		if (firstLine.startsWith("INSERT") == false) {
-			firstLine = firstLine.substring(3, firstLine.length());
-			firstLine = firstLine.replace("MMB", "DEVELOPMENT");
-		}
-
-		for (String string : lines) {
-			if (string.trim().equals(";")) {
-				continue;
-			}
-
-			String insertStatement = string.substring(3, string.length());
-			if (insertStatement.startsWith("INSERT")) {
-				string = string.substring(3, string.length());
-			}
-
-			string = string.trim();
-			if (string.startsWith(",(")) {
-				string = string.substring(0, string.length());
-				string = firstLine + string;
-			}
-			if (string.endsWith(")")) {
-				string += ";";
-			}
-			string = string.replace("MMB", "DEVELOPMENT");
-			string = string.replace("VALUES,", "VALUES");
-			result += "\n" + string;
-
-			System.out.println(string);
-		}
-		return result;
-	}
-
-	public ShopProfile getProfile() {
-		ShopProfile dbProfile = shopProfileRepository.findByMartCode(martCode);
-
-		/* return getShopProfileFromSession(); */ return EntityUtil.validateDefaultValue(dbProfile);
-	}
-
-	private ShopProfile defaultProfile() {
-		ShopProfile profile = new ShopProfile();
-		profile.setName("Universal Good Shop [Generated]");
-		profile.setAddress("Spring Mvc, Java Virtual Machine, Win 10 64");
-		profile.setContact("087737666614");
-		profile.setWebsite("http://localhost:8080/universal-good-shop");
-		profile.setIconUrl("DefaultIcon.BMP");
-		profile.setBackgroundUrl("DefaultBackground.BMP");
-		profile.setMartCode(martCode);
-		profile.setShortDescription("we provide what u need");
-		profile.setColor("green");
-		profile.setAbout("Nam libero tempore.");
-		return profile;
-	}
-
-	public <T extends BaseEntity>  JpaRepository getJpaRepository(Class<T> _entityClass) {
+	public <T extends BaseEntity> JpaRepository getJpaRepository(Class<T> _entityClass) {
 		log.info("get JPA Repository for: {}", _entityClass);
-		
+
 		JpaRepository result = this.repositoryMap.get(_entityClass);
-		
+
 		log.info("found repo object: {}", result);
-		
+
 		return result;
 	}
 

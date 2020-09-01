@@ -29,6 +29,7 @@ import com.fajar.shoppingmart.dto.FieldType;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.setting.EntityElement;
 import com.fajar.shoppingmart.entity.setting.EntityProperty;
+import com.fajar.shoppingmart.service.ProgressService;
 import com.fajar.shoppingmart.service.report.data.CurrencyCell;
 import com.fajar.shoppingmart.service.report.data.CustomCell;
 import com.fajar.shoppingmart.service.report.data.NumericCell;
@@ -105,7 +106,14 @@ public class ExcelReportUtil {
 		}
 	}
 	
+	public static interface RowCreatedCallback{
+		public void callback(int i, int totalRow);
+	}
 	public static void createTable(XSSFSheet sheet, int columCount, int xOffset, int yOffset, Object ...values){
+		createTable(sheet, columCount, xOffset, yOffset, null,  values);
+		
+	}
+	public static void createTable(XSSFSheet sheet, int columCount, int xOffset, int yOffset, RowCreatedCallback rowCallback, Object ...values){
 		Map<Integer, List<Object>> tableContent = getTableContent(columCount, values);
 		 
 		for (Integer integer : tableContent.keySet()) {
@@ -116,6 +124,11 @@ public class ExcelReportUtil {
 			Object[] rowValues = valueList.toArray();
 			XSSFRow row = createRow(sheet, integer + yOffset, xOffset, rowValues);
 			autosizeColumn(row, rowValues.length, BorderStyle.THIN, null);
+			
+			if(null != rowCallback) {
+				rowCallback.callback(integer,  tableContent.keySet().size());
+			}
+			 
 		}
 	} 
 	

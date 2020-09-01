@@ -18,7 +18,7 @@ import com.fajar.shoppingmart.entity.Page;
 import com.fajar.shoppingmart.entity.Product;
 import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.RegisteredRequest;
-import com.fajar.shoppingmart.entity.ShopProfile;
+import com.fajar.shoppingmart.entity.Profile;
 import com.fajar.shoppingmart.entity.Supplier;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.Unit;
@@ -53,13 +53,13 @@ public class WebRequest implements Serializable {
 	private User user;
 	private Supplier supplier;
 	private Customer customer;
-	private ShopProfile shopprofile;
+	private Profile shopprofile;
 	private Menu menu;
 	private Unit unit;
 	private Product product;
 	private UserRole userrole;
 	private Category category;
-	private RegisteredRequest registeredRequest; 
+	private RegisteredRequest registeredrequest; 
 	private Cost cost;
 	private CostFlow costflow;
 	private Voucher voucher;
@@ -82,7 +82,7 @@ public class WebRequest implements Serializable {
 	private String username;
 	private String value;
 	
-	private List<Page> pages;
+	private List<BaseEntity> orderedEntities;
 	
 	@Builder.Default
 	private List<ProductFlow> productFlows = new ArrayList<ProductFlow>();

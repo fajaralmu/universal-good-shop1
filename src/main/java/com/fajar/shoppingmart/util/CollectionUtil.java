@@ -1,10 +1,14 @@
 package com.fajar.shoppingmart.util;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.fajar.shoppingmart.dto.KeyPair;
+import com.fajar.shoppingmart.entity.BaseEntity;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,22 +42,21 @@ public class CollectionUtil {
 			List<T> mapValue = map.get(key);
 			if (null == mapValue)
 				continue;
-			
+
 			list.addAll(mapValue);
 		}
 
 		return list;
 	}
 
-	public static <T> String printArray(T[] array) {
+	public static <T> void printArray(T[] array) {
 		if (null == array) {
-			return "";
+			return;
 		}
 
 		String[] arrayString = toArrayOfString(array);
-		String result =  String.join(", ", arrayString);
-		log.info("Print Array: [{}]", result);
-		return result;
+		log.info("Print Array: [{}]", String.join(", ", arrayString));
+
 	}
 
 	public static <T> List<T> listOf(T o) {
@@ -63,11 +66,14 @@ public class CollectionUtil {
 		return list;
 	}
 
-	public static <T> List<T> convertList(List<?> list) {
-		List<T> newList = new ArrayList<T>();
+	public static <T> ArrayList<T> convertList(List<?> list) {
+		ArrayList<T> newList = new ArrayList<T>();
+		if(null == list) {
+			return newList;
+		}
 		for (Object object : list) {
 			try {
-				newList.add((T) object);
+				newList.add((T)(object));
 			} catch (Exception e) {
 
 			}
@@ -100,18 +106,75 @@ public class CollectionUtil {
 		return array;
 	}
 
-	public static List<KeyPair> yearArray(int min, int max){
-		List<KeyPair> years = new ArrayList<>();
-		for(int i = min; i <= max; i++) {
-			years.add(new KeyPair(i, i, true));
-		}
-		return years;
+	public static boolean isCollection(Object o) {
+		return Collection.class.isAssignableFrom(o.getClass());
+	}
+
+	public static boolean isCollection(Class<?> o) {
+		return Collection.class.isAssignableFrom(o);
 	}
 	
-	public static <T> boolean emptyArray(T[] array) {
-		if(null == array) return true;
-		if(0 == array.length) return true;
-		
-		return false;
+	public static Type[] getGenericTypes(Field field) {
+		ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
+		Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+		return actualTypeArguments;
 	}
+	
+	public static Field getIDFieldOfUnderlyingListType(Field field) {
+		 
+		Type[] actualTypeArguments = getGenericTypes(field);
+		Class<?> cls = (Class<?>) actualTypeArguments[0];
+		return EntityUtil.getIdFieldOfAnObject(cls);
+	}
+	
+	public static boolean isCollectionOfBaseEntity(Field field) {
+
+		if (Collection.class.isAssignableFrom(field.getType())) {
+			try {
+				ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
+				Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+				boolean result = BaseEntity.class.isAssignableFrom((Class<?>) actualTypeArguments[0]);
+
+				return result;
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		return false;
+
+	}
+
+	public static <T> boolean emptyArray(T[] arr) {
+		return arr == null || arr.length == 0;
+	}
+
+	public static <T> Object[] toObjectArray(T[] rawArray) {
+
+		Object[] resultArray = new Object[rawArray.length];
+
+		for (int i = 0; i < rawArray.length; i++) {
+			resultArray[i] = rawArray[i];
+		}
+		return resultArray;
+	}
+
+	public static Object[] objectElementsToArray(final String fieldName, Object... array) {
+		try {
+			Object sampleObject = array[0];
+			Object[] result = new Object[array.length];
+			Field field = EntityUtil.getDeclaredField(sampleObject.getClass(), fieldName);
+			for (int i = 0; i < array.length; i++) {
+				Object object = array[i];
+				Object fieldValue = field.get(object);
+				result[i] = fieldValue;
+			}
+
+			return result;
+		} catch (Exception e) {
+			return new Object[] { "EMPTY" };
+		}
+	}
+
+	 
+
 }

@@ -1,5 +1,6 @@
 package com.fajar.shoppingmart.entity;
 
+import java.beans.Transient;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -26,6 +27,7 @@ public class BaseEntity implements Serializable{
 	/**
 	 * 
 	 */
+	@JsonIgnore
 	private static final long serialVersionUID = 5713292970611528372L;
 	
 	@Id
@@ -46,7 +48,7 @@ public class BaseEntity implements Serializable{
 	@Column(name = "deleted")
 	@JsonIgnore
 	private boolean deleted;
-	
+	@BaseField
 	@Column(name = "general_color")
 	@FormField(type = FieldType.FIELD_TYPE_COLOR, defaultValue = "green")
 	private String color;
@@ -110,12 +112,17 @@ public class BaseEntity implements Serializable{
 		}
 		this.modifiedDate = new Date();
 	}
-
-	public EntityUpdateInterceptor updateInterceptor() {
+ 
+	
+	@JsonIgnore
+	@Transient
+	public EntityUpdateInterceptor getUpdateInterceptor() {
 		return new EntityUpdateInterceptor<BaseEntity>() {
+			private static final long serialVersionUID = 2878932467536346251L;
+
 			@Override
-			public BaseEntity preUpdate(BaseEntity baseEntity) {
-				return baseEntity;
+			public BaseEntity preUpdate(BaseEntity object) {
+				return object;
 			}
 		};
 	}

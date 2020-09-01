@@ -3,11 +3,8 @@ package com.fajar.shoppingmart.service;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,15 +23,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserAccountService {
 
-
 	@Autowired
 	private UserSessionService userSessionService;
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
 	private UserRoleRepository userRoleRepository;
-	@PersistenceContext
-	private EntityManager entityManager;
+	@Autowired
+	private WebConfigService webConfigService;
+	@Autowired
+	private ProgressService progressService;
 
 	@PostConstruct
 	public void init() {
@@ -47,20 +45,22 @@ public class UserAccountService {
 	 * @param request
 	 * @return
 	 */
-	@Transactional
-	public WebResponse registerUser(WebRequest request) {
-		WebResponse response = new WebResponse();
-		Optional<UserRole> regularRoleOpt = userRoleRepository.findById(2L);
+	public WebResponse registerUser(WebRequest request, HttpServletRequest httpServletRequest) {
 
-		if (regularRoleOpt.isPresent() == false) {
-			throw new RuntimeException("ROLE WITH ID: 2 NOT FOUND");
+		try {
+			UserRole defaultUserRole = webConfigService.defaultRole();
+			progressService.sendProgress(30, httpServletRequest);
+			
+			User user = populateUser(request, defaultUserRole);
+			userRepository.save(user);
+			progressService.sendProgress(40, httpServletRequest);
+			
+			log.info("success register");
+			return WebResponse.success();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
 		}
-		UserRole regularRole = regularRoleOpt.get();
-
-		User user = populateUser(request, regularRole);
-		 entityManager.persist(user);
-		response.setUser(user);
-		return response;
 	}
 
 	private User populateUser(WebRequest request, UserRole regularRole) {
@@ -83,30 +83,34 @@ public class UserAccountService {
 	 * @throws IllegalAccessException
 	 */
 	public WebResponse login(WebRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse)
-			throws  Exception {
+			throws Exception {
 		User dbUser = userSessionService.getUserByUsernameAndPassword(request);
 
 		if (dbUser == null) {
 			return new WebResponse("01", "invalid credential");
 		}
+ 
+		userSessionService.addUserSession(dbUser, httpRequest, httpResponse); 
+		registerRequestId(httpRequest, httpResponse); 
 
-		dbUser = userSessionService.addUserSession(dbUser, httpRequest, httpResponse);
-		WebResponse requestIdResponse = userSessionService.requestId(httpRequest, httpResponse); 
-		SessionUtil.setSessionRegisteredRequestId(httpRequest, requestIdResponse); 
-		
-		WebResponse response = new WebResponse("00", "success");
-		response.setEntity(dbUser); 
-		
 		log.info("LOGIN SUCCESS");
 
 		String sessionRequestUri = SessionUtil.getSessionRequestUri(httpRequest);
-		
+
 		if (sessionRequestUri != null) {
-			log.info("WILL REDIRECT TO REQUESTED URI: " + sessionRequestUri);
-			response.setRedirectUrl(sessionRequestUri);
-		}
-		response.setMessage(requestIdResponse.getMessage());
-		return response;
+			log.debug("goto page after login: " + sessionRequestUri);
+ 
+			httpResponse.setHeader("location", sessionRequestUri); 
+//			response.setRedirectUrl(sessionRequestUri);
+		} 
+		return WebResponse.success();
+	}
+
+	private void registerRequestId(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+		 
+		WebResponse requestIdResponse = userSessionService.generateRequestId(httpRequest, httpResponse);
+		SessionUtil.setSessionRegisteredRequestId(httpRequest, requestIdResponse);
+
 	}
 
 	/**
@@ -167,6 +171,15 @@ public class UserAccountService {
 		log.info("Role From User: {}", user.getRole());
 		Optional<UserRole> dbUserRole = userRoleRepository.findById(user.getRole().getId());
 		return dbUserRole.get();
+	}
+
+	public WebResponse checkUsername(WebRequest request) {
+		String username = request.getUsername();
+		User user = userRepository.findByUsername(username);
+		String code = user == null ? "00":"01";
+		String msg = user == null ? "Username Available": "Username Not Available";
+		
+		return WebResponse.builder().code(code).message(msg).build();
 	}
 
 }

@@ -17,8 +17,8 @@ import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
-import com.fajar.shoppingmart.entity.Capital;
-import com.fajar.shoppingmart.entity.Cost;
+import com.fajar.shoppingmart.entity.Menu;
+import com.fajar.shoppingmart.entity.Page;
 import com.fajar.shoppingmart.entity.UserRole;
 import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
 import com.fajar.shoppingmart.repository.EntityRepository;
@@ -26,6 +26,7 @@ import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.service.entity.BaseEntityUpdateService;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
+import com.fajar.shoppingmart.util.ThreadUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,7 +43,9 @@ public class EntityService {
 	@Autowired
 	private RepositoryCustomImpl repositoryCustom;
 	@Autowired
-	private EntityRepository entityRepository;
+	private EntityRepository entityRepository; 
+	@Autowired
+	private WebConfigService webConfigService;
 
 	@PostConstruct
 	public void init() {
@@ -76,22 +79,42 @@ public class EntityService {
 				entityValue = entityField.get(request);
 
 				log.info("save {}: {}", entityField.getName(), entityValue);
-				log.info("newRecord: {}", newRecord);
-
+				log.info("newRecord: {}", newRecord); 
+				
+				if (entityValue != null) {
+					WebResponse saved = updateService.saveEntity((BaseEntity) entityValue, newRecord);
+					
+					if(saved.isSuccess()) {
+						validateInMemoryEntities(entityConfig);
+					}
+					
+					return saved;
+				}
+				else {
+					return WebResponse.failed();
+				}
+				
 			} catch (Exception e) {
 				e.printStackTrace();
-				return WebResponse.failed();
+				return WebResponse.failed(e.getMessage());
 			}
-
-			if (entityValue != null)
-				return updateService.saveEntity((BaseEntity) entityValue, newRecord,
-						entityConfig.getUpdateInterceptor());
-
+ 
 		} catch (Exception e) {
-			e.printStackTrace();
-		}
+			return WebResponse.failed(e.getMessage());
+		}finally {
+			 
+		} 
+	}
 
-		return WebResponse.builder().code("01").message("failed").build();
+	private void validateInMemoryEntities(final EntityManagementConfig entityConfig) {
+//		ThreadUtil.run(()->{
+//			if(entityConfig.getEntityClass().equals(Page.class)) {
+//				webConfigService.refreshPages(true);
+//			}else if(entityConfig.getEntityClass().equals(Menu.class)) {
+//				webConfigService.refreshMenus(true);
+//			}
+//		});
+		
 	}
 
 	/**
@@ -128,12 +151,12 @@ public class EntityService {
 			 */
 			EntityResult entityResult = filterEntities(filter, entityClass);
 
-			return WebResponse.builder().entities(EntityUtil.validateDefaultValue(entityResult.entities))
+			return WebResponse.builder().entities(EntityValidation.validateDefaultValues(entityResult.entities, entityRepository))
 					.totalData(entityResult.count).filter(request.getFilter()).entityClass(entityClass).build();
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			return WebResponse.failed();
+			return WebResponse.failed(ex.getMessage());
 		}
 	}
 
@@ -148,7 +171,7 @@ public class EntityService {
 //			Thread thread2 = ThreadUtil.run(() -> {
 				long resultCount = repositoryCustom.getRowCount(entityClass, filter);
 				count.put("value", resultCount);
-//			});
+//			}); 
 //			thread.join();
 //			thread2.join();
 			
@@ -209,14 +232,14 @@ public class EntityService {
 	}
 
 //	
-	public List<Cost> getAllCostType() {
-		return findAll(Cost.class);
-	}
- 
-
-	public List<Capital> getAllCapitalType() {
-		return findAll(Capital.class);
-	}
+//	public List<Cost> getAllCostType() {
+//		return findAll(Cost.class);
+//	}
+// 
+//
+//	public List<Capital> getAllCapitalType() {
+//		return findAll(Capital.class);
+//	}
 
 	public <T extends BaseEntity> List<T> findAll(Class<T> _class) {
 		List<T> resultList = entityRepository.findAll(_class);

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.fajar.shoppingmart.annotation.Authenticated;
 import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.service.LogProxyFactory;
+import com.fajar.shoppingmart.service.MenuInitiationService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("account")
 public class MvcAccountController extends BaseController { 
 	 
+	@Autowired
+	private MenuInitiationService menuInitiationService;
 
 	@Autowired
 	public MvcAccountController() { 
@@ -65,6 +68,20 @@ public class MvcAccountController extends BaseController {
 			response.sendRedirect(request.getContextPath() + "/admin/home");
 		}
 		return "shop/register-page";
+	}
+	
+	@RequestMapping(value = { "/websetting" })
+	@Authenticated
+	public void webSetting(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		String parameter = request.getParameter("action");
+		log.info("parameter: {}", parameter);
+		if (null != parameter && parameter.equals("resetmenu")) {
+			menuInitiationService.resetMenus();
+		}
+		response.setStatus(302);
+		response.setHeader("location", request.getContextPath() + "/admin/home");
+
 	}
 
 }

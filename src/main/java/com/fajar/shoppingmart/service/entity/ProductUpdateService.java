@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class ProductUpdateService extends BaseEntityUpdateService{
+public class ProductUpdateService extends BaseEntityUpdateService<Product>{
 
 	@Autowired
 	private ProductRepository productRepository;
@@ -35,7 +35,7 @@ public class ProductUpdateService extends BaseEntityUpdateService{
 	 * @return
 	 */
 	@Override
-	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord,EntityUpdateInterceptor entityUpdateInterceptor) {
+	public WebResponse saveEntity(Product baseEntity, boolean newRecord) {
 
 		Product product = (Product) copyNewElement(baseEntity, newRecord);
 

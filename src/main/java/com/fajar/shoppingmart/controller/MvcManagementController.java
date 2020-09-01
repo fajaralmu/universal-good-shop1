@@ -13,16 +13,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.support.BindingAwareModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.shoppingmart.annotation.Authenticated;
 import com.fajar.shoppingmart.annotation.CustomRequestInfo;
-import com.fajar.shoppingmart.entity.CapitalFlow;
-import com.fajar.shoppingmart.entity.CostFlow;
-import com.fajar.shoppingmart.entity.Menu;
 import com.fajar.shoppingmart.entity.Message;
-import com.fajar.shoppingmart.entity.ShopProfile;
+import com.fajar.shoppingmart.entity.Profile;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.setting.EntityProperty;
@@ -32,6 +30,7 @@ import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.MyJsonUtil;
+import com.fajar.shoppingmart.util.SessionUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("management")
 @Authenticated
-@CustomRequestInfo(stylePaths = "entitymanagement")
+@CustomRequestInfo(stylePaths = "entitymanagement", scriptPaths = "entitymanagement", pageUrl = "shop/entity-management-page")
 public class MvcManagementController extends BaseController {
 
 	@Autowired
@@ -67,14 +66,18 @@ public class MvcManagementController extends BaseController {
 	@RequestMapping(value = { "/common/{name}" })
 	public String unit(@PathVariable("name") String name, Model model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
- 
-		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/common/" + name);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR_404_PAGE;
-		}
+
 		model = entityManagementPageService.setModel(request, model, name);
+		try {
+			
+			BindingAwareModelMap modelImpl = (BindingAwareModelMap) model;
+			String pageCode = modelImpl.get(SessionUtil.PAGE_CODE).toString();
+			setActivePage(request, pageCode); 
+			
+			log.info("Management Page Code: {}", request.getSession().getAttribute(SessionUtil.PAGE_CODE));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		return basePage;
 	}
 
@@ -88,7 +91,7 @@ public class MvcManagementController extends BaseController {
 			e.printStackTrace();
 			return ERROR_404_PAGE;
 		}
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(ShopProfile.class, null);
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(Profile.class, null);
 
 		model = constructCommonModel(request, entityProperty, model, "shopProfile", "management");
 		// override singleObject
@@ -96,59 +99,8 @@ public class MvcManagementController extends BaseController {
 		model.addAttribute("singleRecord", true);
 		return basePage;
 	}
-
-	@RequestMapping(value = { "/menu" })
-	public String menu(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-		 
-		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/menu");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR_404_PAGE;
-		}
-		HashMap<String, List<?>> listObject = new HashMap<>();
-		listObject.put("menuPage", CollectionUtil.convertList(componentService.getAllPages()));
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(Menu.class, listObject);
-		model = constructCommonModel(request, entityProperty, model, "Menu", "management");
-		return basePage;
-	}
-
-	@RequestMapping(value = { "/costflow" })
-	public String costflow(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-		 
-		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/costflow");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR_404_PAGE;
-		}
-		HashMap<String, List<?>> listObject = new HashMap<>();
-		listObject.put("costType", CollectionUtil.convertList(entityService.getAllCostType()));
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(CostFlow.class, listObject);
-		model = constructCommonModel(request, entityProperty, model, "CostFlow", "management");
-		return basePage;
-	}
-
-	@RequestMapping(value = { "/capitalflow" })
-	public String capitalflow(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-		 
-		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/capitalflow");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR_404_PAGE;
-		}
-		HashMap<String, List<?>> listObject = new HashMap<String, List<?>>();
-		listObject.put("capitalType", CollectionUtil.convertList(entityService.getAllCapitalType()));
-
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(CapitalFlow.class, listObject);
-
-		model = constructCommonModel(request, entityProperty, model, "CapitalFlow", "management");
-		return basePage;
-	}
+ 
+	 
 
 	/**
 	 * RESTRICTED ACCESS

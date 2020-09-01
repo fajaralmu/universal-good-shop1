@@ -65,6 +65,8 @@ public class WebResponse implements Serializable {
 	 
 	private Map<String, CashFlow> dailyCashflow;
 	
+	private boolean success;
+	
 	public static WebResponse failedResponse() {
 		return new WebResponse("01","INVALID REQUEST");
 	}

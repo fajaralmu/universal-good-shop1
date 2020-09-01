@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.dto.WebResponse;
-import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Customer;
 import com.fajar.shoppingmart.entity.CustomerVoucher;
 import com.fajar.shoppingmart.entity.Voucher;
@@ -19,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class VoucherUpdateService extends BaseEntityUpdateService{
+public class VoucherUpdateService extends BaseEntityUpdateService<Voucher>{
 
 	@Autowired
 	private VoucherRepository voucherRepository; 
@@ -29,7 +28,7 @@ public class VoucherUpdateService extends BaseEntityUpdateService{
 	private CustomerVoucherRepository CustomerVoucherRepository;
 	 
 	@Override
-	public WebResponse saveEntity(BaseEntity baseEntity, boolean newRecord,EntityUpdateInterceptor entityUpdateInterceptor) {
+	public WebResponse saveEntity(Voucher baseEntity, boolean newRecord) {
 		
 		Voucher voucher = (Voucher) baseEntity;
 		if(newRecord) {

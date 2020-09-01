@@ -15,7 +15,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
 
 import com.fajar.shoppingmart.dto.Filter;
-import com.fajar.shoppingmart.dto.KeyPair;
+import com.fajar.shoppingmart.dto.KeyValue;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Category;
 import com.fajar.shoppingmart.entity.Customer;
@@ -226,7 +226,7 @@ public class CriteriaBuilder {
 			}
 
 			String fieldName = field.getName();
-			KeyPair joinColumnResult = QueryUtil.checkIfJoinColumn(currentKey, field, false);
+			KeyValue joinColumnResult = QueryUtil.checkIfJoinColumn(currentKey, field, false);
 
 			if (null != joinColumnResult) {
 				if (joinColumnResult.isValid()) {

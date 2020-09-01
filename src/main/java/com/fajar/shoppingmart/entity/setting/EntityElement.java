@@ -16,7 +16,7 @@ import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
 import com.fajar.shoppingmart.entity.BaseEntity;
-import com.fajar.shoppingmart.exception.InvalidValueException;
+import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.MyJsonUtil;
 import com.fajar.shoppingmart.util.StringUtil;
@@ -40,41 +40,43 @@ public class EntityElement implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -6768302238247458766L;
+
+	public final boolean ignoreBaseField;
+	public final boolean isGrouped;
+	public final Field field;
+
 	private String id;
 	private String type;
 	private String className;
-	private boolean identity;
-	private boolean required;
-	private boolean idField;
 	private String lableName;
-	private List<BaseEntity> options;
 	private String jsonList;
 	private String optionItemName;
 	private String optionValueName;
 	private String entityReferenceName;
 	private String entityReferenceClass;
+
+	private String detailFields;
+	private String inputGroupname;
+	private String[] defaultValues;
+
+	private List<Object> plainListValues;
+	private List<BaseEntity> options;
+
+	private boolean identity;
+	private boolean required;
+	private boolean idField;
+	private boolean skipBaseField;
+	private boolean hasJoinColumn;
 	private boolean multiple;
 	private boolean showDetail;
-	private String detailFields;
-	private String[] defaultValues;
-	private List<Object> plainListValues;
-
-	private final boolean isGrouped;
-	private String inputGroupname;
-
 	private boolean detailField;
+	private boolean multipleSelect;
 
-	// not shown in view
-
-	public final Field field;
-	public final boolean ignoreBaseField;
 	public EntityProperty entityProperty;
 	public Map<String, List<?>> additionalMap;
 
 	private FormField formField;
 	private BaseField baseField;
-	private boolean skipBaseField;
-	private boolean hasJoinColumn;
 
 //	public static void main(String[] args) {
 //		String json = "[{\\\"serialVersionUID\\\":\\\"4969863194918869183\\\",\\\"name\\\":\\\"Kebersihan\\\",\\\"description\\\":\\\"1111111\\t\\t\\t\\t\\t\\\",\\\"serialVersionUID\\\":\\\"-8161890497812023383\\\",\\\"id\\\":1,\\\"color\\\":null,\\\"fontColor\\\":null,\\\"createdDate\\\":\\\"2020-05-14 21:06:03.0\\\",\\\"modifiedDate\\\":\\\"2020-05-14 21:06:03.0\\\",\\\"deleted\\\":\\\"false\\\"},{\\\"serialVersionUID\\\":\\\"4969863194918869183\\\",\\\"name\\\":\\\"Mukafaah\\\",\\\"description\\\":\\\"dfdffd\\\",\\\"serialVersionUID\\\":\\\"-8161890497812023383\\\",\\\"id\\\":2,\\\"color\\\":\\\"#000000\\\",\\\"fontColor\\\":\\\"#000000\\\",\\\"createdDate\\\":\\\"2020-05-12 21:16:58.0\\\",\\\"modifiedDate\\\":\\\"2020-05-12 21:16:58.0\\\",\\\"deleted\\\":\\\"false\\\"},{\\\"serialVersionUID\\\":\\\"4969863194918869183\\\",\\\"name\\\":\\\"Alat Tulis\\\",\\\"description\\\":\\\"alat tulis kantor\\t\\t\\t\\t\\t\\t\\\",\\\"serialVersionUID\\\":\\\"-8161890497812023383\\\",\\\"id\\\":3,\\\"color\\\":null,\\\"fontColor\\\":null,\\\"createdDate\\\":\\\"2020-05-12 21:56:36.0\\\",\\\"modifiedDate\\\":\\\"2020-05-12 21:56:36.0\\\",\\\"deleted\\\":\\\"false\\\"}]";
@@ -86,6 +88,7 @@ public class EntityElement implements Serializable {
 		this.ignoreBaseField = entityProperty.isIgnoreBaseField();
 		this.entityProperty = entityProperty;
 		this.isGrouped = entityProperty.isQuestionare();
+
 		init();
 	}
 
@@ -132,7 +135,7 @@ public class EntityElement implements Serializable {
 	}
 
 	private void checkIfGroupedInput() {
-		 
+
 		if (isGrouped) {
 			AdditionalQuestionField annotation = field.getAnnotation(AdditionalQuestionField.class);
 			inputGroupname = annotation != null ? annotation.value() : AdditionalQuestionField.DEFAULT_GROUP_NAME;
@@ -159,24 +162,27 @@ public class EntityElement implements Serializable {
 
 			checkFieldType(determinedFieldType);
 			boolean hasJoinColumn = field.getAnnotation(JoinColumn.class) != null;
+			boolean collectionOfBaseEntity = CollectionUtil.isCollectionOfBaseEntity(field);
 
-			if (hasJoinColumn) {
+			if (hasJoinColumn || collectionOfBaseEntity) {
 				processJoinColumn(determinedFieldType);
 			}
+
+			checkDetailField(); 
+			setLableName(StringUtil.extractCamelCase(lableName));
+			setType(determinedFieldType.value);
+			
+			setId(field.getName());
+			setIdentity(idField);
+			setRequired(formField.required());
+			setMultiple(formField.multipleImage());
+			setClassName(field.getType().getCanonicalName());
+			setShowDetail(formField.showDetail());
+			
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			throw e1;
 		}
-
-		checkDetailField();
-		setId(field.getName());
-		setIdentity(idField);
-		setLableName(StringUtil.extractCamelCase(lableName));
-		setRequired(formField.required());
-		setType(determinedFieldType.value);
-		setMultiple(formField.multiple());
-		setClassName(field.getType().getCanonicalName());
-		setShowDetail(formField.showDetail());
 		return true;
 	}
 
@@ -193,20 +199,33 @@ public class EntityElement implements Serializable {
 
 	private void checkFieldType(FieldType fieldType) throws Exception {
 
-		if (fieldType.equals(FieldType.FIELD_TYPE_IMAGE)) {
+		switch (fieldType) {
+		case FIELD_TYPE_IMAGE:
 			processImageType();
-
-		} else if (fieldType.equals(FieldType.FIELD_TYPE_CURRENCY)) {
+			break;
+		case FIELD_TYPE_CURRENCY:
 			processCurrencyType();
-
-		} else if (fieldType.equals(FieldType.FIELD_TYPE_DATE)) {
+			break;
+		case FIELD_TYPE_DATE:
 			processDateType();
-
-		} else if (fieldType.equals(FieldType.FIELD_TYPE_PLAIN_LIST)) {
+			break;
+		case FIELD_TYPE_PLAIN_LIST:
 			processPlainListType();
+			break;
+		case FIELD_TYPE_FIXED_LIST:
+			if(formField.multipleSelect()) {
+				processMultipleSelectElements();
+			}
+			break;
+		default:
+			break;
 
 		}
 
+	}
+	
+	private void processMultipleSelectElements() {
+		entityProperty.getMultipleSelectElements().add(field.getName());
 	}
 
 	private void processCurrencyType() {
@@ -224,9 +243,10 @@ public class EntityElement implements Serializable {
 	private void processPlainListType() throws Exception {
 
 		String[] availableValues = formField.availableValues();
+		Object[] arrayOfObject = CollectionUtil.toObjectArray(availableValues);
 
 		if (availableValues.length > 0) {
-			setPlainListValues(Arrays.asList(availableValues));
+			setPlainListValues(Arrays.asList(arrayOfObject));
 
 		} else if (field.getType().isEnum()) {
 			Object[] enumConstants = field.getType().getEnumConstants();
@@ -260,7 +280,7 @@ public class EntityElement implements Serializable {
 		log.info("field {} of {} is join column, type: {}", field.getName(), field.getDeclaringClass(), fieldType);
 
 		Class<?> referenceEntityClass = field.getType();
-		Field referenceEntityIdField = EntityUtil.getIdFieldOfAnObject(referenceEntityClass);
+		Field referenceEntityIdField = EntityUtil.getIdFieldOfAnObject(field);
 
 		if (referenceEntityIdField == null) {
 			throw new Exception("ID Field Not Found");
@@ -270,7 +290,7 @@ public class EntityElement implements Serializable {
 
 			List<BaseEntity> referenceEntityList = (List<BaseEntity>) additionalMap.get(field.getName());
 			if (null == referenceEntityList || referenceEntityList.size() == 0) {
-				throw new InvalidValueException(
+				throw new RuntimeException(
 						"Invalid object list provided for key: " + field.getName() + " in EntityElement.AdditionalMap");
 			}
 			log.info("Additional map with key: {} . Length: {}", field.getName(), referenceEntityList.size());
@@ -283,8 +303,9 @@ public class EntityElement implements Serializable {
 
 			setEntityReferenceClass(referenceEntityClass.getSimpleName());
 		}
-
+ 
 		setOptionValueName(referenceEntityIdField.getName());
+		setMultipleSelect(formField.multipleSelect());
 		setOptionItemName(formField.optionItemName());
 	}
 

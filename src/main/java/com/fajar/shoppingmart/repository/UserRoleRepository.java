@@ -5,6 +5,8 @@ import com.fajar.shoppingmart.entity.UserRole;
 
 public interface UserRoleRepository extends JpaRepository< UserRole	, Long> {
 
+	UserRole findByCode(String defaultRole);
+
 	 
 	
 }

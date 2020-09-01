@@ -28,6 +28,9 @@ public class UserRole extends BaseEntity {
 	@Column(unique = true)
 	@FormField
 	private String name;
+	@Column(unique = true)
+	@FormField
+	private String code;
 	@Column
 	@FormField
 	private String access;

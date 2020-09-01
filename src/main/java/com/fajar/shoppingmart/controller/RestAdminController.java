@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +29,7 @@ import com.fajar.shoppingmart.service.MessagingService;
 @RequestMapping("/api/admin")
 public class RestAdminController extends BaseController {
 	Logger log = LoggerFactory.getLogger(RestAdminController.class);
-	 
+
 	@Autowired
 	private MessagingService messagingService;
 	@Autowired
@@ -46,9 +47,7 @@ public class RestAdminController extends BaseController {
 	@PostMapping(value = "/appsessions", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse appsessions(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		if (!accountService.validateToken(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+
 		WebResponse response = userSessionService.getAvailableSessions();
 		return response;
 	}
@@ -56,58 +55,49 @@ public class RestAdminController extends BaseController {
 	@PostMapping(value = "/deletesession", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse deletesession(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		if (!accountService.validateToken(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
+
 		WebResponse response = userSessionService.deleteSession(request);
 		return response;
 	}
 
-	@PostMapping(value =  "/sendmessage", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/sendmessage", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse sendMessage(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
-		 restPublicController.validatePageRequest(httpRequest);
-		WebResponse response = messagingService.sendMessage(request,httpRequest);
-		return response;
-	}
-	
-	@PostMapping(value =  "/getmessages", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse getmessages(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
-		 restPublicController.validatePageRequest(httpRequest);
-		WebResponse response = messagingService.getMessages(httpRequest);
-		return response;
-	}
-	
-	@PostMapping(value =  "/replymessage", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse replyMessage(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
-		if (!accountService.validateToken(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
-		WebResponse response = messagingService.replyMessage(request,httpRequest);
-		return response;
-	}
-	
-	@PostMapping(value =  "/clearsession", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse clearsessions(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
-		if (!accountService.validateToken(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
-		WebResponse response = userSessionService.clearSessions();
-		return response;
-	}
-	
-	@PostMapping(value =  "/savepagesequence", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse savePageSequence(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
-		if (!accountService.validateToken(httpRequest)) {
-			return WebResponse.failedResponse();
-		}
-		WebResponse response = componentService.savePageSequence(request);
+		restPublicController.validatePageRequest(httpRequest);
+		WebResponse response = messagingService.sendMessage(request, httpRequest);
 		return response;
 	}
 
+	@PostMapping(value = "/getmessages", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public WebResponse getmessages(@RequestBody WebRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+		restPublicController.validatePageRequest(httpRequest);
+		WebResponse response = messagingService.getMessages(httpRequest);
+		return response;
+	}
+
+	@PostMapping(value = "/replymessage", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public WebResponse replyMessage(@RequestBody WebRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+
+		WebResponse response = messagingService.replyMessage(request, httpRequest);
+		return response;
+	}
+
+	@PostMapping(value = "/clearsession", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public WebResponse clearsessions(@RequestBody WebRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+
+		WebResponse response = userSessionService.clearSessions();
+		return response;
+	}
+
+	@PostMapping(value = "/saveentityorder/{entityName}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public WebResponse savePageSequence(@PathVariable("entityName") String entityName, @RequestBody WebRequest request,
+			HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+
+		WebResponse response = componentService.saveEntitySequence(request, entityName);
+		return response;
+	}
 
 }

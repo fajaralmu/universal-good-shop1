@@ -17,7 +17,7 @@ import javax.persistence.Table;
 import com.fajar.shoppingmart.annotation.CustomEntity;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.Filter;
-import com.fajar.shoppingmart.dto.KeyPair;
+import com.fajar.shoppingmart.dto.KeyValue;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.StringUtil;
@@ -221,7 +221,7 @@ public class QueryUtil {
 			}
 			
 			String filterColumnName = getColumnName(field); 
-			KeyPair joinColumnResult = checkIfJoinColumn(currentKey, field, false);
+			KeyValue joinColumnResult = checkIfJoinColumn(currentKey, field, false);
 			
 			if(null != joinColumnResult) {
 				if(joinColumnResult.isValid()) {
@@ -249,10 +249,10 @@ public class QueryUtil {
 	 * @param actualColumnName
 	 * @return
 	 */
-	public static KeyPair checkIfJoinColumn(String currentKey, Field field, boolean actualColumnName) {
+	public static KeyValue checkIfJoinColumn(String currentKey, Field field, boolean actualColumnName) {
 		
 		String multiKeyColumnName = getMultiKeyColumnName(currentKey);
-		KeyPair keyValue = new KeyPair();
+		KeyValue keyValue = new KeyValue();
 		boolean isMultiKey 	= null != multiKeyColumnName; 
 		boolean validColumn = false;
 		

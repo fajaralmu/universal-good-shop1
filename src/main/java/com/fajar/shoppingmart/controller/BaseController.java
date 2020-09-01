@@ -16,9 +16,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.fajar.shoppingmart.dto.KeyPair;
+import com.fajar.shoppingmart.dto.KeyValue;
 import com.fajar.shoppingmart.entity.Page;
-import com.fajar.shoppingmart.entity.ShopProfile;
+import com.fajar.shoppingmart.entity.Profile;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.service.ComponentService;
 import com.fajar.shoppingmart.service.ProductService;
@@ -58,12 +58,12 @@ public class BaseController {
 
 	@ModelAttribute("shopProfile")
 	@Deprecated //new @ModelAttribute = 'profile'
-	public ShopProfile getShopProfile(HttpServletRequest request) {
+	public Profile getShopProfile(HttpServletRequest request) {
 //		System.out.println("Has Session: "+userSessionService.hasSession(request, false));
 		return webAppConfiguration.getProfile();
 	}
 	@ModelAttribute("profile")
-	public ShopProfile getProfile(HttpServletRequest request) {
+	public Profile getProfile(HttpServletRequest request) {
 		return getShopProfile(request);
 	}
 
@@ -139,6 +139,11 @@ public class BaseController {
 		String pageCode = componentService.getPageCode(request);
 		userSessionService.setActivePage(request, pageCode);
 	}
+	
+	public void setActivePage(HttpServletRequest request, String pageCode) {
+ 
+		userSessionService.setActivePage(request, pageCode);
+	}
 
 	/**
 	 * ====================================================== Statics
@@ -157,6 +162,11 @@ public class BaseController {
 			ex.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static Cookie getJSessionIDCookie(HttpServletRequest request) {
+
+		return getCookie(SessionUtil.JSESSSIONID, request.getCookies());
 	}
 
 	/**
@@ -185,9 +195,9 @@ public class BaseController {
 	}
 
 	private static void addResourcePaths(ModelAndView modelAndView, String resourceName, String... paths) {
-		List<KeyPair> resoucePaths = new ArrayList<>();
+		List<KeyValue> resoucePaths = new ArrayList<>();
 		for (int i = 0; i < paths.length; i++) {
-			resoucePaths.add(KeyPair.builder().value(paths[i]).build());
+			resoucePaths.add(KeyValue.builder().value(paths[i]).build());
 			log.info("{}. Add {} to {} , value: {}", i, resourceName, modelAndView.getViewName(), paths[i]);
 		}
 		setModelAttribute(modelAndView, resourceName, resoucePaths);

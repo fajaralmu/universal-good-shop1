@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.report.data.ReportService;
+import com.fajar.shoppingmart.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,16 +49,59 @@ public class RestReportController {
 	@CustomRequestInfo(withRealtimeProgress = true)
 	public void daily(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws Exception {
-		log.info("daily report {}", request);
-//		if(!userSessionService.hasSession(httpRequest)) {
-//			return WebResponse.failedResponse();
-//		}
+		log.info("daily report {}", request); 
 		  
-		File result = reportService.buildDailyReport(request) ;
+		XSSFWorkbook result = reportService.buildDailyReport(request) ;
 
-		writeFileReponse(httpResponse, result);
+		writeXSSFWorkbook(httpResponse, result, "DAILY_"+StringUtil.generateRandomNumber(4)+".xlsx");
 	}
 	
+	
+	
+	
+	@PostMapping(value = "/monthly", consumes = MediaType.APPLICATION_JSON_VALUE )
+	@CustomRequestInfo(withRealtimeProgress = true)
+	public void monthly(@RequestBody WebRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws Exception {
+		log.info("monthly report {}", request); 
+		
+		XSSFWorkbook result = reportService.buildMonthlyReport(request);
+		
+		writeXSSFWorkbook(httpResponse, result , "MONTHLY_"+StringUtil.generateRandomNumber(4)+".xlsx");
+ 
+	}
+	@PostMapping(value = "/entity", consumes = MediaType.APPLICATION_JSON_VALUE )
+	@CustomRequestInfo(withRealtimeProgress = true)
+	public void entityreport(@RequestBody WebRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws Exception {
+		log.info("entityreport {}", request); 
+		
+		XSSFWorkbook result = reportService.generateEntityReport(request, httpRequest);
+		
+		writeXSSFWorkbook(httpResponse, result , request.getEntity()+"_"+StringUtil.generateRandomNumber(4)+".xlsx");
+	}
+	@PostMapping(value = "/balance1", consumes = MediaType.APPLICATION_JSON_VALUE )
+	@CustomRequestInfo(withRealtimeProgress = true)
+	public void balanceWorkSheet(@RequestBody WebRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws Exception {
+		log.info("balance work sheet {}", request); 
+		
+		XSSFWorkbook result = reportService.buildBalanceReport(request);
+		
+		writeXSSFWorkbook(httpResponse, result, "balance1_"+StringUtil.generateRandomNumber(4)+".xlsx");
+	}
+	 
+	///////////////////Writer//////////////////
+	
+	
+	public static void writeXSSFWorkbook(HttpServletResponse httpResponse, XSSFWorkbook xwb, String name) throws Exception{
+		httpResponse.setContentType("text/xls");
+		httpResponse.setHeader("Content-disposition", "attachment;filename=" + name);
+
+		try (OutputStream outputStream = httpResponse.getOutputStream()) {
+			xwb.write(outputStream);
+		}
+	}
 	public static void writeFileReponse(HttpServletResponse httpResponse, File file) throws  Exception {
 		httpResponse.setHeader("Content-disposition","attachment; filename="+file.getName());
 		FileInputStream in = new FileInputStream(file);
@@ -71,37 +116,5 @@ public class RestReportController {
 		in.close();
 		out.close();
 	}
-	
-	@PostMapping(value = "/monthly", consumes = MediaType.APPLICATION_JSON_VALUE )
-	@CustomRequestInfo(withRealtimeProgress = true)
-	public void monthly(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws Exception {
-		log.info("monthly report {}", request); 
-		
-		File result = reportService.buildMonthlyReport(request);
-		
-		writeFileReponse(httpResponse, result);
-	}
-	@PostMapping(value = "/entity", consumes = MediaType.APPLICATION_JSON_VALUE )
-	@CustomRequestInfo(withRealtimeProgress = true)
-	public void entityreport(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws Exception {
-		log.info("entityreport {}", request); 
-		
-		File result = reportService.buildEntityReport(request);
-		
-		writeFileReponse(httpResponse, result);
-	}
-	@PostMapping(value = "/balance1", consumes = MediaType.APPLICATION_JSON_VALUE )
-	@CustomRequestInfo(withRealtimeProgress = true)
-	public void balanceWorkSheet(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws Exception {
-		log.info("balance work sheet {}", request); 
-		
-		File result = reportService.buildBalanceReport(request);
-		
-		writeFileReponse(httpResponse, result);
-	}
-	 
 
 }

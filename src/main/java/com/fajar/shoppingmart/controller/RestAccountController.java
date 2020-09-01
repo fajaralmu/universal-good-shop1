@@ -39,7 +39,7 @@ public class RestAccountController extends BaseController {
 	public WebResponse register(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws Exception {
 		log.info("register {}", request);
-		WebResponse response = accountService.registerUser(request);
+		WebResponse response = accountService.registerUser(request, httpRequest);
 		return response;
 	}
 

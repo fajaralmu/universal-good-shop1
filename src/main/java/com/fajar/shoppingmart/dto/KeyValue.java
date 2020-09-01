@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class KeyPair<K, V> implements Serializable{/**
+public class KeyValue<K, V> implements Serializable{/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1668484384625090190L;

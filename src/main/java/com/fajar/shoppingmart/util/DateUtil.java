@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fajar.shoppingmart.dto.KeyPair;
+import com.fajar.shoppingmart.dto.KeyValue;
 
 public class DateUtil {
 
@@ -88,8 +88,8 @@ public class DateUtil {
 		"Desember"
 	};
 	
-	public static List<KeyPair> months(){
-		return new ArrayList<KeyPair>() {
+	public static List<KeyValue<String, Integer>> months(){
+		return new ArrayList<KeyValue<String, Integer>>() {
 			/**
 			 * 
 			 */
@@ -97,7 +97,7 @@ public class DateUtil {
 
 			{
 				for (int i = 1; i <=12; i++) {
-					add(new KeyPair(MONTH_NAMES[i - 1] + "("+i+")", i, true));
+					add(new KeyValue<String, Integer>(MONTH_NAMES[i - 1] + "("+i+")", i, true));
 				}
 			}
 		};
@@ -186,6 +186,15 @@ public class DateUtil {
 		}
 		
 		return result ;
+	}
+
+	public static List<KeyValue<Integer, Integer>> yearArray(int minYear, int i) {
+		
+		List<KeyValue<Integer, Integer>> years = new ArrayList<>();
+		for (int j = minYear; j <= i; j++) {
+			years.add(new KeyValue<Integer, Integer>(j, j, true));
+		}
+		return years ;
 	}
 
 }

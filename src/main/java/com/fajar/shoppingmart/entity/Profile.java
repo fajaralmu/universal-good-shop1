@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShopProfile extends BaseEntity {
+public class Profile extends BaseEntity {
 
 	/**
 	* 
@@ -34,7 +34,7 @@ public class ShopProfile extends BaseEntity {
 	private String name;
 	@Column(name = "mart_code", unique = true)
 	@FormField(type = FieldType.FIELD_TYPE_HIDDEN)
-	private String martCode;
+	private String appCode;
 	@Column(name = "short_description")
 	@FormField(type = FIELD_TYPE_TEXTAREA)
 	private String shortDescription;

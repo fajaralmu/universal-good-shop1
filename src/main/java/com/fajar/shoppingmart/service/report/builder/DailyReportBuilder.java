@@ -6,7 +6,6 @@ import static com.fajar.shoppingmart.util.ExcelReportUtil.createRow;
 import static com.fajar.shoppingmart.util.ExcelReportUtil.curr;
 import static com.fajar.shoppingmart.util.ExcelReportUtil.removeBorder;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -20,10 +19,9 @@ import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.ReportCategory;
 import com.fajar.shoppingmart.entity.CashBalance;
 import com.fajar.shoppingmart.service.WebConfigService;
-import com.fajar.shoppingmart.service.report.data.ReportRowData;
 import com.fajar.shoppingmart.service.report.data.ReportData;
+import com.fajar.shoppingmart.service.report.data.ReportRowData;
 import com.fajar.shoppingmart.util.DateUtil;
-import com.fajar.shoppingmart.util.MyFileUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,8 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DailyReportBuilder extends ReportBuilder{ 
 	
-	 public DailyReportBuilder(WebConfigService webConfigService, ReportData reportData) {
-		super(webConfigService, reportData);
+	 public DailyReportBuilder( ReportData reportData) {
+		super(  reportData);
 	 } 
 	
 	/**
@@ -41,20 +39,20 @@ public class DailyReportBuilder extends ReportBuilder{
 	 * @return
 	 */
 	 @Override
-	public File buildReport () {
+	public XSSFWorkbook buildReport () {
 
 		Filter filter = reportData.getFilter();
 		String time = getDateTime();
 		String sheetName = "Daily-"+filter.getMonth()+"-"+filter.getYear();
 		
-		String reportName = webConfigService.getReportPath() + "/" + sheetName + "_"+ time+ ".xlsx";
+		String reportName = /* webConfigService.getReportPath() + "/" + */ sheetName + "_"+ time+ ".xlsx";
 		XSSFWorkbook xwb  = new XSSFWorkbook();
 		xsheet = xwb.createSheet(sheetName ); 
 		
 		writeDailyReportOneMonth( reportData);
 		
-		File file = MyFileUtil.getFile(xwb, reportName);
-		return file;
+//		File file = MyFileUtil.getFile(xwb, reportName);
+		return xwb;
 	}
 	
 	/**
@@ -233,6 +231,12 @@ public class DailyReportBuilder extends ReportBuilder{
 			reportTitleRow.getCell(i).getCellStyle().setAlignment(HorizontalAlignment.CENTER);
 			removeBorder(reportTitleRow.getCell(i).getCellStyle());
 		}
+	}
+
+	@Override
+	protected void init() {
+		// TODO Auto-generated method stub
+		
 	}
 
 
