@@ -53,7 +53,7 @@ public class WebRequest implements Serializable {
 	private User user;
 	private Supplier supplier;
 	private Customer customer;
-	private Profile shopprofile;
+	private Profile profile;
 	private Menu menu;
 	private Unit unit;
 	private Product product;
