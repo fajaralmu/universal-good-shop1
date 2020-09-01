@@ -35,7 +35,7 @@ public class MvcPagesController extends BaseController {
 
 	@RequestMapping(value = { "/page/{code}" })
 	@CustomRequestInfo(pageUrl = "shop/master-common-page")
-	public String suppliers(@PathVariable(name = "code") String code, Model model, HttpServletRequest request,
+	public String page(@PathVariable(name = "code") String code, Model model, HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 
 		Page page = componentService.getPage(code, request);
@@ -44,7 +44,8 @@ public class MvcPagesController extends BaseController {
 			sendRedirect(response, request.getContextPath() + "/account/login");
 			return basePage;
 		}
-		setActivePage(request);
+
+		model.addAttribute("title", page.getName());
 		model.addAttribute("page", page);
 		return basePage;
 
