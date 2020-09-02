@@ -185,20 +185,20 @@
 	var selectOrder = _byId("select-order");
 
 	//elements
-	var navigationPanel = _byId("navigation-panel");
-	var catalogPanel = _byId("catalog-panel");
-	var nameFilter = _byId("search-name");
-	var chkBoxGetStock = _byId("get-stock");
-	var categoryFilter = _byId("select-category");
-	var tableSupplierList = _byId("table-supplier-list");
+	const navigationPanel = _byId("navigation-panel");
+	const catalogPanel = _byId("catalog-panel");
+	const nameFilter = _byId("search-name");
+	const chkBoxGetStock = _byId("get-stock");
+	const categoryFilter = _byId("select-category");
+	const tableSupplierList = _byId("table-supplier-list");
 
 	//detail
-	var productTitle = _byId("product-title");
-	var productUnit = _byId("product-unit");
-	var productCategory = _byId("product-category");
-	var productDescription = _byId("product-description");
-	var carouselInner = _byId("carousel-inner");
-	var carouselIndicator = _byId("carousel-indicators");
+	const productTitle = _byId("product-title");
+	const productUnit = _byId("product-unit");
+	const productCategory = _byId("product-category");
+	const productDescription = _byId("product-description");
+	const carouselInner = _byId("carousel-inner");
+	const carouselIndicator = _byId("carousel-indicators");
 	var defaultLocation = window.location.href;
 	var supplierOffset = 0;
 	var selectedProductId = 0;

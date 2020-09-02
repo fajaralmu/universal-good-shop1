@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fajar.shoppingmart.annotation.Authenticated;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
+import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 
 import lombok.extern.slf4j.Slf4j;
@@ -64,9 +65,16 @@ public class RestAccountController extends BaseController {
 
 	@PostMapping(value = "/getprofile", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Authenticated
-	public WebResponse getprpfile(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+	public WebResponse getProfile(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
 
 		return userSessionService.getProfile(httpRequest);
+	}
+	
+	@PostMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+	@Authenticated
+	public User user(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+
+		return userSessionService.getLoggedUser(httpRequest);
 	}
 
 }

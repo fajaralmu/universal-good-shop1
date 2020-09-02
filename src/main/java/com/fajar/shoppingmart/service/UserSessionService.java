@@ -280,10 +280,11 @@ public class UserSessionService {
 	public RegisteredRequest getRegisteredRequest(String requestId) {
   
 		SessionData	sessionData = runtimeService.getModel(SESSION_DATA);
-		RegisteredRequest registeredRequest;
+		RegisteredRequest registeredRequest = null;
 		if (null != sessionData) {
 			registeredRequest = sessionData.getRequest(requestId);
-		}else {
+		}
+		if(null == registeredRequest) {
 			registeredRequest = registeredRequestRepository.findTop1ByRequestId(requestId); 
 			log.info("registeredRequest from DB with req Id ({}): {}", requestId, registeredRequest);
 
