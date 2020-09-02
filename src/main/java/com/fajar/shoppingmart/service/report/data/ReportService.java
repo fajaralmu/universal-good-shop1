@@ -10,10 +10,8 @@ import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.EntityService;
 import com.fajar.shoppingmart.service.ProgressService;
-import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.service.report.builder.BalanceReportBuilder;
 import com.fajar.shoppingmart.service.report.builder.DailyReportBuilder;
-import com.fajar.shoppingmart.service.report.builder.EntityReportBuilder;
 import com.fajar.shoppingmart.service.report.builder.EntityReportService;
 import com.fajar.shoppingmart.service.report.builder.MonthlyReportBuilder;
 import com.fajar.shoppingmart.service.report.builder.OnProgress;
@@ -22,9 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class ReportService {
-	@Autowired
-	private WebConfigService webConfigService;
+public class ReportService { 
 	@Autowired
 	private ReportDataService reportDataService; 
 	@Autowired
@@ -44,7 +40,7 @@ public class ReportService {
 	public XSSFWorkbook buildDailyReport(WebRequest request, HttpServletRequest httpRequest) {
 		log.info("buildDailyReport, request: {}", request);
 		
-		ReportData reportData = reportDataService.getDailyReportData(request);
+		ReportData reportData = reportDataService.getDailyReportData(request, httpRequest);
 		initProgress(httpRequest);
 
 		log.info("report row data size: {}", reportData.getDailyReportRows().size());

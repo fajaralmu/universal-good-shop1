@@ -202,6 +202,10 @@
 	var defaultLocation = window.location.href;
 	var supplierOffset = 0;
 	var selectedProductId = 0;
+	
+	var URL_GET_PRODUCT_PUBLIC = "<spring:url value="/api/public/get" />";
+	var URL_GET_SUPPLIER = "<spring:url value="/api/public/moresupplier" />";
+	var IMAGE_PATH = "${host}/${contextPath}/${imagePath}/";
 
 	function showproductsuppliers() {
 		$('#modal-product-suppliers').modal('show');
@@ -215,138 +219,17 @@
 		this.supplierOffset = 0;
 		this.selectedProductId = 0;
 	}
-
-	
-
+ 
 	function loadMoreSupplier() {
 		supplierOffset++;
 		doLoadMoreSupplier(supplierOffset, selectedProductId);
 	}
-
-	function doLoadMoreSupplier(offset, productId) {
-		doLoadEntities("<spring:url value="/api/public/moresupplier" />", {
-			"filter" : {
-				"page" : offset,
-				"fieldsFilter" : {
-					"productId" : productId
-				}
-			}
-		}, function(response) {
-			var entities = response.entities;
-			if (entities != null && entities.length > 0) {
-				let bodyRows = createTableBody(
-						[ "name", "website", "address" ], entities,
-						(offset * 5));
-
-				for (var i = 0; i < bodyRows.length; i++) {
-					let row = bodyRows[i];
-					tableSupplierList.append(row);
-				}
-			} else
-				alert("Data Not Found");
-			infoDone();
-		});
-	}
-
-	function populateDetail(entity) {
-		selectedProductId = entity.id;
-		console.log("entity", entity);
-		hide("catalog-content");
-
-		//POPULATE
-
-		//title, count, price
-		productTitle.innerHTML = entity.name;
-		_byId("product-stock").innerHTML = entity.count;
-		_byId("product-price").innerHTML = beautifyNominal(entity.price);
-		productUnit.innerHTML = entity.unit.name;
-		productCategory.innerHTML = entity.category.name;
-		productDescription.innerHTML = entity.description;
-		//image
-		carouselInner.innerHTML = "";
-		carouselIndicator.innerHTML = "";
-
-		let images = entity.imageUrl.split("~");
-		for (var i = 0; i < images.length; i++) {
-			let imageUrl = images[i];
-
-			//indicator
-			let className = null;
-			if (i == 0) {
-				className = "active";
-			}
-			let li = createElement("li", "indicator-" + i, className);
-			li.setAttribute("data-slide-to", "" + i);
-			li.setAttribute("data-target", "#carouselExampleIndicators");
-			carouselIndicator.append(li);
-
-			//inner
-			let innerDiv = createDiv("item-" + i, "carousel-item " + className);
-			let src = "${host}/${contextPath}/${imagePath}/" + imageUrl;
-			let iconImage = createImgTag("icon-" + entity.id + "-" + i,
-					"d-block w-100  ", "300", "300", src);
-			iconImage.setAttribute("alt", entity.name + "-" + i);
-
-			innerDiv.append(iconImage);
-			carouselInner.append(innerDiv);
-		}
-
-		//suppliers
-		let suppliers = entity.suppliers;
-
-		tableSupplierList.innerHTML = "";
-		let tableHeader = createTableHeaderByColumns([ "name", "website",
-				"address" ]);
-		let bodyRows = createTableBody([ "name", "website", "address" ],
-				suppliers);
-		tableSupplierList.append(tableHeader);
-		for (var i = 0; i < bodyRows.length; i++) {
-			let row = bodyRows[i];
-			tableSupplierList.append(row);
-		}
-
-		var slash = "";
-		if (!window.location.href.endsWith("/"))
-			slash = "/";
-		if (defaultOption == "")
-			window.history.pushState('detail-page', entity.name,
-					window.location.href + slash + entity.code);
-		defaultOption = "";
-		show("detail-content");
-
-	}
-
-	function loadDetail(code) {
-		infoLoading();
-		var requestObject = {
-			"entity" : "product",
-			"filter" : {
-				"limit" : 1,
-				"exacts" : true,
-				"contains" : false,
-				"fieldsFilter" : {
-					"code" : code,
-					"withStock" : true,
-					"withSupplier" : true
-				}
-			}
-		};
-		doLoadEntities("<spring:url value="/api/public/get" />", requestObject,
-				function(response) {
-					var entities = response.entities;
-					if (entities != null && entities.length > 0)
-						populateDetail(entities[0]);
-					else
-						alert("Data Not Found");
-					infoDone();
-				});
-	}
-
+ 
 	function createListGroup(entity){
 		 return createHtmlTag({
 				tagName: "ul",
 				id: "list-group-" + entity.id,
-				class: "list-group",
+				className: "list-group",
 				style: {color: '#000000'}
 			});
 	}
@@ -356,12 +239,12 @@
 		const listItem = createHtmlTag({
 			tagName: "li", 
 			id: "list-item-count-" + entity.id,
-			class: listClass,
+			className: listClass,
 			ch1: { tagName:"span", innerHTML : "Stock" },
 			ch2: {tagName: "br"},
 			ch3: { 
 				tagName: "span",
-				class: "badge badge-primary badge-pill",
+				className: "badge badge-primary badge-pill",
 				innerHTML: entity.count,
 				id: "product-count-"+entity.id
 			} 
@@ -377,7 +260,7 @@
 			ch1: {
 				tagName:'small', 
 				style: { 'background-color':'rgb(224,224,224)'},
-				class: 'text-muted clickable',
+				className: 'text-muted clickable',
 				innerHTML: (entity.newProduct?"(NEW)":entity.name)
 			}, 
 			onclick: function() {
@@ -396,7 +279,7 @@
 			id: 'category-'+entity.id,
 			ch1:{
 				tagName: 'span',
-				class: 'badge badge-secondary',
+				className: 'badge badge-secondary',
 				innerHTML: entity.category.name
 			}
 		}); 
@@ -421,12 +304,12 @@
 		const html = createHtmlTag({
 			tagName: 'li',
 			id: id, 
-			class: className,
+			className: className,
 			ch1: {tagName: 'span', innerHTML: 'Price'},
 			ch2: {tagName: 'br'},
 			ch3: {
 				tagName: 'span', 
-				class: 'text-warning', 
+				className: 'text-warning', 
 				id: "product-price-"+entity.id,
 				innerHTML: beautifyNominal(entity.price)
 				}
@@ -473,12 +356,12 @@
 			const entity = entities[i];
 
 			//create col
-			const colDiv = createDiv("col-" + entity.id, "col-sm-3");
+			const colDiv = createDiv("col-" + entity.id, "col-sm-4");
 			//create card
 			const cardDiv = createHtmlTag({
 				tagName: "div",
 				id : "card-" + entity.id,
-				class: "card",
+				className: "card",
 				style: {'width': '100%', 'background-color': entity.color, 'color': entity.color}
 			});  
 			 
@@ -521,58 +404,7 @@
 			catalogPanel.append(colDiv);
 		}
 	}
-
-	function loadEntity(page) {
-		this.limit = _byId("select-limit").value;
-		if(this.limit > 20 || this.limit < 0){
-			alert("Woooww.. our server will be confused with your choice");
-			this.limit = 10;
-			return;
-		}
-		if (page < 0) {
-			page = this.page;
-		}
-		var selectedOrder = selectOrder.value;
-		if(selectedOrder != null && selectedOrder != "00"){
-			this. orderBy = selectedOrder.split("-")[0];
-			this.orderType = selectedOrder.split("-")[1];
-		}else{
-			this. orderBy  = null;
-			this.orderType = null;
-		}
-		
-		var requestObject = {
-			"entity" : "product",
-			"filter" : {
-				"limit" : this.limit,
-				"page" : page,
-				"orderBy" : orderBy,
-				"orderType" : orderType,
-				"fieldsFilter" : {
-					"name" : nameFilter.value,
-					"withStock" : chkBoxGetStock.checked
-				}
-			}
-		};
-		if (categoryFilter.value != "00") {
-			requestObject["filter"]["fieldsFilter"]["category,id[EXACTS]"] = categoryFilter.value;
-		}
-
-		doLoadEntities("<spring:url value="/api/public/get" />", requestObject,
-				function(response) {
-					if(response.code != "00"){
-						alert("Data Not Found");
-						return;
-					}
-					var entities = response.entities;
-					totalData = response.totalData;
-					this.page = response.filter.page;
-					populateCatalog(entities);
-					updateNavigationButtons();
-				});
-
-	}
-
+ 
 	function updateNavigationButtons() {
 		createNavigationButtons(this.navigationPanel, this.page,
 				this.totalData, this.limit, this.loadEntity);

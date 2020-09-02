@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ import com.fajar.shoppingmart.repository.ProductFlowRepository;
 import com.fajar.shoppingmart.service.CashBalanceService;
 import com.fajar.shoppingmart.service.EntityService;
 import com.fajar.shoppingmart.service.LogProxyFactory;
+import com.fajar.shoppingmart.service.ProgressService;
 import com.fajar.shoppingmart.util.DateUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 
@@ -50,6 +52,8 @@ public class ReportDataService {
 	private ProductFlowRepository productFlowRepository; 
 	@Autowired
 	private EntityService entityService;  
+	@Autowired
+	private ProgressService progressService;
 	
 	private long debitAmount = 0;
 	private long count = 0;
@@ -73,7 +77,7 @@ public class ReportDataService {
 		LogProxyFactory.setLoggers(this);
 	}
 
-	public ReportData getDailyReportData(WebRequest request) { 
+	public ReportData getDailyReportData(WebRequest request, HttpServletRequest httpRequest) { 
 		try {
 			
 			Filter filter = request.getFilter();    
@@ -335,8 +339,7 @@ public class ReportDataService {
 		log.info("results count: {}", results.size());
 		
 		for (FinancialEntity baseEntity : results) {  
-			//don't access the credit & debt value
-			log.info("Access {}", baseEntity.getClass());
+			//don't access the credit & debt value 
 			Date transactionDate = CashBalanceService.mapCashBalance(baseEntity).getDate(); 
 			int day = DateUtil.getCalendarDayOfMonth(transactionDate);
 			putTransaction(day, baseEntity);

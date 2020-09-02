@@ -55,9 +55,7 @@ public class RestReportController {
 
 		writeXSSFWorkbook(httpResponse, result, "DAILY_"+StringUtil.generateRandomNumber(4)+".xlsx");
 	}
-	
-	
-	
+	 
 	
 	@PostMapping(value = "/monthly", consumes = MediaType.APPLICATION_JSON_VALUE )
 	@CustomRequestInfo(withRealtimeProgress = true)
