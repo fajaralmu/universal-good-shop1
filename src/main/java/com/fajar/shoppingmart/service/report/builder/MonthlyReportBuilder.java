@@ -100,6 +100,8 @@ public class MonthlyReportBuilder extends ReportBuilder{
 		createLeftColumnLabels(offsetRow);
 		createLeftColumnHeader(totalRowNum);
 		createHorizontalMonthNameColumns();
+		
+		onProgress(10, "Prepare Layout");
 
 		/**
 		 * Values
@@ -109,6 +111,8 @@ public class MonthlyReportBuilder extends ReportBuilder{
 			log.info("Writing month : {}", i);
 			Map<ReportCategory, ReportRowData> monthData = reportContent.get(i);
 			writeOneMonthData(monthData, totalRowNum, offsetRow, i);
+			
+			onProgress(1,12,40, null);
 		}
 
 		/**
@@ -117,7 +121,7 @@ public class MonthlyReportBuilder extends ReportBuilder{
 		int totalColumn = 2 + 2 * 12;
 		writeTotalColumnLabel(totalColumn);
 		writeTotalValues(totalColumn, offsetRow, totalRowNum);
-		
+		onProgress(10, null);
 		/**
 		 * auto size and add border
 		 */ 

@@ -16,6 +16,7 @@ import com.fajar.shoppingmart.service.report.builder.DailyReportBuilder;
 import com.fajar.shoppingmart.service.report.builder.EntityReportBuilder;
 import com.fajar.shoppingmart.service.report.builder.EntityReportService;
 import com.fajar.shoppingmart.service.report.builder.MonthlyReportBuilder;
+import com.fajar.shoppingmart.service.report.builder.OnProgress;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,52 +35,70 @@ public class ReportService {
 	private ProgressService progressService;
 	@Autowired
 	private EntityService entityService;
+	
+	private void initProgress(HttpServletRequest httpRequest) {
 
-	public XSSFWorkbook buildDailyReport(WebRequest request) {
+		progressService.sendProgress(1, 1, 20, true, httpRequest);
+	}
+
+	public XSSFWorkbook buildDailyReport(WebRequest request, HttpServletRequest httpRequest) {
 		log.info("buildDailyReport, request: {}", request);
 		
 		ReportData reportData = reportDataService.getDailyReportData(request);
-		DailyReportBuilder reportBuilder = new DailyReportBuilder(reportData);
+		initProgress(httpRequest);
+
 		log.info("report row data size: {}", reportData.getDailyReportRows().size());
 		
-		return reportBuilder.buildReport();
-	}
-
-	public XSSFWorkbook buildMonthlyReport(WebRequest request) {
-		log.info("buildMonthlyReport, request: {}", request);
-		
-		ReportData reportData = reportDataService.getMonthlyReportData(request);
-		MonthlyReportBuilder reportBuilder = new MonthlyReportBuilder(reportData, true);
-		return reportBuilder.buildReport();
-	}
-	
-	public XSSFWorkbook generateEntityReport(WebRequest request, HttpServletRequest httpRequest) throws Exception {
-		log.info("generateEntityReport");
-//		request.getFilter().setLimit(0); 
-
-		WebResponse response = entityService.filter(request);
-
-		progressService.sendProgress(1, 1, 20, true, httpRequest);
-
-		XSSFWorkbook file = entityReportService.getEntityReport(response.getEntities(), response.getEntityClass(), httpRequest);
-
+		DailyReportBuilder reportBuilder = new DailyReportBuilder(reportData);
+		reportBuilder.setOnProgressCallback(onProgressCallback(httpRequest)); 
+		XSSFWorkbook file = reportBuilder.buildReport();
 		return file;
 	}
 
-	public XSSFWorkbook buildEntityReport(WebRequest request) throws Exception {
-		log.info("buildEntityReport, request: {}", request);
+	public XSSFWorkbook buildMonthlyReport(WebRequest request, HttpServletRequest httpRequest) {
+		log.info("buildMonthlyReport, request: {}", request);
 		
-		ReportData reportData =  reportDataService.getEntityReportData(request);
-		EntityReportBuilder reportBuilder = new EntityReportBuilder(reportData);
-		return reportBuilder.buildReport();
+		ReportData reportData = reportDataService.getMonthlyReportData(request);
+		initProgress(httpRequest);
+		
+		MonthlyReportBuilder reportBuilder = new MonthlyReportBuilder(reportData, true);
+		reportBuilder.setOnProgressCallback(onProgressCallback(httpRequest));
+		XSSFWorkbook file = reportBuilder.buildReport();
+		return file;
 	}
 	
-	public XSSFWorkbook buildBalanceReport(WebRequest request) {
+	private OnProgress onProgressCallback(HttpServletRequest httpRequest) {
+		 
+		return new OnProgress() {
+			
+			@Override
+			public void onProgress(int taxProportion, int totalProportion, int generalProportion, String message) {
+				 progressService.sendProgress(taxProportion, totalProportion, generalProportion, httpRequest);
+				
+			}
+		};
+	}
+
+	public XSSFWorkbook generateEntityReport(WebRequest request, HttpServletRequest httpRequest) throws Exception {
+		log.info("generateEntityReport, request: {}", request); 
+
+		WebResponse response = entityService.filter(request); 
+		initProgress(httpRequest);
+
+		XSSFWorkbook file = entityReportService.getEntityReport(response.getEntities(), response.getEntityClass(), httpRequest);
+		return file;
+	}
+ 
+	public XSSFWorkbook buildBalanceReport(WebRequest request, HttpServletRequest httpRequest) {
 		log.info("buildBalanceReport, request: {}", request);
 		
 		ReportData reportData = balanceReportDataService.getBalanceReportData(request);
+		initProgress(httpRequest);
+		
 		BalanceReportBuilder reportBuilder = new BalanceReportBuilder( reportData);
-		return reportBuilder.buildReport();
+		reportBuilder.setOnProgressCallback(onProgressCallback(httpRequest));
+		XSSFWorkbook file = reportBuilder.buildReport();
+		return file;
 	}
 
 }

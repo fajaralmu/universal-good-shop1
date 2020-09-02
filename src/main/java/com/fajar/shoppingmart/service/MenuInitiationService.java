@@ -146,11 +146,11 @@ public class MenuInitiationService {
 
 		boolean commonPage = dto.commonManagementPage();
 		String menuCode = entityClass.getSimpleName().toLowerCase();
+		Page menuPage = getPageByCode(MANAGEMENT);
 
 		Menu menu = new Menu();
 		menu.setCode(menuCode);
-		menu.setName(StringUtil.extractCamelCase(entityClass.getSimpleName()) + " Management"); 
-		Page menuPage = getPageByCode(MANAGEMENT);
+		menu.setName(StringUtil.extractCamelCase(entityClass.getSimpleName()) + " Management");  
 		menu.setMenuPage(menuPage);
 		menu.setColor("#ffffff");
 		menu.setFontColor("#000000");

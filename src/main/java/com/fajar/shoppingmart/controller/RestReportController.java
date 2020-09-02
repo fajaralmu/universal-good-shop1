@@ -51,7 +51,7 @@ public class RestReportController {
 			HttpServletResponse httpResponse) throws Exception {
 		log.info("daily report {}", request); 
 		  
-		XSSFWorkbook result = reportService.buildDailyReport(request) ;
+		XSSFWorkbook result = reportService.buildDailyReport(request, httpRequest) ;
 
 		writeXSSFWorkbook(httpResponse, result, "DAILY_"+StringUtil.generateRandomNumber(4)+".xlsx");
 	}
@@ -65,7 +65,7 @@ public class RestReportController {
 			HttpServletResponse httpResponse) throws Exception {
 		log.info("monthly report {}", request); 
 		
-		XSSFWorkbook result = reportService.buildMonthlyReport(request);
+		XSSFWorkbook result = reportService.buildMonthlyReport(request, httpRequest);
 		
 		writeXSSFWorkbook(httpResponse, result , "MONTHLY_"+StringUtil.generateRandomNumber(4)+".xlsx");
  
@@ -86,7 +86,7 @@ public class RestReportController {
 			HttpServletResponse httpResponse) throws Exception {
 		log.info("balance work sheet {}", request); 
 		
-		XSSFWorkbook result = reportService.buildBalanceReport(request);
+		XSSFWorkbook result = reportService.buildBalanceReport(request, httpRequest);
 		
 		writeXSSFWorkbook(httpResponse, result, "balance1_"+StringUtil.generateRandomNumber(4)+".xlsx");
 	}

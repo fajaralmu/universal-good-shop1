@@ -18,7 +18,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.ReportCategory;
 import com.fajar.shoppingmart.entity.CashBalance;
-import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.service.report.data.ReportData;
 import com.fajar.shoppingmart.service.report.data.ReportRowData;
 import com.fajar.shoppingmart.util.DateUtil;
@@ -77,6 +76,7 @@ public class DailyReportBuilder extends ReportBuilder{
 		 */
 		
 		createOneMonthReportTitle(row, columnOffset, filter); 
+		onProgress(10, null);
 		
 		row++;
 		row++;
@@ -106,6 +106,8 @@ public class DailyReportBuilder extends ReportBuilder{
 			currentDay = dailyReportRow.getDay();
 			log.info("writing row: {} of {}, day = {}", i, dailyReportRows.size(), dailyReportRow.getDay());
 			dailyRow++;
+			
+			onProgress(1,dailyReportRows.size(), 30, null);
 		}
 		
 		log.info("Writing summary");
@@ -113,7 +115,7 @@ public class DailyReportBuilder extends ReportBuilder{
 		 * Daily Summary
 		 */
 		writeOneMonthDailyTransactionTotal(dailyRow, columnOffset, totalDailyReportRow ); 
-		
+		onProgress(10, null);
 		/**
 		 * ======================================================
 		 * 					RECAPITULATION CONTENT
@@ -132,10 +134,12 @@ public class DailyReportBuilder extends ReportBuilder{
 			
 			summaryRow++;
 			number++;
+			
+			onProgress(1, ReportCategory.values().length, 30, null);
 		}
 		 
 		writeOneMonthTransactionSummaryTotal(summaryRow, columnOffset + 7, totalDailyReportRow ); 
-		
+		onProgress(10, null);
 		/**
 		 * auto size columns
 		 */ 
