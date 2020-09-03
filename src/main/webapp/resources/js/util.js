@@ -226,7 +226,7 @@ function createGridWrapper(cols, width){
 	}else{
 		gridTemplateColumns = (width+" ").repeat(cols);
 	}
-	const domObj = {tagName:"div", style:{display:grid, gridTemplateColumns:gridTemplateColumns}}; 
+	const domObj = {tagName:"div", style:{display:'grid', gridTemplateColumns:gridTemplateColumns}}; 
 	return createHtmlTag(domObj);
 }
 
