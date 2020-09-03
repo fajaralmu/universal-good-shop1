@@ -234,8 +234,7 @@
 			rowWrapper.appendChild(createLabel(cashflow.product ? number + ". "
 					+ cashflow.product.name : ""));
 			rowWrapper.appendChild(productCount);
-			rowWrapper
-					.appendChild(nominalLabelBeautified(cashflow.amount)));
+			rowWrapper.appendChild(nominalLabelBeautified(cashflow.amount));
 
 			monthlyDetail.appendChild(rowWrapper);
 
@@ -273,8 +272,8 @@
 
 			rowWrapper.appendChild(createLabel(i));
 			rowWrapper.appendChild(createLabel(cashflow.module));
-			rowWrapper.appendChild(nominalLabelBeautified(cashflow.count)));
-			rowWrapper.appendChild(nominalLabelBeautified(cashflow.amount)));
+			rowWrapper.appendChild(nominalLabelBeautified(cashflow.count));
+			rowWrapper.appendChild(nominalLabelBeautified(cashflow.amount));
 
 			/*
 				cost
@@ -283,8 +282,8 @@
 
 			rowWrapper.appendChild(createLabel(""));
 			rowWrapper.appendChild(createLabel(costFlow.module));
-			rowWrapper.appendChild(nominalLabelBeautified(costFlow.count)));
-			rowWrapper.appendChild(nominalLabelBeautified(costFlow.amount)));
+			rowWrapper.appendChild(nominalLabelBeautified(costFlow.count));
+			rowWrapper.appendChild(nominalLabelBeautified(costFlow.amount));
 
 			rowWrapper.onclick = function() {
 				loadDailyCashflow(i, selectedMonth, selectedYear);
