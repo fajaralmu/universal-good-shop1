@@ -8,7 +8,7 @@
 		onclick="show('monthly-detail-wrapper'); hide('btn-show-monthly')">Show
 		Monthly Detail</button>
 	<div id="monthly-detail-wrapper"
-		style="border: solid 1px blue; display: none">
+		style="border: solid 1px blue; border-radius: 5px; display: none">
 		<div id="monthly-detail-title" style="padding: 5px;">
 			<button class="btn btn-sm btn-secondary"
 				onclick="hide('monthly-detail-wrapper'); show('btn-show-monthly')">Close</button>
@@ -17,15 +17,16 @@
 			</h3>
 
 		</div>
-		<div style="overflow: scroll; height: 300px;">
-			<div id="monthly-detail" style="padding: 5px;"></div>
+		<div style="overflow: scroll; overflow-x: hidden; height: 300px;">
+			<div id="monthly-detail"
+				style="padding: 5px; background-color: green"></div>
 		</div>
 	</div>
 	<div id="main-detail">
-		<h3>Cashflow History</h3> 
-		
-		<button class="btn btn-secondary"
-			onclick="closeCashflowDetail()">Close Cashflow Detail</button>
+		<h3>Cashflow History</h3>
+
+		<button class="btn btn-secondary" onclick="closeCashflowDetail()">Close
+			Cashflow Detail</button>
 
 		<table id="detail-cashflow" class="table">
 
@@ -38,15 +39,17 @@
 	const tableDetail = _byId("detail-cashflow");
 	const monthlyDetail = _byId("monthly-detail");
 	const infoDetailPeriod = _byId("info-period");
-	
+
 	var responseDetailMonthly = {};
 	var responseDetailDaily = {};
 	var selectedMonth = 0;
 	var selectedYear = 0;
 	var selectedDay = 0;
-	
-	function closeCashflowDetail(){
-		hide('content-detail'); hide('filter-detail'); show('content-dashboard')
+
+	function closeCashflowDetail() {
+		hide('content-detail');
+		hide('filter-detail');
+		show('content-dashboard')
 	}
 
 	function showDetail() {
@@ -99,7 +102,7 @@
 						const chartBody = //supply
 						"<div class=\"rounded-right chart-item-hr\" "+
 							"style=\" width:"+percentSupplies+"; font-size:0.7em; background-color:orange\">"
-								+ "</div>" 
+								+ "</div>"
 								//purchase
 								+ "<div class=\"rounded-right chart-item-hr\" "
 								+"style=\" width:"+percentPurchases+"; font-size:0.7em; background-color:green\">"
@@ -109,8 +112,8 @@
 								i + 1,
 								"<a href=\"#\" class=\"badge badge-info\" onclick=\"loadMonthlyCashflow("
 										+ month + "," + year + ")\"> "
-										+ ( monthNames[month - 1] + "-" + year) + "</a>",
-								chartLegend, chartBody ];
+										+ (monthNames[month - 1] + "-" + year)
+										+ "</a>", chartLegend, chartBody ];
 
 						tableColumns.push(columns);
 					}
@@ -127,15 +130,22 @@
 		};
 		show('content-detail');
 		hide('content-dashboard');
-		show('filter-wrapper'); 
+		show('filter-wrapper');
 		showDetail();
+	}
+	
+	function setRowLikeElement(el){
+		if(!el) return; 
+		el.style.backgroundColor = '#ffffff';
+		el.style.marginBottom = '3px';
+		el.style.borderRadius = '5px';
 	}
 
 	function loadDailyCashflow(day, month, year) {
 		infoLoading();
-		
+
 		selectedDay = day;
-		
+
 		const requestObject = {
 			"filter" : {
 				"year" : year,
@@ -183,61 +193,65 @@
 				});
 	}
 
-	function populateDailyDetail(){
+	function populateDailyDetail() {
 		monthlyDetail.innerHTML = "";
-		infoDetailPeriod.innerHTML = selectedDay+" "+ monthNames[ selectedMonth - 1] + " " + selectedYear;
-		
+		infoDetailPeriod.innerHTML = selectedDay + " "
+				+ monthNames[selectedMonth - 1] + " " + selectedYear;
+
 		const btnClose = createButton("btn-close", "Back");
 		btnClose.className = "btn";
-		btnClose.onclick = function (){
+		btnClose.onclick = function() {
 			populateMonthlyDetail();
 		}
-		
+
 		const thWrapper = createGridWrapper(3);
 		thWrapper.innerHTML = "<p><b>Product</b></p><p><b>Sold Quantity</b></p><p><b>Total Price</b></p>";
 
 		monthlyDetail.appendChild(btnClose);
 		monthlyDetail.appendChild(thWrapper);
 
-		const dailyIncome = responseDetailDaily.dailyCashflow; 
+		const dailyIncome = responseDetailDaily.dailyCashflow;
 		let number = 1;
 
 		/**
 			detail  
 		 */
-		for (var key in dailyIncome) {
+		for ( var key in dailyIncome) {
 
-			const cashflow   = dailyIncome[key]; 
-			
+			const cashflow = dailyIncome[key];
+
 			const rowWrapper = createGridWrapper(3, "30%");
 			rowWrapper.setAttribute("class", "left-aligned");
-			
+
 			const productCount = createDiv(key, "chart-item");
 			productCount.style.backgroundColor = 'lightGreen';
-			productCount.style.width = cashflow.proportion+"%";
+			productCount.style.width = cashflow.proportion + "%";
 			productCount.style.height = '13px';
 			productCount.style.fontSize = '0.7em';
 			productCount.style.margin = '3px';
 			productCount.innerHTML = beautifyNominal(cashflow.count);
-			
-			rowWrapper.appendChild(createLabel(cashflow.product ? number+". "+cashflow.product.name:"")); 
+
+			rowWrapper.appendChild(createLabel(cashflow.product ? number + ". "
+					+ cashflow.product.name : ""));
 			rowWrapper.appendChild(productCount);
 			rowWrapper
-					.appendChild(createLabel(beautifyNominal(cashflow.amount)));
-			
+					.appendChild(nominalLabelBeautified(cashflow.amount)));
+
 			monthlyDetail.appendChild(rowWrapper);
 
 			number++;
 		}
 	}
-	
+
 	function populateMonthlyDetail() {
 
 		monthlyDetail.innerHTML = "";
-		infoDetailPeriod.innerHTML = monthNames[ selectedMonth - 1] + " " + selectedYear;
+		infoDetailPeriod.innerHTML = monthNames[selectedMonth - 1] + " "
+				+ selectedYear;
 
 		const thWrapper = createGridWrapper(4);
 		thWrapper.innerHTML = "<p><b>Date</b></p><p><b>Module</b></p><p><b>Quantity</b></p><p><b>Amount</b></p>";
+		setRowLikeElement(thWrapper);
 
 		monthlyDetail.appendChild(thWrapper);
 
@@ -250,20 +264,17 @@
 		for (let i = 1; i <= 31; i++) {
 
 			const rowWrapper = createGridWrapper(4, "20%");
-			rowWrapper.setAttribute("class", "clickable center-aligned");
-
+			rowWrapper.setAttribute("class", "clickable center-aligned"); 
+			setRowLikeElement(rowWrapper);
 			/*
 				cash
 			 */
-
 			const cashflow = detailIncome[i];
 
 			rowWrapper.appendChild(createLabel(i));
 			rowWrapper.appendChild(createLabel(cashflow.module));
-			rowWrapper
-					.appendChild(createLabel(beautifyNominal(cashflow.count)));
-			rowWrapper
-					.appendChild(createLabel(beautifyNominal(cashflow.amount)));
+			rowWrapper.appendChild(nominalLabelBeautified(cashflow.count)));
+			rowWrapper.appendChild(nominalLabelBeautified(cashflow.amount)));
 
 			/*
 				cost
@@ -272,10 +283,8 @@
 
 			rowWrapper.appendChild(createLabel(""));
 			rowWrapper.appendChild(createLabel(costFlow.module));
-			rowWrapper
-					.appendChild(createLabel(beautifyNominal(costFlow.count)));
-			rowWrapper
-					.appendChild(createLabel(beautifyNominal(costFlow.amount)));
+			rowWrapper.appendChild(nominalLabelBeautified(costFlow.count)));
+			rowWrapper.appendChild(nominalLabelBeautified(costFlow.amount)));
 
 			rowWrapper.onclick = function() {
 				loadDailyCashflow(i, selectedMonth, selectedYear);
@@ -287,5 +296,9 @@
 		show('monthly-detail-wrapper');
 		hide('btn-show-monthly');
 
+	}
+	
+	function nominalLabelBeautified(value){
+		return createLabel(beautifyNominal(value));
 	}
 </script>

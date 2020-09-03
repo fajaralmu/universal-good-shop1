@@ -6,23 +6,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div class="header" style="height: auto">
-	<style>
-.menu-spoiler {
-	text-align: left;
-	font-size: 0.7em;
-	background-color: gray;
-	z-index: 1;
-	position: absolute;
-}
 
-.menu-spoiler>a {
-	color: white;
-}
-
-#header-wrapper {
-	height: 100%;
-}
-</style>
 	<div class="page-header" style="color:${shopProfile.fontColor}">
 		<h1>${shopProfile.name }</h1>
 		<p>${shopProfile.shortDescription }</p>

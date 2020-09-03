@@ -55,6 +55,23 @@
 	text-align: center;
 	width: 100%;
 }
+
+ 
+.menu-spoiler {
+	text-align: left;
+	font-size: 0.7em;
+	background-color: gray;
+	z-index: 1;
+	position: absolute;
+}
+
+.menu-spoiler>a {
+	color: white;
+}
+
+#header-wrapper {
+	height: 100%;
+}
 </style>
 </head>
 <body>
