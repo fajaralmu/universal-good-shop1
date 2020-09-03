@@ -4,11 +4,9 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
 <div id="content-product-sales" style="display: none">
-	<h3>Product Sales <small id="info-sales-period"></small></h3>
-	<button id="sdsds" class="btn btn-info" onclick="show('filter-detail')">Show
-		Filter</button>
+	<h3>Product Sales <small id="info-sales-period"></small></h3> 
 	<button class="btn btn-secondary"
-		onclick="hide('content-product-sales');hide('filter-detail'); show('content-dashboard')">Close</button>
+		onclick="closeProductSales()">Close</button>
 	<table id="detail-sales" class="table">
 
 	</table>
@@ -20,6 +18,10 @@
 	var currentOffset = 0;
 	//product sales
 	var tableSales = document.getElementById("detail-sales");
+	
+	function closeProductSales(){
+		hide('content-product-sales');hide('filter-wrapper'); show('content-dashboard')
+	}
 
 	function showProductSales(){
 		document.getElementById("btn-ok-filter-detail").onclick = function(){
@@ -28,7 +30,7 @@
 		};
 		this.currentOffset = 0;
 		show('content-product-sales'); hide('content-dashboard');
-		show('filter-detail');
+		 show('filter-wrapper');
 		showSales();
 	}
 	

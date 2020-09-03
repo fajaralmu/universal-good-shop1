@@ -4,14 +4,14 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div id="content-detail" style="display: none;">
-	<button id="btn-show-monthly" class="btn btn-sm btn-secondary"
+	<button id="btn-show-monthly" class="btn btn-sm btn-info"
 		onclick="show('monthly-detail-wrapper'); hide('btn-show-monthly')">Show
 		Monthly Detail</button>
 	<div id="monthly-detail-wrapper"
 		style="border: solid 1px blue; display: none">
 		<div id="monthly-detail-title" style="padding: 5px;">
 			<button class="btn btn-sm btn-secondary"
-				onclick="hide('monthly-detail-wrapper'); show('btn-show-monthly')">Close</button>
+				onclick="hide('monthly-detail-wrapper'); hide('filter-wrapper'); show('btn-show-monthly')">Close</button>
 			<h3 id="title">
 				Monthly Detail <small id="info-period"></small>
 			</h3>
@@ -22,11 +22,10 @@
 		</div>
 	</div>
 	<div id="main-detail">
-		<h3>Cashflow History</h3>
-		<button id="sdsjdh" class="btn btn-info"
-			onclick="show('filter-detail')">Show Filter</button>
+		<h3>Cashflow History</h3> 
+		
 		<button class="btn btn-secondary"
-			onclick="hide('content-detail');hide('filter-detail'); show('content-dashboard')">Close</button>
+			onclick="closeCashflowDetail()">Close Cashflow Detail</button>
 
 		<table id="detail-cashflow" class="table">
 
@@ -45,6 +44,10 @@
 	var selectedMonth = 0;
 	var selectedYear = 0;
 	var selectedDay = 0;
+	
+	function closeCashflowDetail(){
+		hide('content-detail'); hide('filter-detail'); show('content-dashboard')
+	}
 
 	function showDetail() {
 
@@ -124,7 +127,7 @@
 		};
 		show('content-detail');
 		hide('content-dashboard');
-		show('filter-detail');
+		show('filter-wrapper'); 
 		showDetail();
 	}
 

@@ -2,43 +2,49 @@
 	pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%> 
-<div class="content" style="width:100%">
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<div class="content" style="width: 100%">
 
-	
+
 	<jsp:include page="../home-component/cashflow-filter.jsp"></jsp:include>
 	<jsp:include page="../home-component/product-sales.jsp"></jsp:include>
 	<jsp:include page="../home-component/cashflow-history.jsp"></jsp:include>
-	
-	
+
+
 	<div id="content-dashboard">
 		<h2>Dashboard</h2>
-		<p>Good ${timeGreeting}, ${loggedUser.displayName}. Have a great day!</p>
+		<p>Good ${timeGreeting}, ${loggedUser.displayName}. Have a great
+			day!</p>
 		<div class="input-group mb-3">
 			<div class="input-group-prepend">
-				<span class="input-group-text">Month</span> 
-				<select class="form-control" id="select-month">
+				<span class="input-group-text">Month</span> <select
+					class="form-control" id="select-month">
 					<c:forEach var="month" items="${months}">
 						<option value="${month.value }">${month.key }</option>
 					</c:forEach>
-				</select> 
-				<span class="input-group-text">Year</span> 
-				<select class="form-control" id="select-year">
-					 <c:forEach var="year" items="${years}">
+				</select> <span class="input-group-text">Year</span> <select
+					class="form-control" id="select-year">
+					<c:forEach var="year" items="${years}">
 						<option value="${year.value }">${year.key }</option>
 					</c:forEach>
 				</select>
 			</div>
 			<div class="input-group-append">
-				<button class="btn btn-outline-secondary" onclick="getCashflow()">Search</button> 
-				<button class="btn btn-outline-secondary" onclick="report('daily')">Report This Month</button>
-				<button class="btn btn-outline-secondary" onclick="report('monthly')">Report This Year</button>
-				<button class="btn btn-outline-secondary" onclick="report('balance1')">Balance Report</button>
+				<button class="btn btn-outline-secondary" onclick="getCashflow()">Search</button>
+
 			</div>
+		</div>
+		<div>
+			<button class="btn btn-outline-info" onclick="report('daily')">Generate Report
+				This Month</button>
+			<button class="btn btn-outline-info" onclick="report('monthly')">Generate Report
+				This Year</button>
+			<button class="btn btn-outline-info"
+				onclick="report('balance1')">Generate Balance Report</button>
 		</div>
 		<p></p>
 		<div class="row">
-	
+
 			<div class="col-sm-3">
 				<div class="card" style="width: 100%;">
 					<img class="card-img-top" width="100" height="150"
@@ -56,7 +62,7 @@
 								class="list-group-item d-flex justify-content-between align-items-center">
 								Income<br> <span id="amount-OUT">0</span>
 							</li>
-	
+
 						</ul>
 						<a role="button" id="btn-detail-OUT" class="badge badge-success"
 							link="${contextPath}/management/transaction/type=OUT"
@@ -81,7 +87,7 @@
 								class="list-group-item d-flex justify-content-between align-items-center">
 								Spent<br> <span id="amount-IN">0</span>
 							</li>
-	
+
 						</ul>
 						<a role="button" id="btn-detail-IN" class="badge badge-success"
 							link="${contextPath}/management/transaction/type=IN"
@@ -91,22 +97,24 @@
 			</div>
 		</div>
 		<p></p>
-		<button class="btn btn-primary" onclick="showCashflowHistory()">Cashflow Detail</button>
-		<button class="btn btn-primary" onclick="showProductSales()">Product Sales Detail</button>
+		<button class="btn btn-primary" onclick="showCashflowHistory()">Cashflow
+			Detail</button>
+		<button class="btn btn-primary" onclick="showProductSales()">Product
+			Sales Detail</button>
 		<p></p>
 	</div>
 </div>
 <script type="text/javascript">
-	var infoSales = document.getElementById("count-OUT");
-	var infoTotalIncome = document.getElementById("amount-OUT");
-	var infoSpent = document.getElementById("count-IN");
-	var infoTotalSpent = document.getElementById("amount-IN");  
+	var infoSales = _byId("count-OUT");
+	var infoTotalIncome = _byId("amount-OUT");
+	var infoSpent = _byId("count-IN");
+	var infoTotalSpent = _byId("amount-IN");  
 	
-	var btnDetailIn = document.getElementById("btn-detail-IN");
-	var btnDetailOut = document.getElementById("btn-detail-OUT"); 
+	var btnDetailIn = _byId("btn-detail-IN");
+	var btnDetailOut = _byId("btn-detail-OUT"); 
 
-	var selectMonth = document.getElementById("select-month");
-	var selectYear = document.getElementById("select-year"); 
+	var selectMonth = _byId("select-month");
+	var selectYear = _byId("select-year"); 
 
 	function fetchCashflow(month, year, module) {
 		infoLoading();
@@ -130,9 +138,9 @@
 							amount = cashflow.amount;
 						}
 														
-						document.getElementById("count-"+module).innerHTML = count;
-						document.getElementById("amount-"+module).innerHTML = beautifyNominal(amount);
-						document.getElementById("btn-detail-"+module).href = document.getElementById("btn-detail-"+module).getAttribute("link")
+						_byId("count-"+module).innerHTML = count;
+						_byId("amount-"+module).innerHTML = beautifyNominal(amount);
+						_byId("btn-detail-"+module).href = _byId("btn-detail-"+module).getAttribute("link")
 							+"&transactionDate-month="+month+"&transactionDate-year="+year;
 					} else {
 						alert("Failed getting cashflow: "+module);
