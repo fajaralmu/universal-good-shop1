@@ -49,7 +49,7 @@
 		if(!confirm("Close This Menu?")) return;
 		
 		hide('content-detail');
-		hide('filter-detail');
+		hide('filter-wrapper');
 		show('content-dashboard')
 	}
 
