@@ -4,8 +4,10 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div id="content-detail" style="display: none; padding: 20px">
+	<p></p>
+	<h3>Cashflow History</h3>
 	<button class="btn btn-danger btn-sm" onclick="closeCashflowDetail()">Close
-			Cashflow Detail</button>
+		Cashflow Detail</button>
 	<button id="btn-show-monthly" class="btn btn-sm btn-info"
 		onclick="show('monthly-detail-wrapper'); hide('btn-show-monthly')">Show
 		Monthly Detail</button>
@@ -25,8 +27,6 @@
 		</div>
 	</div>
 	<div id="main-detail">
-		<h3>Cashflow History</h3> 
-
 		<table id="detail-cashflow" class="table">
 
 		</table>
@@ -46,8 +46,9 @@
 	var selectedDay = 0;
 
 	function closeCashflowDetail() {
-		if(!confirm("Close This Menu?")) return;
-		
+		if (!confirm("Close This Menu?"))
+			return;
+
 		hide('content-detail');
 		hide('filter-wrapper');
 		show('content-dashboard')

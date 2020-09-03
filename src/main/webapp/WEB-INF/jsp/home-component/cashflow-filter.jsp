@@ -66,18 +66,22 @@
 	const filterWrapper = _byId("filter-wrapper");
 	
 	function showFilter(){
+		
 		filterForm.removeAttribute("hidden");
 		//show('filter-detail'); 
 		show('btn-close-filter'); 
 		hide('btn-show-filter');
-		filterWrapper.style.width = '40%';
+		filterWrapper.style.width = '0px';
+		updateWidthAsync(filterWrapper, 300, 2,null);
 	}
 	
 	function closeFilter(){
+		
 		filterForm.setAttribute("hidden", "true");
 		//hide('filter-detail'); 
 		hide('btn-close-filter'); 
 		show('btn-show-filter');
-		filterWrapper.style.width = '100px';
+		//filterWrapper.style.width = '100px';
+		updateWidthAsync(filterWrapper, 100, -2,null);
 	}
 </script>

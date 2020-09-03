@@ -4,9 +4,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
 <div id="content-product-sales" style="display: none">
-	<h3>Product Sales <small id="info-sales-period"></small></h3> 
-	<button class="btn btn-secondary"
-		onclick="closeProductSales()">Close</button>
+	<p></p>
+	<h3>
+		Product Sales <small id="info-sales-period"></small>
+	</h3>
+	<button class="btn btn-secondary" onclick="closeProductSales()">Close</button>
 	<table id="detail-sales" class="table">
 
 	</table>
@@ -18,22 +20,25 @@
 	var currentOffset = 0;
 	//product sales
 	var tableSales = document.getElementById("detail-sales");
-	
-	function closeProductSales(){
-		hide('content-product-sales');hide('filter-wrapper'); show('content-dashboard')
+
+	function closeProductSales() {
+		hide('content-product-sales');
+		hide('filter-wrapper');
+		show('content-dashboard')
 	}
 
-	function showProductSales(){
-		document.getElementById("btn-ok-filter-detail").onclick = function(){
-			tableSales.innerHTML  = "";
+	function showProductSales() {
+		document.getElementById("btn-ok-filter-detail").onclick = function() {
+			tableSales.innerHTML = "";
 			showSales();
 		};
 		this.currentOffset = 0;
-		show('content-product-sales'); hide('content-dashboard');
-		 show('filter-wrapper');
+		show('content-product-sales');
+		hide('content-dashboard');
+		show('filter-wrapper');
 		showSales();
 	}
-	
+
 	function loadMoreProduct() {
 		currentOffset++;
 		showSales();
@@ -71,13 +76,14 @@
 		for (var i = 0; i < bodyRows.length; i++) {
 			let row = bodyRows[i];
 			tableSales.append(row);
-		} 
-		
-		const monthFrom = monthNames[ selectMonthFrom.value-1];
-		const monthTo = monthNames[selectMonthTo.value-1];
+		}
+
+		const monthFrom = monthNames[selectMonthFrom.value - 1];
+		const monthTo = monthNames[selectMonthTo.value - 1];
 		const yearFrom = selectYearFrom.value;
 		const yearTo = selectYearTo.value;
-		
-		document.getElementById("info-sales-period").innerHTML = monthFrom+" "+yearFrom+" - "+monthTo+" "+yearTo;
+
+		document.getElementById("info-sales-period").innerHTML = monthFrom
+				+ " " + yearFrom + " - " + monthTo + " " + yearTo;
 	}
 </script>

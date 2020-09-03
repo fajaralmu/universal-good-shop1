@@ -26,6 +26,7 @@
 <script src="<c:url value="/res/js/ajax.js?v=1"></c:url >"></script>
 <script src="<c:url value="/res/js/util.js?v=1"></c:url >"></script>
 <script src="<c:url value="/res/js/strings.js?v=1"></c:url >"></script>
+<script src="<c:url value="/res/js/timeouts.js?v=1"></c:url >"></script>
 
 <c:forEach var="stylePath" items="${additionalStylePaths }">
 	<link rel="stylesheet"
