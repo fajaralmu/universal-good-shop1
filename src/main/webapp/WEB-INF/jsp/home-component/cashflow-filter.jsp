@@ -71,7 +71,7 @@
 		//show('filter-detail'); 
 		show('btn-close-filter'); 
 		hide('btn-show-filter');
-		filterWrapper.style.width = '0px';
+		filterWrapper.style.width = '100px';
 		updateWidthAsync(filterWrapper, 300, 2,null);
 	}
 	
