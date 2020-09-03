@@ -130,17 +130,13 @@ public class ReportingService {
 		int diff = 0;
 		for (int i = y0; i <= y1; i++) {
 
-			int beginMonth = 1;
-
-			if (i == y0) {
-
+			int beginMonth = 1; 
+			if (i == y0) { 
 				beginMonth = m0;
 			}
 
-			for (int j = beginMonth; j <= 12; j++) {
-
-				if (i == y1 && j == m1) {
-
+			for (int j = beginMonth; j <= 12; j++) { 
+				if (i == y1 && j == m1) { 
 					return diff;
 				}
 				diff++;
@@ -188,7 +184,7 @@ public class ReportingService {
 	 * @param productFlows
 	 * @return
 	 */
-	private static Map<Integer, CashFlow> parseCashflow(final String module, List<ProductFlow> productFlows) {
+	private Map<Integer, CashFlow> parseCashflow(final String module, List<ProductFlow> productFlows) {
 
 		Map<Integer, CashFlow> result = new HashMap<Integer, CashFlow>();
 
@@ -255,10 +251,17 @@ public class ReportingService {
 			System.out.println("Report year : "+year);
 
 			List<ProductFlow> flowIncome = productFlowRepository.findByTransactionTypeAndPeriod(TransactionType.OUT.toString(), month, year);
+			progressService.sendProgress(1, 1, 20, requestId);
+			
 			List<ProductFlow> flowCost = productFlowRepository.findByTransactionTypeAndPeriod(TransactionType.IN.toString(), month, year);
-
+			progressService.sendProgress(1, 1, 20, requestId);
+			
 			response.setMonthlyDetailIncome(parseCashflow("OUT", flowIncome));
+			progressService.sendProgress(1, 1, 20, requestId);
+			
 			response.setMonthlyDetailCost(parseCashflow("IN", flowCost));
+			progressService.sendProgress(1, 1, 20, requestId);
+			
 			response.setFilter(filter);
 			response.setTransactionYears(new int[] { getMinTransactionYear(), Calendar.getInstance().get(Calendar.YEAR) });
 			

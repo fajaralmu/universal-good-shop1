@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<div id="content-detail" style="display: none;">
+<div id="content-detail" style="display: none; padding: 20px">
 	<button class="btn btn-danger btn-sm" onclick="closeCashflowDetail()">Close
 			Cashflow Detail</button>
 	<button id="btn-show-monthly" class="btn btn-sm btn-info"

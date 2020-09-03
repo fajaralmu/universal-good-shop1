@@ -4,17 +4,17 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div id="filter-wrapper"
-	style="display: none; padding: 10px; margin-right: 0px; background-color: white; height: auto">
-	<button id="btn-show-filter" class="btn btn-info btn-sm"
-		onclick="show('filter-detail'); show('btn-close-filter'); hide('btn-show-filter')">Show
-		Filter</button>
-	<button style="display: none" id="btn-close-filter"
-		class="btn btn-secondary  btn-sm"
-		onclick="hide('filter-detail'); hide('btn-close-filter'); show('btn-show-filter')">Close
-		Filter</button>
-
-
-	<div class="card" id="filter-detail" style="display: none; width: 60%">
+	style="display: none;">
+	<div style="width:100px">
+		<button  id="btn-show-filter" class="btn btn-info btn-sm"
+			onclick="showFilter()">Show
+			Filter</button>
+		<button  style="display: none" id="btn-close-filter"
+			class="btn btn-secondary  btn-sm"
+			onclick="closeFilter()">Close
+			Filter</button> 
+	</div>
+	<div class="card" id="filter-detail" hidden= "true">
 		<div class="card-header">Filter</div>
 		<div class="card-body">
 			<p>From</p>
@@ -60,5 +60,24 @@
 	var selectYearFrom = _byId("select-year-from");
 
 	var selectMonthTo = _byId("select-month-to");
-	var selectYearTo = _byId("select-year-to");
+	var selectYearTo = _byId("select-year-to"); 
+	
+	const filterForm  = _byId('filter-detail');
+	const filterWrapper = _byId("filter-wrapper");
+	
+	function showFilter(){
+		filterForm.removeAttribute("hidden");
+		//show('filter-detail'); 
+		show('btn-close-filter'); 
+		hide('btn-show-filter');
+		filterWrapper.style.width = '40%';
+	}
+	
+	function closeFilter(){
+		filterForm.setAttribute("hidden", "true");
+		//hide('filter-detail'); 
+		hide('btn-close-filter'); 
+		show('btn-show-filter');
+		filterWrapper.style.width = '100px';
+	}
 </script>
