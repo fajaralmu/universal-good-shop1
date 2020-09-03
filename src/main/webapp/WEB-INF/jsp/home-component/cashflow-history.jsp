@@ -4,29 +4,28 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div id="content-detail" style="display: none;">
+	<button class="btn btn-danger btn-sm" onclick="closeCashflowDetail()">Close
+			Cashflow Detail</button>
 	<button id="btn-show-monthly" class="btn btn-sm btn-info"
 		onclick="show('monthly-detail-wrapper'); hide('btn-show-monthly')">Show
 		Monthly Detail</button>
 	<div id="monthly-detail-wrapper"
 		style="border: solid 1px blue; border-radius: 5px; display: none">
 		<div id="monthly-detail-title" style="padding: 5px;">
-			<button class="btn btn-sm btn-secondary"
+			<button class="btn btn-sm btn-danger"
 				onclick="hide('monthly-detail-wrapper'); show('btn-show-monthly')">Close</button>
 			<h3 id="title">
 				Monthly Detail <small id="info-period"></small>
 			</h3>
-
+			<p>Click the row to see detail selling</p>
 		</div>
 		<div style="overflow: scroll; overflow-x: hidden; height: 300px;">
 			<div id="monthly-detail"
-				style="padding: 5px; background-color: green"></div>
+				style="padding: 5px; background-color: lightgray;"></div>
 		</div>
 	</div>
 	<div id="main-detail">
-		<h3>Cashflow History</h3>
-
-		<button class="btn btn-secondary" onclick="closeCashflowDetail()">Close
-			Cashflow Detail</button>
+		<h3>Cashflow History</h3> 
 
 		<table id="detail-cashflow" class="table">
 
@@ -47,6 +46,8 @@
 	var selectedDay = 0;
 
 	function closeCashflowDetail() {
+		if(!confirm("Close This Menu?")) return;
+		
 		hide('content-detail');
 		hide('filter-detail');
 		show('content-dashboard')
@@ -133,9 +134,10 @@
 		show('filter-wrapper');
 		showDetail();
 	}
-	
-	function setRowLikeElement(el){
-		if(!el) return; 
+
+	function setRowLikeElement(el) {
+		if (!el)
+			return;
 		el.style.backgroundColor = '#ffffff';
 		el.style.marginBottom = '3px';
 		el.style.borderRadius = '5px';
@@ -143,7 +145,6 @@
 
 	function loadDailyCashflow(day, month, year) {
 		infoLoading();
-
 		selectedDay = day;
 
 		const requestObject = {
@@ -204,11 +205,12 @@
 			populateMonthlyDetail();
 		}
 
-		const thWrapper = createGridWrapper(3);
-		thWrapper.innerHTML = "<p><b>Product</b></p><p><b>Sold Quantity</b></p><p><b>Total Price</b></p>";
+		const columnTitleWrapper = createGridWrapper(3);
+		columnTitleWrapper.innerHTML = "<p><b>Product</b></p><p><b>Sold Quantity</b></p><p><b>Total Price</b></p>";
+		setRowLikeElement(columnTitleWrapper);
 
 		monthlyDetail.appendChild(btnClose);
-		monthlyDetail.appendChild(thWrapper);
+		monthlyDetail.appendChild(columnTitleWrapper);
 
 		const dailyIncome = responseDetailDaily.dailyCashflow;
 		let number = 1;
@@ -222,6 +224,7 @@
 
 			const rowWrapper = createGridWrapper(3, "30%");
 			rowWrapper.setAttribute("class", "left-aligned");
+			setRowLikeElement(rowWrapper);
 
 			const productCount = createDiv(key, "chart-item");
 			productCount.style.backgroundColor = 'lightGreen';
@@ -250,6 +253,7 @@
 
 		const thWrapper = createGridWrapper(4);
 		thWrapper.innerHTML = "<p><b>Date</b></p><p><b>Module</b></p><p><b>Quantity</b></p><p><b>Amount</b></p>";
+		thWrapper.style.textAlign = 'center';
 		setRowLikeElement(thWrapper);
 
 		monthlyDetail.appendChild(thWrapper);
@@ -263,7 +267,7 @@
 		for (let i = 1; i <= 31; i++) {
 
 			const rowWrapper = createGridWrapper(4, "20%");
-			rowWrapper.setAttribute("class", "clickable center-aligned"); 
+			rowWrapper.setAttribute("class", "clickable center-aligned");
 			setRowLikeElement(rowWrapper);
 			/*
 				cash
@@ -296,8 +300,8 @@
 		hide('btn-show-monthly');
 
 	}
-	
-	function nominalLabelBeautified(value){
+
+	function nominalLabelBeautified(value) {
 		return createLabel(beautifyNominal(value));
 	}
 </script>
