@@ -1,5 +1,5 @@
 function postReq(url, requestObject, callback, blob) {
-	 infoLoading();
+	infoLoading();
 	var request = new XMLHttpRequest();
 	var param = JSON.stringify(requestObject);
 	request.open("POST", url, true);
@@ -17,7 +17,7 @@ function postReq(url, requestObject, callback, blob) {
 				infoDone();
 				return;
 			}
-			console.log("RESPONSE ", this.status, this);
+			console.debug("RESPONSE ", this.status, this);
 			try {
 				this['data'] = JSON.parse(this.responseText);
 			} catch (e) {

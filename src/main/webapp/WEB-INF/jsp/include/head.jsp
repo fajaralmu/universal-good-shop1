@@ -23,7 +23,7 @@
 	height: 100%;
 }
 </style>
-	<div class="page-header" style="color:${shopProfile.color}">
+	<div class="page-header" style="color:${shopProfile.fontColor}">
 		<h1>${shopProfile.name }</h1>
 		<p>${shopProfile.shortDescription }</p>
 	</div>
@@ -99,11 +99,13 @@
 					infoDone();
 					var response = (xhr.data);
 					var pageCode = response.code;
-					if(_byId(pageCode))
+					if(_byId(pageCode)){
 						_byId(pageCode).setAttribute("class",
 								"nav-link pagelink active");
+					}
 				});
 		}catch (e) {
+			infoDone();
 			 console.log("Error occured.. when getCurrentPageCode");
 		}
 	}

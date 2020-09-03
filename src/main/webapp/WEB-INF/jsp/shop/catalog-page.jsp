@@ -350,10 +350,10 @@
 		return html;
 	} */
 	
-	function populateCatalog(entities) {
+	function populateCatalog(products) {
 		catalogPanel.innerHTML = "";
-		for (let i = 0; i < entities.length; i++) {
-			const entity = entities[i];
+		for (let i = 0; i < products.length; i++) {
+			const entity = products[i];
 
 			//create col
 			const colDiv = createDiv("col-" + entity.id, "col-sm-4");
@@ -385,10 +385,9 @@
 			listGroup.append(listItemCount);
 			listGroup.append(listItemPrice);
 			
-			<% if(request.getSession().getAttribute("user")  != null && request.getSession().getAttribute("user") instanceof User) {%>
-				const listItemDetailLink = createListItemDetailLink(entity);
-				listGroup.append(listItemDetailLink);
-			<%}	%>
+			if(this.addAdditionalLink){
+				this.addAdditionalLink(entity, listGroup);
+			} 
 			
 			
 			//populate cardbody
@@ -406,8 +405,8 @@
 	}
  
 	function updateNavigationButtons() {
-		createNavigationButtons(this.navigationPanel, this.page,
-				this.totalData, this.limit, this.loadEntity);
+		createNavigationButtons( navigationPanel, page,
+				 totalData,  limit, loadEntity);
 	}
 
 	if (defaultOption != "") {
@@ -418,3 +417,11 @@
 
 	loadEntity(page);
 </script>
+<c:if test="${authenticated == true }">
+<script type="text/javascript">
+	function addAdditionalLink(entity, listGroup){
+		const listItemDetailLink = createListItemDetailLink(entity);
+		listGroup.append(listItemDetailLink);
+	}
+</script>
+</c:if>

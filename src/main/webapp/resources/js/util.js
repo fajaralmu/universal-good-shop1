@@ -14,7 +14,7 @@ function _byId(id){
 const loadingDiv = createDiv('loading-div','loading_div');
 
 function infoLoading() {
-	 
+	console.log("infoLoading..");
 	document.body.prepend(loadingDiv);
 	
 	loadingDiv.innerHTML = "";
@@ -226,7 +226,7 @@ function createGridWrapper(cols, width){
 	}else{
 		gridTemplateColumns = (width+" ").repeat(cols);
 	}
-	const domObj = {tagName:"div", style:{display:'grid', gridTemplateColumns:gridTemplateColumns}}; 
+	const domObj = {tagName:"div", style:{display:'grid', 'grid-template-columns':gridTemplateColumns}}; 
 	return createHtmlTag(domObj);
 }
 

@@ -52,7 +52,7 @@ public class MvcAdminController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/home" })
-	@CustomRequestInfo(title = "Dashboard", pageUrl = "shop/home-page", stylePaths = {"dashboard"})
+	@CustomRequestInfo(title = "Dashboard", pageUrl = "shop/dashboard-page", stylePaths = {"dashboard"})
 	public String menuDashboard(Model model, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 		Calendar cal = Calendar.getInstance(); 

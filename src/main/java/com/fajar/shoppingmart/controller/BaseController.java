@@ -130,6 +130,11 @@ public class BaseController {
 	public int getCurrentYear(HttpServletRequest request) {
 		return DateUtil.getCalendarItem(new Date(), Calendar.YEAR);
 	}
+	
+	@ModelAttribute("authenticated")
+	public boolean authenticated(HttpServletRequest request) {
+		return userSessionService.hasSession(request);
+	}
 
 	public String activePage(HttpServletRequest request) {
 		return userSessionService.getPageCode(request);
