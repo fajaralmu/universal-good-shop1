@@ -4,7 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div id="filter-wrapper"
-	style="display: none; padding: 10px; width: 40%; margin-right: 0px; background-color: white; height: auto">
+	style="display: none; padding: 10px; margin-right: 0px; background-color: white; height: auto">
 	<button id="btn-show-filter" class="btn btn-info btn-sm"
 		onclick="show('filter-detail'); show('btn-close-filter'); hide('btn-show-filter')">Show
 		Filter</button>
@@ -14,29 +14,42 @@
 		Filter</button>
 
 
-	<div class="card" id="filter-detail" style="display: none;">
+	<div class="card" id="filter-detail" style="display: none; width: 60%">
 		<div class="card-header">Filter</div>
 		<div class="card-body">
 			<p>From</p>
-			<label>Month</label> <select class="form-control" id="select-month-from">
-				<c:forEach var="month" items="${months}">
-					<option value="${month.value }">${month.key }</option>
-				</c:forEach>
-			</select> <label>Year</label> <select class="form-control" id="select-year-from">
-				<c:forEach var="year" items="${years}">
-					<option value="${year.value }">${year.key }</option>
-				</c:forEach>
-			</select>
+			<div class="grid-3-6">
+				<label>Month</label> <select class="form-control"
+					id="select-month-from">
+					<c:forEach var="month" items="${months}">
+						<option value="${month.value }">${month.key }</option>
+					</c:forEach>
+				</select>
+			</div>
+			<div class="grid-3-6"> 
+				<label>Year</label> <select class="form-control"
+					id="select-year-from">
+					<c:forEach var="year" items="${years}">
+						<option value="${year.value }">${year.key }</option>
+					</c:forEach>
+				</select>
+			</div>
 			<p>To</p>
-			<label>Month</label> <select class="form-control" id="select-month-to">
-				<c:forEach var="month" items="${months}">
-					<option value="${month.value }">${month.key }</option>
-				</c:forEach>
-			</select> <label>Year</label> <select class="form-control" id="select-year-to">
-				<c:forEach var="year" items="${years}">
-					<option value="${year.value }">${year.key }</option>
-				</c:forEach>
-			</select>
+			<div class="grid-3-6">
+				<label>Month</label> <select class="form-control"
+					id="select-month-to">
+					<c:forEach var="month" items="${months}">
+						<option value="${month.value }">${month.key }</option>
+					</c:forEach>
+				</select>
+			</div>
+			<div class="grid-3-6">
+				<label>Year</label> <select class="form-control" id="select-year-to">
+					<c:forEach var="year" items="${years}">
+						<option value="${year.value }">${year.key }</option>
+					</c:forEach>
+				</select>
+			</div>
 			<button id="btn-ok-filter-detail" class="btn btn-primary btn-sm">OK</button>
 		</div>
 	</div>
