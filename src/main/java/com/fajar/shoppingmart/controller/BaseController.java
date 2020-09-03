@@ -57,11 +57,12 @@ public class BaseController {
 	protected ComponentService componentService;
 
 	@ModelAttribute("shopProfile")
-	@Deprecated //new @ModelAttribute = 'profile'
+	@Deprecated // new @ModelAttribute = 'profile'
 	public Profile getShopProfile(HttpServletRequest request) {
 //		System.out.println("Has Session: "+userSessionService.hasSession(request, false));
 		return webAppConfiguration.getProfile();
 	}
+
 	@ModelAttribute("profile")
 	public Profile getProfile(HttpServletRequest request) {
 		return getShopProfile(request);
@@ -139,9 +140,9 @@ public class BaseController {
 		String pageCode = componentService.getPageCode(request);
 		userSessionService.setActivePage(request, pageCode);
 	}
-	
+
 	public void setActivePage(HttpServletRequest request, String pageCode) {
- 
+
 		userSessionService.setActivePage(request, pageCode);
 	}
 
@@ -163,7 +164,7 @@ public class BaseController {
 		}
 		return null;
 	}
-	
+
 	public static Cookie getJSessionIDCookie(HttpServletRequest request) {
 
 		return getCookie(SessionUtil.JSESSSIONID, request.getCookies());
@@ -189,51 +190,56 @@ public class BaseController {
 		try {
 			response.sendRedirect(url);
 		} catch (IOException e) {
-			
+
 			e.printStackTrace();
 		}
 	}
 
 	private static void addResourcePaths(ModelAndView modelAndView, String resourceName, String... paths) {
-		List<KeyValue> resoucePaths = new ArrayList<>();
+		List<KeyValue<String, String>> resoucePaths = new ArrayList<>();
 		for (int i = 0; i < paths.length; i++) {
-			resoucePaths.add(KeyValue.builder().value(paths[i]).build());
+			KeyValue<String, String> keyValue = new KeyValue<String, String>();
+			keyValue.setValue(paths[i]);
+			
+			resoucePaths.add(keyValue);
 			log.info("{}. Add {} to {} , value: {}", i, resourceName, modelAndView.getViewName(), paths[i]);
 		}
 		setModelAttribute(modelAndView, resourceName, resoucePaths);
 	}
-	
+
 	private static void setModelAttribute(ModelAndView modelAndView, String attrName, Object attrValue) {
-		if(null == attrValue) { return ; }
+		if (null == attrValue) {
+			return;
+		}
 		modelAndView.getModel().put(attrName, attrValue);
 	}
 
 	public static void addStylePaths(ModelAndView modelAndView, String... paths) {
-		if(null == paths) {
+		if (null == paths) {
 			return;
 		}
 		addResourcePaths(modelAndView, "additionalStylePaths", paths);
 	}
 
 	public static void addJavaScriptResourcePaths(ModelAndView modelAndView, String... paths) {
-		if(null == paths) {
+		if (null == paths) {
 			return;
 		}
 		addResourcePaths(modelAndView, "additionalScriptPaths", paths);
 	}
 
 	public static void addTitle(ModelAndView modelAndView, String title) {
-		if(null == title || title.isEmpty()) {
+		if (null == title || title.isEmpty()) {
 			return;
 		}
 		setModelAttribute(modelAndView, "title", title);
 	}
 
 	public static void addPageUrl(ModelAndView modelAndView, String pageUrl) {
-		if(null == pageUrl || pageUrl.isEmpty()) {
+		if (null == pageUrl || pageUrl.isEmpty()) {
 			return;
 		}
 		setModelAttribute(modelAndView, "pageUrl", pageUrl);
-		
+
 	}
 }

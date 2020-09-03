@@ -70,7 +70,7 @@ public class LogProxyFactory {
 					String[] params = null;
 					try {
 						params = discoverer.getParameterNames(invocation.getMethod()); 
-					}catch ( Exception e) {
+					}catch ( Exception |  NoSuchMethodError e) {
 						// TODO: handle exception
 					}
 					if(params == null) {

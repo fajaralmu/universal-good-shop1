@@ -11,7 +11,7 @@
 		style="border: solid 1px blue; display: none">
 		<div id="monthly-detail-title" style="padding: 5px;">
 			<button class="btn btn-sm btn-secondary"
-				onclick="hide('monthly-detail-wrapper'); hide('filter-wrapper'); show('btn-show-monthly')">Close</button>
+				onclick="hide('monthly-detail-wrapper'); show('btn-show-monthly')">Close</button>
 			<h3 id="title">
 				Monthly Detail <small id="info-period"></small>
 			</h3>
@@ -85,16 +85,16 @@
 						const month = cashflowSupplies.month;
 						const year = cashflowSupplies.year;
 
-						const chartLegend = "<p style=\"color:orange; font-size:0.8em;text-align:right\">"
+						const chartLegend = "<span class=\"badge badge-warning\">"
 								+ beautifyNominal(cashflowSupplies.amount)
 								+ " ("
 								+ beautifyNominal(cashflowSupplies.count)
-								+ " unit)</p>"
-								+ "<p style=\"color:green; font-size:0.8em;text-align:right\">"
+								+ " unit)</span>"
+								+ "<span class=\"badge badge-primary\">"
 								+ beautifyNominal(cashflowPurchases.amount)
 								+ " ("
 								+ beautifyNominal(cashflowPurchases.count)
-								+ " unit)</p> setting= <style>width:200px</style>";
+								+ " unit)</span> setting= <style>width:200px</style>";
 
 						const chartBody = //supply
 						"<div class=\"rounded-right chart-item-hr\" "+
@@ -107,9 +107,9 @@
 
 						const columns = [
 								i + 1,
-								"<span class=\"clickable\" onclick=\"loadMonthlyCashflow("
+								"<a href=\"#\" class=\"badge badge-info\" onclick=\"loadMonthlyCashflow("
 										+ month + "," + year + ")\"> "
-										+ ( monthNames[month - 1] + "-" + year) + "</span>",
+										+ ( monthNames[month - 1] + "-" + year) + "</a>",
 								chartLegend, chartBody ];
 
 						tableColumns.push(columns);
