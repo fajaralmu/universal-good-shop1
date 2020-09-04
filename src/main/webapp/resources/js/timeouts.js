@@ -57,9 +57,9 @@ function animateObjStyle(element, attr, id, modifyOperation, finalHandler) {
 
 	const attributeVal = element.style[attr];
 	var newValue = modifyOperation(element, attributeVal);
-	console.debug("newValue: ", newValue);
+//	console.debug("newValue: ", newValue);
 	if (newValue == null) {
-		clearTimeout(timeOuts[id]);
+		clearTimeouts(id);
 		if (finalHandler) {
 			finalHandler();
 		}
@@ -72,23 +72,44 @@ function animateObjStyle(element, attr, id, modifyOperation, finalHandler) {
 	}
 }
 
+function clearTimeouts(id){
+	if(!timeOuts[id]){ return; }
+	
+	for (var i = 0; i < timeOuts[id].length; i++) {
+		clearTimeout(timeOuts[id][i]);
+	}
+	timeOuts[id] = null;
+}
+
+function registerTimeout(id){
+	timeOuts[id] = [];
+}
+
+function addTimeout(id, timeoutId){
+	if(!timeOuts[id]){
+		registerTimeout(id);
+	}
+	timeOuts[id].push(timeoutId);
+}
+
 function updateWidthAsync(el, maxVal, incrementBy, finalHandler) {
 
 	const id = new Date().getMilliseconds() + "_" + incrementBy + "_"
 			+ maxVal;
-	timeOuts[id] = setTimeout(function() {
+	var timeoutId = setTimeout(function() {
 		
 		updateStyleAsync(el, id, 'width', maxVal, incrementBy, finalHandler);
 		
 	}, 1);
+	addTimeout(id, timeoutId);
 }
 
 function updateStyleAsync(el, id, styleAttr, maxVal, incrementBy, finalHandler) {
 	/*const id = new Date().getMilliseconds() + "_" + incrementBy + "_"
 			+ maxHeight;*/
-	console.debug("updateStyleAsync");
+//	console.debug("updateStyleAsync");
 	const modifyOpr = function(el, styleVal) {
-		console.debug("styleVal: ", styleVal);
+	//	console.debug("styleVal: ", styleVal);
 		var withPercentage = false;
 		var withPixel = false;
 		
@@ -102,7 +123,7 @@ function updateStyleAsync(el, id, styleAttr, maxVal, incrementBy, finalHandler) 
 		}
 		
 		styleVal = +styleVal;
-		console.debug('styleVal after', styleVal, "max val ", maxVal, incrementBy);
+	//	console.debug('styleVal after', styleVal, "max val ", maxVal, incrementBy);
 		var end;
 		var retVal;
 		
@@ -127,7 +148,9 @@ function updateStyleAsync(el, id, styleAttr, maxVal, incrementBy, finalHandler) 
 		}
 		return retVal;
 	}
-	timeOuts[id] = setTimeout(function() {
+	var timeoutId = setTimeout(function() {
 		animateObjStyle(el, styleAttr, id, modifyOpr, finalHandler);
 	}, 1);
+	
+	addTimeout(id, timeoutId);
 }
