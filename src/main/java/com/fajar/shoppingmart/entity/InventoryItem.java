@@ -83,7 +83,7 @@ public class InventoryItem extends BaseEntity {
 		return getCount() - _productFlow2.getCount() >= 0;
 	}
 
-	public static InventoryItem getAndAddNewProduct(ProductFlow productFlow2) {
+	public static InventoryItem createAndAddNewProduct(ProductFlow productFlow2) {
 		InventoryItem inventoryItem = new InventoryItem(productFlow2);
 		inventoryItem.addNewProduct();
 		return inventoryItem;

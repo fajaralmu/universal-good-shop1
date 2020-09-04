@@ -52,10 +52,10 @@ public class MvcAdminController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/home" })
-	@CustomRequestInfo(title = "Dashboard", pageUrl = "shop/dashboard-page", stylePaths = {"dashboard", "filter-box"})
+	@CustomRequestInfo(title = "Dashboard", pageUrl = "shop/dashboard-page", stylePaths = { "dashboard", "filter-box" })
 	public String menuDashboard(Model model, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-		Calendar cal = Calendar.getInstance(); 
+		Calendar cal = Calendar.getInstance();
 		setActivePage(request);
 
 		model.addAttribute("menus", componentService.getDashboardMenus(request));
@@ -67,7 +67,7 @@ public class MvcAdminController extends BaseController {
 		model.addAttribute("minYear", minYear);
 		model.addAttribute("maxYear", cal.get(Calendar.YEAR));
 		model.addAttribute("months", DateUtil.months());
-		model.addAttribute("years",DateUtil.yearArray(minYear, cal.get(Calendar.YEAR)));
+		model.addAttribute("years", DateUtil.yearArray(minYear, cal.get(Calendar.YEAR)));
 		return basePage;
 	}
 
@@ -76,7 +76,7 @@ public class MvcAdminController extends BaseController {
 	public String productDetail(@PathVariable(required = true) String code, Model model, HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 		Calendar cal = Calendar.getInstance();
- 
+
 		Map<String, Object> fieldsFilter = new HashMap<String, Object>();
 		fieldsFilter.put("code", code);
 		fieldsFilter.put("withStock", true);
@@ -153,10 +153,11 @@ public class MvcAdminController extends BaseController {
 //	}
 
 	@RequestMapping(value = { "/transaction/in", "/transaction/in/", "/transaction/in/{transactionCode}" })
-	@CustomRequestInfo(scriptPaths = { "transaction" }, title = "Purchase", pageUrl = "shop/transaction-purchasing-page")
+	@CustomRequestInfo(scriptPaths = { "transaction" }, stylePaths = {
+			"transaction-sell-purc" }, title = "Purchase", pageUrl = "shop/transaction-purchasing-page")
 	public String purchasingTransaction(@PathVariable(required = false) String transactionCode, Model model,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
- 
+
 		if (null != transactionCode) {
 			model.addAttribute("requestCode", transactionCode);
 		}
@@ -166,10 +167,11 @@ public class MvcAdminController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/transaction/out", "/transaction/out/", "/transaction/out/{transactionCode}" })
-	@CustomRequestInfo(scriptPaths = { "transaction" }, title = "Selling", pageUrl = "shop/transaction-selling-page")
+	@CustomRequestInfo(scriptPaths = { "transaction" }, stylePaths = {
+			"transaction-sell-purc" }, title = "Selling", pageUrl = "shop/transaction-selling-page")
 	public String sellingTransaction(@PathVariable(required = false) String transactionCode, Model model,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
- 
+
 		if (null != transactionCode) {
 			model.addAttribute("requestCode", transactionCode);
 		}
@@ -178,10 +180,11 @@ public class MvcAdminController extends BaseController {
 
 		return basePage;
 	}
-	
+
 	@RequestMapping(value = { "/sidemenudisplayorder" })
-	@CustomRequestInfo(title = "Menu Sequence Order", pageUrl = "shop/sequenceordering", stylePaths = { "sequenceordering" })
-	public String sideMenuDisplayOrder(Model model, HttpServletRequest request, HttpServletResponse response)  {
+	@CustomRequestInfo(title = "Menu Sequence Order", pageUrl = "shop/sequenceordering", stylePaths = {
+			"sequenceordering" })
+	public String sideMenuDisplayOrder(Model model, HttpServletRequest request, HttpServletResponse response) {
 
 //		model.addAttribute("pages", componentService.getAllPages());
 		model.addAttribute("idField", EntityUtil.getIdFieldOfAnObject(Page.class).getName());

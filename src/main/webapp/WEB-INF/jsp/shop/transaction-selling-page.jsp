@@ -4,30 +4,28 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
 <div class="content">
-	<div id="content-receipt" style="display: none">
-		<h2>Receipt</h2>
 
-		<table id="table-receipt" style="layout: fixed" class="table">
+	<jsp:include page="../transaction-component/receipt.jsp"></jsp:include>
 
-		</table>
-		<button id="btn-close-receipt" class="btn btn-secondary"
-			onclick="hide('content-receipt'); show('content-form')">Ok</button>
-		<button id="btn-print-receipt" class="btn btn-secondary">Print</button>
-	</div>
 	<div id="content-form">
 		<h2>Selling</h2>
 		<table style="layout: fixed" class="table">
 			<tr>
 				<td>
 					<div class="form">
-						<p>ProductName</p>
-						<input id="input-product" type="text" onkeyup="loadProductList()"
-							class="form-control" /> <br /> <select style="width: 300px"
-							id="product-dropdown" class="form-control" multiple="multiple">
-						</select>
-						<hr>
-						<div class="panel"
-							style="display: grid; grid-template-columns: 35% 55%; grid-row-gap: 5px">
+						<div class="card">
+							<div class="card-header">Product</div>
+							<div class="card-body">
+								<div class="dynamic-dropdown-form">
+									<input id="input-product" placeholder="product name"
+										type="text" onkeyup="loadProductList()" class="form-control" />
+									<select id="product-dropdown" class="form-control"
+										multiple="multiple">
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="panel trans-form" style="width: 50%">
 							<p>Unit :</p>
 							<span id="unit-name"></span>
 							<p>Stock</p>
@@ -49,13 +47,12 @@
 					</div>
 				</td>
 				<td><jsp:include
-						page="../transaction-selling/customer-form.jsp"></jsp:include></td>
+						page="../transaction-component/customer-form.jsp"></jsp:include></td>
 			</tr>
 			<tr>
 			</tr>
 		</table>
-		<div
-			style="display: grid; grid-template-columns: 45% 45%; grid-row-gap: 5px">
+		<div class="trans-form">
 			<p>Total Price</p>
 			<input type="number" id="total-price-label" disabled="disabled"
 				class="form-control" />
@@ -157,7 +154,9 @@
 		var requestObject = {
 			'entity' : 'product',
 			'filter' : {
-				'fieldsFilter' : { "name" : inputProductName.value }
+				'fieldsFilter' : {
+					"name" : inputProductName.value
+				}
 			}
 		};
 
@@ -192,12 +191,12 @@
 			alert("Product is not specified!");
 			return;
 		}
-		
-		if(getCurrentProductFlow(currentProduct.code)){
+
+		if (getCurrentProductFlow(currentProduct.code)) {
 			alert("product is exist in the cart!");
 			return;
 		}
-		
+
 		const inputQty = +inputQuantityField.value;
 
 		if (!inputQty || inputQty > quantityField.value * 1) {
@@ -227,8 +226,8 @@
 	}
 
 	function getCurrentProductFlow(code) {
-		if (productFlows) { 
-			for (var i = 0; i < productFlows.length; i++) { 
+		if (productFlows) {
+			for (var i = 0; i < productFlows.length; i++) {
 				if (productFlows[i].product.code == code) {
 					return productFlows[i];
 				}
@@ -260,9 +259,9 @@
 	}
 
 	function setCurrentProduct(entity, loadNewStock) {
-		inputProductName.value = entity.product.name; 
+		inputProductName.value = entity.product.name;
 		priceField.value = beautifyNominal(entity.product.price);
-		quantityField.value = entity.product.count; 
+		quantityField.value = entity.product.count;
 
 		unitNameLabel.innerHTML = entity.product.unit.name;
 

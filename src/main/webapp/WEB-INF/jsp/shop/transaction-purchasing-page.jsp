@@ -3,34 +3,28 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
-
 <div class="content">
-	
-	<div id="content-receipt" style="display: none">
-		<h2>Receipt</h2>
-		
-		<table id="table-receipt" style="layout: fixed" class="table">
-			
-		</table>	
-		<button id="btn-close-receipt" class="btn btn-secondary" onclick="hide('content-receipt'); show('content-form')"
-		 >Ok</button>
-		 <button id="btn-print-receipt" class="btn btn-secondary" >Print</button>
-	</div>
-	
+
+	<jsp:include page="../transaction-component/receipt.jsp"></jsp:include>
+
 	<div id="content-form">
-		<h2>Add New Stock</h2>
+		<h2>Purchasing</h2>
 		<table style="layout: fixed" class="table">
 			<tr>
 				<td>
 					<div class="form">
-						<p>ProductName</p>
-						<input id="input-product" type="text" onkeyup="loadPrductList()"
-							class="form-control" /> <br /> <select style="width: 200px"
-							id="product-dropdown" class="form-control" multiple="multiple">
-						</select>
-						<hr>
-						<p>Product Detail</p>
-						<div class="panel">
+						<div class="card">
+							<div class="card-header">Product</div>
+							<div class="card-body">
+								<div class="dynamic-dropdown-form">
+									<input id="input-product" placeholder="product name"
+										type="text" onkeyup="loadPrductList()" class="form-control" /><select
+										id="product-dropdown" class="form-control" multiple="multiple">
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="panel trans-form">
 							<p>
 								Unit :<span id="unit-name"></span>
 							</p>
@@ -41,32 +35,18 @@
 							<input type="number" class="form-control" id="product-quantity"
 								required="required" />
 							<p>Price @Unit</p>
-							<input  class="form-control" id="product-price"
+							<input class="form-control" id="product-price"
 								required="required" />
 							<p>Expiry Date</p>
 							<input type="date" class="form-control" id="product-exp-date" />
-							<p></p>
-							<button class="btn btn-default" id="add-product"
+
+							<button class="btn btn-info btn-sm" id="add-product"
 								onclick="addToChart()">Add</button>
 						</div>
 					</div>
 				</td>
-				<td>
-					<div class="form">
-						<p>Supplier Name</p>
-						<input id="input-supplier" type="text" onkeyup="loadSupplierList()"
-							class="form-control" /> <br /> <select style="width: 200px"
-							id="supplier-dropdown" class="form-control" multiple="multiple">
-						</select>
-						<hr>
-						<p>Supplier Detail</p>
-						<div class="panel">
-							<h3 id="supplier-name"></h3>
-							<p id="supplier-address"></p>
-							<p id="supplier-contact"></p>
-						</div>
-					</div>
-				</td>
+				<td><jsp:include
+						page="../transaction-component/supplier-form.jsp"></jsp:include></td>
 			</tr>
 			<tr>
 			</tr>
@@ -98,7 +78,7 @@
 				</tr>
 			</thead>
 			<tbody id="product-flows">
-	
+
 			</tbody>
 		</table>
 	</div>
@@ -116,17 +96,15 @@
 	var productFlowTable = byId("product-flows");
 	var tableReceipt = byId("table-receipt");
 
-	var inputSupplierField = byId("input-supplier");
-	var supplierListDropDown = byId("supplier-dropdown");
 	function send() {
 		if (!confirm("Are You Ready To Submit Transaction?"))
 			return;
 
-		if(!currentSupplier){
+		if (!currentSupplier) {
 			alert("Supplier is not defined!");
 			return;
 		}
-		
+
 		var requestObject = {
 			"supplier" : currentSupplier,
 			"productFlows" : productFlows
@@ -146,32 +124,16 @@
 				});
 	}
 
-	function showReceipt(transaction){
-		const tableColumns = [
-			["Code", transaction.code,""],
-			["Date", new Date(transaction.transactionDate),""],
-			["Type", transaction.type,""],
-			["Supplier", transaction.supplier.name,""]
-		];
-		
-		const tbody  = createTBodyWithGivenValue(tableColumns);
-		tableReceipt.innerHTML = tbody.innerHTML; 
-		
-		processReceipt(transaction); 
-	} 
-	
-	function loadSupplierList() {
-		 
-		const filterValue = inputSupplierField.value; 
-		
-		loadStakeHolderList(supplierListDropDown, 'supplier', 'name', filterValue, 
-				function(entity) {
-					inputSupplierField.value = entity.name;
-					byId("supplier-name").innerHTML = entity.name;
-					byId("supplier-address").innerHTML = entity.address;
-					byId("supplier-contact").innerHTML = entity.contact;
-					currentSupplier = entity;
-		});
+	function showReceipt(transaction) {
+		const tableColumns = [ [ "Code", transaction.code, "" ],
+				[ "Date", new Date(transaction.transactionDate), "" ],
+				[ "Type", transaction.type, "" ],
+				[ "Supplier", transaction.supplier.name, "" ] ];
+
+		const tbody = createTBodyWithGivenValue(tableColumns);
+		tableReceipt.innerHTML = tbody.innerHTML;
+
+		processReceipt(transaction);
 	}
 
 	function loadPrductList() {
@@ -181,27 +143,26 @@
 			"filter" : {
 				"page" : 0,
 				"limit" : 10,
-				"fieldsFilter": {
-					"name": inputProductField.value
+				"fieldsFilter" : {
+					"name" : inputProductField.value
 				}
 			}
-		}; 
+		};
 
-		loadEntityList("<spring:url value="/api/entity/get" />", requestObject,
-				function(entities) {
-					for (let i = 0; i < entities.length; i++) {
-						const entity = entities[i];
-						const option = createHtmlTag({
-							tagName: 'option',
-							id:  entity["id"],
-							innerHTML : entity['name'],
-							onclick : function() {
-								setCurrentProduct(entity);
-							}  
-						}); 
-						productListDropDown.append(option);
+		loadEntityList(ENTITY_GET_URL, requestObject, function(entities) {
+			for (let i = 0; i < entities.length; i++) {
+				const entity = entities[i];
+				const option = createHtmlTag({
+					tagName : 'option',
+					id : entity["id"],
+					innerHTML : entity['name'],
+					onclick : function() {
+						setCurrentProduct(entity);
 					}
 				});
+				productListDropDown.append(option);
+			}
+		});
 	}
 
 	/***COMPONENT OPERATION***/
@@ -216,7 +177,7 @@
 			return;
 		}
 
-		let ID = Math.floor(Math.random() * 1000);
+		let ID = randomID();
 		if (currentProductFlow != null && currentProductFlow.id != null) {
 			ID = currentProductFlow.id;
 			removeFromProductFlowsById(ID);
@@ -230,17 +191,22 @@
 
 		};
 
-		productFlows.push(productFlow);
-		populateProductFlow(productFlows);
+		addProductFlow(productFlow);
 		console.log("Product Flows", productFlows);
 		currentProduct = null;
 		currentProductFlow = null;
 		clearProduct();
 	}
 
+	function addProductFlow(productFlow) {
+		productFlows.push(productFlow);
+		populateProductFlow(productFlows);
+	}
+
 	function clearProduct() {
-		clearElement(inputProductField, priceField, quantityField, expiryDateField);
-		clearElement("unit-name", "product-dropdown", "current-price"); 
+		clearElement(inputProductField, priceField, quantityField,
+				expiryDateField);
+		clearElement("unit-name", "product-dropdown", "current-price");
 	}
 
 	function setCurrentProduct(entity) {
@@ -250,16 +216,16 @@
 		currentProduct = entity;
 
 	}
- 
+
 	function populateProductFlow(productFlows) {
-		doPopulateProductFlow(productFlows, function(i, productFlow, row){
+		doPopulateProductFlow(productFlows, function(i, productFlow, row) {
 			row.append(createCell((i * 1 + 1) + ""));
 			row.append(createCell(productFlow.id));
 			row.append(createCell(productFlow.product.name));
 			row.append(createCell(productFlow.expiryDate));
 			row.append(createCell(productFlow.count));
 			row.append(createCell(beautifyNominal(productFlow.price)));
-		}); 
+		});
 	}
 
 	function setCurrentProductFlow(entity) {
@@ -274,22 +240,22 @@
 	<script type="text/javascript">
 		var requestTransactionCode = "${requestCode}";
 		const requestObject = {
-			    "entity": "transaction",
-			    "filter": {
-			        "limit": 1,
-			        "orderBy": null,
-			        "orderType": null,
-			        "exacts":true,
-			        "contains":false,
-			        "fieldsFilter": {
-			            "code": requestTransactionCode,
-			            "type":"IN"
-			        }
-			    }
-			};
-		doGetById("<spring:url value="/api/entity/get" />", requestObject, function(entity){
-			showReceipt(entity);
-		});	
-		
+			"entity" : "transaction",
+			"filter" : {
+				"limit" : 1,
+				"orderBy" : null,
+				"orderType" : null,
+				"exacts" : true,
+				"contains" : false,
+				"fieldsFilter" : {
+					"code" : requestTransactionCode,
+					"type" : "IN"
+				}
+			}
+		};
+		doGetById("<spring:url value="/api/entity/get" />", requestObject,
+				function(entity) {
+					showReceipt(entity);
+				});
 	</script>
 </c:if>
