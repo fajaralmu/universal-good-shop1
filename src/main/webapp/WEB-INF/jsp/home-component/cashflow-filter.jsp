@@ -4,8 +4,8 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div id="filter-wrapper" style="display: none;">
-	<div style="display: grid; grid-template-column: 50px 300px">
-		<div style="width: 50px">
+	<div style="display: grid; grid-template-columns: 55px 300px">
+		<div style="width: 50px; z-index: 1">
 			<button id="btn-show-filter"
 				class="btn btn-info btn-sm btn-filter-toggle" onclick="showFilter()">Show
 				Filter</button>
@@ -73,17 +73,19 @@
 		//show('filter-detail'); 
 		show('btn-close-filter');
 		hide('btn-show-filter');
-		filterWrapper.style.width = '50px';
+		filterWrapper.style.width = '55px';
 		updateWidthAsync(filterWrapper, 350, 2, null);
 	}
 
 	function closeFilter() {
-
-		filterForm.setAttribute("hidden", "true");
+ 
 		//hide('filter-detail'); 
 		hide('btn-close-filter');
 		show('btn-show-filter');
 		//filterWrapper.style.width = '100px';
-		updateWidthAsync(filterWrapper, 50, -2, null);
+		updateWidthAsync(filterWrapper, 55, -2, function(){
+			filterForm.setAttribute("hidden", "true");
+		});
+		
 	}
 </script>
