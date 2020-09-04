@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,9 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("web")
 @Slf4j
-public class MvcUtilController extends BaseController{ 
-	
-	public MvcUtilController() {
+public class MvcWebController extends BaseController {
+
+	public MvcWebController() {
 		log.info("-----------------MvcUtilController------------------");
 	}
 
@@ -41,43 +42,55 @@ public class MvcUtilController extends BaseController{
 		// to the view-resolver(s) in usual way.
 		// Note that the exception is NOT available to this view (it is not added
 		// to the model) but see "Extending ExceptionHandlerExceptionResolver"
-		// below. 
+		// below.
 		return "error/notfound";
 	}
-	
+
 	@RequestMapping(value = "app-error", method = RequestMethod.GET)
-	public ModelAndView renderErrorPage(HttpServletRequest httpRequest) {
+	public ModelAndView renderErrorPage(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
 		ModelAndView errorPage = new ModelAndView("error/errorPage");
-		
+
 		int httpErrorCode = getErrorCode(httpRequest);
-		 errorPage.addObject("errorCode", httpErrorCode);
-		 errorPage.addObject("errorMessage", getAttribute(httpRequest, "javax.servlet.error.exception"));
-		 printHttpRequestAttrs(httpRequest);
+
+		if (200 == httpErrorCode) {
+			httpResponse.sendRedirect("/index");
+			return null;
+		}
+
+		errorPage.addObject("errorCode", httpErrorCode);
+		errorPage.addObject("errorMessage", getAttribute(httpRequest, "javax.servlet.error.exception"));
+		printHttpRequestAttrs(httpRequest);
 		return errorPage;
 	}
-	
+
 	private void printHttpRequestAttrs(HttpServletRequest httpRequest) {
 		Enumeration<String> attrNames = httpRequest.getAttributeNames();
 		log.debug("========= error request http attrs ========");
 		int number = 1;
-		while(attrNames.hasMoreElements()) {
+		while (attrNames.hasMoreElements()) {
 			String attrName = attrNames.nextElement();
 			Object attributeValue = httpRequest.getAttribute(attrName);
-			log.debug(number+". "+attrName+" : "+attributeValue + " || TYPE: " + ( attributeValue == null ? "" : attributeValue.getClass()));
+			log.debug(number + ". " + attrName + " : " + attributeValue + " || TYPE: "
+					+ (attributeValue == null ? "" : attributeValue.getClass()));
 			number++;
 		}
 		log.debug("===== ** end ** ====");
 	}
 
 	private int getErrorCode(HttpServletRequest httpRequest) {
+		if (null == httpRequest.getAttribute("javax.servlet.error.status_code")) {
+			return 200;
+		}
 		try {
-			return (Integer) httpRequest.getAttribute("javax.servlet.error.status_code");
-		}catch (Exception e) {
-			
+			Integer status_code = (Integer) httpRequest.getAttribute("javax.servlet.error.status_code");
+			log.debug("status_code:{}", status_code);
+			return status_code;
+		} catch (Exception e) {
+
 			return 500;
 		}
 	}
-	
+
 	private Object getAttribute(HttpServletRequest httpServletRequest, String name) {
 		return httpServletRequest.getAttribute(name);
 	}
