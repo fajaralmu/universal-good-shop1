@@ -45,7 +45,7 @@
 		<p></p>
 		<div class="row">
 
-			<div class="col-sm-3">
+			<div class="col-md-4">
 				<div class="card" style="width: 100%;">
 					<img class="card-img-top" width="100" height="150"
 						src="<spring:url value="/res/img/income.jpg" />"
@@ -70,7 +70,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-sm-3">
+			<div class="col-md-4">
 				<div class="card" style="width: 100%;">
 					<img class="card-img-top" width="100" height="150"
 						src="<spring:url value="/res/img/wallet1.png" />"
@@ -105,16 +105,16 @@
 	</div>
 </div>
 <script type="text/javascript">
-	var infoSales = _byId("count-OUT");
-	var infoTotalIncome = _byId("amount-OUT");
-	var infoSpent = _byId("count-IN");
-	var infoTotalSpent = _byId("amount-IN");  
+	const infoSales = _byId("count-OUT");
+	const infoTotalIncome = _byId("amount-OUT");
+	const infoSpent = _byId("count-IN");
+	const infoTotalSpent = _byId("amount-IN");  
 	
-	var btnDetailIn = _byId("btn-detail-IN");
-	var btnDetailOut = _byId("btn-detail-OUT"); 
+	const btnDetailIn = _byId("btn-detail-IN");
+	const btnDetailOut = _byId("btn-detail-OUT"); 
 
-	var selectMonth = _byId("select-month");
-	var selectYear = _byId("select-year"); 
+	const selectMonth = _byId("select-month");
+	const selectYear = _byId("select-year"); 
 
 	function fetchCashflow(month, year, module) {
 		infoLoading();
@@ -174,6 +174,6 @@
 	 
 	
 	
-	fetchCashflow(${currentMonth}, ${currentYear}, "IN");
-	fetchCashflow(${currentMonth}, ${currentYear}, "OUT");
+	fetchCashflow(parseInt("${currentMonth}"), parseInt("${currentYear}"), "IN");
+	fetchCashflow(parseInt("${currentMonth}"), parseInt("${currentYear}"), "OUT");
 </script>
