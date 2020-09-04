@@ -53,7 +53,7 @@ public class MvcWebController extends BaseController {
 		int httpErrorCode = getErrorCode(httpRequest);
 
 		if (200 == httpErrorCode) {
-			httpResponse.sendRedirect("/index");
+			httpResponse.sendRedirect(httpRequest.getContextPath()+"/index");
 			return null;
 		}
 
