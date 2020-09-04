@@ -1,7 +1,7 @@
 .trans-form {
 	display: grid;
 	grid-template-columns: 35% 55%;
-	grid-row-gap: 5px
+	grid-row-gap: 5px;
 	grid-column-gap: 5px
 }
 
