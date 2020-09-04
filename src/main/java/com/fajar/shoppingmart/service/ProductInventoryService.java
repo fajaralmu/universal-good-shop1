@@ -151,6 +151,8 @@ public class ProductInventoryService {
 			long productId = productFlow.getProduct().getId();
 			InventoryItem inventoryItemV2 = inventoryItemRepository.findTop1ByProduct_IdAndNewVersion(productId, true);
 
+			log.debug("inventoryItemV2, productID: {} => : {}", productId, inventoryItemV2 == null ? "NULL" : inventoryItemV2.getId());
+			
 			if (transactionType.equals(TYPE_OUT)) {
 				// Check Stock
 				if (!inventoryItemV2.hasEnoughStock(productFlow)) {
@@ -162,11 +164,9 @@ public class ProductInventoryService {
 			} else if (transactionType.equals(TYPE_IN)) {
 
 				if (null == inventoryItemV2) {
-					log.info("add new record of inventoryItemV2");
-
-					inventoryItemV2 = new InventoryItem();
-					inventoryItemV2.setProduct(productFlow.getProduct());
-					inventoryItemV2.setCount(productFlow.getCount());
+					log.info("add new record of inventoryItemV2"); 
+					inventoryItemV2 = new InventoryItem(productFlow.getProduct(), productFlow.getCount());
+					
 				} else {
 					log.info("inventoryItemV2 current count: {}", inventoryItemV2.getCount());
 					log.info("productFlow count: {}", productFlow.getCount());
@@ -177,7 +177,9 @@ public class ProductInventoryService {
 				}
 
 			}
-			repositoryCustom.saveObject(inventoryItemV2);
+			
+			InventoryItem ret =  inventoryItemRepository.save(inventoryItemV2);//repositoryCustom.saveObject(inventoryItemV2);
+			log.debug("Update inventory item: {}, count: {}", ret.getId(), ret.getCount());
 			progressService.sendProgress(1, savedProductFlows.size(), 30, false, requestId);
 
 		}
@@ -196,8 +198,7 @@ public class ProductInventoryService {
 		for (ProductFlow productFlow : savedProductFlows) {
 
 			// INSERT new inventory item row
-			InventoryItem inventoryItem = new InventoryItem(productFlow);
-			inventoryItem.addNewProduct();
+			InventoryItem inventoryItem = InventoryItem.getAndAddNewProduct(productFlow); 
 			repositoryCustom.saveObject(inventoryItem);
 		}
 	}

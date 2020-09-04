@@ -165,7 +165,7 @@ public class BaseController {
 				}
 			}
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			log.error("ERROR GET COOKIE NAME: {}", name);
 		}
 		return null;
 	}

@@ -251,12 +251,12 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 
 					log.debug("success add new record of {} with new ID: {}", entity.getClass(), newId);
 				} else {
-					log.debug("Will update entity ");
+					log.debug("Will update entity :{}", entity.getId());
 					entity.setModifiedDate(new Date());
 
 					result = (T) hibernateSession.merge(entity);
 
-					log.debug("success update record of {}", entity.getClass());
+					log.debug("success update record of {}  ", entity.getClass() );
 				}
 
 				log.info("success save Object of {} >> savedObject: {}", entity.getClass(), result);
@@ -293,14 +293,19 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 				throw new Exception("persistenceOperation must not be NULL");
 			}
 			if (null == currentTransaction) {
+				log.info("Hibernate begin new Transaction");
 				currentTransaction = hibernateSession.beginTransaction();
 			}
 
 			T result = persistenceOperation.doPersist(hibernateSession);
 
 			if (isTransactionNotKept()) {
+				hibernateSession.flush();
 				currentTransaction.commit();
+				
 				log.info("==**COMMITED Transaction**==");
+			}else {
+				log.info("Not committing transaction");
 			}
 
 			log.info("success persist operation commited: {}", removeTransactionAfterPersistence);
