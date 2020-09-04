@@ -10,8 +10,8 @@
 	var ctxPath = "${contextPath}";
 	function login() {
 
-		var username = _byId("user-name").value;
-		var password = _byId("password").value;
+		var username = byId("user-name").value;
+		var password = byId("password").value;
 		var request = new XMLHttpRequest();
 		infoLoading();
 		var requestObject = {

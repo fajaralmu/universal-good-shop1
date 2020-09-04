@@ -83,14 +83,14 @@
 	var fields = document.getElementsByClassName("input-field");
 	var filterFields = document.getElementsByClassName("filter-field");
 
-	var entityTBody = _byId("entity-tb");
-	var entityTableHead = _byId("entity-th");
-	var entitiesTable = _byId("list-table");
+	var entityTBody = byId("entity-tb");
+	var entityTableHead = byId("entity-th");
+	var entitiesTable = byId("list-table");
 
-	var filterField = _byId("filter-field");
-	var filterValue = _byId("filter-value");
+	var filterField = byId("filter-field");
+	var filterValue = byId("filter-value");
 
-	var navigationPanel = _byId("navigation-panel");
+	var navigationPanel = byId("navigation-panel");
 	var orderBy = null;
 	var orderType = null;
 
@@ -98,13 +98,13 @@
 	var currentDetailEntityName = "";
 	var currentDetailFieldName = "";
 	var currentDetailOffset = 0;
-	var detailTable = _byId("table-detail");
+	var detailTable = byId("table-detail");
 	/*
 		add single image
 	 */
 	function addImagesData(id) {
-		const imageTag = _byId(id + "-display");
-		toBase64(_byId(id), function(result) {
+		const imageTag = byId(id + "-display");
+		toBase64(byId(id), function(result) {
 			const imageData = {
 				id : result
 			};
@@ -118,8 +118,8 @@
 		cancel single image
 	 */
 	function cancelImagesData(id) {
-		_byId(id).value = null;
-		const imageTag = _byId(id + "-display");
+		byId(id).value = null;
+		const imageTag = byId(id + "-display");
 		imageTag.src = imageTag.getAttribute("originaldata");
 		//remove from imagesData object
 		imagesData[id] = null;
@@ -128,7 +128,7 @@
 	//load dropdown list for multiple select
 	function loadList(inputElement) {
 
-		const element = _byId(inputElement.name);
+		const element = byId(inputElement.name);
 		element.innerHTML = "";
 		//converter field
 		const itemField = element.getAttribute("itemNameField");
@@ -184,11 +184,11 @@
 	}
 
 	function setPage() {
-		const selectedPage = _byId("input-page").value - 1;
+		const selectedPage = byId("input-page").value - 1;
 
 		if (selectedPage < 0) {
 			alert("Invalid Page : " + selectedPage + "!!");
-			_byId("input-page").value = 1;
+			byId("input-page").value = 1;
 			return;
 		}
 
@@ -262,7 +262,7 @@
 			const filterValue = filterField.value;
 			if (filterValue != "") {
 				var fieldName = filterField.getAttribute("field");
-				const checkBoxExact = _byId("checkbox-exact-" + fieldName);
+				const checkBoxExact = byId("checkbox-exact-" + fieldName);
 
 				if (checkBoxExact != null && checkBoxExact.checked) {
 					fieldName = fieldName + "[EXACTS]";
@@ -589,7 +589,7 @@
 		var entityValue = entity[fieldName];
 		var entityValueAsObject = entityValue;
 		//element
-		const elementField = _byId(fieldName);  
+		const elementField = byId(fieldName);  
 
 		//handle object type value
 		if (isObject(entityValue) ) {
@@ -613,7 +613,7 @@
 
 				elementField.append(option);
 				//set input value same as converter field name
-				const inputField = _byId("input-" + fieldName);
+				const inputField = byId("input-" + fieldName);
 				inputField.value = entityValueAsObject[objectItemName];
 			}
 			else if(isMultipleSelect(fieldName)){
@@ -642,7 +642,7 @@
 		}
 		//handle image type value
 		else if (isImage(fieldName)) {
-			const displayElement = _byId(fieldName + "-display");
+			const displayElement = byId(fieldName + "-display");
 			const url = fullImagePath;
 
 			if (displayElement == null && entityValue != null) {
@@ -684,11 +684,11 @@
 		const fields = document.getElementsByClassName("input-field");
 		for (let i = 0; i < fields.length; i++) {
 			let id = fields[i].id;
-			let element = _byId(id);
+			let element = byId(id);
 			if (element.nodeName == "SELECT"
 					&& element.getAttribute("multiple") == "multiple") {
 				element.innerHTML = "";
-				_byId("input-" + id).value = "";
+				byId("input-" + id).value = "";
 			} else {
 				element.value = null;
 				element.value = "";
@@ -703,7 +703,7 @@
 
 	//add image to image list
 	function doAddImageList(id, src, originalvalue) {
-		const listParent = _byId(id);//+"-input-list");
+		const listParent = byId(id);//+"-input-list");
 		//current item list elements
 		const itemLists = document.getElementsByClassName(id + "-input-item");
 		let length = 0;
@@ -787,7 +787,7 @@
 	function removeImageList(id) {
 		if (!confirm("Are you sure want to remove this item?"))
 			return;
-		let element = _byId(id);
+		let element = byId(id);
 		element.parentNode.remove(element);
 	}
 
@@ -805,7 +805,7 @@
 				"fieldsFilter" : {}
 			}
 		};
-		const detailElement = _byId(this.currentDetailEntityName);
+		const detailElement = byId(this.currentDetailEntityName);
 
 		requestObject.filter.fieldsFilter[entityName] = detailElement
 				.getAttribute(this.currentDetailFieldName);
@@ -845,7 +845,7 @@
 		};
 		requestObject.filter.fieldsFilter[entityName] = document
 				.getElementById(elementId).getAttribute(field);
-		const detailFields = _byId(elementId).getAttribute("detailfields")
+		const detailFields = byId(elementId).getAttribute("detailfields")
 				.split("~");
 		console.log("request", requestObject);
 		detailTable.innerHTML = "";
@@ -876,9 +876,9 @@
 			return;
 		}
 		for ( let optionElement in optionElements) {
-			if (_byId("filter-" + optionElement) == null)
+			if (byId("filter-" + optionElement) == null)
 				continue;
-			_byId("filter-" + optionElement).value = optionElements[optionElement];
+			byId("filter-" + optionElement).value = optionElements[optionElement];
 		}
 
 	}
@@ -1005,7 +1005,7 @@
 					finalValue = "";
 					for (var j = 0; j < length; j++) {
 						const elmentIdAndIndex = fieldId + "-" + j;
-						const imgTag = _byId(elmentIdAndIndex + "-display");
+						const imgTag = byId(elmentIdAndIndex + "-display");
 
 						//check original image
 						const originalValue = imgTag
@@ -1044,10 +1044,10 @@
 		}
 
 		function initEvents() {
-			_byId("btn-submit").onclick = function(e) {
+			byId("btn-submit").onclick = function(e) {
 				submit();
 			}
-			_byId("btn-clear").onclick = function(e) {
+			byId("btn-clear").onclick = function(e) {
 				clear();
 			}
 

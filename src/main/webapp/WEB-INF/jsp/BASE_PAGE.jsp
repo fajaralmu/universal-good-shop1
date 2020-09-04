@@ -109,8 +109,8 @@
 					response) {
 
 				show('progress-bar-wrapper');
-				_byId('progress-bar').style.width = response.percentage + "%";
-				_byId('progress-bar').setAttribute("aria-valuenow",
+				byId('progress-bar').style.width = response.percentage + "%";
+				byId('progress-bar').setAttribute("aria-valuenow",
 						Math.floor(response.percentage));
 
 				if (response.percentage >= 100) {

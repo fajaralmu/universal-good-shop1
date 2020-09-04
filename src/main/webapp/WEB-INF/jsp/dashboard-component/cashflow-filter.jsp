@@ -58,14 +58,14 @@
 </div>
 <script type="text/javascript">
 	//filter 
-	var selectMonthFrom = _byId("select-month-from");
-	var selectYearFrom = _byId("select-year-from");
+	var selectMonthFrom = byId("select-month-from");
+	var selectYearFrom = byId("select-year-from");
 
-	var selectMonthTo = _byId("select-month-to");
-	var selectYearTo = _byId("select-year-to");
+	var selectMonthTo = byId("select-month-to");
+	var selectYearTo = byId("select-year-to");
 
-	const filterForm = _byId('filter-detail');
-	const filterWrapper = _byId("filter-wrapper");
+	const filterForm = byId('filter-detail');
+	const filterWrapper = byId("filter-wrapper");
 
 	function showFilter() {
 

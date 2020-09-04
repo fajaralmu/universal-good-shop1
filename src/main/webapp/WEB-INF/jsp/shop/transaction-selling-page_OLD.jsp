@@ -15,17 +15,22 @@
 		<button id="btn-print-receipt" class="btn btn-secondary">Print</button>
 	</div>
 	<div id="content-form">
-		<h2>Selling</h2>
+		<h2>Purchasing</h2>
 		<table style="layout: fixed" class="table">
 			<tr>
 				<td>
-					<div class="form"> 
-						<p>ProductName</p>
+					<div class="form">
+						<p>Stock ID</p>
+						<input type="number" class="form-control" id="stock-id"
+							required="required" />
+						<button id="search-stock" class="btn btn-outline-secondary btn-sm" onclick="stockInfo()">OK</button>
+						<p>Or Put ProductName</p>
 						<input id="input-product" type="text" onkeyup="loadPrductList()"
 							class="form-control" /> <br /> <select style="width: 300px"
 							id="product-dropdown" class="form-control" multiple="multiple">
 						</select>
-						<hr> 
+						<hr>
+						<p>Product Detail</p>
 						<div class="panel">
 							<p>
 								Unit :<span id="unit-name"></span>
@@ -40,17 +45,31 @@
 							<p>Price @Unit</p>
 							<input disabled="disabled" class="form-control"
 								id="product-price" required="required" />
-							<p hidden="true">Expiry Date</p>
-							<input hidden="true" disabled="disabled" type="date" class="form-control"
+							<p>Expiry Date</p>
+							<input disabled="disabled" type="date" class="form-control"
 								id="product-exp-date" />
 							<p></p>
 							<button class="btn btn-submit" id="add-product"
-								onclick="addToCart()">Add</button>
+								onclick="addToChart()">Add</button>
 						</div>
 					</div>
 				</td>
 				<td>
-					<jsp:include page="../transaction-selling/customer-form.jsp"></jsp:include>
+					<div class="form">
+						<p>Customer Name</p>
+						<input id="input-customer" type="text"
+							onkeyup="loadCustomerList()" class="form-control" /> <br /> <select
+							style="width: 200px" id="customer-dropdown" class="form-control"
+							multiple="multiple">
+						</select>
+						<hr>
+						<p>Customer Detail</p>
+						<div class="panel">
+							<h3 id="customer-name"></h3>
+							<p id="customer-address"></p>
+							<p id="customer-contact"></p>
+						</div>
+					</div>
 				</td>
 			</tr>
 			<tr>
@@ -103,20 +122,23 @@
 </div>
 
 <script type="text/javascript">
-		//has been declared;
+
 		ENTITY_GET_URL = "<spring:url value="/api/entity/get" />";
 
 		var productFlows = new Array();
 		var currentProductFlow;
 		var currentProduct;
 		var currentCustomer;
+		var inputProductField = byId("input-product");
+		var stockIdField = byId("stock-id");
+		var totalPriceLabel = byId("total-price");
+		var productListDropDown = byId("product-dropdown");
+		var productFlowTable = byId("product-flows");
+		var tableReceipt = byId("table-receipt");
 		
-		const inputProductName = byId("input-product");
-		//const stockIdField = byId("stock-id");
-		const totalPriceLabel = byId("total-price");
-		const productListDropDown = byId("product-dropdown");
-		const productFlowTable = byId("product-flows");
-		const tableReceipt = byId("table-receipt");  
+		var inputCustomerField = byId("input-customer");
+		var customerListDropDown = byId("customer-dropdown");
+		
 		
 		function send() {
 			if(!confirm("Are You Ready To Submit Transaction?"))
@@ -153,27 +175,39 @@
 			
 			processReceipt(transaction); 
 		}		
- 
+
+		function loadCustomerList() {
+			const filterValue = inputCustomerField.value;
+			
+			loadStakeHolderList(customerListDropDown, 'customer', 'name', filterValue, 
+					function(entity) {
+							inputCustomerField.value = entity.name;
+							byId("customer-name").innerHTML = entity.name;
+							/* byId("customer-address").innerHTML = entity.address;
+							byId("customer-contact").innerHTML = entity.contact; */
+							currentCustomer = entity;
+			}); 
+		}
+
 		function loadPrductList() {
 			productListDropDown.innerHTML = "";
 			var requestObject = {
-				'entity':'product',
-				'filter':{
-					'fieldsFilter' : { 	"name" : inputProductName.value }
+				"product" : {
+					"name" : inputProductField.value
 				}
 			};
 
-			loadEntityList(ENTITY_GET_URL,
+			loadEntityList("<spring:url value="/api/transaction/stocks" />",
 					requestObject, function(entities) {
 						for (let i = 0; i < entities.length; i++) {
-							
-							const product = entities[i];
+							const flowEntity = entities[i];
+							const entity = flowEntity.product;
 							const option = createHtmlTag({
 								tagName: 'option',
-								value: product['id'],
-								innerHTML:  product['name'],
+								value: entity['id'],
+								innerHTML: flowEntity.id + "-" + entity["name"],
 								onclick : function() {
-									getProductFlow(product, true);
+									setCurrentProduct(flowEntity, true);
 								}
 							})
 							 
@@ -184,24 +218,21 @@
 
 		/***COMPONENT OPERATION***/
 		
-		const priceField = byId("product-price");
-		const quantityField = byId("stock-quantity");
-		const inputQuantityField = byId("product-quantity");
-		const expiryDateField = byId("product-exp-date");
-		const unitNameLabel = byId("unit-name");
+		var priceField = byId("product-price");
+		var quantityField = byId("stock-quantity");
+		var inputQuantityField = byId("product-quantity");
+		var expiryDateField = byId("product-exp-date");
 
-		function addToCart() {
+		function addToChart() {
 			if (currentProduct == null) {
 				alert("Product is not specified!");
 				return;
 			}
-			const inputQty = +inputQuantityField.value;
-			
-			if (!inputQty || inputQty > quantityField.value*1) {
+			if (inputQuantityField.value*1 > quantityField.value*1) {
 				alert("Quantity insufficient");
 				return;
 			}
-			let ID = randomID();
+			let ID = Math.floor(Math.random() * 1000);
 			if (currentProductFlow != null && currentProductFlow.id != null) {
 				ID = currentProductFlow.id;
 				removeFromProductFlowsById(ID);
@@ -212,7 +243,7 @@
 				"price" : currentProduct.price,
 				"count" : inputQuantityField.value,
 				"expiryDate" : expiryDateField.value,
-				//"flowReferenceId":stockIdField.value
+				"flowReferenceId":stockIdField.value
 
 			};
 
@@ -225,45 +256,63 @@
 		}
 		
 		function calculateChange(){
-			const totalPrice=byId("total-price-label").value; 
-			const puchaseValue = byId("purchase-price").value;
+			var totalPrice=byId("total-price-label").value; 
+			var puchaseValue = byId("purchase-price").value;
 			byId("total-change-label").value = puchaseValue - totalPrice;
 		}
 
 		function clearProduct() {
-			clearElement(inputProductName, priceField, quantityField, inputQuantityField, expiryDateField);
+			clearElement(inputProductField, priceField, quantityField, inputQuantityField, expiryDateField, stockIdField);
 			clearElement("unit-name", "product-dropdown", "total-change-label", "purchase-price"); 
-			clearElement(quantityField, priceField, quantityField); 
 		}
 
 		function setCurrentProduct(entity, loadNewStock) {
-			inputProductName.value = entity.product.name;
-			unitNameLabel.innerHTML = entity.product.unit.name;
-			
-			priceField.value = beautifyNominal(entity.product.price);
-			quantityField.value = entity.product.count;
-			
-			if(!entity.count){
-				inputQuantityField.value = 0; 
-			}else{
-				inputQuantityField.value = entity.count;
-			}
-			
+			inputProductField.value = entity.product.name;
+			byId("unit-name").innerHTML = entity.product.unit.name;
 			currentProduct = entity.product;
-			
+			priceField.value = beautifyNominal(entity.product.price);
+			inputQuantityField.value = entity.count;
 			//let expDate=new Date(entity.expiryDate);
 			
-			//expiryDateField.value =entity.expiryDate; //toDateInput(expDate);
-			//stockIdField.value = entity.id;
+			expiryDateField.value =entity.expiryDate; //toDateInput(expDate);
+			stockIdField.value = entity.id;
 
 			//get remaining
-			//const ID = entity.flowReferenceId != null? entity.flowReferenceId : entity.id; 
-			/* if(loadNewStock)
-				getStock(ID, false); */
+			let ID = entity.id;
+			if(entity.flowReferenceId != null){
+				ID = entity.flowReferenceId;
+			}
+			if(loadNewStock)
+				getStock(ID, false);
 
-		} 
+		}
 		
-		 
+		function  stockInfo(){
+			getStock(stockIdField.value,true);
+		}
+		
+		function  getStock(ID, updateProduct){
+			var requestObject = {
+					"productFlow" : {
+						"id" : ID
+					}
+				}
+
+				postReq("<spring:url value="/api/transaction/stockinfo" />",
+						requestObject,
+						function(xhr) {
+							var response = (xhr.data);
+							var code = response.code;
+							if (code == "00") {
+								quantityField.value = response.productFlowStock.remainingStock;
+								if(updateProduct){
+									setCurrentProduct(response.productFlowStock.productFlow, false);
+								}
+							} else {
+								alert("server error");
+							}
+						});
+		} 
 
 		function populateProductFlow(productFlows) {
 			doPopulateProductFlow(productFlows, function(i, productFlow, row){
@@ -278,38 +327,13 @@
 				
 			});
 		}
-		
-		function getProductFlow(product){
-			const requestObject = {
-					"entity" : "product",
-					"filter" : { 
-						'limit':20,
-						"fieldsFilter" : {
-							"code[EXACTS]" : product.code,
-							"withStock" : true
-						}
-					}
-				}; 
-				doLoadEntities("<spring:url value="/api/public/get" />", requestObject, function(res) {
-					if (!res || res.code != "00") {
-						alert("Data Not Found");
-						return;
-					}
-					const entities = res.entities;
-				 	const productDetailed = entities[0];
-				 	const productFlowObj = {
-				 		product: 	productDetailed
-				 	};
-				 	setCurrentProductFlow(productFlowObj);
-				});
-		}
 
 		function setCurrentProductFlow(entity) {
-			currentProductFlow = entity; 
+			currentProductFlow = entity;
+		
 			priceField.value = entity.price;
-			
 		//	quantityField.value = entity.productFlowStock.remainingStock;
-		//	expiryDateField.value = entity.expiryDate;
+			expiryDateField.value = entity.expiryDate;
 			setCurrentProduct(entity, true);
 		}
 	</script>

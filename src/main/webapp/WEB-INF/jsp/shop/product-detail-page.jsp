@@ -124,16 +124,16 @@
 	</div>
 </div>
 <script type="text/javascript">
-	//var selectMonth = _byId("select-month");
-	//var selectYear = _byId("select-year");
+	//var selectMonth = byId("select-month");
+	//var selectYear = byId("select-year");
 
-	var tableSales = _byId("table-sales-history");
+	var tableSales = byId("table-sales-history");
 	
-	var selectMonthFrom = _byId("select-month-from");
-	var selectYearFrom = _byId("select-year-from");
+	var selectMonthFrom = byId("select-month-from");
+	var selectYearFrom = byId("select-year-from");
 
-	var selectMonthTo = _byId("select-month-to");
-	var selectYearTo = _byId("select-year-to");
+	var selectMonthTo = byId("select-month-to");
+	var selectYearTo = byId("select-year-to");
 	
 	function populatePeriodFilter() {
 	//	populateSelectPeriod(selectMonth, selectYear);

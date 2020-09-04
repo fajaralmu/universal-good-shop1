@@ -105,16 +105,16 @@
 	</div>
 </div>
 <script type="text/javascript">
-	const infoSales = _byId("count-OUT");
-	const infoTotalIncome = _byId("amount-OUT");
-	const infoSpent = _byId("count-IN");
-	const infoTotalSpent = _byId("amount-IN");  
+	const infoSales = byId("count-OUT");
+	const infoTotalIncome = byId("amount-OUT");
+	const infoSpent = byId("count-IN");
+	const infoTotalSpent = byId("amount-IN");  
 	
-	const btnDetailIn = _byId("btn-detail-IN");
-	const btnDetailOut = _byId("btn-detail-OUT"); 
+	const btnDetailIn = byId("btn-detail-IN");
+	const btnDetailOut = byId("btn-detail-OUT"); 
 
-	const selectMonth = _byId("select-month");
-	const selectYear = _byId("select-year"); 
+	const selectMonth = byId("select-month");
+	const selectYear = byId("select-year"); 
 
 	function fetchCashflow(month, year, module) {
 		infoLoading();
@@ -138,9 +138,9 @@
 							amount = cashflow.amount;
 						}
 														
-						_byId("count-"+module).innerHTML = count;
-						_byId("amount-"+module).innerHTML = beautifyNominal(amount);
-						_byId("btn-detail-"+module).href = _byId("btn-detail-"+module).getAttribute("link")
+						byId("count-"+module).innerHTML = count;
+						byId("amount-"+module).innerHTML = beautifyNominal(amount);
+						byId("btn-detail-"+module).href = byId("btn-detail-"+module).getAttribute("link")
 							+"&transactionDate-month="+month+"&transactionDate-year="+year;
 					} else {
 						alert("Failed getting cashflow: "+module);

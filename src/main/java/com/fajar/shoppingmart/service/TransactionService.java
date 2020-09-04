@@ -33,7 +33,10 @@ import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class TransactionService {
 
 	private static final boolean NOT_EXACTS = false;
@@ -250,7 +253,7 @@ public class TransactionService {
 			List<InventoryItem> inventories = productInventoryService.getInventoriesByProduct(key, value, match, limit);
 
 			sendProgress(1, 1, 10, false, requestId);
-
+			log.info("inventories: {}", inventories.size());
 			for (InventoryItem inventoryItem : inventories) {
 				Optional<ProductFlow> productFlow = productFlowRepository.findById(inventoryItem.getIncomingFlowId());
 				sendProgress(1, inventories.size(), 90, false, requestId);
@@ -260,6 +263,7 @@ public class TransactionService {
 				productFlows.add(productFlow.get());
 			}
 
+			log.info("productFlows: {}", productFlows.size());
 			return CollectionUtil.convertList(productFlows);
 		} catch (Exception e) {
 			e.printStackTrace();

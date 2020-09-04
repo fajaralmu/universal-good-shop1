@@ -66,7 +66,7 @@
 													innerHTML : toDisplay
 												});
 
-												_byId("${element.id }").append(
+												byId("${element.id }").append(
 														option);
 											}
 										</script>
@@ -206,7 +206,7 @@
 </div>
 <script>
 	const groupedInputs = getGroupedInputs();
-	const entityForm = _byId('entity-form');
+	const entityForm = byId('entity-form');
 	var groupNames = "${entityProperty.groupNames}";
 	
 	function arrangeInputs() {

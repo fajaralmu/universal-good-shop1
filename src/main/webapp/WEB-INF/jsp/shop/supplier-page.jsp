@@ -65,12 +65,12 @@
 	var defaultOption = "${defaultOption}";
 	
 	//filted
-	var selectOrder = _byId("select-order");
+	var selectOrder = byId("select-order");
 
 	//elements
-	var navigationPanel = _byId("navigation-panel");
-	var catalogPanel = _byId("catalog-panel");
-	var nameFilter = _byId("search-name");
+	var navigationPanel = byId("navigation-panel");
+	var catalogPanel = byId("catalog-panel");
+	var nameFilter = byId("search-name");
 	  
 
 	function populateCatalog(entities) {
@@ -137,7 +137,7 @@
 	}
 
 	function loadEntity(page) {
-		this.limit = _byId("select-limit").value;
+		this.limit = byId("select-limit").value;
 		if(this.limit > 20 || this.limit < 0){
 			alert("Woooww.. our server will be confused with your choice");
 			this.limit = 10;

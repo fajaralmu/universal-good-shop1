@@ -35,7 +35,7 @@
 	var selectedId = 0;
 	var pagesContainer = document.getElementById("pages");
 	var pages = {};
-	const btnResetMenus = _byId("btn-reset-all-menus");
+	const btnResetMenus = byId("btn-reset-all-menus");
 
 	function initEvents() {
 		contentItems = document.getElementsByClassName("page-item");

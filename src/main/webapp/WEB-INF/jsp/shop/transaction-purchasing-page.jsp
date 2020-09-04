@@ -110,14 +110,14 @@
 	var currentProductFlow;
 	var currentProduct;
 	var currentSupplier;
-	var inputProductField = _byId("input-product");
-	var totalPriceLabel = _byId("total-price");
-	var productListDropDown = _byId("product-dropdown");
-	var productFlowTable = _byId("product-flows");
-	var tableReceipt = _byId("table-receipt");
+	var inputProductField = byId("input-product");
+	var totalPriceLabel = byId("total-price");
+	var productListDropDown = byId("product-dropdown");
+	var productFlowTable = byId("product-flows");
+	var tableReceipt = byId("table-receipt");
 
-	var inputSupplierField = _byId("input-supplier");
-	var supplierListDropDown = _byId("supplier-dropdown");
+	var inputSupplierField = byId("input-supplier");
+	var supplierListDropDown = byId("supplier-dropdown");
 	function send() {
 		if (!confirm("Are You Ready To Submit Transaction?"))
 			return;
@@ -167,9 +167,9 @@
 		loadStakeHolderList(supplierListDropDown, 'supplier', 'name', filterValue, 
 				function(entity) {
 					inputSupplierField.value = entity.name;
-					_byId("supplier-name").innerHTML = entity.name;
-					_byId("supplier-address").innerHTML = entity.address;
-					_byId("supplier-contact").innerHTML = entity.contact;
+					byId("supplier-name").innerHTML = entity.name;
+					byId("supplier-address").innerHTML = entity.address;
+					byId("supplier-contact").innerHTML = entity.contact;
 					currentSupplier = entity;
 		});
 	}
@@ -206,9 +206,9 @@
 
 	/***COMPONENT OPERATION***/
 
-	const priceField = _byId("product-price");
-	const quantityField = _byId("product-quantity");
-	const expiryDateField = _byId("product-exp-date");
+	const priceField = byId("product-price");
+	const quantityField = byId("product-quantity");
+	const expiryDateField = byId("product-exp-date");
 
 	function addToChart() {
 		if (currentProduct == null) {
@@ -245,8 +245,8 @@
 
 	function setCurrentProduct(entity) {
 		inputProductField.value = entity.name;
-		_byId("unit-name").innerHTML = entity.unit.name;
-		_byId("current-price").innerHTML = beautifyNominal(entity.price);
+		byId("unit-name").innerHTML = entity.unit.name;
+		byId("current-price").innerHTML = beautifyNominal(entity.price);
 		currentProduct = entity;
 
 	}

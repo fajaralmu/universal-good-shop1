@@ -1,5 +1,5 @@
 function loadEntity(page) {
-	this.limit = _byId("select-limit").value;
+	this.limit = byId("select-limit").value;
 	if (this.limit > 20 || this.limit < 0) {
 		alert("Please select correct limit");
 		this.limit = 10;
@@ -83,8 +83,8 @@ function populateDetail(entity) {
 
 	// title, count, price
 	productTitle.innerHTML = entity.name;
-	_byId("product-stock").innerHTML = entity.count;
-	_byId("product-price").innerHTML = beautifyNominal(entity.price);
+	byId("product-stock").innerHTML = entity.count;
+	byId("product-price").innerHTML = beautifyNominal(entity.price);
 	productUnit.innerHTML = entity.unit.name;
 	productCategory.innerHTML = entity.category.name;
 	productDescription.innerHTML = entity.description;

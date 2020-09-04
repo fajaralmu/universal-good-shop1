@@ -83,8 +83,8 @@
 					infoDone();
 					var response = (xhr.data);
 					var pageCode = response.code;
-					if(_byId(pageCode)){
-						_byId(pageCode).setAttribute("class",
+					if(byId(pageCode)){
+						byId(pageCode).setAttribute("class",
 								"nav-link pagelink active");
 					}
 				});
@@ -109,7 +109,7 @@
 			}
 		}
 
-		_byId("header-wrapper").onmouseleave = function(e) {
+		byId("header-wrapper").onmouseleave = function(e) {
 			hideAllMenuSpoiler();
 		}
 	}
@@ -137,7 +137,7 @@
 		const menus = pageMenus[pageCode];
 		console.log("MENUS:", menus);
 		const menuContainer = createGridWrapper(1, "100%");
-		const parentElement = _byId(pageCode).parentElement;
+		const parentElement = byId(pageCode).parentElement;
 
 		if (parentElement.childElementCount > 1) {
 			hideMenuByPageCode(pageCode);
@@ -163,7 +163,7 @@
 	}
 
 	function hideMenuByPageCode(code) {
-		const pageLink = _byId(code);
+		const pageLink = byId(code);
 		//console.log("HIDE ", code)
 		const parentElement = pageLink.parentElement;
 		if (parentElement.childElementCount > 1) {

@@ -13,6 +13,10 @@ function receiptFooterRow(summaryPrice) {
 	});
 }
 
+function randomID(){
+	return Math.floor(Math.random() * 1000);
+}
+
 function receiptHeaderRow2() {
 	return createHtmlTag({
 		"tagName" : "tr",
@@ -149,7 +153,7 @@ function doPopulateProductFlow(productFlows, rowCreationFunction) {
 	}
 
 	totalPriceLabel.innerHTML = beautifyNominal(totalPrice);
-//	_byId("total-price-label").value = totalPrice;
+//	byId("total-price-label").value = totalPrice;
 }
 
 function processReceipt(transaction){

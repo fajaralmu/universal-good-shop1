@@ -34,9 +34,9 @@
 </div>
 <script type="text/javascript">
 	//detail cashflow
-	const tableDetail = _byId("detail-cashflow");
-	const monthlyDetail = _byId("monthly-detail");
-	const infoDetailPeriod = _byId("info-period");
+	const tableDetail = byId("detail-cashflow");
+	const monthlyDetail = byId("monthly-detail");
+	const infoDetailPeriod = byId("info-period");
 
 	var responseDetailMonthly = {};
 	var responseDetailDaily = {};
@@ -125,7 +125,7 @@
 	}
 
 	function showCashflowHistory() {
-		_byId("btn-ok-filter-detail").onclick = function() {
+		byId("btn-ok-filter-detail").onclick = function() {
 
 			showDetail();
 		};

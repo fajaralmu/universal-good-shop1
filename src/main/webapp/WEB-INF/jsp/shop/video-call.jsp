@@ -46,9 +46,9 @@ var latestImageResponse = {};
 var width = 90;
 var height = 90;
 const theCanvas = document.createElement("canvas");
-var btnTerminate = _byId("btn-terminate");
-var btnPause = _byId("btn-pause");
-var partnerInfo = _byId("partner-info");
+var btnTerminate = byId("btn-terminate");
+var btnPause = byId("btn-pause");
+var partnerInfo = byId("partner-info");
 
 function init () {
 	const _class = this;   
@@ -138,7 +138,7 @@ function handleLiveStream(response)  {
     } 
     
     
-    //_byId("base64-info").innerHTML = response.imageData;
+    //byId("base64-info").innerHTML = response.imageData;
    /*  const _class = this;
     this.populateCanvas().then(function(base64) {
         _class.photoReceiver.setAttribute('src', base64 );
@@ -231,14 +231,14 @@ function animate(){
 function initLiveStream(){
 	console.info("START initLiveStream");
 	
-	 this.video = _byId('video');
+	 this.video = byId('video');
      console.log("video:", this.video);
-     this.canvas = _byId('canvas'); 
-     this.photoReceiver = _byId("photo-receiver");
+     this.canvas = byId('canvas'); 
+     this.photoReceiver = byId("photo-receiver");
      this.init();
      this.initAnimation(this);
      this.initWebSocket();
-     this.myCapture = _byId("my-capture");
+     this.myCapture = byId("my-capture");
      console.info("END initLiveStream");
      document.body.onunload = onClose;
 }

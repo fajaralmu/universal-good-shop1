@@ -55,7 +55,7 @@
 
 	function populateTable(entities) {
 
-		const table = _byId("app-sessions");
+		const table = byId("app-sessions");
 
 		table.innerHTML = "";
 
@@ -140,8 +140,8 @@
 
 	function updateMessage(response) {
 		 
-		if (_byId(response.code)) {
-			_byId(response.code).innerHTML = "<button class=\"btn btn-secondary\" id=\"do-toggle-msg"+response.code+"\" >Toggle Chat("
+		if (byId(response.code)) {
+			byId(response.code).innerHTML = "<button class=\"btn btn-secondary\" id=\"do-toggle-msg"+response.code+"\" >Toggle Chat("
 					+ response.entities.length + ")</button>";
 			const messages = response.entities;
 
@@ -173,20 +173,20 @@
 			tableMsg.style.width = "100%";
 			tableMsg.style.display = "block";
 			tableMsg.appendChild(rowReply);
-			_byId(response.code).appendChild(tableMsg);
-			_byId("do-reply-msg" + response.code).onclick = function(
+			byId(response.code).appendChild(tableMsg);
+			byId("do-reply-msg" + response.code).onclick = function(
 					e) {
-				let message = _byId("reply-msg"
+				let message = byId("reply-msg"
 						+ response.code).value;
 				sendReply(response.code, message);
 			}
 
-			_byId("do-toggle-msg" + response.code).onclick = function(e) {
+			byId("do-toggle-msg" + response.code).onclick = function(e) {
 				let display = "block";
-				if (_byId("chat-msg-" + response.code).style.display == "block") {
+				if (byId("chat-msg-" + response.code).style.display == "block") {
 					display = "none";
 				}
-				_byId("chat-msg-" + response.code).style.display = display;
+				byId("chat-msg-" + response.code).style.display = display;
 			}
 
 		}

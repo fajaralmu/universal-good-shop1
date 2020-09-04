@@ -4,7 +4,7 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
 	  "July", "August", "September", "October", "November", "December"
 	];
 
-function _byId(id){
+function byId(id){
 	if(id==null || id == ""){
 		console.warn("ID IS EMPTY");
 	}
@@ -106,8 +106,8 @@ function clearElement(...elements){
 		}
 		
 		if(typeof(element) == "string"){
-			if(_byId(element)){
-				element = _byId(element);
+			if(byId(element)){
+				element = byId(element);
 			}
 		}
 		
@@ -136,11 +136,11 @@ function createInputText(id, className){
 }
 
 function hide(id){
-	_byId(id).style.display = "none";
+	byId(id).style.display = "none";
 }
 
 function show(id){
-	_byId(id).style.display = "block";
+	byId(id).style.display = "block";
 }
 	 
 

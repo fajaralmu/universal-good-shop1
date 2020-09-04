@@ -54,8 +54,8 @@
 </div>
 <script type="text/javascript">
 	//filter  
-	const filterForm = _byId('filter-detail');
-	const filterWrapper = _byId("filter-wrapper");
+	const filterForm = byId('filter-detail');
+	const filterWrapper = byId("filter-wrapper");
 
 	function showFilter() {
 
