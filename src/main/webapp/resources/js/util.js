@@ -115,8 +115,13 @@ function clearElement(...elements){
 			continue;
 		}
 		
-		if(element.tagName == "input" || element.tagName == "textarea"){
-			element.value = "";
+		if(element.tagName.toLowerCase() == "input" || element.tagName.toLowerCase() == "textarea"){
+			if(element.type.toLowerCase() == "number"){
+				element.value = 0;
+			}else{
+				element.value = "";
+			}
+			
 		}else{
 			element.innerHTML = "";
 		}

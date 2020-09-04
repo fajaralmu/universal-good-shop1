@@ -233,7 +233,10 @@
 		function clearProduct() {
 			clearElement(inputProductName, priceField, quantityField, inputQuantityField, expiryDateField);
 			clearElement("unit-name", "product-dropdown", "total-change-label", "purchase-price"); 
-			clearElement(quantityField, priceField, quantityField); 
+			
+			//quantityField.value = 0;
+			//priceField.value = 0;
+			//quantityField.value = 0; 
 		}
 
 		function setCurrentProduct(entity, loadNewStock) {
@@ -249,17 +252,7 @@
 				inputQuantityField.value = entity.count;
 			}
 			
-			currentProduct = entity.product;
-			
-			//let expDate=new Date(entity.expiryDate);
-			
-			//expiryDateField.value =entity.expiryDate; //toDateInput(expDate);
-			//stockIdField.value = entity.id;
-
-			//get remaining
-			//const ID = entity.flowReferenceId != null? entity.flowReferenceId : entity.id; 
-			/* if(loadNewStock)
-				getStock(ID, false); */
+			currentProduct = entity.product; 
 
 		} 
 		
