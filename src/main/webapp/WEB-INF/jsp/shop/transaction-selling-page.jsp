@@ -23,7 +23,7 @@
 						<p>Stock ID</p>
 						<input type="number" class="form-control" id="stock-id"
 							required="required" />
-						<button id="search-stock" onclick="stockInfo()">OK</button>
+						<button id="search-stock" class="btn btn-outline-secondary btn-sm" onclick="stockInfo()">OK</button>
 						<p>Or Put ProductName</p>
 						<input id="input-product" type="text" onkeyup="loadPrductList()"
 							class="form-control" /> <br /> <select style="width: 300px"
