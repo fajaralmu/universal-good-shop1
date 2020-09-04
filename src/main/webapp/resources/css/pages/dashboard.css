@@ -6,10 +6,15 @@
 #filter-wrapper {
 	position: fixed;
 	 
-	background-color: #ccc;
+/* 	background-color: #ccc; */
 	height: auto;
 /* 	width: 40%; */
 	transition-duration: 300;
 	right: 0;
 	top: 20%;
+}
+
+.btn-filter-toggle{
+	
+	transform: rotate(90deg);
 }
