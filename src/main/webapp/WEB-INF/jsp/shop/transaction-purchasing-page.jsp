@@ -25,12 +25,10 @@
 							</div>
 						</div>
 						<div class="panel trans-form">
-							<p>
-								Unit :<span id="unit-name"></span>
-							</p>
-							<p>
-								Current Price :<span id="current-price"></span>
-							</p>
+							<p>Unit</p>
+							<span id="unit-name"></span>
+							<p>Current Price</p>
+							<span id="current-price"></span>
 							<p>Qty</p>
 							<input type="number" class="form-control" id="product-quantity"
 								required="required" />
@@ -40,47 +38,44 @@
 							<p>Expiry Date</p>
 							<input type="date" class="form-control" id="product-exp-date" />
 
-							<button class="btn btn-info btn-sm" id="add-product"
-								onclick="addToChart()">Add</button>
+							<button class="btn btn-outline-info btn-sm" id="add-product"
+								onclick="addToChart()">add to cart</button>
+							<button class="btn btn-primary btn-sm" id="btn-send" onclick="send()">Submit-Transaction</button>
 						</div>
 					</div>
 				</td>
 				<td><jsp:include
 						page="../transaction-component/supplier-form.jsp"></jsp:include></td>
 			</tr>
-			<tr>
-			</tr>
-		</table>
-		<div>
-			<button class="btn btn-primary" id="btn-send" onclick="send()">Submit-Transaction</button>
-		</div>
-		<table class="table">
-			<thead>
-				<tr>
-					<th>No</th>
-					<th>Flow ID</th>
-					<th>Product Name</th>
-					<th>Expiry Date</th>
-					<th>Quantity</th>
-					<th>Price @Item</th>
-					<th>Option</th>
-				</tr>
-				<tr>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th>Total:<span id="total-price"></span>
-					</th>
-					<th></th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody id="product-flows">
+			</table>
+			 
+			<table class="table">
+				<thead>
+					<tr>
+						<th>No</th>
+						<th>Flow ID</th>
+						<th>Product Name</th>
+						<th>Expiry Date</th>
+						<th>Quantity</th>
+						<th>Price @Item</th>
+						<th>Option</th>
+					</tr>
+					<tr>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th>Total:<span id="total-price"></span>
+						</th>
+						<th></th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody id="product-flows">
 
-			</tbody>
-		</table>
+				</tbody>
+			</table>
 	</div>
 </div>
 <script type="text/javascript">

@@ -25,8 +25,8 @@
 								</div>
 							</div>
 						</div>
-						<div class="panel trans-form" style="width: 50%">
-							<p>Unit :</p>
+						<div class="panel trans-form">
+							<p>Unit</p>
 							<span id="unit-name"></span>
 							<p>Stock</p>
 							<input disabled="disabled" type="number" class="form-control"
@@ -41,32 +41,18 @@
 							<input hidden="true" disabled="disabled" type="date"
 								class="form-control" id="product-exp-date" />
 
-							<button class="btn btn-info btn-sm" id="add-product"
-								onclick="addToCart()">Add</button>
+							<button class="btn btn-outline-info btn-sm" id="add-product"
+								onclick="addToChart()">add to cart</button>
+							<button class="btn btn-primary btn-sm" id="btn-send"
+								onclick="send()">Submit Transaction</button>
 						</div>
 					</div>
 				</td>
 				<td><jsp:include
 						page="../transaction-component/customer-form.jsp"></jsp:include></td>
 			</tr>
-			<tr>
-			</tr>
 		</table>
-		<div class="trans-form">
-			<p>Total Price</p>
-			<input type="number" id="total-price-label" disabled="disabled"
-				class="form-control" />
-			<p>Purchase Price</p>
-			<input type="number" required="required" id="purchase-price"
-				onkeyup="calculateChange()" class="form-control" />
-			<p>Change</p>
-			<input type="number" id="total-change-label" disabled="disabled"
-				class="form-control" />
-		</div>
-		<div>
-			<button class="btn btn-primary" id="btn-send" onclick="send()">Submit
-				Transaction</button>
-		</div>
+		
 		<table class="table">
 			<thead>
 				<tr>
@@ -95,6 +81,17 @@
 
 			</tbody>
 		</table>
+		<div class="trans-form" style="width: 50%">
+			<p>Total Price</p>
+			<input type="number" id="total-price-label" disabled="disabled"
+				class="form-control" />
+			<p>Purchase Price</p>
+			<input type="number" required="required" id="purchase-price"
+				onkeyup="calculateChange()" class="form-control" />
+			<p>Change</p>
+			<input type="number" id="total-change-label" disabled="disabled"
+				class="form-control" />
+		</div>
 	</div>
 </div>
 
