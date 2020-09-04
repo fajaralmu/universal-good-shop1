@@ -5,7 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div id="filter-wrapper" style="display: none;">
 	<div style="display: grid; grid-template-columns: 55px 300px">
-		<div style="width: 50px; z-index: 1">
+		<div style="width: 50px; z-index: 1; margin-top: 28px">
 			<button id="btn-show-filter"
 				class="btn btn-info btn-sm btn-filter-toggle" onclick="showFilter()">Show
 				Filter</button>
@@ -51,7 +51,7 @@
 						</c:forEach>
 					</select>
 				</div>
-				<button id="btn-ok-filter-detail" class="btn btn-primary btn-sm">OK</button>
+				<button id="btn-ok-filter-detail" class="btn btn-primary btn-sm">Search</button>
 			</div>
 		</div>
 	</div>
@@ -70,21 +70,23 @@
 	function showFilter() {
 
 		filterForm.removeAttribute("hidden");
-		//show('filter-detail'); 
-		show('btn-close-filter');
-		hide('btn-show-filter');
+		//show('filter-detail');  
 		filterWrapper.style.width = '55px';
-		updateWidthAsync(filterWrapper, 350, 2, null);
+		updateWidthAsync(filterWrapper, 350, 3, function(){
+			show('btn-close-filter');
+			hide('btn-show-filter');
+		});
 	}
 
 	function closeFilter() {
  
 		//hide('filter-detail'); 
-		hide('btn-close-filter');
-		show('btn-show-filter');
+		
 		//filterWrapper.style.width = '100px';
-		updateWidthAsync(filterWrapper, 55, -2, function(){
+		updateWidthAsync(filterWrapper, 55, -3, function(){
 			filterForm.setAttribute("hidden", "true");
+			hide('btn-close-filter');
+			show('btn-show-filter');
 		});
 		
 	}

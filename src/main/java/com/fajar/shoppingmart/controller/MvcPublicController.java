@@ -51,7 +51,7 @@ public class MvcPublicController extends BaseController{
 	
 	
 	@RequestMapping(value = { "/public/catalog","/public/catalog/", "/public/catalog/{option}" })
-	@CustomRequestInfo(title = "Product Catalog", pageUrl = "shop/catalog-page", scriptPaths = "product-catalog")
+	@CustomRequestInfo(title = "Product Catalog", pageUrl = "shop/catalog-page", scriptPaths = "product-catalog", stylePaths = {"filter-box"})
 	public String catalog(@PathVariable(required = false)String option, Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		model.addAttribute("page", "main");

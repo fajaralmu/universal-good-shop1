@@ -6,11 +6,12 @@
 <div id="content-product-sales" style="display: none">
 	<p></p>
 	<h3>
-		Product Sales <small id="info-sales-period"></small>
-	</h3>
-	<button class="btn btn-secondary" onclick="closeProductSales()">Close</button>
-	<table id="detail-sales" class="table">
-
+		Product Sales <small>
+		<span  id="info-sales-period"></span>
+		<a href="#" class="badge badge-info" onclick="closeProductSales()">Close</a>
+		</small>
+	</h3> 
+	<table id="detail-sales" class="table"> 
 	</table>
 	<div style="text-align: center">
 		<button class="btn btn-outline-success" onclick="loadMoreProduct()">More</button>
@@ -22,6 +23,7 @@
 	var tableSales = document.getElementById("detail-sales");
 
 	function closeProductSales() {
+		if(!confirm("Close this menu?")) { return; }
 		hide('content-product-sales');
 		hide('filter-wrapper');
 		show('content-dashboard')

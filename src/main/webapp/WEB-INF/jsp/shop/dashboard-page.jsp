@@ -3,14 +3,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<jsp:include page="../home-component/cashflow-filter.jsp"></jsp:include>
+<jsp:include page="../dashboard-component/cashflow-filter.jsp"></jsp:include>
 <div class="content" style="width: 100%">
  
 	
-	<jsp:include page="../home-component/product-sales.jsp"></jsp:include>
-	<jsp:include page="../home-component/cashflow-history.jsp"></jsp:include>
+	<jsp:include page="../dashboard-component/product-sales.jsp"></jsp:include>
+	<jsp:include page="../dashboard-component/cashflow-history.jsp"></jsp:include>
 
-
+	
 	<div id="content-dashboard">
 		<h2>Dashboard</h2>
 		<p>Good ${timeGreeting}, ${loggedUser.displayName}. Have a great

@@ -5,9 +5,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div id="content-detail" style="display: none; padding: 20px">
 	<p></p>
-	<h3>Cashflow History</h3>
-	<button class="btn btn-danger btn-sm" onclick="closeCashflowDetail()">Close
-		Cashflow Detail</button>
+	<h3>Cashflow History <small><a href="#" class="badge badge-info" onclick="closeCashflowDetail()">Close</a></small></h3>
+	
 	<button id="btn-show-monthly" class="btn btn-sm btn-info"
 		onclick="show('monthly-detail-wrapper'); hide('btn-show-monthly')">Show
 		Monthly Detail</button>
@@ -28,7 +27,7 @@
 	</div>
 	<div id="main-detail">
 		<table id="detail-cashflow" class="table">
-
+		<tr><td>Please select the month to display detail</td></tr>
 		</table>
 	</div>
 

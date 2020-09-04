@@ -44,6 +44,7 @@
 	grid-template-columns: 20% 80%;
 	border-radius: 10px;
 	margin-top: 10px;
+	margin-bottom: 10px;
 }
 /**
 		active menu when using vertical aligment
