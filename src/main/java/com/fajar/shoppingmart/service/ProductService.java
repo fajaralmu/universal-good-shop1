@@ -22,7 +22,6 @@ import com.fajar.shoppingmart.entity.Product;
 import com.fajar.shoppingmart.entity.ProductSales;
 import com.fajar.shoppingmart.entity.Supplier;
 import com.fajar.shoppingmart.entity.Transaction;
-import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.ProductRepository;
 import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.util.CollectionUtil;
