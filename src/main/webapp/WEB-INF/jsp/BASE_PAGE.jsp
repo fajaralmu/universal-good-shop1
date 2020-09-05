@@ -40,12 +40,16 @@
 
 <style>
 .container {
-	display: grid;
-	grid-template-columns: 20% 80%;
 	border-radius: 10px;
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
+
+.content-layout {
+	display: grid;
+	grid-template-columns: 20% 80%;
+}
+
 /**
 		active menu when using vertical aligment
 	**/
@@ -58,7 +62,6 @@
 	width: 100%;
 }
 
- 
 .menu-spoiler {
 	text-align: left;
 	font-size: 0.7em;
@@ -81,24 +84,30 @@
 
 	<input id="registered-request-id" value="${registeredRequestId }"
 		type="hidden" />
-	  <div id="loading-div"></div>  
+	<div id="loading-div"></div>
 
 	<!-- WEB APP CONTENT -->
 
 	<div class="container">
-		<div>
-			<jsp:include page="include/head.jsp"></jsp:include>
-			<input id="token-value" value="${pageToken }" type="hidden" /> <input
-				id="request-id" value="${requestId }" type="hidden" />
+		<div class="page-header" style="color:${shopProfile.fontColor}">
+			<h1>${shopProfile.name }</h1>
+			<p>${shopProfile.shortDescription }</p>
 		</div>
-		<div>
-			<jsp:include page="${pageUrl == null? 'error/notfound': pageUrl}.jsp"></jsp:include>
+		<div class="content-layout">
+			<div>
+				<jsp:include page="include/navs.jsp"></jsp:include>
+				<input id="token-value" value="${pageToken }" type="hidden" /> <input
+					id="request-id" value="${requestId }" type="hidden" />
+			</div>
+			<div>
+				<jsp:include
+					page="${pageUrl == null? 'error/notfound': pageUrl}.jsp"></jsp:include>
+			</div>
+			<div></div>
+			<div>
+				<jsp:include page="include/foot.jsp"></jsp:include>
+			</div>
 		</div>
-		<div></div>
-		<div>
-			<jsp:include page="include/foot.jsp"></jsp:include>
-		</div>
-
 	</div>
 	<script type="text/javascript">
 		const websocketUrl = '${contextPath}/realtime-app';

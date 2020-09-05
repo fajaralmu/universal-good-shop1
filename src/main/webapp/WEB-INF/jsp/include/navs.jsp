@@ -7,10 +7,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div class="header" style="height: auto">
 
-	<div class="page-header" style="color:${shopProfile.fontColor}">
-		<h1>${shopProfile.name }</h1>
-		<p>${shopProfile.shortDescription }</p>
-	</div>
+	
 
 	<div>
 		<!-- <ul class="nav nav-tabs"> -->
