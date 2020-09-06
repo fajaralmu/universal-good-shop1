@@ -64,16 +64,16 @@ public class MvcManagementController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/common/{name}" })
-	public String unit(@PathVariable("name") String name, Model model, HttpServletRequest request,
+	public String commonManahementPage(@PathVariable("name") String name, Model model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 
 		model = entityManagementPageService.setModel(request, model, name);
 		try {
-			
+
 			BindingAwareModelMap modelImpl = (BindingAwareModelMap) model;
 			String pageCode = modelImpl.get(SessionUtil.PAGE_CODE).toString();
-			setActivePage(request, pageCode); 
-			
+			setActivePage(request, pageCode);
+
 			log.info("Management Page Code: {}", request.getSession().getAttribute(SessionUtil.PAGE_CODE));
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -84,7 +84,6 @@ public class MvcManagementController extends BaseController {
 	@RequestMapping(value = { "/profile" })
 	public String profile(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		 
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/profile");
 		} catch (Exception e) {
@@ -99,8 +98,6 @@ public class MvcManagementController extends BaseController {
 		model.addAttribute("singleRecord", true);
 		return basePage;
 	}
- 
-	 
 
 	/**
 	 * RESTRICTED ACCESS
@@ -111,7 +108,6 @@ public class MvcManagementController extends BaseController {
 	@RequestMapping(value = { "/messages" })
 	public String messages(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		 
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/messages");
 		} catch (Exception e) {
@@ -148,7 +144,6 @@ public class MvcManagementController extends BaseController {
 	public String transaction(@PathVariable(required = false) String option, Model model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 
-		 
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/transaction");
 		} catch (Exception e) {
@@ -165,18 +160,7 @@ public class MvcManagementController extends BaseController {
 	@RequestMapping(value = { "/user" })
 	public String user(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-	 
-		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/user");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR_404_PAGE;
-		}
-		HashMap<String, List<?>> listObject = new HashMap<>();
-		listObject.put("userRole", CollectionUtil.convertList(entityService.getAllUserRole()));
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(User.class, listObject);
-		model = constructCommonModel(request, entityProperty, model, "User", "management");
-		return basePage;
+		return commonManahementPage("user", model, request, response);
 	}
 
 //	@RequestMapping(value = { "/menu" })
@@ -205,7 +189,7 @@ public class MvcManagementController extends BaseController {
 	@RequestMapping(value = { "/appsession" })
 	@CustomRequestInfo(title = "Apps Sessions", pageUrl = "shop/app-session")
 	public String appsession(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
- 
+
 		try {
 			checkUserAccess(userService.getUserFromSession(request), "/management/menu");
 		} catch (Exception e) {

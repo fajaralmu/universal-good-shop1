@@ -212,7 +212,7 @@ public class EntityService {
 
 			Class<? extends BaseEntity> entityClass = getEntityManagementConfig(entityName).getEntityClass();
 
-			if (null == entityClass) {
+			if (null == entityClass || User.class.equals(entityClass)) {
 				throw new Exception("Invalid entity");
 			}
 
@@ -243,16 +243,7 @@ public class EntityService {
 		List<BaseEntity> entities;
 		int count;
 	}
-
-//	
-//	public List<Cost> getAllCostType() {
-//		return findAll(Cost.class);
-//	}
-// 
-//
-//	public List<Capital> getAllCapitalType() {
-//		return findAll(Capital.class);
-//	}
+ 
 
 	public <T extends BaseEntity> List<T> findAll(Class<T> _class) {
 		List<T> resultList = entityRepository.findAll(_class);
