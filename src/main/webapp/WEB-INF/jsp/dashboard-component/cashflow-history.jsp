@@ -3,8 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<div id="content-detail" style="display: none; padding: 20px">
-	<p></p>
+<div id="content-detail" style="display: none; padding: 20px"> 
 	<h3>Cashflow History <small><a href="#" class="badge badge-info" onclick="closeCashflowDetail()">Close</a></small></h3>
 	
 	<button id="btn-show-monthly" class="btn btn-sm btn-info"

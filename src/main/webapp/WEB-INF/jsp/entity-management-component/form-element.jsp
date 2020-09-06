@@ -224,7 +224,7 @@
 			const sectionContent = createHtmlTag({
 				tagName:'div',
 				id: 'section-'+groupName,
-				class : 'form-section',
+				className : 'form-section',
 				ch1: groupHeader, 
 				style: {
 					padding: '5px',
@@ -281,7 +281,7 @@
 		const h3 = createHtmlTag({
 			tagName: 'h3',
 			innerHTML: section + '  ' + groupName,
-			class: 'section-border'
+			className: 'section-border'
 		});
 		return h3;
 	}

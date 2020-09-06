@@ -22,6 +22,7 @@ import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.MessagingService;
+import com.fajar.shoppingmart.service.TransactionService;
 
 @CrossOrigin
 @RestController
@@ -34,6 +35,8 @@ public class RestAdminController extends BaseController {
 	private MessagingService messagingService;
 	@Autowired
 	private RestPublicController restPublicController;
+	@Autowired
+	private TransactionService transactionService;
 
 	public RestAdminController() {
 		log.info("------------------RestAdminController-----------------");
@@ -69,7 +72,7 @@ public class RestAdminController extends BaseController {
 	}
 
 	@PostMapping(value = "/getmessages", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse getmessages(@RequestBody WebRequest request, HttpServletRequest httpRequest,
+	public WebResponse getMessages(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		restPublicController.validatePageRequest(httpRequest);
 		WebResponse response = messagingService.getMessages(httpRequest);
@@ -97,6 +100,14 @@ public class RestAdminController extends BaseController {
 			HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
 
 		WebResponse response = componentService.saveEntitySequence(request, entityName);
+		return response;
+	}
+	
+	@PostMapping(value = "/balance", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public WebResponse getBalance(@RequestBody WebRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException {
+		
+		WebResponse response = transactionService.getBalance(request);
 		return response;
 	}
 

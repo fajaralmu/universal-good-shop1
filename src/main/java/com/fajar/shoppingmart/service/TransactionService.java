@@ -12,10 +12,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.TransactionType;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.entity.CashBalance;
 import com.fajar.shoppingmart.entity.Customer;
 import com.fajar.shoppingmart.entity.InventoryItem;
 import com.fajar.shoppingmart.entity.Product;
@@ -30,7 +32,6 @@ import com.fajar.shoppingmart.repository.ProductRepository;
 import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.repository.SupplierRepository;
 import com.fajar.shoppingmart.util.CollectionUtil;
-import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -59,6 +60,8 @@ public class TransactionService {
 	private ReportingService reportingService;
 	@Autowired
 	private RepositoryCustomImpl repositoryCustomImpl;
+	@Autowired
+	private CashBalanceService cashBalanceService;
 
 	@PostConstruct
 	public void init() {
@@ -391,6 +394,12 @@ public class TransactionService {
 
 	public WebResponse getCashflowDaily(WebRequest request, String requestId) {
 		return reportingService.getCashflowDaily(request, requestId);
+	}
+
+	public WebResponse getBalance(WebRequest request) {
+		Filter filter = request.getFilter();
+		CashBalance balance = cashBalanceService.getBalanceAt(filter.getDay(), filter.getMonth(), filter.getYear());
+		return WebResponse.builder().entity(balance).build();
 	}
 
 }

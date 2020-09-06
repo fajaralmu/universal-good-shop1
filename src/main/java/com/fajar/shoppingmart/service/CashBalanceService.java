@@ -39,12 +39,32 @@ public class CashBalanceService {
 	 * @param year
 	 * @return
 	 */
-	public CashBalance getBalanceBefore (int month, int year) { 
+	public CashBalance getBalanceBefore (int month, int year) {  
 		
-		Date date = DateUtil.getDate(year, month-1, 1);
+		return getBalanceBefore(1, month, year);
+	}
+	
+	public CashBalance getBalanceBefore (int day, int month, int year) { 
+		
+		Date date = DateUtil.getDate(year, month-1, day);
 		String dateString = DateUtil.formatDate(date, "yyyy-MM-dd");
 		
 		Object object = cashBalanceRepository.getBalanceBefore(dateString ); 
+		Object[] result = (Object[]) object;
+		
+		CashBalance cashBalance = new CashBalance();
+		cashBalance.setCreditAmt(Long.valueOf(result[0].toString()));
+		cashBalance.setDebitAmt(Long.valueOf(result[1].toString()));
+		cashBalance.setActualBalance(Long.valueOf(result[2].toString()));
+		
+		return cashBalance;
+	}
+	public CashBalance getBalanceAt (int day, int month, int year) { 
+		
+		Date date = DateUtil.getDate(year, month-1, day);
+		String dateString = DateUtil.formatDate(date, "yyyy-MM-dd");
+		
+		Object object = cashBalanceRepository.getBalanceAt(dateString ); 
 		Object[] result = (Object[]) object;
 		
 		CashBalance cashBalance = new CashBalance();

@@ -19,7 +19,12 @@ public interface CashBalanceRepository extends JpaRepository<CashBalance, Long> 
 			+ " sum(credit_temp) as credit, sum(debit_temp) as debit, (sum(debit_temp) - sum(credit_temp)) as balance from cash_balance where "
 			+ " date < ?1")
 	public Object getBalanceBefore(String dateString);
-
+	
 	public CashBalance findTop1ByTypeAndReferenceId(CashType cashType, String valueOf);
+	
+	@Query(nativeQuery = true, value = "select "
+			+ " sum(credit_temp) as credit, sum(debit_temp) as debit, (sum(debit_temp) - sum(credit_temp)) as balance from cash_balance where "
+			+ " date <= ?1")
+	public Object getBalanceAt(String dateString);
 
 }

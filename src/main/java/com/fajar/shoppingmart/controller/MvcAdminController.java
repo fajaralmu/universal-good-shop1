@@ -3,6 +3,7 @@ package com.fajar.shoppingmart.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +119,18 @@ public class MvcAdminController extends BaseController {
 //		model.addAttribute("maxYear", transactionYears[1]);
 		return basePage;
 
+	}
+
+	@RequestMapping(value = { "/balance-info" })
+	@CustomRequestInfo(pageUrl = "shop/balance-info", title = "Cash Balance")
+	public String balanceInfo(Model model, HttpServletRequest request, HttpServletResponse response) {
+
+		Date now = new Date();
+		
+		model.addAttribute("currentMonth", DateUtil.getCalendarMonth(now)+1);
+		model.addAttribute("currentYear", DateUtil.getCalendarYear(now));
+		model.addAttribute("currentDay", DateUtil.getCalendarDayOfMonth(now));
+		return basePage;
 	}
 
 //	@RequestMapping(value = { "/management" })
