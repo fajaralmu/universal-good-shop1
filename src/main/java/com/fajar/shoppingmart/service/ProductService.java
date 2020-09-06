@@ -73,7 +73,7 @@ public class ProductService {
 
 		request.getFilter().getFieldsFilter().remove(OPTION_WITH_STOCK);
 		
-		WebResponse filteredProducts = entityService.filter(request);
+		WebResponse filteredProducts = entityService.filter(request, null);
 		
 		progressService.sendProgress(1, 1, 20.0, true, requestId);
 		
@@ -410,7 +410,7 @@ public class ProductService {
 			return getProductsCatalog(request, requestId);
 			
 		} else if (request.getEntity().equals("supplier")) {
-			return entityService.filter(request);
+			return entityService.filter(request, null);
 		}
 		return WebResponse.failed("invalid option");
 	}

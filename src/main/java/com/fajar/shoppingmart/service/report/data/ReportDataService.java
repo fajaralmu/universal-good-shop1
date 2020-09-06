@@ -406,7 +406,7 @@ public class ReportDataService {
 
 	public ReportData getEntityReportData(WebRequest request) throws Exception { 
 //		request.getFilter().setLimit(0);
-		WebResponse response = entityService.filter(request);
+		WebResponse response = entityService.filter(request, null);
 		
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(response.getEntityClass(), null);
 		

@@ -17,8 +17,7 @@ import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
-import com.fajar.shoppingmart.entity.Menu;
-import com.fajar.shoppingmart.entity.Page;
+import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.UserRole;
 import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
 import com.fajar.shoppingmart.repository.EntityRepository;
@@ -26,7 +25,7 @@ import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.service.entity.BaseEntityUpdateService;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
-import com.fajar.shoppingmart.util.ThreadUtil;
+import com.fajar.shoppingmart.util.SessionUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,7 +42,7 @@ public class EntityService {
 	@Autowired
 	private RepositoryCustomImpl repositoryCustom;
 	@Autowired
-	private EntityRepository entityRepository; 
+	private EntityRepository entityRepository;
 	@Autowired
 	private WebConfigService webConfigService;
 
@@ -79,31 +78,30 @@ public class EntityService {
 				entityValue = entityField.get(request);
 
 				log.info("save {}: {}", entityField.getName(), entityValue);
-				log.info("newRecord: {}", newRecord); 
-				
+				log.info("newRecord: {}", newRecord);
+
 				if (entityValue != null) {
 					WebResponse saved = updateService.saveEntity((BaseEntity) entityValue, newRecord);
-					
-					if(saved.isSuccess()) {
+
+					if (saved.isSuccess()) {
 						validateInMemoryEntities(entityConfig);
 					}
-					
+
 					return saved;
-				}
-				else {
+				} else {
 					return WebResponse.failed();
 				}
-				
+
 			} catch (Exception e) {
 				e.printStackTrace();
 				return WebResponse.failed(e.getMessage());
 			}
- 
+
 		} catch (Exception e) {
 			return WebResponse.failed(e.getMessage());
-		}finally {
-			 
-		} 
+		} finally {
+
+		}
 	}
 
 	private void validateInMemoryEntities(final EntityManagementConfig entityConfig) {
@@ -114,7 +112,7 @@ public class EntityService {
 //				webConfigService.refreshMenus(true);
 //			}
 //		});
-		
+
 	}
 
 	/**
@@ -123,7 +121,7 @@ public class EntityService {
 	 * @param request
 	 * @return
 	 */
-	public WebResponse filter(WebRequest request) {
+	public WebResponse filter(WebRequest request, HttpServletRequest httpRequest) {
 		Class<? extends BaseEntity> entityClass = null;
 
 		Filter filter = EntityUtil.cloneSerializable(request.getFilter());
@@ -145,13 +143,16 @@ public class EntityService {
 			if (null == entityClass) {
 				throw new Exception("Invalid entity");
 			}
+			EntityResult entityResult;
+			if (User.class.equals(entityClass)) {
+				User user = SessionUtil.getSessionUser(httpRequest); 
+				entityResult = EntityResult.builder().count(1).entities(CollectionUtil.listOf(user)).build();
+			} else {
 
-			/**
-			 * Generate query string
-			 */
-			EntityResult entityResult = filterEntities(filter, entityClass);
-
-			return WebResponse.builder().entities(EntityValidation.validateDefaultValues(entityResult.entities, entityRepository))
+				entityResult = filterEntities(filter, entityClass);
+			}
+			return WebResponse.builder()
+					.entities(EntityValidation.validateDefaultValues(entityResult.entities, entityRepository))
 					.totalData(entityResult.count).filter(request.getFilter()).entityClass(entityClass).build();
 
 		} catch (Exception ex) {
@@ -165,23 +166,23 @@ public class EntityService {
 		final Map<String, Long> count = new HashMap<>();
 		try {
 //			Thread thread = ThreadUtil.run(() -> {
-				List<T> resultList = repositoryCustom.filterAndSortv2(entityClass, filter);
-				entities.addAll(resultList);
+			List<T> resultList = repositoryCustom.filterAndSortv2(entityClass, filter);
+			entities.addAll(resultList);
 //			});
 //			Thread thread2 = ThreadUtil.run(() -> {
-				long resultCount = repositoryCustom.getRowCount(entityClass, filter);
-				count.put("value", resultCount);
+			long resultCount = repositoryCustom.getRowCount(entityClass, filter);
+			count.put("value", resultCount);
 //			}); 
 //			thread.join();
 //			thread2.join();
-			
-		}catch (Exception e) {
-			log.error("Error filterEntities: {}", e.getCause() );
+
+		} catch (Exception e) {
+			log.error("Error filterEntities: {}", e.getCause());
 			count.put("value", 0L);
 			e.printStackTrace();
 		}
-		return EntityResult.builder().entities(CollectionUtil.convertList(entities)).count(count.get("value").intValue())
-				.build();
+		return EntityResult.builder().entities(CollectionUtil.convertList(entities))
+				.count(count.get("value").intValue()).build();
 	}
 
 	/**
@@ -205,7 +206,7 @@ public class EntityService {
 
 			boolean result = entityRepository.deleteById(id, entityClass);
 
-			return WebResponse.builder().code("00").message("deleted :"+result).build();
+			return WebResponse.builder().code("00").message("deleted :" + result).build();
 
 		} catch (Exception ex) {
 

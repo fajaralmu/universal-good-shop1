@@ -78,7 +78,7 @@ public class ReportService {
 	public XSSFWorkbook generateEntityReport(WebRequest request, HttpServletRequest httpRequest) throws Exception {
 		log.info("generateEntityReport, request: {}", request); 
 
-		WebResponse response = entityService.filter(request); 
+		WebResponse response = entityService.filter(request, null); 
 		initProgress(httpRequest);
 
 		XSSFWorkbook file = entityReportService.getEntityReport(response.getEntities(), response.getEntityClass(), httpRequest);

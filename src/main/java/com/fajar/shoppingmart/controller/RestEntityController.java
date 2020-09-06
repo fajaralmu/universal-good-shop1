@@ -60,7 +60,7 @@ public class RestEntityController extends BaseController{
 	public WebResponse get(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("get entity {}", request); 
-		return entityService.filter(request );
+		return entityService.filter(request, httpRequest );
 		 
 	}
 	
