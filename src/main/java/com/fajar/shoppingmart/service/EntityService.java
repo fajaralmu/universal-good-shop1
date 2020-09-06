@@ -69,6 +69,7 @@ public class EntityService {
 
 			final String key = request.getEntity().toLowerCase();
 			EntityManagementConfig entityConfig = getEntityManagementConfig(key);
+			
 			BaseEntityUpdateService updateService = entityConfig.getEntityUpdateService();
 			String fieldName = entityConfig.getFieldName();
 			Object entityValue = null;
@@ -79,8 +80,9 @@ public class EntityService {
 
 				log.info("save {}: {}", entityField.getName(), entityValue);
 				log.info("newRecord: {}", newRecord);
-
+				
 				if (entityValue != null) {
+					checkIfUser(entityValue, servletRequest);
 					WebResponse saved = updateService.saveEntity((BaseEntity) entityValue, newRecord);
 
 					if (saved.isSuccess()) {
@@ -101,6 +103,16 @@ public class EntityService {
 			return WebResponse.failed(e.getMessage());
 		} finally {
 
+		}
+	}
+
+	private void checkIfUser(Object entityValue, HttpServletRequest servletRequest) {
+		 
+		User user = SessionUtil.getSessionUser(servletRequest);
+		if(entityValue instanceof User) {
+			if(!user.getId().equals(((User) entityValue).getId())){
+				throw new RuntimeException("Invalid User!");
+			}
 		}
 	}
 
