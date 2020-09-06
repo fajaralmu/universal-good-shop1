@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 import com.fajar.shoppingmart.annotation.Dto;
@@ -52,6 +53,16 @@ public class Menu extends BaseEntity {
 	@FormField(type = FieldType.FIELD_TYPE_IMAGE, required = false, defaultValue = "DefaultIcon.BMP")
 	@Column(name = "icon_url")
 	private String iconUrl;
+	
+	@PrePersist
+	public void pre() {
+		if(getColor() == null) {
+			setColor("#ccc");
+		}
+		if(getFontColor() == null) {
+			setFontColor("#000000");
+		}
+	}
 	
 	@Override
 	public EntityUpdateInterceptor getUpdateInterceptor() {

@@ -13,19 +13,18 @@
 	
 	<div id="content-dashboard">
 		<h2>Dashboard</h2>
-		<p>Good ${timeGreeting}, ${loggedUser.displayName}. Have a great
-			day!</p>
+		<p>Good ${timeGreeting}, ${loggedUser.displayName}. Have a great day!</p>
 		<div class="input-group mb-3">
 			<div class="input-group-prepend">
 				<span class="input-group-text">Month</span> <select
 					class="form-control" id="select-month">
 					<c:forEach var="month" items="${months}">
-						<option value="${month.value }">${month.key }</option>
+						<option value="${month.value }" ${month.value == currentMonth ? 'selected' : '' }>${month.key }</option>
 					</c:forEach>
 				</select> <span class="input-group-text">Year</span> <select
 					class="form-control" id="select-year">
 					<c:forEach var="year" items="${years}">
-						<option value="${year.value }">${year.key }</option>
+						<option value="${year.value }" ${year.value == currentYear? 'selected' : '' }>${year.key }</option>
 					</c:forEach>
 				</select>
 			</div>
@@ -115,6 +114,8 @@
 
 	const selectMonth = byId("select-month");
 	const selectYear = byId("select-year"); 
+	
+	var URL_CASHFLOW_INFO = "<spring:url value="/api/transaction/cashflowinfo" />";
 
 	function fetchCashflow(month, year, module) {
 		infoLoading();
@@ -127,7 +128,7 @@
 		};
 		
 		console.log("get cashflow", requestObject);
-		postReq("<spring:url value="/api/transaction/cashflowinfo" />"  ,
+		postReq(URL_CASHFLOW_INFO  ,
 				requestObject, function(xhr) {
 					var response = (xhr.data);
 					if (response != null && response.code == "00") {
