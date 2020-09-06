@@ -153,7 +153,9 @@ function doPopulateProductFlow(productFlows, rowCreationFunction) {
 	}
 
 	totalPriceLabel.innerHTML = beautifyNominal(totalPrice);
-	byId("total-price-label").value = totalPrice;
+	if(byId("total-price-label")){ 
+		byId("total-price-label").value = totalPrice;
+	}
 }
 
 function processReceipt(transaction){

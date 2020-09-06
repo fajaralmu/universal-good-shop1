@@ -128,8 +128,8 @@ public class ProductInventoryService {
 				progressService.sendProgress(1, 1, 10, false, requestId);
 
 				List<ProductFlow> savedProductFlows = saveProductFlows(productFlows, transaction, requestId);
-				saveNewInventoryRecords(savedProductFlows, transaction);
-				updateInventoryRecords(savedProductFlows, transaction, requestId);
+				saveNewInventoryRecords(savedProductFlows, transaction, hibernateSession);
+				updateInventoryRecords(savedProductFlows, transaction, requestId, hibernateSession);
 
 				repositoryCustom.notKeepingTransaction();
 				return transaction;
@@ -143,7 +143,7 @@ public class ProductInventoryService {
 	 * @param savedProductFlows
 	 * @param requestId
 	 */
-	private void updateInventoryRecords(List<ProductFlow> savedProductFlows, Transaction transaction, String requestId) {
+	private void updateInventoryRecords(List<ProductFlow> savedProductFlows, Transaction transaction, String requestId, Session hibernateSession) {
 		final TransactionType transactionType = transaction.getType();
 		log.info("update inentory item for: TRX {}", transactionType);
 
@@ -151,7 +151,7 @@ public class ProductInventoryService {
 
 			boolean updateSuccess;
 			try{
-				updateSuccess = updateInventoryRecord(transactionType, productFlow);
+				updateSuccess = updateInventoryRecord(transactionType, productFlow, hibernateSession);
 			}catch (Exception e) {
 				updateSuccess = false;
 			} 
@@ -166,9 +166,10 @@ public class ProductInventoryService {
 	 * @param productFlow
 	 * @return
 	 */
-	private boolean updateInventoryRecord(TransactionType transactionType, ProductFlow productFlow) { 
+	private boolean updateInventoryRecord(TransactionType transactionType, ProductFlow productFlow, Session hibernateSession) { 
 		 
 		long productId = productFlow.getProduct().getId();
+		boolean newRecord = false;
 		InventoryItem inventoryItemV2 = inventoryItemRepository.findTop1ByProduct_IdAndNewVersion(productId, true);
 
 		log.debug("inventoryItemV2, productID: {} => : {}", productId,
@@ -187,16 +188,22 @@ public class ProductInventoryService {
 			if (null == inventoryItemV2) {
 				log.info("add new record of inventoryItemV2");
 				inventoryItemV2 = new InventoryItem(productFlow.getProduct(), productFlow.getCount());
-
+				inventoryItemV2.setNewVersion(true);
+				newRecord = true;
 			} else { 
 				log.info("productFlow count: {}", productFlow.getCount()); 
 				inventoryItemV2.addProduct(productFlow.getCount()); 
 			}
 
 		}
-
-		InventoryItem ret = inventoryItemRepository.save(inventoryItemV2);// repositoryCustom.saveObject(inventoryItemV2);
-		log.debug("Update inventory item: {}, count: {}", ret.getId(), ret.getCount());
+		if(newRecord) {
+			Object insertedID = hibernateSession.save(inventoryItemV2);
+			log.info("insertedID: {}", insertedID);
+		}else {
+			hibernateSession.merge(inventoryItemV2);
+		}
+//		InventoryItem ret = inventoryItemRepository.save(inventoryItemV2);// repositoryCustom.saveObject(inventoryItemV2);
+//		log.debug("Update inventory item: {}, count: {}", ret.getId(), ret.getCount());
 		return true;
 	}
 
@@ -205,7 +212,7 @@ public class ProductInventoryService {
 	 * 
 	 * @param savedProductFlows
 	 */
-	private void saveNewInventoryRecords(List<ProductFlow> savedProductFlows, Transaction transaction) {
+	private void saveNewInventoryRecords(List<ProductFlow> savedProductFlows, Transaction transaction, Session hibernateSession) {
 		if (transaction.getType().equals(TYPE_OUT)) {
 			return;
 		}
@@ -214,7 +221,7 @@ public class ProductInventoryService {
 
 			// INSERT new inventory item row
 			InventoryItem inventoryItem = InventoryItem.createAndAddNewProduct(productFlow);
-			repositoryCustom.saveObject(inventoryItem);
+			hibernateSession.save(inventoryItem);
 		}
 	}
 
