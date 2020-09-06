@@ -49,10 +49,10 @@
 			<div class="login-form">
 			
 				<label for="user-name">Username</label>
-				<input id="user-name"
+				<input placeholder="username" id="user-name"
 					class="form-control" type="text" />
 				<label for="password">Password</label> 
-				<input id="password" type="password" class="form-control" />
+				<input placeholder="password" id="password" type="password" class="form-control" />
 				 
 				<button class="btn btn-primary" onclick="login(); return false;">Login</button> 
 				<a role="button" class="btn btn-success"
