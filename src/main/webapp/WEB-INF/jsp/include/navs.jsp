@@ -26,8 +26,10 @@
 						${loggedUser.displayName }<span class="caret"></span>
 					</button>
 					<div class="dropdown-menu">
+					<a class="dropdown-item"
+							href="<spring:url value="/management/user"/>">User Profile</a>
 						<a class="dropdown-item"
-							href="<spring:url value="/management/profile"/>">Profile</a> <a
+							href="<spring:url value="/management/profile"/>">App Profile</a><a
 							class="dropdown-item" href="#" onclick="logout()">Logout</a>
 					</div>
 				</div>

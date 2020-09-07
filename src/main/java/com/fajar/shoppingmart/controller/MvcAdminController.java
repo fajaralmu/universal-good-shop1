@@ -91,10 +91,7 @@ public class MvcAdminController extends BaseController {
 		List<String> imageUrlList = CollectionUtil.arrayToList(product.getImageUrl().split("~"));
 		List<Map<String, Object>> imageUrlObjects = new ArrayList<>();
 		for (String string : imageUrlList) {
-			imageUrlObjects.add(new HashMap<String, Object>() {
-				/**
-				* 
-				*/
+			imageUrlObjects.add(new HashMap<String, Object>() { 
 				private static final long serialVersionUID = 1055027585947531920L;
 
 				{
