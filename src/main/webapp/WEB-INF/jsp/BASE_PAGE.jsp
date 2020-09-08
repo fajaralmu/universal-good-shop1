@@ -13,10 +13,9 @@
 <link rel="icon" href="<c:url value="/res/img/javaEE.ico"></c:url >"
 	type="image/x-icon">
 
-<link rel="stylesheet" type="text/css"
-	href="<c:url value="/res/css/shop.css?version=1"></c:url>" />
-<link rel="stylesheet"
-	href="<c:url value="/res/css/bootstrap.min.css" />" />
+<link rel="stylesheet" type="text/css" href="<c:url value="/res/css/shop.css?version=1"></c:url>" />
+<link rel="stylesheet" type="text/css" href="<c:url value="/res/css/bootstrap.min.css" />" />
+<link rel="stylesheet" type="text/css" href="<c:url value="/res/fa/css/all.css" />" />
 <script src="<c:url value="/res/js/jquery-3.3.1.slim.min.js" />"></script>
 <script src="<c:url value="/res/js/popper.min.js" />"></script>
 <script src="<c:url value="/res/js/bootstrap.min.js"  />"></script>
@@ -27,6 +26,7 @@
 <script src="<c:url value="/res/js/util.js?v=1"></c:url >"></script>
 <script src="<c:url value="/res/js/strings.js?v=1"></c:url >"></script>
 <script src="<c:url value="/res/js/timeouts.js?v=1"></c:url >"></script>
+<script src="<c:url value="/res/fa/js/all.js?v=1"></c:url >"></script>
 
 <c:forEach var="stylePath" items="${additionalStylePaths }">
 	<link rel="stylesheet"
@@ -44,12 +44,7 @@
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
-
-.content-layout {
-	display: grid;
-	grid-template-columns: 20% 80%;
-}
-
+ 
 /**
 		active menu when using vertical aligment
 	**/

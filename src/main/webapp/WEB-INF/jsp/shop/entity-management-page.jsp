@@ -352,7 +352,7 @@
 
 	function getButtonOptionGroup(entity, index) {
 		//button edit
-		const buttonEdit = createButton("btn-edit-" + index, editable ? "Edit"
+		const buttonEdit = createButton("btn-edit-" + index, editable ? "<i class=\"fa fa-pencil-square\"></i>"
 				: "Detail");
 		buttonEdit.className = "btn btn-warning";
 		const _idField = this.idField;
@@ -374,7 +374,7 @@
 
 		//button delete
 		if (editable) {
-			const buttonDelete = createButton("delete_" + index, "Delete");
+			const buttonDelete = createButton("delete_" + index, "<i class=\"fa fa-trash\"></i>");
 			buttonDelete.className = "btn btn-danger";
 			buttonDelete.onclick = function() {
 				if (!confirm("will Delete: " + entity[_idField])) {

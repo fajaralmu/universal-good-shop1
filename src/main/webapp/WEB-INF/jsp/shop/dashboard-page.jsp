@@ -29,7 +29,8 @@
 				</select>
 			</div>
 			<div class="input-group-append">
-				<button class="btn btn-outline-secondary" onclick="getCashflow()">Search</button>
+				<button class="btn btn-outline-secondary" onclick="getCashflow()"><i class="fa fa-search"  ></i>
+</button>
 
 			</div>
 		</div>
