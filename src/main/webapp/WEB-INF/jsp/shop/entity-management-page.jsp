@@ -352,7 +352,7 @@
 
 	function getButtonOptionGroup(entity, index) {
 		//button edit
-		const buttonEdit = createButton("btn-edit-" + index, editable ? "<i class=\"fa fa-pencil-square\"></i>"
+		const buttonEdit = createButton("btn-edit-" + index, editable ? "<i class=\"fa fa-wrench\"></i>"
 				: "Detail");
 		buttonEdit.className = "btn btn-warning";
 		const _idField = this.idField;
