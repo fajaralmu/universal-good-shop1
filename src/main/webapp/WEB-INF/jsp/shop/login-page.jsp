@@ -28,9 +28,10 @@
 					var response = (xhr.data);
 					if (response != null && response.code == "00") {
 						alert("LOGIN SUCCESS");
-						const redirectLocation = xhr.getResponseHeader("location");
-						
-						if (redirectLocation!= null) {
+						const redirectLocation = xhr
+								.getResponseHeader("location");
+
+						if (redirectLocation != null) {
 							window.location.href = redirectLocation;
 						} else
 							window.location.href = "<spring:url value="/admin/home" />";
@@ -39,7 +40,6 @@
 					}
 				});
 	}
- 
 </script>
 <div class="content">
 	<p id="info" align="center"></p>
@@ -47,16 +47,21 @@
 		<div class="card-header">Please Login</div>
 		<div class="card-body">
 			<div class="login-form">
-			
-				<label for="user-name">Username</label>
-				<input placeholder="username" id="user-name"
-					class="form-control" type="text" />
-				<label for="password">Password</label> 
-				<input placeholder="password" id="password" type="password" class="form-control" />
-				 
-				<button class="btn btn-primary" onclick="login(); return false;">Login</button> 
+				<div class="input-group mb-3">
+					<div class="input-group-prepend">
+						<span class="input-group-text"><i class="fa fa-user-circle"></i></span>
+					</div>
+					<input placeholder="username" id="user-name" class="form-control" type="text" />
+				</div>
+				<div class="input-group mb-3">
+					<div class="input-group-prepend">
+						<span class="input-group-text"> <i class="fa fa-lock"></i></span>
+					</div>
+					<input placeholder="password" id="password" type="password" class="form-control" />
+				</div>
+				<button class="btn btn-primary" onclick="login(); return false;">Login</button>
 				<a role="button" class="btn btn-success"
-					href='<spring:url value="/account/register"></spring:url>'>Register</a>  
+					href='<spring:url value="/account/register"></spring:url>'>Register</a>
 
 			</div>
 		</div>
