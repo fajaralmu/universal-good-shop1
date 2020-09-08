@@ -93,18 +93,17 @@
 			<h1>${shopProfile.name }</h1>
 			<p>${shopProfile.shortDescription }</p>
 		</div>
-		<div class="content-layout">
-			<div>
+		<div class="row">
+			<div class="col-2">
 				<jsp:include page="include/navs.jsp"></jsp:include>
 				<input id="token-value" value="${pageToken }" type="hidden" /> <input
 					id="request-id" value="${requestId }" type="hidden" />
 			</div>
-			<div>
+			<div class="col-10">
 				<jsp:include
 					page="${pageUrl == null? 'error/notfound': pageUrl}.jsp"></jsp:include>
-			</div>
-			<div></div>
-			<div>
+			</div> 
+			<div class="col-12">
 				<jsp:include page="include/foot.jsp"></jsp:include>
 			</div>
 		</div>
