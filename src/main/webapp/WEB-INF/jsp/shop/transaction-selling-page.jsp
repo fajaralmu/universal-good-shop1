@@ -42,7 +42,7 @@
 								class="form-control" id="product-exp-date" />
 
 							<button class="btn btn-outline-info btn-sm" id="add-product"
-								onclick="addToCart()">add to cart</button>
+								onclick="addToCart()"><i class="fa fa-cart-plus" aria-hidden="true"></i></button>
 							<button class="btn btn-primary btn-sm" id="btn-send"
 								onclick="send()">Submit Transaction</button>
 						</div>
