@@ -55,7 +55,7 @@
 			<nav>
 				<ul class="pagination" id="navigation-panel"></ul>
 			</nav>
-			<div id="catalog-panel" class="row"></div>
+			<div id="catalog-panel"  style="grid-row-gap: 10px"class="row"></div>
 		</div>
 	</div>
 </div>
@@ -150,13 +150,15 @@
 		const html = createHtmlTag({
 			tagName : 'h5',
 			id : 'title-' + entity.id,
+			innerHTML : entity.name,
+			style: {color:'#000000'},
 			ch1 : {
 				tagName : 'small',
 				style : {
 					'background-color' : 'rgb(224,224,224)'
 				},
 				className : 'text-muted clickable',
-				innerHTML : (entity.newProduct ? "(NEW)" : entity.name)
+				innerHTML : (entity.newProduct ? "(NEW)" : "")
 			},
 			onclick : function() {
 				loadDetail(entity.code);
@@ -201,16 +203,10 @@
 			tagName : 'li',
 			id : id,
 			className : className,
+			 
 			ch1 : {
 				tagName : 'span',
-				innerHTML : 'Price'
-			},
-			ch2 : {
-				tagName : 'br'
-			},
-			ch3 : {
-				tagName : 'span',
-				className : 'text-warning',
+				className : 'badge badge-warning',
 				id : "product-price-" + entity.id,
 				innerHTML : beautifyNominal(entity.price)
 			}
