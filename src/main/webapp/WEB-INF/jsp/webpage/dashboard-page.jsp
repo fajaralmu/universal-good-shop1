@@ -29,8 +29,7 @@
 				</select>
 			</div>
 			<div class="input-group-append">
-				<button class="btn btn-outline-secondary" onclick="getCashflow()"><i class="fa fa-search"  ></i>
-</button>
+				<button class="btn btn-outline-secondary" onclick="getCashflow()"><i class="fa fa-search"  ></i></button>
 
 			</div>
 		</div>
@@ -45,17 +44,20 @@
 		<p></p>
 		<div class="row">
 
-			<div class="col-md-4">
+			<div class="col-md-3">
 				<div class="card" style="width: 100%;">
 					<img class="card-img-top" width="100" height="200"
 						src="<spring:url value="/res/img/income.jpg" />"
 						alt="Card image cap">
 					<div class="card-body">
-						<h5 class="card-title">Income</h5>
+						<div class="card-title"><a role="button"  id="btn-detail-OUT" class="badge badge-secondary"
+							link="${contextPath}/management/transaction/type=OUT"
+							href="${contextPath}/management/transaction/type=OUT">
+							Income <i class="fa fa-th-list" aria-hidden="true"></i></a></div>
 						<ul class="list-group">
 							<li
 								class="list-group-item d-flex justify-content-between align-items-center">
-								Product Sales <span class="badge badge-primary badge-pill"
+								Selling<span class="badge badge-primary badge-pill"
 								id="count-OUT">0</span>
 							</li>
 							<li
@@ -64,23 +66,22 @@
 							</li>
 
 						</ul>
-						<a role="button" id="btn-detail-OUT" class="badge badge-success"
-							link="${contextPath}/management/transaction/type=OUT"
-							href="${contextPath}/management/transaction/type=OUT">Detail</a>
-					</div>
+							</div>
 				</div>
 			</div>
-			<div class="col-md-4">
+			<div class="col-md-3">
 				<div class="card" style="width: 100%;">
 					<img class="card-img-top" width="100" height="200"
 						src="<spring:url value="/res/img/wallet1.png" />"
 						alt="Card image cap">
 					<div class="card-body">
-						<h5 class="card-title">Spent</h5>
+						<div class="card-title"><a role="button" id="btn-detail-IN" class="badge badge-secondary"
+							link="${contextPath}/management/transaction/type=IN"
+							href="${contextPath}/management/transaction/type=IN">Spent <i class="fa fa-th-list" aria-hidden="true"></i></a></div>
 						<ul class="list-group">
 							<li
 								class="list-group-item d-flex justify-content-between align-items-center">
-								Product Supply <span class="badge badge-primary badge-pill"
+								Purchasing<span class="badge badge-primary badge-pill"
 								id="count-IN">0</span>
 							</li>
 							<li
@@ -88,10 +89,7 @@
 								Spent<br> <span id="amount-IN">0</span>
 							</li>
 
-						</ul>
-						<a role="button" id="btn-detail-IN" class="badge badge-success"
-							link="${contextPath}/management/transaction/type=IN"
-							href="${contextPath}/management/transaction/type=IN">Detail</a>
+						</ul> 
 					</div>
 				</div>
 			</div>
