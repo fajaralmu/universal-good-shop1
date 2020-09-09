@@ -47,7 +47,7 @@
 
 			<div class="col-md-4">
 				<div class="card" style="width: 100%;">
-					<img class="card-img-top" width="100" height="150"
+					<img class="card-img-top" width="100" height="200"
 						src="<spring:url value="/res/img/income.jpg" />"
 						alt="Card image cap">
 					<div class="card-body">
@@ -72,7 +72,7 @@
 			</div>
 			<div class="col-md-4">
 				<div class="card" style="width: 100%;">
-					<img class="card-img-top" width="100" height="150"
+					<img class="card-img-top" width="100" height="200"
 						src="<spring:url value="/res/img/wallet1.png" />"
 						alt="Card image cap">
 					<div class="card-body">

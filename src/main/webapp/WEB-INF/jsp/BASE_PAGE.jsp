@@ -79,11 +79,7 @@
 
 .content {
 	padding: 10px
-}
-
-.page-head {
-	margin-bottom: -17px
-}
+} 
 
 a {
 	color: ${shopProfile.fontColor} 

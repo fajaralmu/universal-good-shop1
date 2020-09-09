@@ -190,7 +190,7 @@
 				+ imageUrl.split("~")[0];
 		const elementId = "icon-" + entity.id;
 
-		const iconImage = createImgTag(elementId, "card-img-top", "100", "150",
+		const iconImage = createImgTag(elementId, "card-img-top", "100", "200",
 				src);
 		iconImage.setAttribute("alt", entity.name);
 
