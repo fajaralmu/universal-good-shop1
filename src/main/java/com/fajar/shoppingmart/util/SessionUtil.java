@@ -110,8 +110,11 @@ public class SessionUtil {
 	}
 
 	public static void setSessionPageCode(HttpServletRequest request, String pageCode) {
-
-		request.getSession(false).setAttribute(PAGE_CODE, pageCode);
+		try {
+			request.getSession(false).setAttribute(PAGE_CODE, pageCode);
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
 	public static String getRequestToken(HttpServletRequest httpRequest) {

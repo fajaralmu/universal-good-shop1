@@ -10,7 +10,7 @@
 <meta http-equiv="Content-Type"
 	content="text/html; charset=windows-1256">
 <title>${title}</title>
-<link rel="icon" href="<c:url value="/res/img/javaEE.ico"></c:url >"
+<link rel="icon" href="<c:url value="${pageIconUrl }"></c:url >"
 	type="image/x-icon">
 
 <link rel="stylesheet" type="text/css"

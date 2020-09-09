@@ -26,5 +26,6 @@ public @interface FormField {
 	public boolean required() default true;  
 	public boolean emptyAble() default true;
 	public boolean multipleSelect() default false;
+	public boolean iconImage() default false;
 
 }

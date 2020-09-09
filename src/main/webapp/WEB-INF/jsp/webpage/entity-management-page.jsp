@@ -436,7 +436,7 @@
 				tagName : "img",
 				width : 30,
 				height : 30,
-				src : "${host}${contextPath}/${imagePath}/" + (entityValue)
+				src : "${host}${contextPath}/${imagePath}/" + (entityValue.endsWith(".ico") ? "ICON/"+entityValue: entityValue)
 			});
 			entityValue = domToString(dom);
 			//"<img width=\"30\" height=\"30\" src=\"${host}/${contextPath}/${imagePath}/" + (entityValue) + "\" />";
@@ -656,8 +656,9 @@
 							array_element);
 				}
 			} else {
-				const resourceUrl = url + entityValue;
+				const resourceUrl = url + (entityValue.endsWith(".ico")? "ICON/"+ entityValue : entityValue);
 				displayElement.src = resourceUrl;
+				
 				displayElement.setAttribute("originaldata", resourceUrl);
 				displayElement.setAttribute("originalvalue", entityValue);
 			}
@@ -1047,9 +1048,12 @@
 			byId("btn-submit").onclick = function(e) {
 				submit();
 			}
-			byId("btn-clear").onclick = function(e) {
-				clear();
+			if(byId("btn-clear")){
+				byId("btn-clear").onclick = function(e) {
+					clear();
+				}
 			}
+		
 
 		}
 

@@ -81,6 +81,20 @@ public class BaseController {
 			return null;
 	}
 
+	@ModelAttribute("pageIconUrl")
+	public String iconUrl(HttpServletRequest request) {
+		Profile Profile = webAppConfiguration.getProfile();
+
+		String icon;
+		if (null != Profile.getPageIcon()) {
+			icon = "/WebAsset/Shop1/Images/ICON/" + Profile.getPageIcon();
+		} else {
+			icon = "/res/img/javaEE.ico";
+		}
+
+		return icon;
+	}
+
 	@ModelAttribute("host")
 	public String getHost(HttpServletRequest request) {
 		return MvcUtil.getHost(request);
@@ -130,7 +144,7 @@ public class BaseController {
 	public int getCurrentYear(HttpServletRequest request) {
 		return DateUtil.getCalendarItem(new Date(), Calendar.YEAR);
 	}
-	
+
 	@ModelAttribute("authenticated")
 	public boolean authenticated(HttpServletRequest request) {
 		return userSessionService.hasSession(request);
@@ -205,7 +219,7 @@ public class BaseController {
 		for (int i = 0; i < paths.length; i++) {
 			KeyValue<String, String> keyValue = new KeyValue<String, String>();
 			keyValue.setValue(paths[i]);
-			
+
 			resoucePaths.add(keyValue);
 			log.info("{}. Add {} to {} , value: {}", i, resourceName, modelAndView.getViewName(), paths[i]);
 		}

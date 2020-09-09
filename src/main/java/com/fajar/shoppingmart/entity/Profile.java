@@ -57,6 +57,9 @@ public class Profile extends BaseEntity {
 	@FormField(type = FieldType.FIELD_TYPE_IMAGE, required = false, defaultValue = "DefaultIcon.BMP")
 	@Column(name = "icon_url")
 	private String iconUrl;
+	@FormField(type = FieldType.FIELD_TYPE_IMAGE, iconImage = true, required = false, defaultValue = "DefaultIcon.BMP")
+	@Column(name = "page_icon_url")
+	private String pageIcon;
 	@FormField(type = FieldType.FIELD_TYPE_IMAGE, required = false, defaultValue = "DefaultBackground.BMP")
 	@Column(name = "background_url")
 	private String backgroundUrl;
