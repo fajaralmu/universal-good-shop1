@@ -21,7 +21,12 @@ body {
 	min-height: 100vh;
 }
 
-a :hover {
+a:hover {
+	cursor: pointer;
+	color: #cccccc;
+}
+
+.header-a:hover {
 	cursor: pointer;
 	color: #cccccc;
 }
