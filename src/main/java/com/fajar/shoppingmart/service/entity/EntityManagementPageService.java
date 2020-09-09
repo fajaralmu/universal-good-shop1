@@ -1,4 +1,4 @@
-package com.fajar.shoppingmart.service;
+package com.fajar.shoppingmart.service.entity;
 
 import static com.fajar.shoppingmart.util.MvcUtil.constructCommonModel;
 
@@ -18,6 +18,7 @@ import com.fajar.shoppingmart.entity.Menu;
 import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
 import com.fajar.shoppingmart.entity.setting.EntityProperty;
 import com.fajar.shoppingmart.repository.EntityRepository;
+import com.fajar.shoppingmart.service.MenuInitiationService;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.SessionUtil;

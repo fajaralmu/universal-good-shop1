@@ -21,7 +21,7 @@ import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.exception.InvalidRequestException;
 import com.fajar.shoppingmart.service.LogProxyFactory;
-import com.fajar.shoppingmart.service.ProductService;
+import com.fajar.shoppingmart.service.transaction.ProductService;
 
 import lombok.extern.slf4j.Slf4j;
 

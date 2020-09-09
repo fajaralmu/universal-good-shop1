@@ -22,7 +22,7 @@ import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.MessagingService;
-import com.fajar.shoppingmart.service.TransactionService;
+import com.fajar.shoppingmart.service.transaction.TransactionService;
 
 @CrossOrigin
 @RestController

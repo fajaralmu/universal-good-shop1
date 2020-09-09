@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fajar.shoppingmart.annotation.Authenticated;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
-import com.fajar.shoppingmart.service.EntityService;
 import com.fajar.shoppingmart.service.LogProxyFactory;
+import com.fajar.shoppingmart.service.entity.EntityService;
 
 import lombok.extern.slf4j.Slf4j;
 

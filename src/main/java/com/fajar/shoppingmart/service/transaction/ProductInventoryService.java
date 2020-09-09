@@ -1,4 +1,4 @@
-package com.fajar.shoppingmart.service;
+package com.fajar.shoppingmart.service.transaction;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +20,8 @@ import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.InventoryItemRepository;
 import com.fajar.shoppingmart.repository.PersistenceOperation;
 import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
+import com.fajar.shoppingmart.service.ProgressService;
+import com.fajar.shoppingmart.service.financial.CashBalanceService;
 import com.fajar.shoppingmart.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +45,93 @@ public class ProductInventoryService {
 	public static final TransactionType TYPE_IN = TransactionType.IN;
 	public static final boolean NEW_VERSION = Boolean.TRUE;
 
+	
+	 
+	public Transaction savePurchasingTransaction(List<ProductFlow> productFlows, User user, Supplier supplier,
+			Date transactionDate) {
+		final Transaction transaction = buildTransactionObject(TYPE_IN, user, null, supplier, transactionDate);
+		final String requestId = user.getRequestId();
+
+		repositoryCustom.keepTransaction();
+		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId);
+
+		repositoryCustom.pesistOperation(op);
+
+		transaction.setProductFlows(productFlows);
+		return transaction;
+
+	}
+ 
+	public synchronized Transaction saveSellingTransaction(Date transactionDate, List<ProductFlow> productFlows,
+			User user, Customer customer) {
+		if (productFlows == null || productFlows.size() == 0) {
+			throw new RuntimeException("INVALID PRODUCTS");
+		}
+		final String requestId = user.getRequestId();
+		final Transaction transaction = buildTransactionObject(TYPE_OUT, user, customer, null, transactionDate);
+
+		repositoryCustom.keepTransaction();
+		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId);
+
+		repositoryCustom.pesistOperation(op);
+		transaction.setProductFlows(productFlows);
+
+		return transaction;
+	}
+
+	public InventoryItem getInventoryByFlowRefId(long reffId) {
+		return inventoryItemRepository.findByIncomingFlowId(reffId);
+	}
+
+	/**
+	 * get available quantity
+	 * 
+	 * @param field
+	 * @param value
+	 * @param match
+	 * @param limit
+	 * @return
+	 */
+	public List<InventoryItem> getInventoriesByProduct(String field, Object value, boolean match, int limit) {
+		String sql = "select * from inventoryitem left join product on inventoryitem.product_id = product.id "
+				+ " where inventoryitem.count > 0 and product." + field + " ";
+		if (match) {
+			sql += " = '" + value + "'";
+		} else {
+			sql += " like '%" + value + "%'";
+		}
+		if (limit > 0) {
+			sql += " limit " + limit;
+		}
+		return repositoryCustom.filterAndSort(sql, InventoryItem.class);
+	}
+
+	/**
+	 * get current product quantity
+	 * 
+	 * @param product
+	 * @return
+	 */
+	public int getProductInventory(Product product) {
+		int quantity = 0;
+
+		InventoryItem inventoryItem = inventoryItemRepository.findTop1ByProduct_IdAndNewVersion(product.getId(), true);
+
+		if (null != inventoryItem) {
+			quantity = inventoryItem.getCount();
+		}
+
+		return quantity;
+	}
+
+	public void addNewProduct(Product product) {
+		log.info("Add new product: {}", product.getName());
+
+		InventoryItem inventoryItem = new InventoryItem();
+		inventoryItem.setProduct(product);
+		entityRepository.save(inventoryItem);
+	}
+	
 	/**
 	 * create common transaction object
 	 */
@@ -61,59 +150,8 @@ public class ProductInventoryService {
 		}
 
 		return transaction;
-	}
-
-	/**
-	 * purchasing product from supplier
-	 * 
-	 * @param productFlows
-	 * @param requestId
-	 * @param user
-	 * @param supplier
-	 * @param transactionDate
-	 * @return
-	 */
-	public Transaction savePurchasingTransaction(List<ProductFlow> productFlows, User user, Supplier supplier,
-			Date transactionDate) {
-		final Transaction transaction = buildTransactionObject(TYPE_IN, user, null, supplier, transactionDate);
-		final String requestId = user.getRequestId();
-
-		repositoryCustom.keepTransaction();
-		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId);
-
-		repositoryCustom.pesistOperation(op);
-
-		transaction.setProductFlows(productFlows);
-		return transaction;
-
-	}
-
-	/**
-	 * sell product to customer
-	 * 
-	 * @param transactionDate
-	 * @param productFlows
-	 * @param user
-	 * @param customer
-	 * @return
-	 */
-	public synchronized Transaction saveSellingTransaction(Date transactionDate, List<ProductFlow> productFlows,
-			User user, Customer customer) {
-		if (productFlows == null || productFlows.size() == 0) {
-			throw new RuntimeException("INVALID PRODUCTS");
-		}
-		final String requestId = user.getRequestId();
-		final Transaction transaction = buildTransactionObject(TYPE_OUT, user, customer, null, transactionDate);
-
-		repositoryCustom.keepTransaction();
-		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId);
-
-		repositoryCustom.pesistOperation(op);
-		transaction.setProductFlows(productFlows);
-
-		return transaction;
-	}
-
+	} 
+	
 	private PersistenceOperation<Transaction> getTransactionPersistenceOperation(final Transaction transaction,
 			List<ProductFlow> productFlows, String requestId) {
 		log.info("Persistence Operation For trasaction type: {}, code: {}", transaction.getType(),
@@ -356,57 +394,6 @@ public class ProductInventoryService {
 		return savedProductFlows;
 	}
 
-	public InventoryItem getInventoryByFlowRefId(long reffId) {
-		return inventoryItemRepository.findByIncomingFlowId(reffId);
-	}
-
-	/**
-	 * get available quantity
-	 * 
-	 * @param field
-	 * @param value
-	 * @param match
-	 * @param limit
-	 * @return
-	 */
-	public List<InventoryItem> getInventoriesByProduct(String field, Object value, boolean match, int limit) {
-		String sql = "select * from inventoryitem left join product on inventoryitem.product_id = product.id "
-				+ " where inventoryitem.count > 0 and product." + field + " ";
-		if (match) {
-			sql += " = '" + value + "'";
-		} else {
-			sql += " like '%" + value + "%'";
-		}
-		if (limit > 0) {
-			sql += " limit " + limit;
-		}
-		return repositoryCustom.filterAndSort(sql, InventoryItem.class);
-	}
-
-	/**
-	 * get current product quantity
-	 * 
-	 * @param product
-	 * @return
-	 */
-	public int getProductInventory(Product product) {
-		int quantity = 0;
-
-		InventoryItem inventoryItem = inventoryItemRepository.findTop1ByProduct_IdAndNewVersion(product.getId(), true);
-
-		if (null != inventoryItem) {
-			quantity = inventoryItem.getCount();
-		}
-
-		return quantity;
-	}
-
-	public void addNewProduct(Product product) {
-		log.info("Add new product: {}", product.getName());
-
-		InventoryItem inventoryItem = new InventoryItem();
-		inventoryItem.setProduct(product);
-		entityRepository.save(inventoryItem);
-	}
+	
 
 }

@@ -1,4 +1,4 @@
-package com.fajar.shoppingmart.service;
+package com.fajar.shoppingmart.service.financial;
 
 import java.util.Date;
 

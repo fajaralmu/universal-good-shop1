@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
-import com.fajar.shoppingmart.service.EntityService;
 import com.fajar.shoppingmart.service.ProgressService;
+import com.fajar.shoppingmart.service.entity.EntityService;
 import com.fajar.shoppingmart.service.report.builder.BalanceReportBuilder;
 import com.fajar.shoppingmart.service.report.builder.DailyReportBuilder;
 import com.fajar.shoppingmart.service.report.builder.EntityReportService;

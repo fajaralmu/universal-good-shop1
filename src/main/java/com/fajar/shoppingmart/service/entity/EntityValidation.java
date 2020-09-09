@@ -1,4 +1,4 @@
-package com.fajar.shoppingmart.service;
+package com.fajar.shoppingmart.service.entity;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;

@@ -29,10 +29,10 @@ import com.fajar.shoppingmart.entity.setting.EntityProperty;
 import com.fajar.shoppingmart.repository.CapitalFlowRepository;
 import com.fajar.shoppingmart.repository.CostFlowRepository;
 import com.fajar.shoppingmart.repository.ProductFlowRepository;
-import com.fajar.shoppingmart.service.CashBalanceService;
-import com.fajar.shoppingmart.service.EntityService;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.ProgressService;
+import com.fajar.shoppingmart.service.entity.EntityService;
+import com.fajar.shoppingmart.service.financial.CashBalanceService;
 import com.fajar.shoppingmart.util.DateUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 

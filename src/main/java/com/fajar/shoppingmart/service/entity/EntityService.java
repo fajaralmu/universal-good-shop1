@@ -1,4 +1,4 @@
-package com.fajar.shoppingmart.service;
+package com.fajar.shoppingmart.service.entity;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -22,7 +22,8 @@ import com.fajar.shoppingmart.entity.UserRole;
 import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
 import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
-import com.fajar.shoppingmart.service.entity.BaseEntityUpdateService;
+import com.fajar.shoppingmart.service.LogProxyFactory;
+import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.SessionUtil;

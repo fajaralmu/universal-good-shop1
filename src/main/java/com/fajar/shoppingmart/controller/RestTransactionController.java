@@ -20,8 +20,8 @@ import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.LogProxyFactory;
-import com.fajar.shoppingmart.service.ProductService;
-import com.fajar.shoppingmart.service.TransactionService;
+import com.fajar.shoppingmart.service.transaction.ProductService;
+import com.fajar.shoppingmart.service.transaction.TransactionService;
 
 import lombok.extern.slf4j.Slf4j;
 

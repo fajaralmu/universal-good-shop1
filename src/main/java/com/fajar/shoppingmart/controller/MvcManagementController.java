@@ -3,8 +3,6 @@ package com.fajar.shoppingmart.controller;
 import static com.fajar.shoppingmart.util.MvcUtil.constructCommonModel;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -24,10 +22,8 @@ import com.fajar.shoppingmart.entity.Profile;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.setting.EntityProperty;
-import com.fajar.shoppingmart.service.EntityManagementPageService;
-import com.fajar.shoppingmart.service.EntityService;
 import com.fajar.shoppingmart.service.LogProxyFactory;
-import com.fajar.shoppingmart.util.CollectionUtil;
+import com.fajar.shoppingmart.service.entity.EntityManagementPageService;
 import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.MyJsonUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
@@ -45,9 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 @Authenticated
 @CustomRequestInfo(stylePaths = "entitymanagement", scriptPaths = "entitymanagement", pageUrl = "webpage/entity-management-page")
 public class MvcManagementController extends BaseController {
-
-	@Autowired
-	private EntityService entityService;
+ 
 	@Autowired
 	private EntityManagementPageService entityManagementPageService;
 

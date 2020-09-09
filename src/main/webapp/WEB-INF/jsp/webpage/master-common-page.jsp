@@ -7,7 +7,7 @@
 	<h2>${page.name}</h2>
 	<p>Good ${timeGreeting}, ${loggedUser.displayName}. Have a great day!</p>
 	<p>${page.description }</p>
-	<div class="row">
+	<div class="row" style="grid-row-gap: 10px">
 		<c:forEach var="menu" items="${page.menus }">
 			<div class="col-sm-3">
 				<div class="card" style="width: 100%;">

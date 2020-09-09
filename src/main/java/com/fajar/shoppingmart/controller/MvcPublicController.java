@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.service.LogProxyFactory;
-import com.fajar.shoppingmart.service.ProductService;
+import com.fajar.shoppingmart.service.transaction.ProductService;
 
 import lombok.extern.slf4j.Slf4j;
 

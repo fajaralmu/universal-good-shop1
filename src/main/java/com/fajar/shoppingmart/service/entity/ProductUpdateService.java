@@ -1,6 +1,6 @@
 package com.fajar.shoppingmart.service.entity;
 
-import static com.fajar.shoppingmart.service.EntityService.*;
+import static com.fajar.shoppingmart.service.entity.EntityService.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,7 +14,7 @@ import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Product;
 import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.ProductRepository;
-import com.fajar.shoppingmart.service.ProductInventoryService;
+import com.fajar.shoppingmart.service.transaction.ProductInventoryService;
 import com.fajar.shoppingmart.util.CollectionUtil;
 
 import lombok.extern.slf4j.Slf4j;

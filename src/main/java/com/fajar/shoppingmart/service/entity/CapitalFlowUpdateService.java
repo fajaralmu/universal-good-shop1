@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.CapitalFlow;
 import com.fajar.shoppingmart.repository.EntityRepository;
-import com.fajar.shoppingmart.service.CashBalanceService;
+import com.fajar.shoppingmart.service.financial.CashBalanceService;
 
 @Service
 public class CapitalFlowUpdateService extends BaseEntityUpdateService<CapitalFlow>{ 
