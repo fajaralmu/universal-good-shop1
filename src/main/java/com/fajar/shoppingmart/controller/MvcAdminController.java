@@ -53,7 +53,7 @@ public class MvcAdminController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/home" })
-	@CustomRequestInfo(title = "Dashboard", pageUrl = "shop/dashboard-page", stylePaths = { "dashboard", "filter-box" })
+	@CustomRequestInfo(title = "Dashboard", pageUrl = "webpage/dashboard-page", stylePaths = { "dashboard", "filter-box" })
 	public String menuDashboard(Model model, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 		Calendar cal = Calendar.getInstance();
@@ -73,7 +73,7 @@ public class MvcAdminController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/product/{code}" })
-	@CustomRequestInfo(pageUrl = "shop/product-detail-page")
+	@CustomRequestInfo(pageUrl = "webpage/product-detail-page")
 	public String productDetail(@PathVariable(required = true) String code, Model model, HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 		Calendar cal = Calendar.getInstance();
@@ -119,7 +119,7 @@ public class MvcAdminController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/balance-info" })
-	@CustomRequestInfo(pageUrl = "shop/balance-info", title = "Cash Balance")
+	@CustomRequestInfo(pageUrl = "webpage/balance-info", title = "Cash Balance")
 	public String balanceInfo(Model model, HttpServletRequest request, HttpServletResponse response) {
 
 		Date now = new Date();
@@ -141,7 +141,7 @@ public class MvcAdminController extends BaseController {
 //		model.addAttribute("menus", componentService.getManagementMenus(request));
 //		model.addAttribute("contextPath", request.getContextPath());
 //		model.addAttribute("title", "Shop::Management");
-//		model.addAttribute("pageUrl", "shop/management-page");
+//		model.addAttribute("pageUrl", "webpage/management-page");
 //		model.addAttribute("page", "management");
 //		return basePage;
 //	}
@@ -157,14 +157,14 @@ public class MvcAdminController extends BaseController {
 //		model.addAttribute("menus", componentService.getTransactionMenus(request));
 //		model.addAttribute("imagePath", webAppConfiguration.getUploadedImagePath());
 //		model.addAttribute("title", "Shop::Transaction");
-//		model.addAttribute("pageUrl", "shop/transaction-page");
+//		model.addAttribute("pageUrl", "webpage/transaction-page");
 //		model.addAttribute("page", "transaction");
 //		return basePage;
 //	}
 
 	@RequestMapping(value = { "/transaction/in", "/transaction/in/", "/transaction/in/{transactionCode}" })
 	@CustomRequestInfo(scriptPaths = { "transaction" }, stylePaths = {
-			"transaction-sell-purc" }, title = "Purchase", pageUrl = "shop/transaction-purchasing-page")
+			"transaction-sell-purc" }, title = "Purchase", pageUrl = "webpage/transaction-purchasing-page")
 	public String purchasingTransaction(@PathVariable(required = false) String transactionCode, Model model,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -178,7 +178,7 @@ public class MvcAdminController extends BaseController {
 
 	@RequestMapping(value = { "/transaction/out", "/transaction/out/", "/transaction/out/{transactionCode}" })
 	@CustomRequestInfo(scriptPaths = { "transaction" }, stylePaths = {
-			"transaction-sell-purc" }, title = "Selling", pageUrl = "shop/transaction-selling-page")
+			"transaction-sell-purc" }, title = "Selling", pageUrl = "webpage/transaction-selling-page")
 	public String sellingTransaction(@PathVariable(required = false) String transactionCode, Model model,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -192,7 +192,7 @@ public class MvcAdminController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/sidemenudisplayorder" })
-	@CustomRequestInfo(title = "Menu Sequence Order", pageUrl = "shop/sequenceordering", stylePaths = {
+	@CustomRequestInfo(title = "Menu Sequence Order", pageUrl = "webpage/sequenceordering", stylePaths = {
 			"sequenceordering" })
 	public String sideMenuDisplayOrder(Model model, HttpServletRequest request, HttpServletResponse response) {
 

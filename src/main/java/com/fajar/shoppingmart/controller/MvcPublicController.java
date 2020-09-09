@@ -51,7 +51,7 @@ public class MvcPublicController extends BaseController{
 	
 	
 	@RequestMapping(value = { "/public/catalog","/public/catalog/", "/public/catalog/{option}" })
-	@CustomRequestInfo(title = "Product Catalog", pageUrl = "shop/catalog-page", scriptPaths = "product-catalog", stylePaths = {"filter-box"})
+	@CustomRequestInfo(title = "Product Catalog", pageUrl = "webpage/catalog-page", scriptPaths = "product-catalog", stylePaths = {"filter-box"})
 	public String catalog(@PathVariable(required = false)String option, Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		model.addAttribute("page", "main");
@@ -62,7 +62,7 @@ public class MvcPublicController extends BaseController{
 	}
 	
 	@RequestMapping(value = { "/public/about" })
-	@CustomRequestInfo(title="About Us", pageUrl = "shop/about-page")
+	@CustomRequestInfo(title="About Us", pageUrl = "webpage/about-page")
 	public String about(  Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		setActivePage(request );
@@ -73,7 +73,7 @@ public class MvcPublicController extends BaseController{
 	}
 	
 	@RequestMapping(value = { "/public/suppliers" })
-	@CustomRequestInfo(title="Our Suppliers", pageUrl = "shop/supplier-page")
+	@CustomRequestInfo(title="Our Suppliers", pageUrl = "webpage/supplier-page")
 	public String suppliers(  Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		model.addAttribute("page", "main"); 

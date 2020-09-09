@@ -38,7 +38,7 @@ public class MvcAccountController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/login" })
-	@CustomRequestInfo(title="Login", pageUrl = "shop/login-page", stylePaths = "loginpage")
+	@CustomRequestInfo(title="Login", pageUrl = "webpage/login-page", stylePaths = "loginpage")
 	public String login(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if (userSessionService.hasSession(request, false)) {
 			response.sendRedirect(request.getContextPath() + "/admin/home");
@@ -57,7 +57,7 @@ public class MvcAccountController extends BaseController {
 			userSessionService.logout(request);
 		}
 
-		model.addAttribute("pageUrl", "shop/login-page");
+		model.addAttribute("pageUrl", "webpage/login-page");
 		model.addAttribute("page", "login");
 		return basePage;
 	}
@@ -67,7 +67,7 @@ public class MvcAccountController extends BaseController {
 		if (userSessionService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/admin/home");
 		}
-		return "shop/register-page";
+		return "webpage/register-page";
 	}
 	
 	@RequestMapping(value = { "/websetting" })

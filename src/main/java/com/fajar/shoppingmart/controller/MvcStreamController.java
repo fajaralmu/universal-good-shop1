@@ -59,7 +59,7 @@ public class MvcStreamController extends BaseController {
 			model.addAttribute("partnerId", partnerId);
 			model.addAttribute("title", "Video Call");
 			model.addAttribute("partnerInfo", partnerInfo);
-			model.addAttribute("pageUrl", "shop/video-call");
+			model.addAttribute("pageUrl", "webpage/video-call");
 		} catch (Exception e) {
 			sendRedirectLogin(request, response);
 			 

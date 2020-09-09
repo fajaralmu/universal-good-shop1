@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("management")
 @Authenticated
-@CustomRequestInfo(stylePaths = "entitymanagement", scriptPaths = "entitymanagement", pageUrl = "shop/entity-management-page")
+@CustomRequestInfo(stylePaths = "entitymanagement", scriptPaths = "entitymanagement", pageUrl = "webpage/entity-management-page")
 public class MvcManagementController extends BaseController {
 
 	@Autowired
@@ -187,7 +187,7 @@ public class MvcManagementController extends BaseController {
 	 */
 
 	@RequestMapping(value = { "/appsession" })
-	@CustomRequestInfo(title = "Apps Sessions", pageUrl = "shop/app-session")
+	@CustomRequestInfo(title = "Apps Sessions", pageUrl = "webpage/app-session")
 	public String appsession(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		try {
