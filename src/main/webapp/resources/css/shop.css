@@ -17,11 +17,13 @@ body {
  
 	/*  border: solid 1px; */
 	padding: 0;
-	background-color: white
+	background-color: white;
+	min-height: 100vh;
 }
 
 a :hover {
 	cursor: pointer;
+	color: #cccccc;
 }
 
 .header {
@@ -110,7 +112,7 @@ a :hover {
 /******MENUS*******/
 ul#menu-1 li {
 	display: inline;
-}
+} 
 
 /******* REPORT *******/
 .chart-item-hr {

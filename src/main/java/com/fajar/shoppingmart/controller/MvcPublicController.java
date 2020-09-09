@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.transaction.ProductService;
+import com.fajar.shoppingmart.util.CollectionUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,9 +43,9 @@ public class MvcPublicController extends BaseController{
 		String imagebasePath = getFullImagePath(request);
 
 		List<String> randomImages = productService.getRandomProductImages(imagebasePath); 
-		model.addAttribute("imageUrlList", randomImages);
+		model.addAttribute("imageUrlList", CollectionUtil.listToKeyVal(randomImages));
 		model.addAttribute("page", "main"); 
-		
+		model.addAttribute("hideNavBar", true);
 		return basePage;
 
 	}

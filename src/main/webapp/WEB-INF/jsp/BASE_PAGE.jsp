@@ -79,22 +79,27 @@
 
 .content {
 	padding: 10px
-} 
-.side-nav-item{
-	padding:10px; 
 }
-.side-nav-item a{
+
+.side-nav-item {
+	padding: 10px;
+}
+
+.side-nav-item a {
 	width: 100%;
 	display: block;
 }
-.side-nav-item:hover{
+
+.side-nav-item:hover {
 	cursor: pointer;
 }
+
 a {
-	color: ${shopProfile.fontColor} 
+	color: ${shopProfile.fontColor}
+
 }
-a:hover{
-	text-decoration: none;	
+a:hover {
+	text-decoration: none;
 }
 </style>
 </head>
@@ -113,15 +118,25 @@ a:hover{
 			<jsp:include page="include/header.jsp"></jsp:include>
 		</div>
 		<div class="row" style="margin-right: 0">
-			<div class="col-2" style="background-color: ${shopProfile.color}">
-				<jsp:include page="include/navs.jsp"></jsp:include>
-				<input id="token-value" value="${pageToken }" type="hidden" /> <input
-					id="request-id" value="${requestId }" type="hidden" />
-			</div>
-			<div class="col-10">
-				<jsp:include
-					page="${pageUrl == null? 'error/notfound': pageUrl}.jsp"></jsp:include>
-			</div>
+			<c:choose>
+				<c:when test="${hideNavBar != null && hideNavBar == true }">
+					<div class="col-12">
+						<jsp:include
+							page="${pageUrl == null? 'error/notfound': pageUrl}.jsp"></jsp:include>
+					</div>
+				</c:when>
+				<c:otherwise>
+					<div class="col-2" style="background-color: ${shopProfile.color}">
+						<jsp:include page="include/navs.jsp"></jsp:include>
+						<input id="token-value" value="${pageToken }" type="hidden" /> <input
+							id="request-id" value="${requestId }" type="hidden" />
+					</div>
+					<div class="col-10">
+						<jsp:include
+							page="${pageUrl == null? 'error/notfound': pageUrl}.jsp"></jsp:include>
+					</div>
+				</c:otherwise>
+			</c:choose>
 			<div class="col-12" style="background-color: ${shopProfile.color}">
 				<jsp:include page="include/foot.jsp"></jsp:include>
 			</div>

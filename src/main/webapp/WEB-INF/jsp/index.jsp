@@ -4,26 +4,33 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div class="content">
-	<div id="welcome-header" class="page-header" style="padding:5px;
-		margin-top:10px;margin-bottom:10px; 
-	 	color:white;text-align: center; 
+	<div id="welcome-header" class="page-header"
+		style="
+		padding:5px;
+		margin-top:10px;
+		margin-bottom:10px; 
+	 	color:white;
+	 	text-align: center; 
 	  	background-position: center;
-		  background-repeat: no-repeat;
-		  background-size: cover;
+		background-repeat: no-repeat;
+		background-size: cover;
 	 	background-image: url('${host}/${contextPath}/${imagePath}/${shopProfile.backgroundUrl }'); 
 	 	color:${shopProfile.fontColor }; 
-	 	width:100%; font-size:3 em">
+	 	width:100%;
+	 	height:300px;
+	 	  ">
 		<h3>Assalamu'alaikum, Good ${timeGreeting} Welcome to</h3>
-		<h1> ${shopProfile.name }</h1>
-		<p></p>
+		<h1>
+			<a class="header-a" href="<c:url value="/public/catalog" />">
+				${shopProfile.name }</a>
+		</h1> 
 		<p>${shopProfile.welcomingMessage }</p>
-		<p></p>
-		<p></p>
+	</div>
+	<div class="center-aligned">
 		<c:forEach var="imageUrl" items="${imageUrlList }">
-			<img src="${imageUrl }" width="40" height="40" />
+			<img src="${imageUrl.value }" width="40" height="40" />
 		</c:forEach>
 	</div>
-	 
 
 	<div class="row">
 		<c:forEach var="menu" items="${menus }">
@@ -32,7 +39,8 @@
 					<img class="card-img-top" width="100" height="150"
 						src="${host}/${contextPath}/${imagePath}/${menu.iconUrl }"
 						alt="Card image cap">
-					<div class="card-body" style="background-color:${menu.color }; color:${menu.fontColor }">
+					<div class="card-body"
+						style="background-color:${menu.color }; color:${menu.fontColor }">
 						<h5 class="card-title">${menu.name }</h5>
 						<a role="button" class="badge badge-primary" data-toggle="tooltip"
 							data-placement="bottom" title="${menu.description }"

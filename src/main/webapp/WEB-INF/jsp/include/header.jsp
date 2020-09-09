@@ -6,7 +6,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div class="row" style="margin:0">
 	<div class="col-10">
-		<h1>${shopProfile.name }</h1>
+		<h1><a class="header-a" href="<c:url value="/index" />">${shopProfile.name }</a></h1>
 		<p>${shopProfile.shortDescription }</p>
 	</div>
 	<div class="col-2" style="text-align: right;">

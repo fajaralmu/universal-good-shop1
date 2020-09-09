@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.fajar.shoppingmart.dto.KeyValue;
 import com.fajar.shoppingmart.entity.BaseEntity;
 
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,15 @@ public class CollectionUtil {
 		}
 		return list;
 
+	}
+	
+	public static <T> List<KeyValue<T, T>> listToKeyVal(List<T> list){
+		
+		List<KeyValue<T, T>> result = new ArrayList<KeyValue<T,T>>();
+		for (T el : list) {
+			result.add((KeyValue<T, T>) KeyValue.builder().key(el).value(el).build());
+		}
+		return result ;
 	}
 
 	public static void main(String[] args) {

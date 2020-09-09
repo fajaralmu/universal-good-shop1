@@ -35,4 +35,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 			+ " and transaction.transaction_date >= ?1 and " + " transaction.transaction_date <= ?2 ")
 	public BigDecimal findProductSalesBetween(String period1, String period2, Long productId);
 
+	@Query(nativeQuery = true, value="select * from product where image_url is not null limit 7")
+	public List<Product> getRandomProducts();
+
 }
