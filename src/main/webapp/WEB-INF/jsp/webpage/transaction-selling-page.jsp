@@ -14,7 +14,7 @@
 				<td>
 					<div class="form">
 						<div class="card">
-							<div class="card-header">Product</div>
+							<div class="card-header"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i> Product</div>
 							<div class="card-body">
 								<div class="dynamic-dropdown-form">
 									<input id="input-product" placeholder="product name"

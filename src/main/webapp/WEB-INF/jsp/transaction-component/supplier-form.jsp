@@ -2,7 +2,7 @@
 	pageEncoding="ISO-8859-1"%>
 <div class="form">
 	<div class="card">
-		<div class="card-header">Supplier</div>
+		<div class="card-header"><i class="fa fa-industry"  ></i> Supplier</div>
 		<div class="card-body">
 			<div class="dynamic-dropdown-form">
 				<input id="input-supplier" placeholder="supplier name" type="text"

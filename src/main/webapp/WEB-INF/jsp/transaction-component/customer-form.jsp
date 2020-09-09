@@ -2,7 +2,7 @@
 	pageEncoding="ISO-8859-1"%>
 <div class="form">
 	<div class="card">
-		<div class="card-header">Customer</div>
+		<div class="card-header"><i class="fa fa-address-card" aria-hidden="true"></i> Customer</div>
 		<div class="card-body">
 			<div class="dynamic-dropdown-form">
 				<input id="input-customer" placeholder="customer name" type="text"

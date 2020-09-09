@@ -10,7 +10,7 @@
 		<div class="nav-list">
 			<c:forEach var="pageItem" items="${pages}">
 				<div class="side-nav-item">
-					<a id="${pageItem.code }" menupage="${pageItem.isMenuPage() }"
+					<i class="fa fa-${pageItem.getIconClass() }" aria-hidden="true"></i><a id="${pageItem.code }" menupage="${pageItem.isMenuPage() }"
 						href="<spring:url value="${pageItem.link }"/>">${pageItem.name }
 					</a>
 				</div>

@@ -4,12 +4,15 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
+import com.fajar.shoppingmart.dto.FontAwesomeIcon;
 import com.fajar.shoppingmart.dto.FormInputColumn;
 
 import lombok.AllArgsConstructor;
@@ -50,6 +53,10 @@ public class Page extends BaseEntity implements Sequenced  {/**
 	@FormField(type = FieldType.FIELD_TYPE_IMAGE,  required = false, defaultValue = "DefaultIcon.BMP")
 	@Column(name= "image_url")
 	private String imageUrl;
+	@FormField(type = FieldType.FIELD_TYPE_PLAIN_LIST,  required = false, defaultValue = "home")
+	@Column(name= "menu_html_icon_class")
+	@Enumerated(EnumType.STRING)
+	private FontAwesomeIcon menuHtmlIconClass;
 	@Column()
 	@FormField(type=FieldType.FIELD_TYPE_NUMBER,lableName = "Urutan Ke")
 	private int sequence;
@@ -57,6 +64,14 @@ public class Page extends BaseEntity implements Sequenced  {/**
 	@Transient
 	private List<Menu> menus;
 	public String isMenuPage() {
+		
 		return nonMenuPage == 0 ? "true":"false"; 
+	}
+	
+	public String getIconClass() {
+		if(null == this.menuHtmlIconClass) {
+			return "home";
+		}
+		return this.menuHtmlIconClass.value;
 	}
 }

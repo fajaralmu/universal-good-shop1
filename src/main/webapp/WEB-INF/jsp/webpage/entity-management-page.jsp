@@ -56,9 +56,9 @@
 		<input class="form-control" type="number" value="1" id="input-page" />
 		<div class="input-group-append">
 			<button class="btn btn-primary" id="btn-filter-ok"
-				onclick="setPage()">Ok</button>
+				onclick="setPage()"><i class="fa fa-search" aria-hidden="true"></i></button>
 			<button class="btn btn-info" id="btn-printExcel"
-				onclick="printExcel()">Print Excel</button>
+				onclick="printExcel()">Excel Report</button>
 		</div>
 
 	</div>
