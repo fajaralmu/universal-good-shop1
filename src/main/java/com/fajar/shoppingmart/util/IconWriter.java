@@ -25,9 +25,8 @@ public class IconWriter {
 			log.info("Writing icon");
 			// note the double height
 			BufferedImage img = new BufferedImage(ICO_WIDTH, ICO_HEIGHT*2, BufferedImage.TYPE_INT_RGB);
-			Graphics g = img.getGraphics();
-			g.setColor(Color.WHITE);
-			//g.fillRect(0, 16, 16, 16);// added 16 to y coordinate
+			Graphics g = img.getGraphics(); 
+			//g.fillRect(0, 16, 16, 16);// added 16 to y coordinate 
 			g.drawImage(srcImg, 0, ICO_HEIGHT, ICO_WIDTH, ICO_HEIGHT , null);
 			
 			byte[] imgBytes = getImgBytes(img);

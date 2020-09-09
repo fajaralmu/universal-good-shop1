@@ -10,12 +10,10 @@
 </style>
 <div class="content">
 	<div id="detail-content" class="row" style="width: 95%; margin: auto;">
-	<p></p>
+		<p></p>
 		<table class="table" style="layout: fixed;">
 			<tr>
-				<td style="width: 60%">
-					
-				</td>
+				<td style="width: 60%"></td>
 				<td style="width: 40%">
 					<h2 id="product-title">${product.name }</h2>
 
@@ -107,18 +105,27 @@
 			</tr>
 		</table>
 	</div>
-	<div  style="width: 80%; margin: auto; padding: 10px" class="border border-primary box-shadow">
-		<h3>Sales Detail</h3>
-		<p>From</p>
-		Month <select id="select-month-from"></select> Year <select
-			id="select-year-from"></select>
-		<p>To</p>
-		Month <select id="select-month-to"></select> Year <select
-			id="select-year-to"></select>
+	<div class="card">
+		<div class="card-header">Sales Detail</div>
+		<div class="card-body">
+			<div class="row" style="grid-row-gap: 5px">
+				<div class="col-6">
+					<p>From</p>
+					Month <select class="form-control" id="select-month-from"></select>
+					Year <select class="form-control" id="select-year-from"></select>
+				</div>
+				<div class="col-6">
+					<p>To</p>
+					Month <select class="form-control" id="select-month-to"></select>
+					Year <select class="form-control" id="select-year-to"></select>
+				</div>
+				<div class="col-6">
+					<button id="btn-ok-filter-detail" onclick="showSales()"
+						class="btn btn-primary btn-sm">Show Sales History</button>
+				</div>
 
-		<button id="btn-ok-filter-detail" onclick="showSales()"
-			class="btn btn-primary btn-sm">Show Sales History</button>
-		<p></p>
+			</div>
+		</div>
 		<table class="table" id="table-sales-history">
 		</table>
 	</div>
@@ -128,73 +135,75 @@
 	//var selectYear = byId("select-year");
 
 	var tableSales = byId("table-sales-history");
-	
+
 	var selectMonthFrom = byId("select-month-from");
 	var selectYearFrom = byId("select-year-from");
 
 	var selectMonthTo = byId("select-month-to");
 	var selectYearTo = byId("select-year-to");
-	
+
 	function populatePeriodFilter() {
-	//	populateSelectPeriod(selectMonth, selectYear);
+		//	populateSelectPeriod(selectMonth, selectYear);
 		populateSelectPeriod(selectMonthFrom, selectYearFrom);
 		populateSelectPeriod(selectMonthTo, selectYearTo);
 		selectMonthFrom.value = "1";
 		selectMonthTo.value = "12";
-	} 
-	
-	
-	function populateSelectPeriod(selectMonth, selectYear){
+	}
+
+	function populateSelectPeriod(selectMonth, selectYear) {
 		selectMonth.innerHTML = "";
 		for (var i = 1; i <= 12; i++) {
-			selectMonth.append(createOption(i,i));
+			selectMonth.append(createOption(i, i));
 		}
-		selectMonth.value = "${currentMonth}"*1;
-		for(var y="${minYear}"*1;y<="${maxYear}"*1;y++){
-			selectYear.append(createOption(y,y));
+		selectMonth.value = "${currentMonth}" * 1;
+		for (var y = "${minYear}" * 1; y <= "${maxYear}" * 1; y++) {
+			selectYear.append(createOption(y, y));
 		}
-		selectYear.value = "${currentYear}"*1;
+		selectYear.value = "${currentYear}" * 1;
 	}
-	
-	function showSales(){
+
+	function showSales() {
 		var requestObject = {
-			"filter":{
-					"year":selectYearFrom.value,
-					"month":selectMonthFrom.value,
-					"yearTo":selectYearTo.value,
-					"monthTo":selectMonthTo.value
-					
-				}
-			};
+			"filter" : {
+				"year" : selectYearFrom.value,
+				"month" : selectMonthFrom.value,
+				"yearTo" : selectYearTo.value,
+				"monthTo" : selectMonthTo.value
+
+			}
+		};
 		infoLoading();
-		loadEntityList("<spring:url value="/api/transaction/productsalesdetail/" />${productId}" , requestObject,function(entities){
-			infoDone();
-			populateTableSales(entities);
-		});
+		loadEntityList(
+				"<spring:url value="/api/transaction/productsalesdetail/" />${productId}",
+				requestObject, function(entities) {
+					infoDone();
+					populateTableSales(entities);
+				});
 	}
-	
-	function populateTableSales(salesList){
+
+	function populateTableSales(salesList) {
 		tableSales.innerHTML = "";
-		var tableColumns = [
-			["No setting= <style>width:50px</style>","Period setting= <style>width:60px</style>","Sales setting=<colspan>6</colspan>"]
-			
+		var tableColumns = [ [ "No setting= <style>width:50px</style>",
+				"Period setting= <style>width:60px</style>",
+				"Sales setting=<colspan>6</colspan>" ]
+
 		];
 		for (var i = 0; i < salesList.length; i++) {
 			var sales = salesList[i];
-			var bar = "<div class=\"rounded-right\" style=\"width: "+sales.percentage+"%;color:white; height:25px; background-color: green \"></div>setting=<colspan>5</colspan>";
-			tableColumns.push(
-					[
-						i+1, sales.month+"-"+sales.year,beautifyNominal(sales.sales)+ "setting= <style>width:100px</style>", bar
-					]
-					);
+			var bar = "<div class=\"rounded-right\" style=\"width: "
+					+ sales.percentage
+					+ "%;color:white; height:25px; background-color: green \"></div>setting=<colspan>5</colspan>";
+			tableColumns.push([
+					i + 1,
+					sales.month + "-" + sales.year,
+					beautifyNominal(sales.sales)
+							+ "setting= <style>width:100px</style>", bar ]);
 		}
-		let tbody  = createTBodyWithGivenValue(tableColumns);
+		let tbody = createTBodyWithGivenValue(tableColumns);
 		tableSales.innerHTML = tbody.innerHTML;
 	}
-	
+
 	populatePeriodFilter();
-	
 </script>
 
 
-		
