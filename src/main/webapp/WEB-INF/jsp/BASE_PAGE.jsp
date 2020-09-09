@@ -80,9 +80,21 @@
 .content {
 	padding: 10px
 } 
-
+.side-nav-item{
+	padding:10px; 
+}
+.side-nav-item a{
+	width: 100%;
+	display: block;
+}
+.side-nav-item:hover{
+	cursor: pointer;
+}
 a {
 	color: ${shopProfile.fontColor} 
+}
+a:hover{
+	text-decoration: none;	
 }
 </style>
 </head>

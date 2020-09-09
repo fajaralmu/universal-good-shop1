@@ -7,17 +7,17 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div class="header" style="height: auto">
 	<div>
-		<!-- <ul class="nav nav-tabs"> -->
-		<ul class="nav  flex-column">
+		<div class="nav-list">
 			<c:forEach var="pageItem" items="${pages}">
-				<li class="nav-item" style="position: relative;"><a
-					class="nav-link pagelink" id="${pageItem.code }"
-					menupage="${pageItem.isMenuPage() }"
-					href="<spring:url value="${pageItem.link }"/>">${pageItem.name }</a></li>
+				<div class="side-nav-item">
+					<a id="${pageItem.code }" menupage="${pageItem.isMenuPage() }"
+						href="<spring:url value="${pageItem.link }"/>">${pageItem.name }
+					</a>
+				</div>
 
 			</c:forEach>
 
-		</ul>
+		</div>
 	</div>
 </div>
 <script type="text/javascript">
