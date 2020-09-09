@@ -6,42 +6,9 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div class="header" style="height: auto">
-
-	
-
 	<div>
 		<!-- <ul class="nav nav-tabs"> -->
 		<ul class="nav  flex-column">
-
-			<!-- Account Menu -->
-			<c:if test="${loggedUser == null  }">
-				<li class="nav-item "><a
-					class="nav-link  ${page == 'login' ? 'active':'' }"
-					href="<spring:url value="/account/login"/>">Log In </a></li>
-			</c:if>
-			<c:if test="${loggedUser != null }">
-				<div class="dropdown">
-					<button class="btn btn-primary dropdown-toggle" type="button"
-						data-toggle="dropdown">
-						${loggedUser.displayName }<span class="caret"></span>
-					</button>
-					<div class="dropdown-menu">
-					<a class="dropdown-item"
-							href="<spring:url value="/management/user"/>">User Profile</a>
-						<a class="dropdown-item"
-							href="<spring:url value="/management/profile"/>">App Profile</a><a
-							class="dropdown-item" href="#" onclick="logout()">Logout</a>
-					</div>
-				</div>
-			</c:if>
-
-			<%--  
-			<c:if test="${loggedUser != null }">
-				<li class="nav-item"><a
-					class="nav-link ${page == 'dashboard' ? 'active':'' }"
-					href="<spring:url value="/admin/home"/>">Dashboard</a></li> 
-			</c:if> --%>
-
 			<c:forEach var="pageItem" items="${pages}">
 				<li class="nav-item" style="position: relative;"><a
 					class="nav-link pagelink" id="${pageItem.code }"
@@ -76,20 +43,20 @@
 	}
 
 	function getCurrentPageCode() {
-		try{
+		try {
 			postReq("<spring:url value="/api/public/pagecode" />", {},
-				function(xhr) {
-					infoDone();
-					var response = (xhr.data);
-					var pageCode = response.code;
-					if(byId(pageCode)){
-						byId(pageCode).setAttribute("class",
-								"nav-link pagelink active");
-					}
-				});
-		}catch (e) {
+					function(xhr) {
+						infoDone();
+						var response = (xhr.data);
+						var pageCode = response.code;
+						if (byId(pageCode)) {
+							byId(pageCode).setAttribute("class",
+									"nav-link pagelink active");
+						}
+					});
+		} catch (e) {
 			infoDone();
-			 console.log("Error occured.. when getCurrentPageCode");
+			console.log("Error occured.. when getCurrentPageCode");
 		}
 	}
 
@@ -177,6 +144,6 @@
 		}
 	}
 
-//	initPagesLinkEvent();
+	//	initPagesLinkEvent();
 	getCurrentPageCode();
 </script>

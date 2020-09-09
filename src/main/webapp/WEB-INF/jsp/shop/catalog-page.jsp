@@ -152,12 +152,13 @@
 			id : 'title-' + entity.id,
 			innerHTML : entity.name,
 			style: {color:'#000000'},
+			className: 'clickable',
 			ch1 : {
 				tagName : 'small',
 				style : {
 					'background-color' : 'rgb(224,224,224)'
 				},
-				className : 'text-muted clickable',
+				className : 'text-muted',
 				innerHTML : (entity.newProduct ? "(NEW)" : "")
 			},
 			onclick : function() {
@@ -239,7 +240,7 @@
 			const entity = products[i];
 
 			//create col
-			const colDiv = createDiv("col-" + entity.id, "col-sm-3");
+			const colDiv = createDiv("col-" + entity.id, "col-md-3");
 			//create card
 			const cardDiv = createHtmlTag({
 				tagName : "div",

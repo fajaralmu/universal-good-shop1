@@ -13,9 +13,12 @@
 <link rel="icon" href="<c:url value="/res/img/javaEE.ico"></c:url >"
 	type="image/x-icon">
 
-<link rel="stylesheet" type="text/css" href="<c:url value="/res/css/shop.css?version=1"></c:url>" />
-<link rel="stylesheet" type="text/css" href="<c:url value="/res/css/bootstrap.min.css" />" />
-<link rel="stylesheet" type="text/css" href="<c:url value="/res/fa/css/all.css" />" />
+<link rel="stylesheet" type="text/css"
+	href="<c:url value="/res/css/shop.css?version=1"></c:url>" />
+<link rel="stylesheet" type="text/css"
+	href="<c:url value="/res/css/bootstrap.min.css" />" />
+<link rel="stylesheet" type="text/css"
+	href="<c:url value="/res/fa/css/all.css" />" />
 <script src="<c:url value="/res/js/jquery-3.3.1.slim.min.js" />"></script>
 <script src="<c:url value="/res/js/popper.min.js" />"></script>
 <script src="<c:url value="/res/js/bootstrap.min.js"  />"></script>
@@ -39,12 +42,13 @@
 
 
 <style>
-.container {
+.app_container {
 	border-radius: 10px;
-	margin-top: 10px;
-	margin-bottom: 10px;
+	/* margin-top: 10px;
+	margin-bottom: 10px; */
+	width: 100%;
 }
- 
+
 /**
 		active menu when using vertical aligment
 	**/
@@ -72,6 +76,18 @@
 #header-wrapper {
 	height: 100%;
 }
+
+.content {
+	padding: 10px
+}
+
+.page-head {
+	margin-bottom: -17px
+}
+
+a {
+	color: ${shopProfile.fontColor} 
+}
 </style>
 </head>
 <body>
@@ -83,13 +99,13 @@
 
 	<!-- WEB APP CONTENT -->
 
-	<div class="container">
-		<div class="page-header" style="color:${shopProfile.fontColor}">
-			<h1>${shopProfile.name }</h1>
-			<p>${shopProfile.shortDescription }</p>
+	<div class="app_container">
+		<div class="page-head"
+			style="color:${shopProfile.fontColor}; background-color: ${shopProfile.color}">
+			<jsp:include page="include/header.jsp"></jsp:include>
 		</div>
-		<div class="row">
-			<div class="col-2">
+		<div class="row" style="margin-right: 0">
+			<div class="col-2" style="background-color: ${shopProfile.color}">
 				<jsp:include page="include/navs.jsp"></jsp:include>
 				<input id="token-value" value="${pageToken }" type="hidden" /> <input
 					id="request-id" value="${requestId }" type="hidden" />
@@ -97,8 +113,8 @@
 			<div class="col-10">
 				<jsp:include
 					page="${pageUrl == null? 'error/notfound': pageUrl}.jsp"></jsp:include>
-			</div> 
-			<div class="col-12">
+			</div>
+			<div class="col-12" style="background-color: ${shopProfile.color}">
 				<jsp:include page="include/foot.jsp"></jsp:include>
 			</div>
 		</div>
