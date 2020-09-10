@@ -156,8 +156,7 @@
 			const btn = displayOptions[i];
 			const display = btn.getAttribute("display");
 			
-			btn.onclick = function(e) {
-				 
+			btn.onclick = function(e) { 
 				setDisplay(display);
 			}
 		}
@@ -192,6 +191,7 @@
 
 	loadEntity(page);
 	initEvents();
+	showFilter();
 </script>
 <c:if test="${authenticated == true }">
 	<script type="text/javascript">
