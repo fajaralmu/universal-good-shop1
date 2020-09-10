@@ -103,6 +103,16 @@ public class EntityUtil {
 		return field.getAnnotation(Id.class) != null;
 	}
 
+	public static void removeAttribute(Object object, String... fields) {
+		for (String fieldName : fields) {
+			Field field = EntityUtil.getDeclaredField(object.getClass(), fieldName);
+
+			try {
+				field.set(object, null);
+			} catch (Exception e) { e.printStackTrace(); }
+		}
+	}
+	
 	/**
 	 * 
 	 * @param _class

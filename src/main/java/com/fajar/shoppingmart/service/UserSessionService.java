@@ -40,14 +40,11 @@ public class UserSessionService {
 	public static final String SESSION_DATA = "session_data";
 
 	@Autowired
-	private UserRepository userRepository;
-
+	private UserRepository userRepository; 
 	@Autowired
-	private RegisteredRequestRepository registeredRequestRepository;
-
+	private RegisteredRequestRepository registeredRequestRepository; 
 	@Autowired
-	private RealtimeService2 realtimeService;
-
+	private RealtimeService2 realtimeService; 
 	@Autowired
 	private RuntimeService runtimeService;
 
@@ -55,33 +52,25 @@ public class UserSessionService {
 	public void init() {
 		LogProxyFactory.setLoggers(this);
 	}
- 
+
 	public User getUserFromSession(HttpServletRequest request) {
 		try {
 			return SessionUtil.getSessionUser(request);
-		} catch (Exception ex) {
-			return null;
-		}
+		} catch (Exception ex) { return null; }
 	}
- 
+
 	public User getUserFromRuntime(HttpServletRequest request) {
 		String loginKey = SessionUtil.getLoginKey(request);
 		UserSessionModel sessionModel = getUserSessionModel(loginKey);
 
-		if (sessionModel == null) {
-			return null;
-		}
-
+		if (sessionModel == null) { return null; } 
 		return sessionModel.getUser();
 	}
 
 	public User getUserFromRuntime(String loginKey) {
 		UserSessionModel sessionModel = getUserSessionModel(loginKey);
 
-		if (sessionModel == null) {
-			return null;
-		} 
-
+		if (sessionModel == null) { return null; } 
 		return sessionModel.getUser();
 	}
 
@@ -90,10 +79,9 @@ public class UserSessionService {
 	}
 
 	public boolean hasSession(HttpServletRequest request, boolean setRequestURI) {
-		if (setRequestURI && request.getMethod().toLowerCase().equals("get")
-				&& request.getRequestURI().contains("login") == false) {
-
-			SessionUtil.setSessionRequestUri(request); 
+		
+		if (setRequestURI && saveRequestUri(request)) { 
+			SessionUtil.setSessionRequestUri(request);
 		}
 
 		/**
@@ -105,16 +93,16 @@ public class UserSessionService {
 			String remoteAddress = request.getRemoteAddr();
 			int remotePort = request.getRemotePort();
 			log.info("remoteAddress:" + remoteAddress + ":" + remotePort);
+			
 			boolean registered = getUserFromRuntime(request) != null;
 			return registered;
 		}
 
 		/**
 		 * end handle standAlone Client
-		 */
-		User sessionUser = SessionUtil.getSessionUser(request);
-
+		 */  
 		try {
+			User sessionUser = SessionUtil.getSessionUser(request);
 			UserSessionModel sessionModel = getUserSessionModel(sessionUser.getLoginKey());
 
 			if (sessionUser == null || sessionModel == null || !userEquals(sessionUser, sessionModel.getUser())) {
@@ -125,10 +113,15 @@ public class UserSessionService {
 			return true;
 
 		} catch (Exception ex) {
-			log.info("USER DOES NOT HAVE SESSION, return FALSE");
-//			ex.printStackTrace();
+			log.info("USER DOES NOT HAVE SESSION, return FALSE"); 
 			return false;
 		}
+	}
+
+	private boolean saveRequestUri(HttpServletRequest request) {
+		 
+		return request.getMethod().toLowerCase().equals("get")
+				&& request.getRequestURI().contains("login") == false;
 	}
 
 	private boolean userEquals(User user1, User user2) {
@@ -136,20 +129,20 @@ public class UserSessionService {
 			log.info("httpSession loginKey: {}, sessionModel loginKey: {}", user1.getLoginKey(), user2.getLoginKey());
 			return user1.getLoginKey().equals(user2.getLoginKey());
 		} catch (Exception e) {
-			e.printStackTrace(); 
+			e.printStackTrace();
 			return false;
 		}
 	}
 
 	public User addUserSession(final User dbUser, HttpServletRequest httpRequest, HttpServletResponse httpResponse)
-			throws Exception { 
+			throws Exception {
 
 		try {
-			
+
 			String loginKey = generateLoginKey();
 			dbUser.setLoginKey(loginKey);
 			dbUser.setPassword(null);
-			
+
 			UserSessionModel sessionModel = new UserSessionModel(dbUser, generateUserToken());
 			boolean sessionIsSet = runtimeService.set(loginKey, sessionModel);
 
@@ -172,43 +165,32 @@ public class UserSessionService {
 		}
 	}
 
-	private String generateLoginKey() {
-		return UUID.randomUUID().toString();
-	}
-
-	private String generateUserToken() {
-		return UUID.randomUUID().toString();
-	}
+	
 
 	public boolean logout(HttpServletRequest request) {
 
 		try {
-
-			User user = getLoggedUser(request);
-			runtimeService.remove(user.getLoginKey());
 			invalidateSessionUser(request);
-
-			runtimeService.updateSessionId(getJSessionIDCookie(request).getValue(), getPageRequestId(request));
-
 			log.info(" > > > > > SUCCESS LOGOUT");
 			return true;
 		} catch (Exception e) {
-
 			e.printStackTrace();
 			log.info(" < < < < < FAILED LOGOUT");
 			return false;
 		}
 	}
 
+	
+ 
 	/**
-	 * get logged user
-	 * 
+	 * get logged user from httpSession or runtime
 	 * @param request
 	 * @return
 	 */
 	public User getLoggedUser(HttpServletRequest request) {
-		User user = getUserFromSession(request);
+
 		try {
+			User user = getUserFromSession(request);
 			if (user == null && getLoginKey(request) != null) {
 				user = getUserFromRuntime(request);
 			}
@@ -217,35 +199,26 @@ public class UserSessionService {
 			e.printStackTrace();
 			return null;
 		}
-		
+
 	}
 
 	private void invalidateSessionUser(HttpServletRequest request) {
+		User user = getLoggedUser(request);
+		removeUserFromRuntime(user);
 		SessionUtil.removeSessionUserAndInvalidate(request);
-	}
+		runtimeService.updateSessionId(getJSessionIDCookie(request).getValue(), getPageRequestId(request));
 
-	/**
-	 * get token
-	 * 
-	 * @param httpRequest
-	 * @return
-	 */
-	public String getToken(HttpServletRequest httpRequest) {
+	}
+ 
+	public String getTokenByServletRequest(HttpServletRequest httpRequest) {
 		User user = getLoggedUser(httpRequest);
 		log.info("::loggedUser: " + (user == null ? null : user.getUsername()));
 
-		if (user == null)
-			return null;
-		return getToken(user);
+		if (user == null) { return null; }
+		return getTokenByUser(user);
 	}
-
-	/**
-	 * get token
-	 * 
-	 * @param user
-	 * @return
-	 */
-	public String getToken(User user) {
+ 
+	public String getTokenByUser(User user) {
 		UserSessionModel reqModel = getUserSessionModel(user.getLoginKey());
 		if (reqModel == null) {
 			throw new RuntimeErrorException(null, "Invalid Session");
@@ -254,9 +227,7 @@ public class UserSessionService {
 		return token;
 	}
 
-	private UserSessionModel getUserSessionModel(String key) {
-		return runtimeService.getModel(key, UserSessionModel.class);
-	}
+	
 
 	public boolean validatePageRequest(HttpServletRequest httpServletRequest) {
 		final String requestId = SessionUtil.getPageRequestId(httpServletRequest);
@@ -265,7 +236,7 @@ public class UserSessionService {
 		if (null == requestId) {
 			return false;
 		}
-		// check from DB
+		// check if request id is exist from DB
 		RegisteredRequest registeredRequest = getRegisteredRequest(requestId);
 
 		if (registeredRequest != null) {
@@ -286,34 +257,12 @@ public class UserSessionService {
 		}
 		if (null == registeredRequest) {
 			registeredRequest = registeredRequestRepository.findTop1ByRequestId(requestId);
-			log.info("registeredRequest from DB with req Id ({}): {}", requestId, registeredRequest);
-
+			log.info("registeredRequest from DB with req Id ({}): {}", requestId, registeredRequest); 
 		}
 
 		return registeredRequest;
 	}
-
-	private static void removeAttribute(Object object, String... fields) {
-		for (String fieldName : fields) {
-			Field field = EntityUtil.getDeclaredField(object.getClass(), fieldName);
-
-			try {
-				field.set(object, null);
-			} catch (Exception e) {
-
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public WebResponse getProfile(HttpServletRequest httpRequest) {
-
-		User user = getUserFromRuntime(httpRequest);
-		if (user != null) {
-			removeAttribute(user, "role", "password");
-		}
-		return WebResponse.builder().code("00").entity(user).build();
-	}
+  
 
 	/**
 	 * ===================SESSION MANAGEMENT========================
@@ -321,6 +270,7 @@ public class UserSessionService {
 	 */
 
 	public WebResponse generateRequestId(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
+		log.info("generateRequestId... ");
 		String requestId;
 
 		if (validatePageRequest(servletRequest)) {
@@ -347,11 +297,7 @@ public class UserSessionService {
 		return WebResponse.builder().code("00").message(requestId).build();
 	}
 
-	private String generateRequestId() {
-
-		return StringUtil.generateRandomNumber(17);
-	}
-
+	 
 	private SessionData generateSessionData(HttpServletRequest servletRequest, String requestId) {
 
 		SessionData sessionData = getSessionData();
@@ -447,12 +393,10 @@ public class UserSessionService {
 
 		realtimeService.sendUpdateSession(getAvailableSessions());
 		return WebResponse.builder().code("00").sessionData(sessionData).build();
-	}
+	} 
 
-	private SessionData getSessionData() {
-		return runtimeService.getModel(SESSION_DATA, SessionData.class);
-	}
-
+	// ======================================================================
+	
 	public String getPageCode(HttpServletRequest request) {
 		log.info("getPageCode");
 		try {
@@ -479,13 +423,7 @@ public class UserSessionService {
 		}
 
 	}
-
-	/**
-	 * get user by userName and password
-	 * 
-	 * @param request
-	 * @return
-	 */
+ 
 	public User getUserByUsernameAndPassword(WebRequest request) {
 		User requestUser = request.getUser();
 		User dbUser = userRepository.findByUsername(requestUser.getUsername());
@@ -513,4 +451,29 @@ public class UserSessionService {
 		return match;
 	}
 
+	//==========================RUNTIME=========================
+	private SessionData getSessionData() {
+		return runtimeService.getModel(SESSION_DATA, SessionData.class);
+	}
+	private UserSessionModel getUserSessionModel(String key) {
+		return runtimeService.getModel(key, UserSessionModel.class);
+	}
+	private void removeUserFromRuntime(User user) {
+		runtimeService.remove(user.getLoginKey());
+	}
+	
+	//===========================================================
+	
+	private String generateLoginKey() {
+		return UUID.randomUUID().toString() + "-" + StringUtil.generateRandomNumber(10);
+	}
+
+	private String generateUserToken() {
+		return StringUtil.generateRandomNumber(10) + "-" + UUID.randomUUID().toString();
+	}
+	
+	private String generateRequestId() {
+
+		return StringUtil.generateRandomNumber(17);
+	}
 }

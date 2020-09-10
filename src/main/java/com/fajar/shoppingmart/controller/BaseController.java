@@ -118,7 +118,7 @@ public class BaseController {
 	@ModelAttribute("pageToken")
 	public String pageToken(HttpServletRequest request) {
 		try {
-			return userSessionService.getToken(request);
+			return userSessionService.getTokenByServletRequest(request);
 		}catch (Exception e) {
 			return "";
 		}

@@ -159,7 +159,7 @@ public class UserAccountService {
 
 		} else {
 
-			String existingToken = userSessionService.getToken(httpRequest);
+			String existingToken = userSessionService.getTokenByServletRequest(httpRequest);
 			log.info("|| REQUEST_TOKEN: " + requestToken + " vs EXISTING:" + existingToken + "||");
 
 			boolean tokenEquals = requestToken.equals(existingToken);
