@@ -53,13 +53,14 @@ public class MvcAccountController extends BaseController {
 	@RequestMapping(value = { "/logout" })
 	@Authenticated
 	public String logout(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-		if (userSessionService.hasSession(request, false)) {
+		 try {
 			userSessionService.logout(request);
+		 }catch (Exception e) {
+			// TODO: handle exception
 		}
 
-		model.addAttribute("pageUrl", "webpage/login-page");
-		model.addAttribute("page", "login");
-		return basePage;
+		sendRedirectLogin(request, response);
+		return null;
 	}
 
 	@RequestMapping(value = { "/register" })

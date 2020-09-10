@@ -29,7 +29,7 @@
 							href="<spring:url value="/management/user"/>">User Profile</a> <a
 							class="dropdown-item"
 							href="<spring:url value="/management/profile"/>">App Profile</a><a
-							class="dropdown-item" href="#" onclick="logout()">Logout</a>
+							class="dropdown-item" href="<spring:url value="/account/logout" /> ">Logout</a>
 					</div>
 				</div>
 			</c:if>
