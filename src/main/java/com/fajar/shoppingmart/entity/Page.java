@@ -53,7 +53,7 @@ public class Page extends BaseEntity implements Sequenced  {/**
 	@FormField(type = FieldType.FIELD_TYPE_IMAGE,  required = false, defaultValue = "DefaultIcon.BMP")
 	@Column(name= "image_url")
 	private String imageUrl;
-	@FormField(type = FieldType.FIELD_TYPE_PLAIN_LIST,  required = false, defaultValue = "home")
+	@FormField(type = FieldType.FIELD_TYPE_PLAIN_LIST, hasPreview = true, previewLink = "fa-preview" , required = false, defaultValue = "home")
 	@Column(name= "menu_html_icon_class")
 	@Enumerated(EnumType.STRING)
 	private FontAwesomeIcon menuHtmlIconClass;

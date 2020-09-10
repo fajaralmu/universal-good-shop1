@@ -27,5 +27,9 @@ public @interface FormField {
 	public boolean emptyAble() default true;
 	public boolean multipleSelect() default false;
 	public boolean iconImage() default false;
+	
+	public boolean hasPreview() default false;
+	//LINK = /api/component/{previewLink}/{elementValue}
+	public String previewLink() default "";
 
 }

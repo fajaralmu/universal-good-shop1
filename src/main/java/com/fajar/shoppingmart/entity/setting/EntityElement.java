@@ -57,6 +57,7 @@ public class EntityElement implements Serializable {
 
 	private String detailFields;
 	private String inputGroupname;
+	private String previewLink;
 	private String[] defaultValues;
 
 	private List<Object> plainListValues;
@@ -71,6 +72,7 @@ public class EntityElement implements Serializable {
 	private boolean showDetail;
 	private boolean detailField;
 	private boolean multipleSelect;
+	private boolean hasPreview;
 
 	public EntityProperty entityProperty;
 	public Map<String, List<?>> additionalMap;
@@ -110,6 +112,7 @@ public class EntityElement implements Serializable {
 
 		identity = idField;
 		hasJoinColumn = field.getAnnotation(JoinColumn.class) != null;
+		
 
 		checkIfGroupedInput();
 	}
@@ -178,6 +181,12 @@ public class EntityElement implements Serializable {
 			setMultiple(formField.multipleImage());
 			setClassName(field.getType().getCanonicalName());
 			setShowDetail(formField.showDetail());
+			
+
+			setHasPreview(formField.hasPreview());
+			if(isHasPreview()) {
+				setPreviewLink(formField.previewLink());
+			}
 			
 		} catch (Exception e1) {
 			e1.printStackTrace();
