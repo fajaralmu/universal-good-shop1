@@ -4,7 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<div class="row" style="margin:0">
+<div class="row header" style="margin:0;">
 	<div class="col-10">
 		<h1><a class="header-a" href="<c:url value="/index" />">${shopProfile.name }</a></h1>
 		<p>${shopProfile.shortDescription }</p>

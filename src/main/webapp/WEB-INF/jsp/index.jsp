@@ -6,7 +6,7 @@
 <div class="content">
 	<div id="welcome-header" class="page-header"
 		style="
-		padding:5px;
+		padding-top:10%;
 		margin-top:10px;
 		margin-bottom:10px; 
 	 	color:white;

@@ -101,6 +101,7 @@ a {
 a:hover {
 	text-decoration: none;
 }
+
 </style>
 </head>
 <body>
@@ -120,7 +121,7 @@ a:hover {
 		<div class="row" style="margin-right: 0">
 			<c:choose>
 				<c:when test="${hideNavBar != null && hideNavBar == true }">
-					<div class="col-12">
+					<div class="col-12 content-wrapper" style="min-height: 60vh;">
 						<jsp:include
 							page="${pageUrl == null? 'error/notfound': pageUrl}.jsp"></jsp:include>
 					</div>
@@ -131,7 +132,7 @@ a:hover {
 						<input id="token-value" value="${pageToken }" type="hidden" /> <input
 							id="request-id" value="${requestId }" type="hidden" />
 					</div>
-					<div class="col-10">
+					<div class="col-10 content-wrapper" style="min-height: 60vh;">
 						<jsp:include
 							page="${pageUrl == null? 'error/notfound': pageUrl}.jsp"></jsp:include>
 					</div>

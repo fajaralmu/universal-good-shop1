@@ -1,5 +1,9 @@
 package com.fajar.shoppingmart.service;
 
+import static com.fajar.shoppingmart.controller.BaseController.getJSessionIDCookie;
+import static com.fajar.shoppingmart.util.SessionUtil.getLoginKey;
+import static com.fajar.shoppingmart.util.SessionUtil.getPageRequestId;
+
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
@@ -12,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fajar.shoppingmart.controller.BaseController;
 import com.fajar.shoppingmart.dto.SessionData;
 import com.fajar.shoppingmart.dto.UserSessionModel;
 import com.fajar.shoppingmart.dto.WebRequest;
@@ -52,13 +55,7 @@ public class UserSessionService {
 	public void init() {
 		LogProxyFactory.setLoggers(this);
 	}
-
-	/**
-	 * get user from httpSession
-	 * 
-	 * @param request
-	 * @return
-	 */
+ 
 	public User getUserFromSession(HttpServletRequest request) {
 		try {
 			return SessionUtil.getSessionUser(request);
@@ -66,13 +63,7 @@ public class UserSessionService {
 			return null;
 		}
 	}
-
-	/**
-	 * get user from runtime
-	 * 
-	 * @param request
-	 * @return
-	 */
+ 
 	public User getUserFromRuntime(HttpServletRequest request) {
 		String loginKey = SessionUtil.getLoginKey(request);
 		UserSessionModel sessionModel = getUserSessionModel(loginKey);
@@ -106,7 +97,7 @@ public class UserSessionService {
 		}
 
 		/**
-		 * handle Client
+		 * handle standAlone Client
 		 */
 		String loginKey = SessionUtil.getLoginKey(request);
 		if (loginKey != null) {
@@ -119,7 +110,7 @@ public class UserSessionService {
 		}
 
 		/**
-		 * end handle Client
+		 * end handle standAlone Client
 		 */
 		User sessionUser = SessionUtil.getSessionUser(request);
 
@@ -145,8 +136,7 @@ public class UserSessionService {
 			log.info("httpSession loginKey: {}, sessionModel loginKey: {}", user1.getLoginKey(), user2.getLoginKey());
 			return user1.getLoginKey().equals(user2.getLoginKey());
 		} catch (Exception e) {
-			e.printStackTrace();
-			log.error("ERROR comparing values");
+			e.printStackTrace(); 
 			return false;
 		}
 	}
@@ -198,7 +188,7 @@ public class UserSessionService {
 			runtimeService.remove(user.getLoginKey());
 			invalidateSessionUser(request);
 
-			runtimeService.updateSessionId(BaseController.getJSessionIDCookie(request).getValue(), SessionUtil.getPageRequestId(request));
+			runtimeService.updateSessionId(getJSessionIDCookie(request).getValue(), getPageRequestId(request));
 
 			log.info(" > > > > > SUCCESS LOGOUT");
 			return true;
@@ -219,7 +209,7 @@ public class UserSessionService {
 	public User getLoggedUser(HttpServletRequest request) {
 		User user = getUserFromSession(request);
 		try {
-			if (user == null && SessionUtil.getLoginKey(request) != null) {
+			if (user == null && getLoginKey(request) != null) {
 				user = getUserFromRuntime(request);
 			}
 			return user;
@@ -242,7 +232,7 @@ public class UserSessionService {
 	 */
 	public String getToken(HttpServletRequest httpRequest) {
 		User user = getLoggedUser(httpRequest);
-		log.info("==loggedUser: " + (user == null ? null : user.getUsername()));
+		log.info("::loggedUser: " + (user == null ? null : user.getUsername()));
 
 		if (user == null)
 			return null;
