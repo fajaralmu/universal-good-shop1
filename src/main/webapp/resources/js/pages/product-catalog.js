@@ -39,10 +39,11 @@ function loadEntity(page) {
 			alert("Data Not Found");
 			return;
 		}
-		var entities = response.entities;
+		const products = response.entities;
 		totalData = response.totalData;
 		this.page = response.filter.page;
-		populateCatalog(entities);
+		setProducts(products);
+		updateCatalog();
 		updateNavigationButtons();
 	});
 
@@ -63,9 +64,9 @@ function loadDetail(code) {
 			}
 		}
 	};
-	doLoadEntities(this.URL_GET_PRODUCT_PUBLIC, requestObject, function(
+	doLoadEntities(URL_GET_PRODUCT_PUBLIC, requestObject, function(
 			response) {
-		var entities = response.entities;
+		const entities = response.entities;
 		if (entities != null && entities.length > 0)
 			populateDetail(entities[0]);
 		else
@@ -74,25 +75,25 @@ function loadDetail(code) {
 	});
 }
 
-function populateDetail(entity) {
-	selectedProductId = entity.id;
-	console.log("entity", entity);
+function populateDetail(product) {
+	selectedProductId = product.id;
+	console.log("product", product);
 	hide("catalog-content");
 
 	// POPULATE
 
 	// title, count, price
-	productTitle.innerHTML = entity.name;
-	byId("product-stock").innerHTML = entity.count;
-	byId("product-price").innerHTML = beautifyNominal(entity.price);
-	productUnit.innerHTML = entity.unit.name;
-	productCategory.innerHTML = entity.category.name;
-	productDescription.innerHTML = entity.description;
+	productTitle.innerHTML = product.name;
+	byId("product-stock").innerHTML = product.count;
+	byId("product-price").innerHTML = beautifyNominal(product.price);
+	productUnit.innerHTML = product.unit.name;
+	productCategory.innerHTML = product.category.name;
+	productDescription.innerHTML = product.description;
 	// image
 	carouselInner.innerHTML = "";
 	carouselIndicator.innerHTML = "";
 
-	let images = entity.imageUrl.split("~");
+	let images = product.imageUrl.split("~");
 	for (var i = 0; i < images.length; i++) {
 		let imageUrl = images[i];
 
@@ -109,23 +110,23 @@ function populateDetail(entity) {
 		// inner
 		let innerDiv = createDiv("item-" + i, "carousel-item " + className);
 		let src = this.IMAGE_PATH + imageUrl;
-		let iconImage = createImgTag("icon-" + entity.id + "-" + i,
+		let iconImage = createImgTag("icon-" + product.id + "-" + i,
 				"d-block w-100  ", "300", "300", src);
-		iconImage.setAttribute("alt", entity.name + "-" + i);
+		iconImage.setAttribute("alt", product.name + "-" + i);
 
 		innerDiv.append(iconImage);
 		carouselInner.append(innerDiv);
 	}
 
 	// suppliers
-	let suppliers = entity.suppliers;
+	let suppliers = product.suppliers;
 
 	tableSupplierList.innerHTML = "";
 	let tableHeader = createTableHeaderByColumns([ "name", "website", "address" ]);
 	let bodyRows = createTableBody([ "name", "website", "address" ], suppliers);
 	tableSupplierList.append(tableHeader);
-	for (var i = 0; i < bodyRows.length; i++) {
-		let row = bodyRows[i];
+	for (let i = 0; i < bodyRows.length; i++) {
+		const row = bodyRows[i];
 		tableSupplierList.append(row);
 	}
 
@@ -133,8 +134,8 @@ function populateDetail(entity) {
 	if (!window.location.href.endsWith("/"))
 		slash = "/";
 	if (defaultOption == "")
-		window.history.pushState('detail-page', entity.name,
-				window.location.href + slash + entity.code);
+		window.history.pushState('detail-page', product.name,
+				window.location.href + slash + product.code);
 	defaultOption = "";
 	show("detail-content");
 

@@ -173,8 +173,11 @@ function createEmptySpan(){
 	return createHtmlTag({tagName: "span", innerHTML: ""});
 }
 
-function createDiv(id, className){
+function createDiv(id, className, html){
 	let div = createElement("div", id, className); 
+	if(html){
+		div.innerHTML = html;
+	}
 	return div;
 }
 
@@ -518,6 +521,9 @@ function createTBodyWithGivenValue(rowList){
 }
 
 function beautifyNominal(val) {
+	if(!val || val == 0){
+		return "0";
+	}
 	let nominal = ""+val;
 	let result = "";
 	if (nominal.length > 3) {

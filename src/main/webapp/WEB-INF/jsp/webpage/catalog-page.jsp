@@ -12,35 +12,6 @@
 <div class="content">
 	<jsp:include page="../catalog-component/product-filter.jsp"></jsp:include>
 	<p></p>
-	<!-- Detail Product Supplier -->
-	<div class="modal fade" id="modal-product-suppliers" tabindex="-1"
-		role="dialog" aria-labelledby="Product Suppliers" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered modal-lg"
-			role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="title-detail-modal">Supplier</h5>
-					<button type="button" class="close" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body"
-					style="width: 90%; height: 400px; margin: auto; overflow: scroll;">
-					<table class="table" id="table-supplier-list" style="layout: fixed">
-					</table>
-					<div style="text-align: center">
-						<button class="btn btn-outline-success"
-							onclick="loadMoreSupplier()">More</button>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary"
-						data-dismiss="modal">Close</button>
-				</div>
-			</div>
-		</div>
-	</div>
 
 	<!-- Detail Product -->
 	<jsp:include page="../catalog-component/product-detail.jsp"></jsp:include>
@@ -49,13 +20,22 @@
 
 	<div id="catalog-content">
 		<h2>Product Catalog</h2>
-		<p></p> 
+		<p></p>
 		<div style="width: 100%">
 			<!-- PAGINATION -->
 			<nav>
 				<ul class="pagination" id="navigation-panel"></ul>
 			</nav>
-			<div id="catalog-panel"  style="grid-row-gap: 10px"class="row"></div>
+			<div style="width: 30%; padding: 10px">
+				<label>Display </label>
+				<button data="list" class="btn btn-outline-secondary select-display">
+					<i  class="fa fa-list" aria-hidden="true"></i>
+				</button>
+				<button data="card" class="btn btn-outline-secondary select-display">
+					<i  class="fa fa-th" aria-hidden="true"></i>
+				</button>
+			</div>
+			<div id="catalog-panel" style="grid-row-gap: 10px" class="row"></div>
 		</div>
 	</div>
 </div>
@@ -88,10 +68,21 @@
 	var defaultLocation = window.location.href;
 	var supplierOffset = 0;
 	var selectedProductId = 0;
+	var display = "card"; //OR list
 
 	var URL_GET_PRODUCT_PUBLIC = "<spring:url value="/api/public/get" />";
 	var URL_GET_SUPPLIER = "<spring:url value="/api/public/moresupplier" />";
 	var IMAGE_PATH = "${host}/${contextPath}/${imagePath}/";
+
+	var products = [];
+
+	function setProducts(products) {
+		this.products = products;
+	}
+
+	function updateCatalog() {
+		populateCatalog(products);
+	}
 
 	function showproductsuppliers() {
 		$('#modal-product-suppliers').modal('show');
@@ -111,113 +102,6 @@
 		doLoadMoreSupplier(supplierOffset, selectedProductId);
 	}
 
-	function createListGroup(entity) {
-		return createHtmlTag({
-			tagName : "ul",
-			id : "list-group-" + entity.id,
-			className : "list-group",
-			style : {
-				color : '#000000'
-			}
-		});
-	}
-
-	function createListItemCount(entity) {
-		const listClass = "list-group-item d-flex justify-content-between align-items-center";
-		const listItem = createHtmlTag({
-			tagName : "li",
-			id : "list-item-count-" + entity.id,
-			className : listClass,
-			ch1 : {
-				tagName : "span",
-				innerHTML : "Stock"
-			},
-			ch2 : {
-				tagName : "br"
-			},
-			ch3 : {
-				tagName : "span",
-				className : "badge badge-primary badge-pill",
-				innerHTML : entity.count,
-				id : "product-count-" + entity.id
-			}
-		});
-
-		return listItem;
-	}
-
-	function createProductCardTitle(entity) {
-		const html = createHtmlTag({
-			tagName : 'h5',
-			id : 'title-' + entity.id,
-			innerHTML : entity.name,
-			style: {color:'#000000'},
-			className: 'clickable',
-			ch1 : {
-				tagName : 'small',
-				style : {
-					'background-color' : 'rgb(224,224,224)'
-				},
-				className : 'text-muted',
-				innerHTML : (entity.newProduct ? "(NEW)" : "")
-			},
-			onclick : function() {
-				loadDetail(entity.code);
-			}
-		});
-		/* html.onclick = function() {
-			loadDetail(entity.code);
-		} */
-		return html;
-	}
-
-	function createCategoryTag(entity) {
-		const html = createHtmlTag({
-			tagName : 'h5',
-			id : 'category-' + entity.id,
-			ch1 : {
-				tagName : 'span',
-				className : 'badge badge-secondary',
-				innerHTML : entity.category.name
-			}
-		});
-		return html;
-	}
-
-	function createProductIconElement(entity) {
-		const imageUrl = entity.imageUrl;
-		const src = "${host}/${contextPath}/${imagePath}/"
-				+ imageUrl.split("~")[0];
-		const elementId = "icon-" + entity.id;
-
-		const iconImage = createImgTag(elementId, "card-img-top", "100", "200",
-				src);
-		iconImage.setAttribute("alt", entity.name);
-
-		return iconImage;
-	}
-
-	function createListItemPrice(entity) {
-		const id = "list-item-price-" + entity.id;
-		const className = "list-group-item d-flex justify-content-between align-items-center";
-		const html = createHtmlTag({
-			tagName : 'li',
-			id : id,
-			className : className,
-			 
-			ch1 : {
-				tagName : 'span',
-				className : 'badge badge-warning',
-				id : "product-price-" + entity.id,
-				innerHTML : beautifyNominal(entity.price)
-			}
-
-		});
-		return html;
-	}
-
-
-
 	/* function createProductDetailLink(entity){
 		const id = "product-info-link-" + entity.id;
 		const className = "list-group-item d-flex justify-content-between align-items-center";
@@ -236,58 +120,14 @@
 
 	function populateCatalog(products) {
 		catalogPanel.innerHTML = "";
+		const cardDisplay = this.display == "card";
 		for (let i = 0; i < products.length; i++) {
-			const entity = products[i];
-
-			//create col
-			const colDiv = createDiv("col-" + entity.id, "col-md-3");
-			//create card
-			const cardDiv = createHtmlTag({
-				tagName : "div",
-				id : "card-" + entity.id,
-				className : "card",
-				style : {
-					'width' : '100%',
-					'background-color' : entity.color,
-					'color' : entity.color
-				}
-			});
-
-			const iconImage = createProductIconElement(entity);
-			const categoryTag = createCategoryTag(entity);
-			const cardBody = createDiv("card-body-" + entity.id, "card-body");
-			/* <div class="card-body"> */
-			//card  title
-			const cardTitle = createProductCardTitle(entity);
-
-			///LIST GROUP///
-			const listGroup = createListGroup(entity);
-
-			//////////LIST ITEMS//////////
-
-			//const productDetailLink = createProductDetailLink(entity);
-			const listItemCount = createListItemCount(entity);
-			const listItemPrice = createListItemPrice(entity);
-
-			//listGroup.append(productDetailLink);
-			listGroup.append(listItemCount);
-			listGroup.append(listItemPrice);
-
-			if (this.addAdditionalLink) {
-				this.addAdditionalLink(entity, listGroup);
-			}
-
-			//populate cardbody
-			cardBody.append(cardTitle);
-			cardBody.append(listGroup);
-			cardBody.append(categoryTag);
-			//populate overall card
-			cardDiv.append(iconImage);
-			cardDiv.append(cardBody);
+			const product = products[i];
+			const productElement = cardDisplay ? createProductDisplayCard(product)
+					: createProductDisplayList(product);
 
 			//populate column
-			colDiv.append(cardDiv);
-			catalogPanel.append(colDiv);
+			catalogPanel.append(productElement);
 		}
 	}
 
@@ -302,7 +142,31 @@
 		defaultLocation = defaultLocation.replace("/" + defaultOption, "");
 	}
 
+	function initEvents() {
+		console.debug("initEvents");
+		const displayOptions = document
+				.getElementsByClassName("select-display");
+		for (var i = 0; i < displayOptions.length; i++) {
+			displayOptions[i].onclick = function(e) {
+				setDisplay(e.target.getAttribute("data"));
+			}
+		}
+
+	}
+
+	function setDisplay(d) {
+		console.info("setDisplay: ", d);
+		display = d;
+		if (display == "card") {
+			catalogPanel.className = "row";
+		} else {
+			catalogPanel.className = "table";
+		}
+		updateCatalog();
+	}
+
 	loadEntity(page);
+	initEvents();
 </script>
 <c:if test="${authenticated == true }">
 	<script type="text/javascript">
@@ -316,8 +180,9 @@
 				},
 				ch1 : {
 					tagName : 'a',
-					className: 'badge badge-secondary',
-					href : "<spring:url value="/admin/product/" />" + entity.code,
+					className : 'badge badge-secondary',
+					href : "<spring:url value="/admin/product/" />"
+							+ entity.code,
 					innerHTML : 'setting'
 				}
 			});
