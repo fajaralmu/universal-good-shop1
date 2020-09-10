@@ -178,6 +178,18 @@
 									</c:otherwise>
 								</c:choose>
 							</div>
+							<c:if test="${element.hasPreview }">
+								<div class="input-preview" id="preview-${element.id }"></div>
+								<script type="text/javascript">
+									byId("${element.id }").onchange = function(e){
+										const previewLink = "<spring:url value="/api/component/" />${element.previewLink }";
+										
+										postReqHtmlResponse(previewLink+"/"+e.target.value, {}, function(xhr){
+											byId("preview-${element.id }").innerHTML = xhr.data;
+										});
+									}
+								</script>
+							</c:if>
 						</div>
 					</c:forEach>
 				</div>

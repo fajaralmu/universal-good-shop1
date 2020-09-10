@@ -32,6 +32,37 @@ function postReq(url, requestObject, callback, blob) {
 	request.send(param);
 }
 
+function postReqHtmlResponse(url, requestObject, callback ) {
+	infoLoading();
+	var request = new XMLHttpRequest();
+	var param = JSON.stringify(requestObject);
+	request.open("POST", url, true);
+	request.setRequestHeader("Content-type", "application/json");
+	request.setRequestHeader("requestToken", document.getElementById("token-value").value);
+	request.setRequestHeader("requestId", document.getElementById("request-id").value);
+	 
+	request.onreadystatechange = function() {
+		
+		if (this.readyState == this.DONE) {
+			if(this.status != 200){
+				alert("Server Error");
+				infoDone();
+				return;
+			}
+			console.debug("RESPONSE ", this.status, this);
+			try {
+				this['data'] =  (this.responseText);
+			} catch (e) {
+				this['data'] = "{}";
+			}
+			callback(this);
+			infoDone();
+		}
+		 
+	}
+	request.send(param);
+}
+
 function loadEntityList(url, requestObject, callback) {
 	
 	postReq(url, requestObject,
