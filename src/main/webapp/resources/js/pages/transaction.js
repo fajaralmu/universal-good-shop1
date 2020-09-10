@@ -135,7 +135,7 @@ function doPopulateProductFlow(productFlows, rowCreationFunction) {
 		const btnEdit = createButtonWarning("edit-" + productFlow.id, "edit", function() {
 			setCurrentProductFlow(productFlow);
 		});
-		const btnDelete = createButtonDanger("delete-" + productFlow.id, "delete", function() {
+		const btnDelete = createButtonDanger("delete-" + productFlow.id, "remove", function() {
 			if (!confirm("Are you sure wnat to delete?")) {
 				return;
 			}

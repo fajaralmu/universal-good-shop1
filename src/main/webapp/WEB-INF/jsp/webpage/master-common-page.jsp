@@ -4,7 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
 <div class="content">
-	<h2>${page.name}</h2>
+	<h2><i class="fa fa-${page.getIconClass() }" aria-hidden="false"></i> ${page.name}</h2>
 	<p>Good ${timeGreeting}, ${loggedUser.displayName}. Have a great day!</p>
 	<p>${page.description }</p>
 	<div class="row" style="grid-row-gap: 10px">
