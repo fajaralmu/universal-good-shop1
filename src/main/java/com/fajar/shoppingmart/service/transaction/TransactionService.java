@@ -293,7 +293,7 @@ public class TransactionService {
 
 		if (null == user) {
 			// get from registry 
-			user = userSessionService.getUserFromRegistry(httpRequest);
+			user = userSessionService.getUserFromRuntime(httpRequest);
 			if (null == user) {
 				return null;
 			}

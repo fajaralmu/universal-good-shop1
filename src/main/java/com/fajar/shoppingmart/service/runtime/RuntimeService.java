@@ -4,8 +4,6 @@ import static com.fajar.shoppingmart.util.SessionUtil.PAGE_REQUEST;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
@@ -27,15 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class RuntimeService {
-
-//	public static final String PAGE_REQUEST = "page_req_id";
-//
-//	public static final String PAGE_REQUEST_ID = "requestId";
-//
-//	public static final String JSESSSIONID = "JSESSIONID";
-
-//	@Autowired
-//	private Registry registry;
+ 
 //	private final Map<String, Serializable> SESSION_MAP = new LinkedHashMap<>();
 	
 	@Autowired
@@ -187,6 +177,10 @@ public class RuntimeService {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	public boolean createNewSessionData() { 
+		return set(UserSessionService.SESSION_DATA, new SessionData());
 	}
 
 }

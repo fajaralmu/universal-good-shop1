@@ -2,21 +2,27 @@ package com.fajar.shoppingmart.service.runtime;
 
 import java.io.Serializable;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class TempSessionService   {
-
-	@Autowired
-	private FlatFileAccessor flatFileAccessor;
+ 
+	private final FlatFileAccessor flatFileAccessor;
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
-
+	public TempSessionService(FlatFileAccessor fileAccessor) {
+		this.flatFileAccessor = fileAccessor;
+		objectMapper.disable(MapperFeature.USE_ANNOTATIONS);
+		objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+	 
+	}
+	
 	public <T> T get(String key, Class<T> _class) throws Exception {
 		 
 		String json = flatFileAccessor.getLineContent(key);

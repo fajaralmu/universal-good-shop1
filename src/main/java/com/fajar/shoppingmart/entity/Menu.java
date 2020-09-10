@@ -65,7 +65,7 @@ public class Menu extends BaseEntity {
 	}
 	
 	@Override
-	public EntityUpdateInterceptor getUpdateInterceptor() {
+	public EntityUpdateInterceptor modelUpdateInterceptor() {
 
 		return new EntityUpdateInterceptor<Menu>() {
 

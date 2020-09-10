@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.exception.InvalidRequestException;
 import com.fajar.shoppingmart.service.LogProxyFactory;
+import com.fajar.shoppingmart.service.runtime.FlatFileAccessor;
 import com.fajar.shoppingmart.service.transaction.ProductService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +36,9 @@ public class RestPublicController extends BaseController{
 	
 	@Autowired
 	private ProductService productService;
-
+	@Autowired
+	private FlatFileAccessor flatFileAccessor;
+	
 	@PostConstruct
 	public void init() {
 		LogProxyFactory.setLoggers(this);
@@ -89,6 +93,14 @@ public class RestPublicController extends BaseController{
         }
 	}
 	
-	
+	//TODO: remove when testing is over
+	@PostMapping(value = { "/test_sessions" })
+	public WebResponse testSessionTxt(  HttpServletRequest request, HttpServletResponse httpResponse) throws IOException {
+		String sessionTemp =flatFileAccessor.printSessions();
+		 
+		WebResponse response = new WebResponse();
+		response.setMessage(sessionTemp);
+		return response;
+	}
 	 
 }

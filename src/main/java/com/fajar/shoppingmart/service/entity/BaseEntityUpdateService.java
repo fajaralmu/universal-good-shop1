@@ -64,7 +64,7 @@ public class BaseEntityUpdateService<T extends BaseEntity> {
 	}
 	
 	protected EntityUpdateInterceptor<T> getUpdateInterceptor(T baseEntity){
-		return baseEntity.getUpdateInterceptor();
+		return baseEntity.modelUpdateInterceptor();
 	}
 	
 	/**
