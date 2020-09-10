@@ -31,7 +31,7 @@
 				<button id="set-display-list" display="list" class="btn btn-outline-secondary b-select-display">
 					<i  class="fa fa-list" aria-hidden="true"></i>
 				</button>
-				<button id="set-display-card" display="card" class="btn btn-outline-secondary b-select-display">
+				<button id="set-display-card" display="card" class="btn btn-secondary b-select-display">
 					<i  class="fa fa-th" aria-hidden="true"></i>
 				</button>
 			</div>
@@ -152,16 +152,35 @@
 		const displayOptions = document.getElementsByClassName("b-select-display");
 		
 		for (var i = 0; i < displayOptions.length; i++) {
-			const display = displayOptions[i].getAttribute("display");
-			displayOptions[i].onclick = function(e) {
+			
+			const btn = displayOptions[i];
+			const display = btn.getAttribute("display");
+			
+			btn.onclick = function(e) {
+				 
 				setDisplay(display);
 			}
 		}
 
 	}
+	
+	function resetDisplayOptionButtons(){
+		const originalClass = "btn btn-outline-secondary b-select-display";
+		const displayOptions = document.getElementsByClassName("b-select-display");
+		
+		for (var i = 0; i < displayOptions.length; i++) {
+			const display = displayOptions[i].getAttribute("display");
+			displayOptions[i].className = originalClass;
+		}
+	}
 
 	function setDisplay(d) {
 		console.info("setDisplay: ", d);
+		try{
+			resetDisplayOptionButtons();
+			byId("set-display-"+d).className = "btn btn-secondary b-select-display";
+		}catch (e) { }
+		
 		display = d;
 		if (display == "card") {
 			catalogPanel.className = "row";
