@@ -1,5 +1,6 @@
 package com.fajar.shoppingmart.service;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
@@ -22,10 +23,12 @@ import com.fajar.shoppingmart.entity.RegisteredRequest;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.repository.RegisteredRequestRepository;
 import com.fajar.shoppingmart.repository.UserRepository;
+import com.fajar.shoppingmart.service.runtime.RuntimeService;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
 import com.fajar.shoppingmart.util.StringUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -74,7 +77,7 @@ public class UserSessionService {
 	 */
 	public User getUserFromRegistry(HttpServletRequest request) {
 		String loginKey = SessionUtil.getLoginKey(request);
-		UserSessionModel registryModel = runtimeService.getModel(loginKey);
+		UserSessionModel registryModel = runtimeService.getModel(loginKey, UserSessionModel.class);
 
 		if (registryModel == null) {
 			return null;
@@ -84,7 +87,7 @@ public class UserSessionService {
 	}
 
 	public User getUserFromRegistry(String loginKey) {
-		UserSessionModel registryModel = runtimeService.getModel(loginKey);
+		UserSessionModel registryModel = runtimeService.getModel(loginKey, UserSessionModel.class);
 
 		if (registryModel == null) {
 			return null;
@@ -125,9 +128,9 @@ public class UserSessionService {
 		User sessionUser = SessionUtil.getSessionUser(request);
 
 		try {
-			UserSessionModel registryModel = runtimeService.getModel(sessionUser.getLoginKey().toString());
+			UserSessionModel registryModel = runtimeService.getModel(sessionUser.getLoginKey().toString(), UserSessionModel.class);
 
-			if (sessionUser == null || registryModel == null || !sessionUser.equals(registryModel.getUser())) {
+			if (sessionUser == null || registryModel == null || !userEquals(sessionUser, registryModel.getUser())) {
 				log.error("==========USER NOT EQUALS==========");
 				throw new Exception();
 			}
@@ -137,6 +140,19 @@ public class UserSessionService {
 		} catch (Exception ex) {
 			log.info("USER DOES NOT HAVE SESSION, return FALSE");
 //			ex.printStackTrace();
+			return false;
+		}
+	}
+
+	private boolean userEquals(Serializable val1, Serializable val2) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			String val1Str = mapper.writeValueAsString(val1);
+			String val2Str = mapper.writeValueAsString(val2);
+			return val1Str.equals(val2Str);
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error("ERROR comparing values");
 			return false;
 		}
 	}
@@ -250,7 +266,7 @@ public class UserSessionService {
 	 * @return
 	 */
 	public String getToken(User user) {
-		UserSessionModel reqModel = runtimeService.getModel(user.getLoginKey());
+		UserSessionModel reqModel = runtimeService.getModel(user.getLoginKey(), UserSessionModel.class);
 		if (reqModel == null) {
 			throw new RuntimeErrorException(null, "Invalid Session");
 		}
@@ -279,7 +295,7 @@ public class UserSessionService {
 
 	public RegisteredRequest getRegisteredRequest(String requestId) {
   
-		SessionData	sessionData = runtimeService.getModel(SESSION_DATA);
+		SessionData	sessionData = runtimeService.getModel(SESSION_DATA, SessionData.class);
 		RegisteredRequest registeredRequest = null;
 		if (null != sessionData) {
 			registeredRequest = sessionData.getRequest(requestId);
@@ -341,7 +357,7 @@ public class UserSessionService {
 		if (!runtimeService.set(SESSION_DATA, sessionData))
 			throw new RuntimeErrorException(null, "Error generating request id");
 
-		log.info("NEW Session Data Created: {}", (SessionData) runtimeService.getModel(SESSION_DATA));
+		log.info("NEW Session Data Created: {}", (SessionData) runtimeService.getModel(SESSION_DATA, SessionData.class));
 		realtimeService.sendUpdateSession(getAvailableSessions());
 
 		return WebResponse.builder().code("00").message(requestId).build();
@@ -355,13 +371,13 @@ public class UserSessionService {
 	private SessionData generateSessionData(HttpServletRequest servletRequest, HttpServletResponse servletResponse,
 			String requestId) {
 
-		SessionData sessionData = runtimeService.getModel(SESSION_DATA);
+		SessionData sessionData = runtimeService.getModel(SESSION_DATA, SessionData.class);
 
 		if (null == sessionData) {
 			if (!runtimeService.set(SESSION_DATA, new SessionData()))
 				throw new RuntimeErrorException(null, "Error getting session data");
 
-			sessionData = runtimeService.getModel(SESSION_DATA);
+			sessionData = runtimeService.getModel(SESSION_DATA, SessionData.class);
 		}
 
 		RegisteredRequest requestv2 = SessionUtil.buildRegisteredRequest(servletRequest, requestId);
@@ -386,7 +402,7 @@ public class UserSessionService {
 	}
 
 	private List<RegisteredRequest> getAvailableSessionList() {
-		SessionData sessionData = runtimeService.getModel(SESSION_DATA);
+		SessionData sessionData = runtimeService.getModel(SESSION_DATA, SessionData.class);
 
 		if (null == sessionData) {
 			log.info("Session Data IS NULL");
@@ -395,7 +411,7 @@ public class UserSessionService {
 			if (!successSettingRegistry)
 				throw new RuntimeErrorException(null, "Error updating session data");
 
-			sessionData = runtimeService.getModel(SESSION_DATA);
+			sessionData = runtimeService.getModel(SESSION_DATA, SessionData.class);
 		} else {
 			log.info("sessionData found: {}", sessionData);
 		}
@@ -406,11 +422,11 @@ public class UserSessionService {
 	}
 
 	public void setActiveSession(String requestId, boolean active) {
-		SessionData sessionData = runtimeService.getModel(SESSION_DATA);
+		SessionData sessionData = runtimeService.getModel(SESSION_DATA, SessionData.class );
 		if (null == sessionData) {
 			return;
 		}
-		((SessionData) runtimeService.getModel(SESSION_DATA)).setActiveSession(requestId, active);
+		((SessionData) runtimeService.getModel(SESSION_DATA, SessionData.class)).setActiveSession(requestId, active);
 	}
 
 	public RegisteredRequest getAvailableSession(String requestId) {
@@ -425,7 +441,7 @@ public class UserSessionService {
 	}
 
 	public WebResponse deleteSession(WebRequest request) {
-		SessionData sessionData = runtimeService.getModel(SESSION_DATA);
+		SessionData sessionData = runtimeService.getModel(SESSION_DATA, SessionData.class);
 		String requestId = request.getRegisteredrequest().getRequestId();
 		
 		sessionData.remove(requestId );
@@ -437,13 +453,13 @@ public class UserSessionService {
 	}
 
 	public WebResponse clearSessions() {
-		SessionData sessionData = runtimeService.getModel(SESSION_DATA);
+		SessionData sessionData = runtimeService.getModel(SESSION_DATA, SessionData.class);
 		sessionData.clear();
 
 		if (!runtimeService.set(SESSION_DATA, sessionData))
 			throw new RuntimeErrorException(null, "Error updating session data");
 
-		sessionData = runtimeService.getModel(SESSION_DATA);
+		sessionData = runtimeService.getModel(SESSION_DATA, SessionData.class);
 
 		realtimeService.sendUpdateSession(getAvailableSessions());
 		return WebResponse.builder().code("00").sessionData(sessionData).build();

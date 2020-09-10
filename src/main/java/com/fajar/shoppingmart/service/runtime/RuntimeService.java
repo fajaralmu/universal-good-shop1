@@ -1,4 +1,4 @@
-package com.fajar.shoppingmart.service;
+package com.fajar.shoppingmart.service.runtime;
 
 import static com.fajar.shoppingmart.util.SessionUtil.PAGE_REQUEST;
 
@@ -11,11 +11,14 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.controller.BaseController;
 import com.fajar.shoppingmart.dto.SessionData;
 import com.fajar.shoppingmart.dto.UserSessionModel;
+import com.fajar.shoppingmart.service.LogProxyFactory;
+import com.fajar.shoppingmart.service.UserSessionService;
 import com.fajar.shoppingmart.util.SessionUtil;
 import com.fajar.shoppingmart.util.StringUtil;
 
@@ -33,8 +36,11 @@ public class RuntimeService {
 
 //	@Autowired
 //	private Registry registry;
-	private final Map<String, Serializable> SESSION_MAP = new LinkedHashMap<>();
-
+//	private final Map<String, Serializable> SESSION_MAP = new LinkedHashMap<>();
+	
+	@Autowired
+	private TempSessionService tempSessionService;
+	
 	@PostConstruct
 	public void init() {
 		LogProxyFactory.setLoggers(this);
@@ -48,17 +54,17 @@ public class RuntimeService {
 	 * @param key
 	 * @return
 	 */
-	public <T extends Serializable> T getModel(String key) {
+	public <T extends Serializable> T getModel(String key, Class<T> _class) {
 		try {
-			Serializable serializable = SESSION_MAP.get(key);
+			Serializable serializable = tempSessionService.get(key, _class);
 			T finalObj = (T) serializable;
 
 			log.info("==registry model: " + finalObj);
 			return finalObj;
 
-		} catch (Exception ex) {
-			log.info("Unexpected error");
-			ex.printStackTrace();
+		} catch (Exception e ) {
+			log.error("runtime data error");
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -68,12 +74,13 @@ public class RuntimeService {
 	 * @param registryModel
 	 * @return
 	 */
-	public boolean set(String key, Serializable registryModel) {
+	public boolean set(String key, Serializable value) {
 		try {
-			SESSION_MAP.put(key, registryModel);
+			tempSessionService.put(key, value);
 			return true;
 		} catch (Exception e) {
-			// TODO: handle exception
+			log.error("runtime data error");
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -84,10 +91,11 @@ public class RuntimeService {
 	 */
 	public boolean remove(String key) {
 		try {
-			SESSION_MAP.remove(key);
+			tempSessionService.remove(key);
 			return true;
 		} catch (Exception e) {
-			// TODO: handle exception
+			log.error("runtime data error");
+			e.printStackTrace();
 		}
 		return false;
 
@@ -101,9 +109,9 @@ public class RuntimeService {
 		String pageRequestId = generateIdKey();
 
 		UserSessionModel model;
-		if (getModel(PAGE_REQUEST) != null) {
+		if (getModel(PAGE_REQUEST, UserSessionModel.class) != null) {
 
-			model = (UserSessionModel) getModel(PAGE_REQUEST);
+			model = getModel(PAGE_REQUEST, UserSessionModel.class);
 			model.getTokens().put(pageRequestId, value);
 
 		} else {
@@ -130,11 +138,11 @@ public class RuntimeService {
 
 	public void updateSessionId(String newSessionId, String requestId) {
 		try {
-			((UserSessionModel) getModel(PAGE_REQUEST)).getTokens().put(requestId, newSessionId);
+			((UserSessionModel) getModel(PAGE_REQUEST, UserSessionModel.class)).getTokens().put(requestId, newSessionId);
 			log.info("SessionID UPDATED!!");
 			
 		} catch (Exception e) {
-			log.error("Error update SessionID on runtime");
+			log.error("runtime data error");
 			e.printStackTrace();
 		}
 	}
@@ -149,7 +157,7 @@ public class RuntimeService {
 		log.info("Will validate page request");
 
 		try {
-			UserSessionModel model = (UserSessionModel) getModel(PAGE_REQUEST);
+			UserSessionModel model =  getModel(PAGE_REQUEST, UserSessionModel.class);
 
 			if (null == model) {
 				log.debug("MODEL IS NULL");
@@ -174,8 +182,9 @@ public class RuntimeService {
 				log.debug("x x x x Request ID not found x x x x");
 				return false;
 			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		} catch (Exception e ) {
+			log.error("runtime data error");
+			e.printStackTrace();
 			return false;
 		}
 	}

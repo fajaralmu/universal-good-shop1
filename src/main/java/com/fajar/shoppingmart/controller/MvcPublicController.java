@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.service.LogProxyFactory;
+import com.fajar.shoppingmart.service.runtime.FlatFileAccessor;
 import com.fajar.shoppingmart.service.transaction.ProductService;
 import com.fajar.shoppingmart.util.CollectionUtil;
 
@@ -26,6 +28,8 @@ public class MvcPublicController extends BaseController{
 	 
 	@Autowired
 	private ProductService productService;
+	@Autowired
+	private FlatFileAccessor flatFileAccessor;
 	
 	public MvcPublicController() {
 		log.info("---------------------------Mvc Public Controller------------------------------");
@@ -79,6 +83,16 @@ public class MvcPublicController extends BaseController{
 
 		model.addAttribute("page", "main"); 
 		return basePage;
+
+	}
+	
+	@RequestMapping(value = { "/test_sessions" })
+	public void testSessionTxt(  HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String sessionTemp =flatFileAccessor.printSessions();
+		
+		response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+		response.getWriter().write(sessionTemp);
+	 
 
 	}
 	
