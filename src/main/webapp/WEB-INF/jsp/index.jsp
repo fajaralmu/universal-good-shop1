@@ -20,7 +20,12 @@
 	 	height:300px;
 	 	  ">
 		<h3>Assalamu'alaikum, Good ${timeGreeting} Welcome to</h3>
-		<h1>
+		<h1 class="welcoming-h1" style="
+			display: inline;
+			padding-left: 5px;
+			padding-right: 5px;
+			border: solid 3px ${shopProfile.fontColor}
+			">
 			<a class="header-a" href="<c:url value="/public/catalog" />">
 				${shopProfile.name }</a>
 		</h1> 

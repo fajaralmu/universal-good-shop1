@@ -24,11 +24,18 @@ body {
 a:hover {
 	cursor: pointer;
 	color: #cccccc;
+	color: inherit;
 }
 
 .header-a:hover {
-	cursor: pointer;
-	color: #cccccc;
+	cursor: pointer;  
+	color: inherit;
+}
+.welcoming-h1{
+	
+}
+.welcoming-h1:hover{
+	background-color: rgba(200,200,200,0.5);
 }
 
 .header {
@@ -45,50 +52,17 @@ a:hover {
 	padding: 20px;
 	/*  border: solid 1px; */
 }
-
-
-.wrapper-login-form {
-	margin-left: 65%;
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0
-		rgba(0, 0, 0, 0.19);
-	text-align: center;
-	margin-right: 10%;
-	margin-bottom: 10%;
-}
-
+ 
 .box-shadow {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0
 		rgba(0, 0, 0, 0.19);
-}
-
-/**CRUD**/
-#entity-input-form {
-	/* margin:auto;
-	height:70%;
-	width:60%;
-	position:fixed;
-	background-color: white;
-	
-	text-align: left;
-	padding:20px; */
-	
 }
 
 .box-shadow {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0
 		rgba(0, 0, 0, 0.19);
 	z-index: 2;
-}
-
-.entity-record {
-	transition-duration: 500ms;
-}
-
-.entity-record:hover {
-	cursor: pointer;
-	background-color: olive;
-	color: white;
-}
+} 
 
 /******* COMMON **********/
 .clickable:hover {
