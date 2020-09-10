@@ -50,11 +50,11 @@ public class BaseEntity implements Serializable{
 	private boolean deleted;
 	@BaseField
 	@Column(name = "general_color")
-	@FormField(type = FieldType.FIELD_TYPE_COLOR, defaultValue = "green")
+	@FormField(type = FieldType.FIELD_TYPE_COLOR, defaultValue = "#cccccc")
 	private String color;
 	@BaseField
 	@Column(name = "font_color")
-	@FormField(type = FieldType.FIELD_TYPE_COLOR, defaultValue = "yellow")
+	@FormField(type = FieldType.FIELD_TYPE_COLOR, defaultValue = "#000000")
 	private String fontColor;
 
 	public String getFontColor() {

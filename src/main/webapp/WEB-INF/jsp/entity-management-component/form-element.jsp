@@ -179,16 +179,7 @@
 								</c:choose>
 							</div>
 							<c:if test="${element.hasPreview }">
-								<div class="input-preview" id="preview-${element.id }"></div>
-								<script type="text/javascript">
-									byId("${element.id }").onchange = function(e){
-										const previewLink = "<spring:url value="/api/component/" />${element.previewLink }";
-										
-										postReqHtmlResponse(previewLink+"/"+e.target.value, {}, function(xhr){
-											byId("preview-${element.id }").innerHTML = xhr.data;
-										});
-									}
-								</script>
+								<div class="input-preview" preview-link="${element.previewLink }" name="${element.id}" id="preview-${element.id }"></div> 
 							</c:if>
 						</div>
 					</c:forEach>
@@ -220,6 +211,7 @@
 	const groupedInputs = getGroupedInputs();
 	const entityForm = byId('entity-form');
 	var groupNames = "${entityProperty.groupNames}";
+	const inputPreviews = document.getElementsByClassName("input-preview");
 	
 	function arrangeInputs() {
 		if(!groupedInputs) return;
@@ -267,6 +259,26 @@
 		return result;
 	}
 	
+	function initInputPreviewsEvent(){
+		console.debug("Input previews: ", inputPreviews.length);
+		for (var i = 0; i < inputPreviews.length; i++) {
+			const inputPreview = inputPreviews[i];
+			const name = inputPreview.getAttribute("name");
+			 
+			byId(name).onchange = function(e){
+				const previewLink = "<spring:url value="/api/component/" />"+ inputPreview.getAttribute("preview-link");
+				
+				postReqHtmlResponse(previewLink+"/"+e.target.value, {}, function(xhr){
+					inputPreview.innerHTML = xhr.data;
+				});
+			}
+		}
+		 
+		
+	 
+		
+	}
+	
 	function getGroupedInputs(){
 		const inputs = document.getElementsByClassName('grouped');
 		const result = new Array();
@@ -286,8 +298,7 @@
 		}catch (e) {
 			return 0; 
 		}
-	}
-	 
+	} 
 	
 	function getGroupName(section, groupName){
 		const h3 = createHtmlTag({
@@ -301,4 +312,6 @@
 	if (groupedInputs && groupedInputs.length > 1 ) {
 		arrangeInputs();
 	}
+	
+	initInputPreviewsEvent();
 </script>
