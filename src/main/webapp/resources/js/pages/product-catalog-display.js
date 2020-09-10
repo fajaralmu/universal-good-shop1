@@ -118,29 +118,25 @@ function createListItemCount(entity) {
 	return listItem;
 }
 
-function createProductCardTitle(entity) {
+function createProductCardTitle(product) {
 	const html = createHtmlTag({
 		tagName : 'h5',
-		id : 'title-' + entity.id,
-		innerHTML : entity.name,
-		style : {
-			color : '#000000'
-		},
+		id : 'title-' + product.id,
+		innerHTML : product.name,
+		style : { color : '#000000' },
 		className : 'clickable',
 		ch1 : {
 			tagName : 'small',
-			style : {
-				'background-color' : 'rgb(224,224,224)'
-			},
+			style : { 'background-color' : 'rgb(224,224,224)' },
 			className : 'text-muted',
-			innerHTML : (entity.newProduct ? "(NEW)" : "")
+			innerHTML : (product.newProduct ? "(NEW)" : "")
 		},
 		onclick : function() {
-			loadDetail(entity.code);
+			loadDetail(product.code);
 		}
 	});
 	/*
-	 * html.onclick = function() { loadDetail(entity.code); }
+	 * html.onclick = function() { loadDetail(product.code); }
 	 */
 	return html;
 }
@@ -158,15 +154,18 @@ function createListGroup(entity) {
 
 // ///////////////PRODUCT LIST/////////////////
 function createProductDisplayList(product) {
-	const rowDiv = createDiv("ROW-" + product.id, "row");
+	const rowDiv = createDiv("ROW-" + product.id, "row clickable");
 	rowDiv.style.margin = '5px';
 	rowDiv.style.border = 'solid 1px #cccccc';
+	rowDiv.onclick = function(e) {
+		loadDetail(product.code);
+	}
 	// ICON
 	const imageUrl = product.imageUrl;
 	const src = IMAGE_PATH + imageUrl.split("~")[0];
 	const imgDiv = createHtmlTag({
 		tagName : "div",
-		className : "col-md-3",
+		className : "col-md-4",
 		
 		ch1 : {
 			tagName : "img",
@@ -177,12 +176,25 @@ function createProductDisplayList(product) {
 	});
 
 	// name
-	const nameDiv = createDiv(null, 'col-md-3', product.name);
+	const nameDiv = createDiv(null, 'col-md-4', product.name);
+	//category
+	const categoryDiv = createDiv(null, 'col-md-4', product.category.name);
 	// price
-	const priceDiv = createDiv(null, 'col-md-3', beautifyNominal(product.price));
+	const priceDiv = createDiv(null, 'col-md-4', beautifyNominal(product.price));
 	// stock
-	const countDiv = createDiv(null, 'col-md-3', beautifyNominal(product.count));
+	const countDiv = createDiv(null, 'col-md-4', beautifyNominal(product.count));
 
-	appendElements(rowDiv, imgDiv, nameDiv, priceDiv, countDiv);
+	appendElements(rowDiv, imgDiv, nameDiv, categoryDiv, priceDiv, countDiv);
 	return rowDiv;
+}
+
+function generateProductCatalogListHeaders(){
+	const mainHeader = createDiv("product-catalog-list-header", "row");
+	const imgDiv = createDiv(null, 'col-md-4 center-aligned', "Preview");
+	const nameDiv = createDiv(null, 'col-md-4 center-aligned', "Name"); 
+	const categoryDiv = createDiv(null, 'col-md-4 center-aligned', "Category"); 
+	const priceDiv = createDiv(null, 'col-md-4 center-aligned', "Price"); 
+	const countDiv = createDiv(null, 'col-md-4 center-aligned', "Stock");
+	appendElements(mainHeader, imgDiv, nameDiv, categoryDiv, priceDiv, countDiv);
+	return mainHeader;
 }

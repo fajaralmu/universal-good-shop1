@@ -22,16 +22,16 @@
 		<h2>Product Catalog</h2>
 		<p></p>
 		<div style="width: 100%">
-			<!-- PAGINATION -->
+			<!-- Navigations -->
 			<nav>
 				<ul class="pagination" id="navigation-panel"></ul>
 			</nav>
-			<div style="width: 30%; padding: 10px">
-				<label>Display </label>
-				<button data="list" class="btn btn-outline-secondary select-display">
+			<div style= "padding: 10px">
+				<!-- Display Options -->
+				<button id="set-display-list" display="list" class="btn btn-outline-secondary b-select-display">
 					<i  class="fa fa-list" aria-hidden="true"></i>
 				</button>
-				<button data="card" class="btn btn-outline-secondary select-display">
+				<button id="set-display-card" display="card" class="btn btn-outline-secondary b-select-display">
 					<i  class="fa fa-th" aria-hidden="true"></i>
 				</button>
 			</div>
@@ -121,6 +121,11 @@
 	function populateCatalog(products) {
 		catalogPanel.innerHTML = "";
 		const cardDisplay = this.display == "card";
+		
+		if(!cardDisplay){
+			catalogPanel.appendChild(generateProductCatalogListHeaders());
+		}
+		
 		for (let i = 0; i < products.length; i++) {
 			const product = products[i];
 			const productElement = cardDisplay ? createProductDisplayCard(product)
@@ -144,11 +149,12 @@
 
 	function initEvents() {
 		console.debug("initEvents");
-		const displayOptions = document
-				.getElementsByClassName("select-display");
+		const displayOptions = document.getElementsByClassName("b-select-display");
+		
 		for (var i = 0; i < displayOptions.length; i++) {
+			const display = displayOptions[i].getAttribute("display");
 			displayOptions[i].onclick = function(e) {
-				setDisplay(e.target.getAttribute("data"));
+				setDisplay(display);
 			}
 		}
 

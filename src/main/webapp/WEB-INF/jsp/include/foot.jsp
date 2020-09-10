@@ -5,5 +5,6 @@
 		})
 	</script>
 	<p style="color: ${shopProfile.fontColor}" align="center"><i class="fa fa-coffee" aria-hidden="true"></i>
-	 ${shopProfile.name } ${year }</p>
+	</p>
+	<p style="color: ${shopProfile.fontColor}" align="center">${shopProfile.name } ${year }</p>
 </div>
