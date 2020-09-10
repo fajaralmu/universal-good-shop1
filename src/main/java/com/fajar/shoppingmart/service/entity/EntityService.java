@@ -23,7 +23,6 @@ import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
 import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.service.LogProxyFactory;
-import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
@@ -43,9 +42,7 @@ public class EntityService {
 	@Autowired
 	private RepositoryCustomImpl repositoryCustom;
 	@Autowired
-	private EntityRepository entityRepository;
-	@Autowired
-	private WebConfigService webConfigService;
+	private EntityRepository entityRepository; 
 
 	@PostConstruct
 	public void init() {
@@ -83,10 +80,15 @@ public class EntityService {
 				log.info("newRecord: {}", newRecord);
 				
 				if (entityValue != null) {
-					checkIfUser(entityValue, servletRequest);
+					boolean isUser = newRecord? false: checkIfUser(entityValue, servletRequest);
 					WebResponse saved = updateService.saveEntity((BaseEntity) entityValue, newRecord);
+					
 
 					if (saved.isSuccess()) {
+						if(isUser) {
+							log.info("Updating session user");
+							SessionUtil.updateSessionUser(servletRequest, (User) saved.getEntity());
+						}
 						validateInMemoryEntities(entityConfig);
 					}
 
@@ -107,14 +109,16 @@ public class EntityService {
 		}
 	}
 
-	private void checkIfUser(Object entityValue, HttpServletRequest servletRequest) {
+	private boolean checkIfUser(Object entityValue, HttpServletRequest servletRequest) {
 		 
 		User user = SessionUtil.getSessionUser(servletRequest);
 		if(entityValue instanceof User) {
 			if(!user.getId().equals(((User) entityValue).getId())){
 				throw new RuntimeException("Invalid User!");
 			}
+			return true;
 		}
+		return false;
 	}
 
 	private void validateInMemoryEntities(final EntityManagementConfig entityConfig) {

@@ -10,6 +10,7 @@ import javax.persistence.Transient;
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
+import com.fajar.shoppingmart.service.entity.UserUpdateService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -17,7 +18,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Dto(commonManagementPage = false)
+@Dto(commonManagementPage = false, updateService = UserUpdateService.class)
 @Entity
 @Table(name = "user")
 @Builder
@@ -44,6 +45,9 @@ public class User extends BaseEntity {
 	@ManyToOne
 	@FormField(type = FieldType.FIELD_TYPE_FIXED_LIST, optionItemName = "name")
 	private UserRole role;
+	@FormField(type = FieldType.FIELD_TYPE_IMAGE, required = false, defaultValue = "DefaultIcon.BMP")
+	@Column(name = "profile_image")
+	private String profileImage;
 
 	@javax.persistence.Transient
 	@JsonIgnore

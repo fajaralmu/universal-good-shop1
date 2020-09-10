@@ -117,14 +117,23 @@ public class BaseController {
 
 	@ModelAttribute("pageToken")
 	public String pageToken(HttpServletRequest request) {
-		return userSessionService.getToken(request);
+		try {
+			return userSessionService.getToken(request);
+		}catch (Exception e) {
+			return "";
+		}
 	}
 
 	@ModelAttribute("requestId")
 	public String getPublicRequestId(HttpServletRequest request) {
-		Cookie cookie = getCookie(SessionUtil.JSESSSIONID, request.getCookies());
-		String cookieValue = cookie == null ? UUID.randomUUID().toString() : cookie.getValue();
-		return registryService.addPageRequest(cookieValue);
+		try {
+			Cookie cookie = getCookie(SessionUtil.JSESSSIONID, request.getCookies());
+			String cookieValue = cookie == null ? UUID.randomUUID().toString() : cookie.getValue();
+			return registryService.addPageRequest(cookieValue);
+		}catch (Exception e) {
+			
+			return "";
+		}
 
 	}
 

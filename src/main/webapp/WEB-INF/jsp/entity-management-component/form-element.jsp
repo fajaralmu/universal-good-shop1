@@ -71,7 +71,7 @@
 											}
 										</script>
 									</c:when>
-									<c:when test="${  element.type == 'dynamiclist'}">
+									<c:when test="${element.type == 'dynamiclist'}">
 										<input onkeyup="loadList(this)" name="${element.id }"
 											id="input-${element.id }" class="form-control" type="text" />
 										<br />
@@ -163,7 +163,7 @@
 											</div>
 										</div>
 										<button id="${element.id }-add-list"
-											onclick="addImageList('${element.id }')">Add</button>
+											onclick="addImageList('${element.id }')" class="btn btn-secondary btn-sm">Add</button>
 									</c:when>
 									<c:when test="${ element.identity}">
 										<input class="input-field form-control" disabled="disabled"
