@@ -58,7 +58,7 @@
 			<button class="btn btn-primary" id="btn-filter-ok"
 				onclick="setPage()"><i class="fa fa-search" aria-hidden="true"></i></button>
 			<button class="btn btn-info" id="btn-printExcel"
-				onclick="printExcel()">Excel Report</button>
+				onclick="printExcel()"><i class="fa fa-print" aria-hidden="true"></i> Excel Report</button>
 		</div>
 
 	</div>

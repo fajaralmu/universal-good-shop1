@@ -34,12 +34,12 @@
 			</div>
 		</div>
 		<div>
-			<button class="btn btn-outline-info" onclick="report('daily')">Generate Report
+			<button class="btn btn-outline-info" onclick="report('daily')"><i class="fa fa-print" aria-hidden="true"></i> Report
 				This Month</button>
-			<button class="btn btn-outline-info" onclick="report('monthly')">Generate Report
+			<button class="btn btn-outline-info" onclick="report('monthly')"><i class="fa fa-print" aria-hidden="true"></i> Report
 				This Year</button>
 			<button class="btn btn-outline-info"
-				onclick="report('balance1')">Generate Balance Report</button>
+				onclick="report('balance1')"><i class="fa fa-print" aria-hidden="true"></i> Balance Report</button>
 		</div>
 		<p></p>
 		<div class="row">
