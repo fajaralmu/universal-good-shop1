@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.JoinColumn;
+
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
@@ -176,7 +178,7 @@ public class ExcelReportUtil {
 		/**
 		 * table content
 		 */
-		for (int e = 0; e< entities.size(); e++) {  
+		for (int e = 0; e < entities.size(); e++) {  
 			
 			BaseEntity entity = entities.get(e); 
 			values[seqNum] =  e+1 ; //numbering
@@ -185,7 +187,7 @@ public class ExcelReportUtil {
 			/**
 			 * checking the value type
 			 */
-			for(int i = 0; i< entityElements.size();i++) {
+			for(int i = 0; i < entityElements.size();i++) {
 				
 				Object value = mapEntityValue(entity, entityElements.get(i));
 				values[seqNum] = value;
@@ -207,7 +209,7 @@ public class ExcelReportUtil {
 			
 			if(null != value) {
 				
-				if( objectEquals(fieldType, FieldType.FIELD_TYPE_DYNAMIC_LIST, FieldType.FIELD_TYPE_FIXED_LIST)){
+				if(field.getAnnotation(JoinColumn.class)!= null){ //dynamic_list / fixed_list
 					
 					String optionItemName = element.getOptionItemName();
 					

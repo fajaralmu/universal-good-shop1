@@ -16,7 +16,7 @@
 			<c:if test="${loggedUser == null  }">
 				<li class="nav-item "><a
 					class="nav-link  ${page == 'login' ? 'active':'' }"
-					href="<spring:url value="/account/login"/>">Log In </a></li>
+					href="<spring:url value="/account/login"/>"><i class="fa fa-key" aria-hidden="true"></i> Log In </a></li>
 			</c:if>
 			<c:if test="${loggedUser != null }">
 				<div class="dropdown">
