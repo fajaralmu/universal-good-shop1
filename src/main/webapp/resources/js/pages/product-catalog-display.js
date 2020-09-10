@@ -165,7 +165,7 @@ function createProductDisplayList(product) {
 	const src = IMAGE_PATH + imageUrl.split("~")[0];
 	const imgDiv = createHtmlTag({
 		tagName : "div",
-		className : "col-md-4",
+		className : "col-md-2",
 		
 		ch1 : {
 			tagName : "img",
@@ -176,13 +176,13 @@ function createProductDisplayList(product) {
 	});
 
 	// name
-	const nameDiv = createDiv(null, 'col-md-4', product.name);
+	const nameDiv = createDiv(null, 'col-md-2', product.name);
 	//category
-	const categoryDiv = createDiv(null, 'col-md-4', product.category.name);
+	const categoryDiv = createDiv(null, 'col-md-2', product.category.name);
 	// price
-	const priceDiv = createDiv(null, 'col-md-4', beautifyNominal(product.price));
+	const priceDiv = createDiv(null, 'col-md-2', beautifyNominal(product.price));
 	// stock
-	const countDiv = createDiv(null, 'col-md-4', beautifyNominal(product.count));
+	const countDiv = createDiv(null, 'col-md-2', beautifyNominal(product.count));
 
 	appendElements(rowDiv, imgDiv, nameDiv, categoryDiv, priceDiv, countDiv);
 	return rowDiv;
@@ -190,11 +190,13 @@ function createProductDisplayList(product) {
 
 function generateProductCatalogListHeaders(){
 	const mainHeader = createDiv("product-catalog-list-header", "row");
-	const imgDiv = createDiv(null, 'col-md-4 center-aligned', "Preview");
-	const nameDiv = createDiv(null, 'col-md-4 center-aligned', "Name"); 
-	const categoryDiv = createDiv(null, 'col-md-4 center-aligned', "Category"); 
-	const priceDiv = createDiv(null, 'col-md-4 center-aligned', "Price"); 
-	const countDiv = createDiv(null, 'col-md-4 center-aligned', "Stock");
+	mainHeader.style.fontSize = '1.2em';
+	
+	const imgDiv = createDiv(null, 'col-md-2 center-aligned', "Preview");
+	const nameDiv = createDiv(null, 'col-md-2 center-aligned', "Name"); 
+	const categoryDiv = createDiv(null, 'col-md-2 center-aligned', "Category"); 
+	const priceDiv = createDiv(null, 'col-md-2 center-aligned', "Price"); 
+	const countDiv = createDiv(null, 'col-md-2 center-aligned', "Stock");
 	appendElements(mainHeader, imgDiv, nameDiv, categoryDiv, priceDiv, countDiv);
 	return mainHeader;
 }
