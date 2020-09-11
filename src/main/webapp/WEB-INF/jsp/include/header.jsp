@@ -7,7 +7,7 @@
 <div class="row header" style="margin:0;">
 	<div class="col-10">
 		<div class="row">
-			<img class="col-1" width="50" height="50" src="${host}/${contextPath}/${imagePath}/${shopProfile.iconUrl }"  >
+			<img class="col-1" style="margin-top:10px" width="50" height="50" src="${host}/${contextPath}/${imagePath}/${shopProfile.iconUrl }"  />
 			<h1 class="col-11"><a class="header-a" href="<c:url value="/index" />">${shopProfile.name }</a></h1> 
 			<p class="col-1"></p>
 			<p class="col-11">${shopProfile.shortDescription }</p>
