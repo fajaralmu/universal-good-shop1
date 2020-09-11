@@ -17,6 +17,7 @@ import com.fajar.shoppingmart.dto.SessionData;
 import com.fajar.shoppingmart.dto.UserSessionModel;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.UserSessionService;
+import com.fajar.shoppingmart.util.MapUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
 import com.fajar.shoppingmart.util.StringUtil;
 
@@ -107,11 +108,7 @@ public class RuntimeService {
 		} else {
 
 			model = new UserSessionModel();
-			model.setTokens(new HashMap<String, Object>() {
-				{
-					put(pageRequestId, value);
-				}
-			});
+			model.setTokens(MapUtil.singleMap(pageRequestId, value));
 		}
 		if (set(PAGE_REQUEST, model)) {
 			return pageRequestId;
@@ -120,12 +117,7 @@ public class RuntimeService {
 		}
 
 	}
-
-	private String generateIdKey() {
-
-		return StringUtil.generateRandomNumber(15);
-	}
-
+ 
 	public void updateSessionId(String newSessionId, String requestId) {
 		try {
 			((UserSessionModel) getModel(PAGE_REQUEST, UserSessionModel.class)).getTokens().put(requestId, newSessionId);
@@ -181,6 +173,11 @@ public class RuntimeService {
 
 	public boolean createNewSessionData() { 
 		return set(UserSessionService.SESSION_DATA, new SessionData());
+	}
+	
+	private String generateIdKey() {
+
+		return StringUtil.generateRandomNumber(15);
 	}
 
 }

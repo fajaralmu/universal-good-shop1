@@ -1,6 +1,6 @@
 package com.fajar.shoppingmart.service.entity;
 
-import static com.fajar.shoppingmart.service.entity.EntityService.*;
+import static com.fajar.shoppingmart.service.entity.EntityService.ORIGINAL_PREFFIX;
 
 import java.io.IOException;
 import java.util.List;
@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.dto.WebResponse;
-import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Product;
-import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.ProductRepository;
 import com.fajar.shoppingmart.service.transaction.ProductInventoryService;
 import com.fajar.shoppingmart.util.CollectionUtil;
@@ -93,11 +91,9 @@ public class ProductUpdateService extends BaseEntityUpdateService<Product>{
 					product.setImageUrl(dbProduct.get().getImageUrl());
 				}
 			}
-		}
-		 
+		} 
 		
-		Product newProduct = entityRepository.save(product);
-		
+		Product newProduct = entityRepository.save(product); 
 		if(newRecord) {
 			productInventoryService.addNewProduct(newProduct);
 		}

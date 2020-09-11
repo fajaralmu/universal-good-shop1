@@ -4,7 +4,6 @@ import static com.fajar.shoppingmart.controller.BaseController.getJSessionIDCook
 import static com.fajar.shoppingmart.util.SessionUtil.getLoginKey;
 import static com.fajar.shoppingmart.util.SessionUtil.getPageRequestId;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,7 +26,6 @@ import com.fajar.shoppingmart.repository.RegisteredRequestRepository;
 import com.fajar.shoppingmart.repository.UserRepository;
 import com.fajar.shoppingmart.service.runtime.RuntimeService;
 import com.fajar.shoppingmart.util.CollectionUtil;
-import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
 import com.fajar.shoppingmart.util.StringUtil;
 
@@ -473,7 +471,6 @@ public class UserSessionService {
 	}
 	
 	private String generateRequestId() {
-
 		return StringUtil.generateRandomNumber(17);
 	}
 }

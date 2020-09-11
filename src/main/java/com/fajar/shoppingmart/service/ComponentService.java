@@ -24,7 +24,6 @@ import com.fajar.shoppingmart.repository.MenuRepository;
 import com.fajar.shoppingmart.repository.PageRepository;
 import com.fajar.shoppingmart.service.entity.EntityValidation;
 import com.fajar.shoppingmart.util.CollectionUtil;
-import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -131,13 +130,7 @@ public class ComponentService {
 			if (pageCode.equals(SETTING)) {
 				Menu menu = defaultMenu();
 				final Menu savedMenu = entityRepository.save(menu);
-				return new ArrayList<Menu>() {
-					private static final long serialVersionUID = -6867018433722897471L;
-
-					{
-						add(savedMenu);
-					}
-				};
+				return CollectionUtil.listOf(savedMenu);			
 			}
 		}
 

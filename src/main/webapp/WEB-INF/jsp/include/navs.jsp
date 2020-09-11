@@ -7,6 +7,23 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div class="header" style="height: auto">
 	<div>
+	<c:if test="${loggedUser!=null }">
+	<div class="profile-thumbnail " style="width:100%; text-align: center; color: ${shopProfile.fontColor}">
+		<div  
+		style="
+			background-position: center;
+			background-repeat: no-repeat;
+			background-size: cover;
+		 	background-image: url('${host}/${contextPath}/${imagePath}/${loggedUser.profileImage }'); 
+		 	width: 100px;
+		 	height: 100px;
+		 	border-radius: 50px;
+		 	margin: auto;
+		" ></div>
+		<p>${loggedUser.displayName}</p>
+	</div>
+	</c:if>
+		
 		<div class="nav-list">
 			<c:forEach var="pageItem" items="${pages}">
 				<div class="side-nav-item">

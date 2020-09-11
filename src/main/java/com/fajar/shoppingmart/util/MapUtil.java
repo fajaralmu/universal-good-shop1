@@ -16,7 +16,7 @@ public class MapUtil {
 		return false;
 	}
 
-	public static <K, V> Map<K, V> singleMap(K key, V value) {
+	public static <K, V> HashMap<K, V> singleMap(K key, V value) {
 
 		return new HashMap<K, V>() {
 			private static final long serialVersionUID = 1150764585262310376L;
