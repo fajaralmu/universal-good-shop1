@@ -8,6 +8,10 @@ body {
 	height: 100%
 }
 
+#main-header{
+	z-index: 3;
+}
+
 #loading-div {
 	position: fixed;
 	margin: auto

@@ -114,8 +114,8 @@ a:hover {
 	<!-- WEB APP CONTENT -->
 
 	<div class="app_container">
-		<div class="page-head"
-			style="color:${shopProfile.fontColor}; background-color: ${shopProfile.color}">
+		<div  id="main-header" class="page-head"
+			style="color:${shopProfile.fontColor}; background-color: ${shopProfile.color}; width:100%">
 			<jsp:include page="include/header.jsp"></jsp:include>
 		</div>
 		<div class="row" style="margin-right: 0">
@@ -144,6 +144,7 @@ a:hover {
 		</div>
 	</div>
 	<script type="text/javascript">
+		const mainHeader = byId("main-header");
 		const websocketUrl = '${contextPath}/realtime-app';
 		function initProgressWebsocket() {
 			hide('progress-bar-wrapper');
@@ -167,6 +168,20 @@ a:hover {
 			connectToWebsocket();
 
 		}
+		
+		function handleOnScroll(e){
+			if(scrollY > 70){
+				mainHeader.style.position = 'fixed';
+			}else{
+				mainHeader.style.position = 'relative';
+			}
+		}
+		
+		document.body.onscroll = function(e){
+			handleOnScroll(e);
+		}
+		
+		
 	</script>
 </body>
 </html>

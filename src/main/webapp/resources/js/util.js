@@ -23,6 +23,7 @@ function infoLoading() {
 		id:'loading-txt',
 		innerHTML:'Please Wait'
 	}); 
+	loadingDiv.style.zIndex = 6;
 	loadingDiv.appendChild(loadingText); 
 	const imagePath = ctxPath+"/res/img/loading-disk.gif";
 	const loadingImg = createHtmlTag({

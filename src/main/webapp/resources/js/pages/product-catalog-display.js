@@ -190,13 +190,13 @@ function createProductDisplayList(product) {
 
 function generateProductCatalogListHeaders(){
 	const mainHeader = createDiv("product-catalog-list-header", "row");
-	mainHeader.style.fontSize = '1.2em';
+	mainHeader.style.fontSize = '1.2em'; 
 	
-	const imgDiv = createDiv(null, 'col-md-2 center-aligned', "Preview");
-	const nameDiv = createDiv(null, 'col-md-2 center-aligned', "Name"); 
-	const categoryDiv = createDiv(null, 'col-md-2 center-aligned', "Category"); 
-	const priceDiv = createDiv(null, 'col-md-2 center-aligned', "Price"); 
-	const countDiv = createDiv(null, 'col-md-2 center-aligned', "Stock");
+	const imgDiv = createDiv(null, 'col-md-2 center-aligned', "<h5>Preview</h5>");
+	const nameDiv = createDiv(null, 'col-md-2 center-aligned', "<h5>Name</h5>"); 
+	const categoryDiv = createDiv(null, 'col-md-2 center-aligned', "<h5>Category</h5>"); 
+	const priceDiv = createDiv(null, 'col-md-2 center-aligned', "<h5>Price</h5>"); 
+	const countDiv = createDiv(null, 'col-md-2 center-aligned', "<h5>Stock</h5>");
 	appendElements(mainHeader, imgDiv, nameDiv, categoryDiv, priceDiv, countDiv);
 	return mainHeader;
 }

@@ -40,18 +40,18 @@
 <!-- CONTENT -->
 <div class="content">
 	<h2>${entityProperty.alias }</h2>
-	<p></p>
-	<c:if test="${entityProperty.editable == true }">
-		<button type="btn-show-form" class="btn btn-primary"
-			data-toggle="modal" data-target="#modal-entity-form">Show
-			Form</button>
-		<!-- <button id="btn-show-form" class="btn btn-info" onclick="show('modal-entity-form')">Show
-			Form</button> -->
-	</c:if>
-	<p></p>
+	<p></p> 
 
 	<!-- PAGINATION -->
-	<div class="input-group mb-3" style="width: 30%">
+	<div class="input-group mb-3" style="width: 40%">
+	
+		<c:if test="${entityProperty.editable == true }">
+			<button type="btn-show-form" class="btn btn-secondary" 
+			data-toggle="modal" data-target="#modal-entity-form">Show Form</button>
+		<!-- <button id="btn-show-form" class="btn btn-info" onclick="show('modal-entity-form')">Show
+			Form</button> -->
+		</c:if>
+	
 		<input class="form-control" value="Page" disabled="disabled">
 		<input class="form-control" type="number" value="1" id="input-page" />
 		<div class="input-group-append">

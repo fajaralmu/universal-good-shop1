@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <div id="progress-bar-wrapper" onclick="hide('progress-bar-wrapper');"
 	class="box-shadow"
-	style="display: none; height: 50px; padding: 10px; background-color: white; margin: auto; position: fixed; width: 100%">
+	style="display: none; z-index:4; height: 50px; padding: 10px; background-color: white; margin: auto; position: fixed; width: 100%">
 	<div class="progress">
 		<div id="progress-bar"
 			class="progress-bar progress-bar-striped bg-info" role="progressbar"
