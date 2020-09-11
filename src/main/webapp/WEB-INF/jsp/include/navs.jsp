@@ -27,7 +27,7 @@
 		<div class="nav-list">
 			<c:forEach var="pageItem" items="${pages}">
 				<div class="side-nav-item" id="${pageItem.code }">
-					<a class="nav-link" href='#' page-code='${pageItem.code }' menupage="${pageItem.isMenuPage() }" location="<spring:url value="${pageItem.link }"/>">
+					<a class="nav-link side-link" href='#' page-code='${pageItem.code }' menupage="${pageItem.isMenuPage() }" location="<spring:url value="${pageItem.link }"/>">
 						<i class="fa fa-${pageItem.getIconClass() }" aria-hidden="false"></i>${pageItem.name } 
 					</a>
 				</div>
@@ -41,7 +41,7 @@
 	document.body.style.backgroundColor = "${shopProfile.color}";
 
 	const pagesLink = document.getElementsByClassName("side-nav-item");
-	const navLinks = document.getElementsByClassName("nav-link");
+	const navLinks = document.getElementsByClassName("side-link");
 	const MART_SIDEBAR_CODE = '${shopProfile.id}_mart_sidebarcode';
 	var pageMenus = {};
 	var ctxPath = "${contextPath}";
@@ -88,11 +88,20 @@
 		}
 		for (var i = 0; i < navLinks.length; i++) {
 			const navLink = navLinks[i];
-			const loc = navLink.getAttribute("location");
+			const location = navLink.getAttribute("location");
 			const code = navLink.getAttribute("page-code");
 			navLink.onclick = function(e){
-				setSideBarCookie(code, loc);
+				setSideBarCookie(code, location);
 			}
+			navLink.onmousedown = function(e){
+                if (event.which == 3) {
+                	navLink.setAttribute("href", location);
+                   // alert("right clicked!");
+                }
+            }
+			navLink.onmouseout = function(e){
+				navLink.setAttribute("href", "#");
+            }
 		}
 	}
 
