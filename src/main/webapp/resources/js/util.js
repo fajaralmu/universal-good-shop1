@@ -642,3 +642,14 @@ function createBr() {
 	return document.createElement("br");
 }
 
+function getCookie(key){
+    try{
+       return document.cookie
+            .split('; ')
+            .find(row => row.startsWith(key))
+            .split('=')[1];
+    }catch(e){
+        return null;
+    }
+}
+
