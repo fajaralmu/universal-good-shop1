@@ -42,7 +42,8 @@ public class RestComponentController extends BaseController{
 		//validatePageRequest(httpRequest);
 		try {
 			FontAwesomeIcon icon = FontAwesomeIcon.valueOf(classAlias);
-			return "<i class=\"fa fa-"+icon.value+"\"></i>";
+			 
+			return "<i class=\""+icon.value+"\"></i>";
 		}catch (Exception e) {
 			 
 		}

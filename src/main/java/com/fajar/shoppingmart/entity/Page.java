@@ -70,7 +70,7 @@ public class Page extends BaseEntity implements Sequenced  {/**
 	
 	public String getIconClass() {
 		if(null == this.menuHtmlIconClass) {
-			return "home";
+			return "fa fa-home";
 		}
 		return this.menuHtmlIconClass.value;
 	}
