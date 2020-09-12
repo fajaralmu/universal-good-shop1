@@ -170,7 +170,8 @@ a:hover {
 		}
 		
 		function handleOnScroll(e){
-			if(scrollY > 70){
+			const limit = screen.height*15/100; //25vh
+			if(scrollY > limit){
 				mainHeader.style.position = 'fixed';
 			}else{
 				mainHeader.style.position = 'relative';
