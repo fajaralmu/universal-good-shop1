@@ -40,7 +40,7 @@ public class Page extends BaseEntity implements Sequenced  {/**
 	private String name;
 	@FormField(lableName = "Authorized (1 or 0)",type = FieldType.FIELD_TYPE_NUMBER)
 	@Column(nullable = false)
-	private int authorized; 
+	private int authorized;
 	@FormField(lableName = "Is nonMenu Page(1 or 0)",type = FieldType.FIELD_TYPE_NUMBER)
 	@Column(name = "is_non_menu_page")
 	private int nonMenuPage;

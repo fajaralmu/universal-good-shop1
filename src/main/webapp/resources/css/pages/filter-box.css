@@ -7,8 +7,8 @@
 	width: 55px;
 	transition-duration: 300;
 	right: 0;
-	top: 20%;
-	z-index: 20;
+	top: 15vh;
+	z-index: 6;
 }
 
 .btn-filter-toggle{
