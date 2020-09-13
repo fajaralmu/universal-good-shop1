@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EntityElement implements Serializable {
 
-	static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	final ObjectMapper objectMapper = new ObjectMapper();
 	/**
 	 * 
 	 */
@@ -118,8 +118,9 @@ public class EntityElement implements Serializable {
 	}
 
 	public String getJsonListString(boolean removeBeginningAndEndIndex) {
+		log.info("getJsonListString from json: {}", jsonList);
 		try {
-			String jsonStringified = OBJECT_MAPPER.writeValueAsString(jsonList).trim();
+			String jsonStringified = objectMapper.writeValueAsString(jsonList).trim();
 			if (removeBeginningAndEndIndex) {
 				StringBuilder stringBuilder = new StringBuilder(jsonStringified);
 				stringBuilder.setCharAt(0, ' ');
@@ -250,7 +251,7 @@ public class EntityElement implements Serializable {
 	}
 
 	private void processPlainListType() throws Exception {
-
+		log.info("Process Plain List Type: {}", field.getName());
 		String[] availableValues = formField.availableValues();
 		Object[] arrayOfObject = CollectionUtil.toObjectArray(availableValues);
 

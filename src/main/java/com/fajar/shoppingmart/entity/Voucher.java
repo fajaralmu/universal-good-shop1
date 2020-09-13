@@ -2,6 +2,8 @@ package com.fajar.shoppingmart.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 import com.fajar.shoppingmart.annotation.Dto;
@@ -29,7 +31,8 @@ public class Voucher extends BaseEntity {
 	@FormField(type=FieldType.FIELD_TYPE_NUMBER)
 	private int year;
 	@Column
-	@FormField(type=FieldType.FIELD_TYPE_FIXED_LIST)
+	@Enumerated(EnumType.STRING)
+	@FormField(type=FieldType.FIELD_TYPE_PLAIN_LIST)
 	private VoucherType type;
 	@Column
 	@FormField(type=FieldType.FIELD_TYPE_NUMBER)
