@@ -25,7 +25,7 @@ public class TempSessionService   {
 	
 	public <T> T get(String key, Class<T> _class) throws Exception {
 		 
-		String json = flatFileAccessor.getLineContent(key);
+		String json = flatFileAccessor.getLineContent(_class.getSimpleName()+"_"+key);
 		log.debug("TempSessionService get JSON: {}", json);
 		if(null == json) {
 			return null;
@@ -33,15 +33,15 @@ public class TempSessionService   {
 		return objectMapper.readValue(json, _class);
 	}
 
-	public void put(String key, Serializable registryModel) throws  Exception {
+	public void put(String key, Serializable data) throws  Exception {
 		 
-		String json = objectMapper.writeValueAsString(registryModel);
-		flatFileAccessor.putKeyValue(key, json);
+		String json = objectMapper.writeValueAsString(data);
+		flatFileAccessor.putKeyValue(data.getClass().getSimpleName()+"_"+key, json);
 	}
 
-	public void remove(String key) throws Exception {
+	public void remove(String key, Class<?> _class) throws Exception {
 		 
-		flatFileAccessor.removeLineWithKey(key);
+		flatFileAccessor.removeLineWithKey(_class.getSimpleName()+"_"+key);
 	}
 	
 	 

@@ -457,7 +457,7 @@ public class UserSessionService {
 		return runtimeService.getModel(key, UserSessionModel.class);
 	}
 	private void removeUserFromRuntime(User user) {
-		runtimeService.remove(user.getLoginKey());
+		runtimeService.remove(user.getLoginKey(), UserSessionModel.class);
 	}
 	
 	//===========================================================

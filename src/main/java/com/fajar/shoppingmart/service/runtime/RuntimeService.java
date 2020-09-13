@@ -79,9 +79,9 @@ public class RuntimeService {
 	 * @param key
 	 * @return
 	 */
-	public boolean remove(String key) {
+	public boolean remove(String key, Class<? extends Serializable> _class) {
 		try {
-			tempSessionService.remove(key);
+			tempSessionService.remove(key, _class);
 			return true;
 		} catch (Exception e) {
 			log.error("runtime data error");

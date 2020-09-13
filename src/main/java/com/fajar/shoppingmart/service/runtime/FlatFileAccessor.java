@@ -30,7 +30,8 @@ public class FlatFileAccessor {
 		log.info("FlatFileAccessor inits.. ");
 		sessionFile = sessionResourceFile.getFile();
 
-		addLineToSession("APP_STARTED");
+		log.info("sessionFile path: {}", sessionFile.getCanonicalPath());
+		addLineToSession("APP_STARTED "+(new Date()));
 		printSessions();
 	}
 
