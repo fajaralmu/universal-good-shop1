@@ -15,8 +15,9 @@
 		<div style="display: grid; grid-template-columns: 70% 20%;">
 			<div id="pages" style="width: 100%; padding: 10px"></div>
 			<div>
-				<button class="btn btn-info" onclick="up()">Up</button>
-				<button class="btn btn-info" onclick="down()">Down</button>
+				<button style="margin-bottom:5px; margin-top:5px" class="btn btn-info" onclick="up()"><i class="fas fa-chevron-up"></i></button>
+				<br/>
+				<button class="btn btn-info" onclick="down()"><i class="fas fa-chevron-down"></i></button>
 			</div>
 		</div>
 		<button class="btn btn-success" onclick="save()">Save</button>
