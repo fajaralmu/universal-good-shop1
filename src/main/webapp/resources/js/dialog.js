@@ -6,7 +6,7 @@ function confirmDialog(msg) {
 			ch0 : {
 				tagName : 'div',
 				className : 'modal-backdrop', 
-				style:{ 'background-color': 'rgba(166,166,166,0.5)' }
+				style:{ 'background-color': 'rgba(150,150,150,0.5)' }
 			},
 			ch1 : {
 				tagName : 'div',
@@ -34,7 +34,7 @@ function confirmDialog(msg) {
 						ch2 : {
 							tagName : 'div',
 							className : 'modal-body',
-							innerHTML : msg
+							innerHTML : '<i class="fas fa-exclamation-triangle"></i>&nbsp;' + msg
 						},
 						ch3 : {
 							tagName : 'div',
@@ -84,7 +84,7 @@ function infoDialog(msg) {
 			ch0 : {
 				tagName : 'div',
 				className : 'modal-backdrop', 
-				style:{ 'background-color': 'rgba(166,166,166,0.5)' }
+				style:{ 'background-color': 'rgba(150,150,150,0.5)' }
 			},
 			ch1 : {
 				tagName : 'div',
@@ -112,7 +112,7 @@ function infoDialog(msg) {
 						ch2 : {
 							tagName : 'div',
 							className : 'modal-body',
-							innerHTML : msg
+							innerHTML : '<i class="fa fa-info-circle"></i>&nbsp'+ msg
 						},
 						ch3 : {
 							tagName : 'div',

@@ -754,7 +754,7 @@ public enum FontAwesomeIcon {
 	VOLUME_DOWN("fa fa-volume-down"),
 	VOLUME_OFF("fa fa-volume-off"),
 	VOLUME_UP("fa fa-volume-up"),
-	WARNING("fa fa-warning"),
+	WARNING("fas fa-exclamation-triangle"),
 	WECHAT("fa fa-wechat"),
 	WEIBO("fa fa-weibo"),
 	WEIXIN("fa fa-weixin"),

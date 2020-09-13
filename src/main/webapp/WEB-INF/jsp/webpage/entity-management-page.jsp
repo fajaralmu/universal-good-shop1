@@ -939,7 +939,7 @@
 
 				console.log("FIELD ", field);
 				if (commonFieldRequired(field)) {
-					infoDialog("Field " + field.id + " must be filled! ").then(function(e){});
+					alert("Field " + field.id + " must be filled! ");
 					return;
 				}
 				//check if it is update or create operation
