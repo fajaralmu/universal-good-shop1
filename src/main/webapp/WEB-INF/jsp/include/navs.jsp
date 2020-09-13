@@ -28,7 +28,7 @@
 			<c:forEach var="pageItem" items="${pages}">
 				<div class="side-nav-item" id="${pageItem.code }">
 					<a class="nav-link side-link" href='#' page-code='${pageItem.code }' menupage="${pageItem.isMenuPage() }" location="<spring:url value="${pageItem.link }"/>">
-						<i class="${pageItem.getIconClass() }" aria-hidden="false"></i>${pageItem.name } 
+						<i class="${pageItem.getIconClass() }" aria-hidden="false"></i> ${pageItem.name } 
 					</a>
 				</div>
 

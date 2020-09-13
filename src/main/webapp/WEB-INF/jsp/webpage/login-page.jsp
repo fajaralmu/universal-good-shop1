@@ -27,14 +27,15 @@
 					infoDone();
 					var response = (xhr.data);
 					if (response != null && response.code == "00") {
-						alert("LOGIN SUCCESS");
-						const redirectLocation = xhr
-								.getResponseHeader("location");
-
-						if (redirectLocation != null) {
-							window.location.href = redirectLocation;
-						} else
-							window.location.href = "<spring:url value="/admin/home" />";
+						infoDialog("LOGIN SUCCESS").then(function(e){
+							const redirectLocation = xhr.getResponseHeader("location"); 
+							if (redirectLocation != null) {
+								window.location.href = redirectLocation;
+							} else{
+								window.location.href = "<spring:url value="/admin/home" />";
+							}
+						})
+						
 					} else {
 						alert("LOGIN FAILED");
 					}

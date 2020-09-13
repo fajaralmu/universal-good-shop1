@@ -27,6 +27,7 @@
 <script src="<c:url value="/res/js/websocket-util.js"></c:url >"></script>
 <script src="<c:url value="/res/js/ajax.js?v=1"></c:url >"></script>
 <script src="<c:url value="/res/js/util.js?v=1"></c:url >"></script>
+<script src="<c:url value="/res/js/dialog.js?v=1"></c:url >"></script>
 <script src="<c:url value="/res/js/strings.js?v=1"></c:url >"></script>
 <script src="<c:url value="/res/js/timeouts.js?v=1"></c:url >"></script>
 <script src="<c:url value="/res/fa/js/all.js?v=1"></c:url >"></script>

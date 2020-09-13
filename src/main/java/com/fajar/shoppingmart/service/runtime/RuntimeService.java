@@ -3,7 +3,6 @@ package com.fajar.shoppingmart.service.runtime;
 import static com.fajar.shoppingmart.util.SessionUtil.PAGE_REQUEST;
 
 import java.io.Serializable;
-import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;

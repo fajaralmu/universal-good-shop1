@@ -22,7 +22,6 @@ import com.fajar.shoppingmart.entity.ProductSales;
 import com.fajar.shoppingmart.entity.Supplier;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.repository.ProductRepository;
-import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.ProgressService;
 import com.fajar.shoppingmart.service.entity.EntityService;
@@ -53,8 +52,6 @@ public class ProductService {
 	private ProgressService progressService;
 	@Autowired
 	private ProductInventoryService productInventoryService;
-	@Autowired
-	private RepositoryCustomImpl repositoryCustomImpl;
 
 	@PostConstruct
 	public void init() {
@@ -69,6 +66,7 @@ public class ProductService {
 	 * @return
 	 */
 	public WebResponse getProductsCatalog(WebRequest request, String requestId) {
+		log.info("getProductsCatalog");
 
 		Map<String, Object> filter = request.getFilter().getFieldsFilter();
 
@@ -205,6 +203,7 @@ public class ProductService {
 	 * @return
 	 */
 	public WebResponse getProductSales(WebRequest request, String requestId) {
+		log.info("getProductSales");
 
 		WebResponse response = new WebResponse();
 		Filter filter = request.getFilter();
@@ -259,7 +258,8 @@ public class ProductService {
 	 * @return
 	 */
 	public WebResponse getMoreProductSupplier(WebRequest request) {
-
+		log.info("getMoreProductSupplier");
+		
 		try {
 			WebResponse response = new WebResponse();
 			Filter filter = request.getFilter();

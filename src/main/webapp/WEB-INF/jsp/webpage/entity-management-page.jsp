@@ -187,7 +187,7 @@
 		const selectedPage = byId("input-page").value - 1;
 
 		if (selectedPage < 0) {
-			alert("Invalid Page : " + selectedPage + "!!");
+			infoDialog("Invalid Page : " + selectedPage + "!!");
 			byId("input-page").value = 1;
 			return;
 		}
@@ -209,7 +209,7 @@
 
 					var entities = response.entities;
 					if (entities == null) {
-						alert("Server Error!");
+						infoDialog("Server Error!");
 						return;
 					}
 					totalData = response.totalData;
@@ -357,13 +357,17 @@
 		buttonEdit.className = "btn btn-warning";
 		const _idField = this.idField;
 		buttonEdit.onclick = function() {
-			alert("will Edit: " + entity[_idField]);
-			getById(entity[_idField], function(entity) {
-				populateForm(entity);
+			confirmDialog("will Edit: " + entity[_idField]).then(function(ok){
+				if(ok){
+					getById(entity[_idField], function(entity) {
+						populateForm(entity);
+					});
+				}
 			});
+			
 		}
 		/* row.onclick = function() {
-			alert("will Edit: " + entity[idField]);
+			infoDialog("will Edit: " + entity[idField]);
 			getById(entity[idField], function(entity) {
 				populateForm(entity);
 			});
@@ -377,11 +381,13 @@
 			const buttonDelete = createButton("delete_" + index, "<i class=\"fa fa-trash\"></i>");
 			buttonDelete.className = "btn btn-danger";
 			buttonDelete.onclick = function() {
-				if (!confirm("will Delete: " + entity[_idField])) {
-					return;
-				}
-				deleteEntity(entity[_idField]);
-			}
+				confirmDialog("will Delete: " + entity[_idField]+"?").then(function(ok){
+						if(ok){
+							deleteEntity(entity[_idField]);
+						}
+					});
+				} 
+			 
 			btnOptionGroup.append(buttonDelete);
 		}
 		return btnOptionGroup;
@@ -910,11 +916,19 @@
 			return field.getAttribute("identity") == "true"
 					&& field.value != "" && field.value != null;
 		}
+		
+		function submit(){
+			$("#modal-entity-form").modal('hide');
+			 confirmDialog("Are You Sure ?").then(function (ok){
+				 if(ok){
+					 _doSubmit();
+				 }else{}
+				 $("#modal-entity-form").modal('show');
+			 });
+		}
 
-		function submit() {
-			if (!confirm("Are You Sure ?")) {
-				return;
-			}
+		function _doSubmit() {
+			 
 			var requestObject = {};
 			var entity = {};
 			var endPoint = "add";
@@ -925,7 +939,7 @@
 
 				console.log("FIELD ", field);
 				if (commonFieldRequired(field)) {
-					alert("Field " + field.id + " must be filled! ");
+					infoDialog("Field " + field.id + " must be filled! ").then(function(e){});
 					return;
 				}
 				//check if it is update or create operation
