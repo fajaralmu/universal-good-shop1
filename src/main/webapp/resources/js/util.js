@@ -16,26 +16,11 @@ const loadingDiv = createDiv('loading-div','loading_div');
 function infoLoading() {
 	console.log("infoLoading..");
 	document.body.prepend(loadingDiv);
-	
-	loadingDiv.innerHTML = "";
-	const loadingText = createHtmlTag({
-		tagName:'div',
-		id:'loading-txt',
-		innerHTML:'Please Wait'
-	}); 
-	loadingDiv.style.zIndex = 6;
-	loadingDiv.appendChild(loadingText); 
-	const imagePath = ctxPath+"/res/img/loading-disk.gif";
-	const loadingImg = createHtmlTag({
-		tagName: "img",
-		src: imagePath,
-		style: {height: '70px', width: '70px'},
-		onload: function(){
-			loadingText.innerHTML = "";
-		}
-	}); 
-	
-	loadingDiv.appendChild(loadingImg);
+	loadingDiv.style.zIndex = 10;
+	loadingDiv.innerHTML = `<button class="btn btn-info">
+		  <span class="spinner-border spinner-border-sm"></span>
+		  Loading..
+		</button>`;
 }
 
 function infoDone() {
