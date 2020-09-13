@@ -13,7 +13,7 @@
 		var username = byId("user-name").value;
 		var password = byId("password").value;
 		var request = new XMLHttpRequest();
-		infoLoading();
+		loadingButton(); 
 		var requestObject = {
 			'user' : {
 				'username' : username,
@@ -24,7 +24,7 @@
 				"<spring:url value="/api/account/login" />",
 				requestObject,
 				function(xhr) {
-					infoDone();
+					loadingButtonDone();
 					var response = (xhr.data);
 					if (response != null && response.code == "00") {
 						infoDialog("LOGIN SUCCESS").then(function(e){
@@ -60,7 +60,7 @@
 					</div>
 					<input placeholder="password" id="password" type="password" class="form-control" />
 				</div>
-				<button class="btn btn-primary" onclick="login(); return false;">Login</button>
+				<button id="btn-login" class="btn btn-primary"  >Login</button>
 				<a role="button" class="btn btn-success"
 					href='<spring:url value="/account/register"></spring:url>'>Register</a>
 
@@ -68,3 +68,16 @@
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+	const loginBtn = byId("btn-login");
+	
+	function loadingButton(){
+		loginBtn.innerHTML = "<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>";
+	}
+	function loadingButtonDone(){
+		loginBtn.innerHTML = "Login";
+	}
+	loginBtn.onclick = function(e){
+		login();
+	}
+</script>

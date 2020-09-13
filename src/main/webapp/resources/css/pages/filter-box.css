@@ -14,6 +14,7 @@
 .btn-filter-toggle{
 	
 	transform: rotate(90deg);
+	width: max-content;
 }
 .content-dashboard{
 	padding: 20px;
