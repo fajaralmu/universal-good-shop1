@@ -217,7 +217,7 @@ public enum FontAwesomeIcon {
 	DROPBOX("fa fa-dropbox"),
 	DRUPAL("fa fa-drupal"),
 	EDGE("fa fa-edge"),
-	EDIT("fa fa-edit"),
+	EDIT("fas fa-edit"),
 	EERCAST("fa fa-eercast"),
 	EJECT("fa fa-eject"),
 	ELLIPSIS_H("fa fa-ellipsis-h"),
