@@ -221,28 +221,31 @@
 	}
 
 	function printExcel() {
-		const confirmed = confirm("Do you want to download excel file from row page "
-				+ this.page + "?");
-		if (!confirmed) {
-			return;
-		}
-
+		confirmDialog("Do you want to download excel file from row page "+ this.page + "?")
+			.then(function(confirmed){
+					if (confirmed) {
+						doPrintExcel();
+					}
+				});
+	
+	}
+			
+	function doPrintExcel(){
+		const app = this;
 		const requestObject = buildRequestObject(this.page);
-		const limit = prompt("input row count", this.limit);
-
-		if (limit == null) {
-			return;
-		}
-
-		requestObject.filter.limit = limit;
-
-		postReq("<spring:url value="/api/report/entity" />", requestObject,
-				function(xhr) {
-
-					downloadFileFromResponse(xhr);
-
-					infoDone();
-				}, true);
+		promptDialog("Please input count of record", "number").then(function(data){
+			if(data.ok){
+				const limit = data.value;
+				if (limit == null) { return; }
+				
+				requestObject.filter.limit = limit;
+				postReq("<spring:url value="/api/report/entity" />", requestObject,
+						function(xhr) { 
+							downloadFileFromResponse(xhr); 
+							infoDone();
+						}, true); 
+			}
+		})
 	}
 
 	function buildRequestObject(page) {
