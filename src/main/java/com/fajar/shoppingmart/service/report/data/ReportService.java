@@ -2,7 +2,6 @@ package com.fajar.shoppingmart.service.report.data;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +10,7 @@ import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.ProgressService;
 import com.fajar.shoppingmart.service.entity.EntityService;
 import com.fajar.shoppingmart.service.report.builder.BalanceReportBuilder;
+import com.fajar.shoppingmart.service.report.builder.CustomWorkbook;
 import com.fajar.shoppingmart.service.report.builder.DailyReportBuilder;
 import com.fajar.shoppingmart.service.report.builder.EntityReportService;
 import com.fajar.shoppingmart.service.report.builder.MonthlyReportBuilder;
@@ -37,7 +37,7 @@ public class ReportService {
 		progressService.sendProgress(1, 1, 20, true, httpRequest);
 	}
 
-	public XSSFWorkbook buildDailyReport(WebRequest request, HttpServletRequest httpRequest) {
+	public CustomWorkbook buildDailyReport(WebRequest request, HttpServletRequest httpRequest) {
 		log.info("buildDailyReport, request: {}", request);
 		
 		ReportData reportData = reportDataService.getDailyReportData(request, httpRequest);
@@ -47,11 +47,11 @@ public class ReportService {
 		
 		DailyReportBuilder reportBuilder = new DailyReportBuilder(reportData);
 		reportBuilder.setOnProgressCallback(onProgressCallback(httpRequest)); 
-		XSSFWorkbook file = reportBuilder.buildReport();
+		CustomWorkbook file = reportBuilder.buildReport();
 		return file;
 	}
 
-	public XSSFWorkbook buildMonthlyReport(WebRequest request, HttpServletRequest httpRequest) {
+	public CustomWorkbook buildMonthlyReport(WebRequest request, HttpServletRequest httpRequest) {
 		log.info("buildMonthlyReport, request: {}", request);
 		
 		ReportData reportData = reportDataService.getMonthlyReportData(request);
@@ -59,7 +59,7 @@ public class ReportService {
 		
 		MonthlyReportBuilder reportBuilder = new MonthlyReportBuilder(reportData, true);
 		reportBuilder.setOnProgressCallback(onProgressCallback(httpRequest));
-		XSSFWorkbook file = reportBuilder.buildReport();
+		CustomWorkbook file = reportBuilder.buildReport();
 		return file;
 	}
 	
@@ -75,17 +75,17 @@ public class ReportService {
 		};
 	}
 
-	public XSSFWorkbook generateEntityReport(WebRequest request, HttpServletRequest httpRequest) throws Exception {
+	public CustomWorkbook generateEntityReport(WebRequest request, HttpServletRequest httpRequest) throws Exception {
 		log.info("generateEntityReport, request: {}", request); 
 
 		WebResponse response = entityService.filter(request, null); 
 		initProgress(httpRequest);
 
-		XSSFWorkbook file = entityReportService.getEntityReport(response.getEntities(), response.getEntityClass(), httpRequest);
+		CustomWorkbook file = entityReportService.getEntityReport(response.getEntities(), response.getEntityClass(), httpRequest);
 		return file;
 	}
  
-	public XSSFWorkbook buildBalanceReport(WebRequest request, HttpServletRequest httpRequest) {
+	public CustomWorkbook buildBalanceReport(WebRequest request, HttpServletRequest httpRequest) {
 		log.info("buildBalanceReport, request: {}", request);
 		
 		ReportData reportData = balanceReportDataService.getBalanceReportData(request);
@@ -93,7 +93,7 @@ public class ReportService {
 		
 		BalanceReportBuilder reportBuilder = new BalanceReportBuilder( reportData);
 		reportBuilder.setOnProgressCallback(onProgressCallback(httpRequest));
-		XSSFWorkbook file = reportBuilder.buildReport();
+		CustomWorkbook file = reportBuilder.buildReport();
 		return file;
 	}
 

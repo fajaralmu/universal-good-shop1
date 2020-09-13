@@ -2,8 +2,6 @@ package com.fajar.shoppingmart.service.report.builder;
 
 import java.util.List;
 
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.setting.EntityProperty;
 import com.fajar.shoppingmart.service.report.data.ReportData;
@@ -29,7 +27,7 @@ public class EntityReportBuilder extends ReportBuilder {
 	}
 
 	@Override
-	public XSSFWorkbook buildReport() {
+	public CustomWorkbook buildReport() {
 
 		log.info("Writing entity report of: {}", entityProperty.getEntityName());
 
@@ -37,9 +35,9 @@ public class EntityReportBuilder extends ReportBuilder {
 		String sheetName = entityProperty.getEntityName();
 //		 webConfigService.getReportPath() + "/" 
 		String reportName = sheetName + "_" + time + "_" + requestId + ".xlsx";
-		XSSFWorkbook xwb = new XSSFWorkbook();
+		CustomWorkbook xwb = new CustomWorkbook();
 		xsheet = xwb.createSheet(sheetName);
-
+		xwb.setFileName(reportName);
 		createEntityTable();
 
 		sendProgress(1, 1, 10);

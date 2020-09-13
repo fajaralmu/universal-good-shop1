@@ -170,7 +170,7 @@ public class BalanceReportBuilder extends ReportBuilder {
 	}
 
 	@Override
-	public XSSFWorkbook buildReport() {
+	public CustomWorkbook buildReport() {
 
 		Filter filter = reportData.getFilter();
 		String time = getDateTime();
@@ -180,9 +180,10 @@ public class BalanceReportBuilder extends ReportBuilder {
 		setThisYearCashflow(reportData.getMonthyReportContent().get(filter.getYear()));
 
 		String reportName = /* webConfigService.getReportPath() + "/" + */ sheetName + "_" + time + ".xlsx";
-		XSSFWorkbook xwb = new XSSFWorkbook();
+		CustomWorkbook xwb = new CustomWorkbook();
 		xsheet = xwb.createSheet(sheetName);
-
+		xwb.setFileName(reportName);
+		
 		writeBalanceReport(reportData);
 
 //		File file = MyFileUtil.getFile(xwb, reportName);

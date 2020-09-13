@@ -55,15 +55,16 @@ public class MonthlyReportBuilder extends ReportBuilder{
 	 * @return
 	 */
 	@Override
-	public XSSFWorkbook buildReport() {
+	public CustomWorkbook buildReport() {
 		Filter filter = reportData.getFilter();
 		String time = getDateTime();
 		String sheetName = "Monthly-" + filter.getYear();
 
 		String reportName = /* webConfigService.getReportPath() + "/" + */ sheetName + "_" + time + ".xlsx";
-		XSSFWorkbook xwb = new XSSFWorkbook();
+		CustomWorkbook xwb = new CustomWorkbook();
 		xsheet = xwb.createSheet(sheetName);
-
+		xwb.setFileName(reportName);
+		
 		writeMonthlyReport(reportData, reportName);
 
 //		File file = MyFileUtil.getFile(xwb, reportName);

@@ -56,7 +56,7 @@ public abstract class ReportBuilder {
 		progressService.sendProgress(taskProportion, taskSize, totalTaskProportion, false, reportData.getRequestId());
 	}
 
-	public abstract XSSFWorkbook buildReport();
+	public abstract CustomWorkbook buildReport();
 	
 	public void setOnProgressCallback(OnProgress callback)
 	{

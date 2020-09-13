@@ -8,7 +8,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -21,6 +20,7 @@ import com.fajar.shoppingmart.annotation.Authenticated;
 import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.service.LogProxyFactory;
+import com.fajar.shoppingmart.service.report.builder.CustomWorkbook;
 import com.fajar.shoppingmart.service.report.data.ReportService;
 import com.fajar.shoppingmart.util.StringUtil;
 
@@ -51,9 +51,9 @@ public class RestReportController {
 			HttpServletResponse httpResponse) throws Exception {
 		log.info("daily report {}", request); 
 		  
-		XSSFWorkbook result = reportService.buildDailyReport(request, httpRequest) ;
+		CustomWorkbook result = reportService.buildDailyReport(request, httpRequest) ;
 
-		writeXSSFWorkbook(httpResponse, result, "DAILY_"+StringUtil.generateRandomNumber(4)+".xlsx");
+		writeXSSFWorkbook(httpResponse, result);
 	}
 	 
 	
@@ -63,9 +63,9 @@ public class RestReportController {
 			HttpServletResponse httpResponse) throws Exception {
 		log.info("monthly report {}", request); 
 		
-		XSSFWorkbook result = reportService.buildMonthlyReport(request, httpRequest);
+		CustomWorkbook result = reportService.buildMonthlyReport(request, httpRequest);
 		
-		writeXSSFWorkbook(httpResponse, result , "MONTHLY_"+StringUtil.generateRandomNumber(4)+".xlsx");
+		writeXSSFWorkbook(httpResponse, result);
  
 	}
 	@PostMapping(value = "/entity", consumes = MediaType.APPLICATION_JSON_VALUE )
@@ -74,9 +74,9 @@ public class RestReportController {
 			HttpServletResponse httpResponse) throws Exception {
 		log.info("entityreport {}", request); 
 		
-		XSSFWorkbook result = reportService.generateEntityReport(request, httpRequest);
+		CustomWorkbook result = reportService.generateEntityReport(request, httpRequest);
 		
-		writeXSSFWorkbook(httpResponse, result , request.getEntity()+"_"+StringUtil.generateRandomNumber(4)+".xlsx");
+		writeXSSFWorkbook(httpResponse, result);
 	}
 	@PostMapping(value = "/balance1", consumes = MediaType.APPLICATION_JSON_VALUE )
 	@CustomRequestInfo(withRealtimeProgress = true)
@@ -84,17 +84,17 @@ public class RestReportController {
 			HttpServletResponse httpResponse) throws Exception {
 		log.info("balance work sheet {}", request); 
 		
-		XSSFWorkbook result = reportService.buildBalanceReport(request, httpRequest);
+		CustomWorkbook result = reportService.buildBalanceReport(request, httpRequest);
 		
-		writeXSSFWorkbook(httpResponse, result, "balance1_"+StringUtil.generateRandomNumber(4)+".xlsx");
+		writeXSSFWorkbook(httpResponse, result );
 	}
 	 
 	///////////////////Writer//////////////////
 	
 	
-	public static void writeXSSFWorkbook(HttpServletResponse httpResponse, XSSFWorkbook xwb, String name) throws Exception{
+	public static void writeXSSFWorkbook(HttpServletResponse httpResponse, CustomWorkbook xwb ) throws Exception{
 		httpResponse.setContentType("text/xls");
-		httpResponse.setHeader("Content-disposition", "attachment;filename=" + name);
+		httpResponse.setHeader("Content-disposition", "attachment;filename=" + xwb.getFileName());
 
 		try (OutputStream outputStream = httpResponse.getOutputStream()) {
 			xwb.write(outputStream);

@@ -38,16 +38,16 @@ public class DailyReportBuilder extends ReportBuilder{
 	 * @return
 	 */
 	 @Override
-	public XSSFWorkbook buildReport () {
+	public CustomWorkbook buildReport () {
 
 		Filter filter = reportData.getFilter();
 		String time = getDateTime();
 		String sheetName = "Daily-"+filter.getMonth()+"-"+filter.getYear();
 		
 		String reportName = /* webConfigService.getReportPath() + "/" + */ sheetName + "_"+ time+ ".xlsx";
-		XSSFWorkbook xwb  = new XSSFWorkbook();
+		CustomWorkbook xwb  = new CustomWorkbook();
 		xsheet = xwb.createSheet(sheetName ); 
-		
+		xwb.setFileName(reportName);
 		writeDailyReportOneMonth( reportData);
 		
 //		File file = MyFileUtil.getFile(xwb, reportName);

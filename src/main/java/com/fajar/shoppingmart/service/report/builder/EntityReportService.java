@@ -26,7 +26,7 @@ public class EntityReportService {
 	private ProgressService progressService;
 	
 
-	public XSSFWorkbook getEntityReport(List<BaseEntity> entities, Class<? extends BaseEntity> entityClass,
+	public CustomWorkbook getEntityReport(List<BaseEntity> entities, Class<? extends BaseEntity> entityClass,
 			HttpServletRequest httpRequest) throws Exception {
 		log.info("Generate entity report: {}", entityClass); 
 		User currentUser = SessionUtil.getUserFromRequest(httpRequest); 
@@ -40,7 +40,7 @@ public class EntityReportService {
 		
 		progressService.sendProgress(1, 1, 10, false, httpRequest);
 
-		XSSFWorkbook file = reportBuilder.buildReport(); 
+		CustomWorkbook file = reportBuilder.buildReport(); 
 		
 		log.info("Entity Report generated");
 
