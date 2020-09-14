@@ -49,6 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 public class WebConfigService {
 
 	public static final String DEFAULT_ROLE = "00";
+	public static final String DEFAULT_SUPER_ADMIN_ROLE = "SYSTEM";
 	public static final String SETTING = "setting";
 	public static final String MENU = "menu";
 	public static final String PAGE = "page";
@@ -76,17 +77,21 @@ public class WebConfigService {
 	private String appCode;
 	private String DEFAULT_USER_NAME;
 	private String DEFAULT_USER_PWD;
+	private String DEFAULT_SUPER_ADMIN_USER_NAME;
+	private String DEFAULT_SUPER_ADMIN_USER_PWD;
 
 	private Menu defaultMenuManagementMenu, defaultPageManagementMenu;
 	private Page defaultSettingPage, defaultManagementPage, defaultAdminPage, defaultAboutPage;
 	private User defaultUser;
 	private UserRole defaultUserRole;
+	private UserRole defaultSuperAdminUserRole;
 	private Profile defaultProfile;
 	/////////////////////////////////////////////////////////////
 
 	private List<JpaRepository<?, ?>> jpaRepositories = new ArrayList<>();
 	private List<Type> entityClassess = new ArrayList<>();
 	private Map<Class<? extends BaseEntity>, JpaRepository> repositoryMap = new HashMap<>();
+	private User defaultSuperAdminUser;
 
 	@PostConstruct
 	public void init() {
@@ -96,6 +101,7 @@ public class WebConfigService {
 
 		getJpaReporitoriesBean();
 		checkUser();
+		checkSuperAdminUser();
 		checkDefaultProfile();
 		checkDefaultPages();
 	}
@@ -108,6 +114,18 @@ public class WebConfigService {
 
 	private Page defaultAboutPage() {
 		return getPage(ABOUT, defaultAboutPage);
+	}
+	
+	private void checkSuperAdminUser() {
+		UserRole userRole = userRoleRepository.findByCode(DEFAULT_SUPER_ADMIN_ROLE);
+		if (null == userRole) {
+			userRole = defaultSuperAdminRole();
+		}
+		log.debug("DEFAULT_SUPER_ADMIN_USER_NAME: {}", DEFAULT_SUPER_ADMIN_USER_NAME);
+		User user = userRepository.findByUsername(DEFAULT_SUPER_ADMIN_USER_NAME);
+		if (null == user) {
+			user = defaultSuperAdminUser();
+		}
 	}
 
 	private void checkUser() {
@@ -131,6 +149,18 @@ public class WebConfigService {
 
 		return userRepository.save(user);
 	}
+	private User defaultSuperAdminUser() {
+		log.debug("DEFAULT_SUPER_ADMIN_USER_NAME: {}", DEFAULT_SUPER_ADMIN_USER_NAME);
+		
+		User user = userRepository.findByUsername(DEFAULT_SUPER_ADMIN_USER_NAME);
+		if (null != user) {
+			return user;
+		}
+		user = defaultSuperAdminUser;
+		user.setRole(defaultSuperAdminRole());
+
+		return userRepository.save(user);
+	}
 
 	public UserRole defaultRole() {
 		UserRole userRole = userRoleRepository.findByCode(DEFAULT_ROLE);
@@ -138,6 +168,15 @@ public class WebConfigService {
 			return userRole;
 		}
 		userRole = defaultUserRole;
+
+		return userRoleRepository.save(userRole);
+	}
+	public UserRole defaultSuperAdminRole() {
+		UserRole userRole = userRoleRepository.findByCode(DEFAULT_SUPER_ADMIN_ROLE);
+		if (null != userRole) {
+			return userRole;
+		}
+		userRole = defaultSuperAdminUserRole;
 
 		return userRoleRepository.save(userRole);
 	}
