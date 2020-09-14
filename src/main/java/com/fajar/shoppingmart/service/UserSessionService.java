@@ -78,7 +78,7 @@ public class UserSessionService {
 
 	public boolean hasSession(HttpServletRequest request, boolean setRequestURI) {
 		
-		if (setRequestURI && saveRequestUri(request)) { 
+		if (setRequestURI && isSaveRequestUri(request)) { 
 			SessionUtil.setSessionRequestUri(request);
 		}
 
@@ -116,7 +116,7 @@ public class UserSessionService {
 		}
 	}
 
-	private boolean saveRequestUri(HttpServletRequest request) {
+	private boolean isSaveRequestUri(HttpServletRequest request) {
 		 
 		return request.getMethod().toLowerCase().equals("get")
 				&& request.getRequestURI().contains("login") == false;
@@ -132,17 +132,15 @@ public class UserSessionService {
 		}
 	}
 
-	public User addUserSession(final User dbUser, HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+	public User addUserSession(User dbUser, HttpServletRequest httpRequest, HttpServletResponse httpResponse)
 			throws Exception {
 
 		try {
 
 			String loginKey = generateLoginKey();
-			dbUser.setLoginKey(loginKey);
-			dbUser.setPassword(null);
+			dbUser.setLoginKeyAndPasswordNull(loginKey); 
 
-			UserSessionModel sessionModel = new UserSessionModel(dbUser, generateUserToken());
-			boolean sessionIsSet = runtimeService.set(loginKey, sessionModel);
+			boolean sessionIsSet = setNewUserSessionModel(dbUser);  
 
 			if (!sessionIsSet) {
 				throw new RuntimeException("Error saving session");
@@ -152,33 +150,35 @@ public class UserSessionService {
 			SessionUtil.setAccessControlExposeHeader(httpResponse);
 			SessionUtil.setSessionUser(httpRequest, dbUser);
 
-			log.info(" > > > SUCCESS LOGIN :");
+			log.info("success login");
 
 			return dbUser;
 		} catch (Exception e) {
 
 			e.printStackTrace();
-			log.info(" < < < FAILED LOGIN");
+			log.error("failed login");
 			throw new IllegalAccessException("Login Failed");
 		}
 	}
 
-	
+
+	private boolean setNewUserSessionModel(User dbUser) {
+		UserSessionModel sessionModel = new UserSessionModel(dbUser, generateUserToken()); 
+		return runtimeService.set(dbUser.getLoginKey(), sessionModel); 
+	}
 
 	public boolean logout(HttpServletRequest request) {
 
 		try {
 			invalidateSessionUser(request);
-			log.info(" > > > > > SUCCESS LOGOUT");
+			log.info("success logout");
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			log.info(" < < < < < FAILED LOGOUT");
+			log.info("failed logout");
 			return false;
 		}
 	}
-
-	
  
 	/**
 	 * get logged user from httpSession or runtime
@@ -405,22 +405,7 @@ public class UserSessionService {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	public void setActivePage(HttpServletRequest request, String pageCode) {
-		if (null == pageCode) {
-			log.info("will not setActivePage, pageCode IS NULL");
-			return;
-		}
-		log.info("setActivePage: {}", pageCode);
-		try {
-			SessionUtil.setSessionPageCode(request, pageCode);
-			log.info("pageCode: {}", request.getSession().getAttribute("page-code"));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
+	} 
  
 	public User getUserByUsernameAndPassword(WebRequest request) {
 		User requestUser = request.getUser();

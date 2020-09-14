@@ -55,5 +55,10 @@ public class User extends BaseEntity {
 	@Transient
 	@JsonIgnore
 	private String requestId;
+	
+	public void setLoginKeyAndPasswordNull(String loginKey) {
+		this.loginKey = loginKey;
+		this.password = null;
+	}
 
 }

@@ -163,17 +163,6 @@ public class BaseController {
 		return userSessionService.getPageCode(request);
 	}
 
-	public void setActivePage(HttpServletRequest request) {
-
-		String pageCode = componentService.getPageCode(request);
-		userSessionService.setActivePage(request, pageCode);
-	}
-
-	public void setActivePage(HttpServletRequest request, String pageCode) {
-
-		userSessionService.setActivePage(request, pageCode);
-	}
-
 	/**
 	 * ====================================================== Statics
 	 * ======================================================

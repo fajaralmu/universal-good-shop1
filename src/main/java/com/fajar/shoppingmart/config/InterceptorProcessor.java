@@ -124,16 +124,9 @@ public class InterceptorProcessor {
 				progressService.init(SessionUtil.getPageRequestId(request));
 			}
 		}
-
-		this.setActivePage(request);
+ 
 		return true;
-	}
-
-	private void setActivePage(HttpServletRequest httpServletRequest) { 
-		String pageCode = componentService.getPageCode(httpServletRequest);
-		userSessionService.setActivePage(httpServletRequest, pageCode);
-	}
-
+	} 
 	public static void main(String[] args) throws Exception {
 
 	}
