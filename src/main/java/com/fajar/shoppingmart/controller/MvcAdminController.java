@@ -56,8 +56,7 @@ public class MvcAdminController extends BaseController {
 	@CustomRequestInfo(title = "Dashboard", pageUrl = "webpage/dashboard-page", stylePaths = { "dashboard", "filter-box" })
 	public String menuDashboard(Model model, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-		Calendar cal = Calendar.getInstance();
-		setActivePage(request);
+		Calendar cal = Calendar.getInstance(); 
 
 		model.addAttribute("menus", componentService.getDashboardMenus(request));
 		model.addAttribute("imagePath", webAppConfiguration.getUploadedImagePath());
@@ -201,8 +200,7 @@ public class MvcAdminController extends BaseController {
 		model.addAttribute("displayField", "name");
 		model.addAttribute("entityName", "page");
 		model.addAttribute("withAdditionalSetting", true);
-		model.addAttribute("resetSequenceLink", "/account/websetting?action=resetmenu");
-		setActivePage(request, "admin");
+		model.addAttribute("resetSequenceLink", "/account/websetting?action=resetmenu"); 
 		return basePage;
 
 	}

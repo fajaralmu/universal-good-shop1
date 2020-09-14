@@ -42,9 +42,7 @@ public class MvcAccountController extends BaseController {
 	public String login(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if (userSessionService.hasSession(request, false)) {
 			response.sendRedirect(request.getContextPath() + "/admin/home");
-		}
-		
-		setActivePage(request );
+		} 
 
 		model.addAttribute("page", "login");
 		return basePage;

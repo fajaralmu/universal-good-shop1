@@ -65,8 +65,7 @@ public class MvcManagementController extends BaseController {
 		try {
 
 			BindingAwareModelMap modelImpl = (BindingAwareModelMap) model;
-			String pageCode = modelImpl.get(SessionUtil.PAGE_CODE).toString();
-			setActivePage(request, pageCode);
+			String pageCode = modelImpl.get(SessionUtil.PAGE_CODE).toString(); 
 
 			log.info("Management Page Code: {}", request.getSession().getAttribute(SessionUtil.PAGE_CODE));
 		} catch (Exception e) {

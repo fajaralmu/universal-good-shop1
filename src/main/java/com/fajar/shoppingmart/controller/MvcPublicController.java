@@ -64,9 +64,7 @@ public class MvcPublicController extends BaseController{
 	
 	@RequestMapping(value = { "/public/about" })
 	@CustomRequestInfo(title="About Us", pageUrl = "webpage/about-page")
-	public String about(  Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-		
-		setActivePage(request );
+	public String about(  Model model, HttpServletRequest request, HttpServletResponse response) throws IOException { 
 
 		model.addAttribute("page", "about"); 
 		return basePage;

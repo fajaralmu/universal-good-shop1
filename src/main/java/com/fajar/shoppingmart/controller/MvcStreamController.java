@@ -54,8 +54,7 @@ public class MvcStreamController extends BaseController {
 		try {
 			partnerInfo = streamingService.getPartnerInfo(partnerId); 
 			
-			streamingService.setActive(request);
-			setActivePage(request );
+			streamingService.setActive(request); 
 			model.addAttribute("partnerId", partnerId);
 			model.addAttribute("title", "Video Call");
 			model.addAttribute("partnerInfo", partnerInfo);
