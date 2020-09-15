@@ -2,6 +2,7 @@ package com.fajar.shoppingmart.service.runtime;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -15,8 +16,10 @@ public class TempSessionService   {
  
 	private final FlatFileAccessor flatFileAccessor;
 	private ObjectMapper objectMapper = new ObjectMapper();
+	private final String applicationId;
 	
 	public TempSessionService(FlatFileAccessor fileAccessor) {
+		this.applicationId = RandomStringUtils.randomAlphabetic(7);
 		this.flatFileAccessor = fileAccessor;
 		objectMapper.disable(MapperFeature.USE_ANNOTATIONS);
 		objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
@@ -25,7 +28,7 @@ public class TempSessionService   {
 	
 	public <T> T get(String key, Class<T> _class) throws Exception {
 		 
-		String json = flatFileAccessor.getLineContent(_class.getSimpleName()+"_"+key);
+		String json = flatFileAccessor.getLineContent(prefix(_class)+key);
 		log.debug("TempSessionService get JSON: {}", json);
 		if(null == json) {
 			return null;
@@ -36,12 +39,17 @@ public class TempSessionService   {
 	public void put(String key, Serializable data) throws  Exception {
 		 
 		String json = objectMapper.writeValueAsString(data);
-		flatFileAccessor.putKeyValue(data.getClass().getSimpleName()+"_"+key, json);
+		log.debug("TempSessionService set JSON: {}", json);
+		flatFileAccessor.putKeyValue(prefix(data.getClass())+key, json);
 	}
 
 	public void remove(String key, Class<?> _class) throws Exception {
 		 
-		flatFileAccessor.removeLineWithKey(_class.getSimpleName()+"_"+key);
+		flatFileAccessor.removeLineWithKey(prefix(_class)+key);
+	}
+	
+	private String prefix(Class<?> _class) {
+		return applicationId+"_"+_class.getSimpleName()+"_";
 	}
 	
 	 
