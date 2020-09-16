@@ -58,10 +58,12 @@ function createListItemPrice(entity) {
 		tagName : 'li',
 		id : id,
 		className : className,
-
-		ch1 : {
-			tagName : 'span',
-			className : 'badge badge-warning',
+		ch1: {
+			tagName: 'span', 
+			className: 'fas fa-tags'
+		},
+		ch2 : {
+			tagName : 'span', 
 			id : "product-price-" + entity.id,
 			innerHTML : beautifyNominal(entity.price)
 		}
