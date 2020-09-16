@@ -88,7 +88,7 @@
 	
 	function createOptionCell(entity, i){
 		const optionCell = createCell("");
-		const button = createButton("delete-" + i, "Delete");
+		const button = createButton("delete-" + i, "<i class=\"fas fa-trash\"></i>");
 		button.setAttribute("class", "btn btn-danger btn-sm");
 		button.onclick = function(e) {
 			if (!confirm("Invalidate Session: " + entity.requestId + "?")) {
@@ -167,7 +167,7 @@
 			let tableMsg = createTableFromRows(rows, "chat-msg-"
 					+ response.code);
 			let rowReply = createRow("<td colspan=\"2\"><input  class=\"form-control\" type=\"text\" id=\"reply-msg"+response.code+"\" placeholder=\"reply\" />"
-					+ "<button class=\"btn btn-success\" id=\"do-reply-msg"+response.code+"\" >Reply</button></td>");
+					+ "<button class=\"btn btn-success\" id=\"do-reply-msg"+response.code+"\" ><i class=\"fas fa-paper-plane\"></i></button></td>");
 
 			tableMsg.style.tableLayout = "fixed";
 			tableMsg.style.width = "100%";
@@ -193,15 +193,18 @@
 	}
 
 	function connectWesocket() {
-		connectToWebsocket(null, function(response) {
-			console.log("Response connectWesocket: ", response);
-			populateTable(response.entities);
-
-		}, function(response) {
+		
+		addWebsocketRequest('/wsResp/messages', function(
+				response) {
 			console.log("Response connectWesocket updateMessage: ", response);
 			updateMessage(response);
-
-		}, null);
+		});
+		addWebsocketRequest('/wsResp/sessions', function(
+				response) {
+			console.log("Response connectWesocket updateMessage: ", response);
+			populateTable(response.entities);
+		});
+		 
 	}
 
 	getAppSessions();

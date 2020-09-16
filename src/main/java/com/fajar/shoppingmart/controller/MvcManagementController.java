@@ -181,16 +181,8 @@ public class MvcManagementController extends BaseController {
 
 	@RequestMapping(value = { "/appsession" })
 	@CustomRequestInfo(title = "Apps Sessions", pageUrl = "webpage/app-session")
-	public String appsession(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/menu");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR_404_PAGE;
-		}
-
-		model.addAttribute("page", "management");
+	public String appsession(Model model, HttpServletRequest request, HttpServletResponse response)  { 
+		 
 		return basePage;
 	}
 
