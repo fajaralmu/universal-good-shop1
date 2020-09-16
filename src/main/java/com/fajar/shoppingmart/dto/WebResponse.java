@@ -9,6 +9,7 @@ import java.util.Map;
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.ProductFlowStock;
+import com.fajar.shoppingmart.entity.Profile;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.custom.CashFlow;
@@ -55,6 +56,7 @@ public class WebResponse implements Serializable {
 	private String requestId;
 	private int[] transactionYears;
 	private SessionData sessionData;
+	private Profile applicationProfile;
 	@JsonIgnore
 	private Class<? extends BaseEntity> entityClass;
 	private String imageData;
@@ -66,6 +68,7 @@ public class WebResponse implements Serializable {
 	private Map<String, CashFlow> dailyCashflow;
 	
 	private boolean success;
+	private boolean loggedIn;
 	
 	public static WebResponse failedResponse() {
 		return new WebResponse("01","INVALID REQUEST");

@@ -45,6 +45,8 @@ public class UserSessionService {
 	private RealtimeService2 realtimeService; 
 	@Autowired
 	private RuntimeService runtimeService;
+	@Autowired
+	private WebConfigService webConfigService;
 
 	@PostConstruct
 	public void init() {
@@ -204,8 +206,11 @@ public class UserSessionService {
 		User user = getLoggedUser(request);
 		removeUserFromRuntime(user);
 		SessionUtil.removeSessionUserAndInvalidate(request);
-		runtimeService.updateSessionId(getJSessionIDCookie(request).getValue(), getPageRequestId(request));
-
+		try {
+			runtimeService.updateSessionId(getJSessionIDCookie(request).getValue(), getPageRequestId(request));
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
  
 	public String getTokenByServletRequest(HttpServletRequest httpRequest) {
@@ -270,6 +275,7 @@ public class UserSessionService {
 	public WebResponse generateRequestId(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
 		log.info("generateRequestId... ");
 		String requestId;
+		WebResponse response = new WebResponse();
 
 		if (validatePageRequest(servletRequest)) {
 			requestId = SessionUtil.getPageRequestId(servletRequest);// servletRequest.getHeader(RuntimeService.PAGE_REQUEST_ID);
@@ -291,8 +297,23 @@ public class UserSessionService {
 
 		log.info("NEW Session Data Created: {}", (SessionData) getSessionData());
 		realtimeService.sendUpdateSession(getAvailableSessions());
-
-		return WebResponse.builder().code("00").message(requestId).build();
+		
+		///////////
+		try {
+			String loginKey = SessionUtil.getLoginKey(servletRequest);
+			UserSessionModel userSessionModel = getUserSessionModel(loginKey); 
+			if (null != userSessionModel) {
+				 
+				response.setSessionData(SessionData.builder().user(userSessionModel.getUser()).build());
+				response.setLoggedIn(true);
+			}  
+		 }catch (Exception e) {
+			// TODO: handle exception
+		}
+		/////////
+		response.setMessage(requestId);
+		response.setApplicationProfile(webConfigService.getProfile());
+		return response;
 	}
 
 	 

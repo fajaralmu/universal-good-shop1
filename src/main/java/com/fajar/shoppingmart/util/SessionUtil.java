@@ -149,6 +149,9 @@ public class SessionUtil {
 	}
 
 	public static void setUserInRequest(HttpServletRequest request, User authenticatedUser) {
+		if(null == authenticatedUser) {
+			return;
+		}
 		String requestId = getPageRequestId(request);
 		authenticatedUser.setRequestId(requestId);
 		request.setAttribute(ATTR_USER, authenticatedUser);

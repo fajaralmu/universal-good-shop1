@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fajar.shoppingmart.entity.RegisteredRequest;
+import com.fajar.shoppingmart.entity.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,7 @@ public class SessionData implements Serializable{
 	private static final long serialVersionUID = -1210492423406561769L;
 	private Map<String, RegisteredRequest> registeredApps;
 	public static final String ATTR_REQUEST_URI = "requestURI";
+	private User user;
 	
 	public void addNewApp(RegisteredRequest registeredRequest) {
 		if(registeredApps == null) {
