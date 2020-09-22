@@ -73,8 +73,8 @@ public class RestAccountController extends BaseController {
 	@PostMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Authenticated
 	public User user(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
-
-		return getLoggedUser(httpRequest);
+		return userSessionService.getLoggedUser(httpRequest);
+//		return getLoggedUser(httpRequest);
 	}
 
 }
