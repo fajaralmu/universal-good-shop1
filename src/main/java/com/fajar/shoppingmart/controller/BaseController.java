@@ -35,6 +35,7 @@ import com.fajar.shoppingmart.service.transaction.ProductService;
 import com.fajar.shoppingmart.service.transaction.TransactionService;
 import com.fajar.shoppingmart.util.DateUtil;
 import com.fajar.shoppingmart.util.MvcUtil;
+import com.fajar.shoppingmart.util.NetworkUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -87,34 +88,9 @@ public class BaseController {
 			return null;
 	}
 
-	@ModelAttribute("ipv4Adrress")
-	public String ipv4Adrress(HttpServletRequest request) {
-		String ip = "127.0.0.1";
-		try {
-			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-			while (interfaces.hasMoreElements()) {
-				NetworkInterface iface = interfaces.nextElement();
-				// filters out 127.0.0.1 and inactive interfaces
-				if (iface.isLoopback() || !iface.isUp())
-					continue;
-
-				Enumeration<InetAddress> addresses = iface.getInetAddresses();
-				while (addresses.hasMoreElements()) {
-					InetAddress addr = addresses.nextElement();
-
-					// *EDIT*
-					if (addr instanceof Inet4Address == false)
-						continue;
-					if (addr.getHostAddress().startsWith("192.168")) {
-						ip = addr.getHostAddress();
-					}
-				}
-			}
-		} catch (SocketException e) {
-//		    throw new RuntimeException(e);
-
-		}
-		return ip;
+	@ModelAttribute("ipv4Address")
+	public String getIpv4Address(HttpServletRequest request) {
+		return NetworkUtil.getIpv4Address();
 	}
 
 	@ModelAttribute("pageIconUrl")

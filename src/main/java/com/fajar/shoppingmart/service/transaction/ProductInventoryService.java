@@ -394,6 +394,11 @@ public class ProductInventoryService {
 		return savedProductFlows;
 	}
 
+	public void refreshSessions() {
+		repositoryCustom.refresh();
+		
+	}
+
 	
 
 }

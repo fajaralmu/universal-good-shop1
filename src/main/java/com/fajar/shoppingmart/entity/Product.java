@@ -17,10 +17,13 @@ import com.fajar.shoppingmart.dto.FieldType;
 import com.fajar.shoppingmart.dto.FormInputColumn;
 import com.fajar.shoppingmart.service.entity.ProductUpdateService;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @Dto(formInputColumn = FormInputColumn.ONE_COLUMN, updateService =  ProductUpdateService.class)
 @Entity
@@ -29,6 +32,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Slf4j
 public class Product extends BaseEntity {
 
 	/**
@@ -69,8 +73,14 @@ public class Product extends BaseEntity {
 	@Transient
 	private boolean newProduct;
 	@Transient
+	@Setter(value = AccessLevel.NONE)
 	private int count;
 	@Transient
 	private List<Supplier> suppliers;
+	
+	public void setCount(int count) {
+		log.debug(this.name+" Count: "+ count);
+		this.count = count;
+	}
 
 }

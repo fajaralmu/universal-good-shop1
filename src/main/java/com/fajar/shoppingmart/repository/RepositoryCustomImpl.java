@@ -326,7 +326,7 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 			if (isTransactionNotKept()) {
 				currentTransaction = null;
 			}
-			hibernateSession.clear();
+			this.refresh();
 		}
 		return null;
 	}

@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,14 +69,17 @@ public class ProductService {
 	public WebResponse getProductsCatalog(WebRequest request, String requestId) {
 		log.info("getProductsCatalog");
 
-		Map<String, Object> filter = request.getFilter().getFieldsFilter();
+		Map<String, Object> fieldsFilter = request.getFilter().getFieldsFilter();
+		Filter filter = SerializationUtils.clone(request.getFilter());
 
-		boolean withStock = (filter.get(OPTION_WITH_STOCK) != null
-				&& (Boolean.valueOf(filter.get(OPTION_WITH_STOCK).toString())).equals(true));
-		boolean withSupplier = (filter.get(OPTION_WITH_SUPPLIER) != null
-				&& (Boolean.valueOf(filter.get(OPTION_WITH_SUPPLIER).toString())).equals(true));
-		boolean withNewInfo = (filter.get(OPTION_WITH_NEW_INFO) != null
-				&& (Boolean.valueOf(filter.get(OPTION_WITH_NEW_INFO).toString())).equals(true));
+		boolean withStock = (fieldsFilter.get(OPTION_WITH_STOCK) != null
+				&& (Boolean.valueOf(fieldsFilter.get(OPTION_WITH_STOCK).toString())).equals(true));
+		boolean withSupplier = (fieldsFilter.get(OPTION_WITH_SUPPLIER) != null
+				&& (Boolean.valueOf(fieldsFilter.get(OPTION_WITH_SUPPLIER).toString())).equals(true));
+		boolean withNewInfo = (fieldsFilter.get(OPTION_WITH_NEW_INFO) != null
+				&& (Boolean.valueOf(fieldsFilter.get(OPTION_WITH_NEW_INFO).toString())).equals(true));
+
+		log.info("withStock: {}, withSupplier: {}, withNewInfo: {}", withStock, withSupplier, withNewInfo);
 
 		request.getFilter().getFieldsFilter().remove(OPTION_WITH_STOCK);
 
@@ -83,8 +87,7 @@ public class ProductService {
 
 		progressService.sendProgress(1, 1, 20.0, true, requestId);
 
-		if (filteredProducts == null || filteredProducts.getEntities() == null
-				|| filteredProducts.getEntities().size() == 0) {
+		if (filteredProducts == null || filteredProducts.getEntities() == null || filteredProducts.getEntities().size() == 0) {
 			return new WebResponse("01", "Data Not Found");
 		}
 
@@ -96,7 +99,7 @@ public class ProductService {
 			if (withNewInfo) {
 				product.setNewProduct(isNewProduct(product.getId()));
 			}
-			if (true || withStock) {
+			if (withStock) {
 				int remaining = productInventoryService.getProductInventory(product);
 				product.setCount(remaining);
 			}
@@ -104,16 +107,17 @@ public class ProductService {
 				List<Supplier> suppliers = transactionService.getProductSupplier(product.getId(), 5, 0);
 				product.setSuppliers(suppliers);
 			}
+//			log.debug("Product {} count {}", product.getName(), product.getCount());
 			progressService.sendProgress(1, products.size(), 80, false, requestId);
 		}
 
 //		if (withStock) {
 //			products = transactionService.populateProductWithStocks(products, true, requestId);
 //		} 
-
+		productInventoryService.refreshSessions();
 		progressService.sendComplete(requestId);
-
-		filteredProducts.setFilter(request.getFilter());
+		
+		filteredProducts.setFilter(filter);
 		filteredProducts.setEntities(convertList(products));
 		return filteredProducts;
 	}
@@ -259,7 +263,7 @@ public class ProductService {
 	 */
 	public WebResponse getMoreProductSupplier(WebRequest request) {
 		log.info("getMoreProductSupplier");
-		
+
 		try {
 			WebResponse response = new WebResponse();
 			Filter filter = request.getFilter();
@@ -401,11 +405,11 @@ public class ProductService {
 			if (productList == null || productList.size() == 0) {
 				return new ArrayList<>();
 			}
-			  
+
 			List<String> finalImageNames = new ArrayList<>();
 
 			for (Product product : productList) {
-				 
+
 				String[] imageUrls = product.getImageUrl().toString().split("~");
 
 				for (int i = 0; i < imageUrls.length; i++) {
