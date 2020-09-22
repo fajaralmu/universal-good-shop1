@@ -96,7 +96,7 @@ public class ProductService {
 			if (withNewInfo) {
 				product.setNewProduct(isNewProduct(product.getId()));
 			}
-			if (withStock) {
+			if (true || withStock) {
 				int remaining = productInventoryService.getProductInventory(product);
 				product.setCount(remaining);
 			}

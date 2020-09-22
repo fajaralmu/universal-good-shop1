@@ -110,6 +110,7 @@ a:hover {
 
 	<input id="registered-request-id" value="${registeredRequestId }"
 		type="hidden" />
+	<input type="hidden" id="ip-addr" value="${ipv4Adrress }"/>
 	<div id="loading-div"></div>
 
 	<!-- WEB APP CONTENT -->

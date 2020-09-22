@@ -1,9 +1,15 @@
 package com.fajar.shoppingmart.controller;
 
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
 
@@ -81,6 +87,36 @@ public class BaseController {
 			return null;
 	}
 
+	@ModelAttribute("ipv4Adrress")
+	public String ipv4Adrress(HttpServletRequest request) {
+		String ip = "127.0.0.1";
+		try {
+			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+			while (interfaces.hasMoreElements()) {
+				NetworkInterface iface = interfaces.nextElement();
+				// filters out 127.0.0.1 and inactive interfaces
+				if (iface.isLoopback() || !iface.isUp())
+					continue;
+
+				Enumeration<InetAddress> addresses = iface.getInetAddresses();
+				while (addresses.hasMoreElements()) {
+					InetAddress addr = addresses.nextElement();
+
+					// *EDIT*
+					if (addr instanceof Inet4Address == false)
+						continue;
+					if (addr.getHostAddress().startsWith("192.168")) {
+						ip = addr.getHostAddress();
+					}
+				}
+			}
+		} catch (SocketException e) {
+//		    throw new RuntimeException(e);
+
+		}
+		return ip;
+	}
+
 	@ModelAttribute("pageIconUrl")
 	public String iconUrl(HttpServletRequest request) {
 		Profile Profile = webAppConfiguration.getProfile();
@@ -119,7 +155,7 @@ public class BaseController {
 	public String pageToken(HttpServletRequest request) {
 		try {
 			return userSessionService.getTokenByServletRequest(request);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			return "";
 		}
 	}
@@ -130,8 +166,8 @@ public class BaseController {
 			Cookie cookie = getCookie(SessionUtil.JSESSSIONID, request.getCookies());
 			String cookieValue = cookie == null ? UUID.randomUUID().toString() : cookie.getValue();
 			return registryService.addPageRequest(cookieValue);
-		}catch (Exception e) {
-			
+		} catch (Exception e) {
+
 			return "";
 		}
 
