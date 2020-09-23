@@ -22,6 +22,8 @@ import com.fajar.shoppingmart.util.MyJsonUtil;
 import com.fajar.shoppingmart.util.StringUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
@@ -33,7 +35,8 @@ import lombok.extern.slf4j.Slf4j;
 @Builder
 @AllArgsConstructor
 @Dto
-@Slf4j
+@Slf4j 
+@JsonInclude(Include.NON_NULL)
 public class EntityElement implements Serializable {
 
 	@JsonIgnore
@@ -83,7 +86,7 @@ public class EntityElement implements Serializable {
 	private FormField formField;
 	@JsonIgnore
 	private BaseField baseField;
-
+	@JsonIgnore
 	public Map<String, List<?>> additionalMap;
 
 //	public static void main(String[] args) {
@@ -121,6 +124,14 @@ public class EntityElement implements Serializable {
 		
 
 		checkIfGroupedInput();
+	}
+	
+	public String getFieldTypeConstants() {
+		try {
+			return formField.type().toString();
+		}catch (Exception e) {
+			return null;
+		}
 	}
 
 	public String getJsonListString(boolean removeBeginningAndEndIndex) {
@@ -314,12 +325,14 @@ public class EntityElement implements Serializable {
 				setOptions(referenceEntityList);
 				setJsonList(MyJsonUtil.listToJson(referenceEntityList));
 			}
+			
 
 		} else if (fieldType.equals(FieldType.FIELD_TYPE_DYNAMIC_LIST)) {
 
-			setEntityReferenceClass(referenceEntityClass.getSimpleName());
+//			setEntityReferenceClass(referenceEntityClass.getSimpleName());
 		}
- 
+		
+		setEntityReferenceClass(referenceEntityClass.getSimpleName());
 		setOptionValueName(referenceEntityIdField.getName());
 		setMultipleSelect(formField.multipleSelect());
 		setOptionItemName(formField.optionItemName());
