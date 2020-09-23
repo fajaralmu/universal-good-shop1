@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fajar.shoppingmart.annotation.AdditionalQuestionField;
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.util.MyJsonUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -112,7 +113,7 @@ public class EntityProperty implements Serializable {
 //			if(args[i] == "OO")
 //		}
 //	}
-
+ 
 	public String getGridTemplateColumns() {
 		if (formInputColumn == 2) {
 			return "20% 70%";

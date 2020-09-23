@@ -2,8 +2,6 @@ package com.fajar.shoppingmart.controller;
 
 import static com.fajar.shoppingmart.util.MvcUtil.constructCommonModel;
 
-import java.io.IOException;
-
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

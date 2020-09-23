@@ -9,9 +9,13 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.ConcurrentModel;
+import org.springframework.ui.Model;
 
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
@@ -20,6 +24,7 @@ import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.UserRole;
 import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
+import com.fajar.shoppingmart.entity.setting.EntityProperty;
 import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.service.LogProxyFactory;
@@ -43,6 +48,8 @@ public class EntityService {
 	private RepositoryCustomImpl repositoryCustom;
 	@Autowired
 	private EntityRepository entityRepository; 
+	@Autowired
+	private EntityManagementPageService entityManagementPageService;
 
 	@PostConstruct
 	public void init() {
@@ -182,16 +189,10 @@ public class EntityService {
 		final List<T> entities = new ArrayList<>();
 		final Map<String, Long> count = new HashMap<>();
 		try {
-//			Thread thread = ThreadUtil.run(() -> {
 			List<T> resultList = repositoryCustom.filterAndSortv2(entityClass, filter);
-			entities.addAll(resultList);
-//			});
-//			Thread thread2 = ThreadUtil.run(() -> {
+			entities.addAll(resultList); 
 			long resultCount = repositoryCustom.getRowCount(entityClass, filter);
-			count.put("value", resultCount);
-//			}); 
-//			thread.join();
-//			thread2.join();
+			count.put("value", resultCount); 
 
 		} catch (Exception e) {
 			log.error("Error filterEntities: {}", e.getCause());
@@ -258,6 +259,18 @@ public class EntityService {
 		}
 
 		return resultList;
+	}
+
+	public EntityProperty getConfig(WebRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+		try {
+			final String key = request.getEntity().toLowerCase();
+			Model model = entityManagementPageService.setModel(httpRequest, new ConcurrentModel(), key); 
+			 
+			return (EntityProperty) ((ConcurrentModel)model).get("entityProperty");
+		}catch (Exception e) {
+			httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+			return null;
+		}
 	}
 
 }
