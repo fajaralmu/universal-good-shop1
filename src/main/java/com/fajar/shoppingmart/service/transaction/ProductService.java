@@ -194,7 +194,7 @@ public class ProductService {
 			Object count = productRepository.findProductSalesBetween(periodFrom, periodTo, productId);// .getSingleResult(sql);
 			return Integer.parseInt(count.toString());
 		} catch (Exception ex) {
-			ex.printStackTrace();
+//			ex.printStackTrace();
 			return 0;
 		}
 	}

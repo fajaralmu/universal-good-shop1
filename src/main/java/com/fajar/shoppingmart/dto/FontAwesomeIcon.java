@@ -171,7 +171,7 @@ public enum FontAwesomeIcon {
 	CODE_FORK("fa fa-code-fork"),
 	CODEPEN("fa fa-codepen"),
 	CODIEPIE("fa fa-codiepie"),
-	COFFEE("fa fa-coffee"),
+	COFFEE("fas fa-coffee"),
 	COG("fa fa-cog"),
 	COGS("fa fa-cogs"),
 	COLUMNS("fa fa-columns"),

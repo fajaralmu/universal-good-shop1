@@ -4,17 +4,25 @@ import static com.fajar.shoppingmart.dto.FieldType.FIELD_TYPE_TEXTAREA;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.aspectj.lang.annotation.Before;
 
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
+import com.fajar.shoppingmart.dto.FontAwesomeIcon;
 import com.fajar.shoppingmart.service.entity.ShopProfileUpdateService;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Dto(ignoreBaseField = false, updateService = ShopProfileUpdateService.class)
 @Entity
@@ -63,5 +71,18 @@ public class Profile extends BaseEntity {
 	@FormField(type = FieldType.FIELD_TYPE_IMAGE, required = false, defaultValue = "DefaultBackground.BMP")
 	@Column(name = "background_url")
 	private String backgroundUrl;
+	@FormField(type = FieldType.FIELD_TYPE_PLAIN_LIST, hasPreview = true, previewLink = "fa-preview" , required = false, defaultValue = "home")
+	@Column(name= "footer_icon_class")
+	@Enumerated(EnumType.STRING) 
+	private FontAwesomeIcon footerIconClass; 
+	
+	public String getFooterIconClassValue() {
+		if(null == footerIconClass) {
+			return "fa fa-home"; 
+		}
+		return footerIconClass.value;
+	}
+	
+	
 
 }
