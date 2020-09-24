@@ -46,8 +46,12 @@ public class SessionUtil {
 	}
 
 	public static User getSessionUser(HttpServletRequest request) {
+		if (request.getSession(false) == null) {
+			return null;
+		}
 		try {
-			return (User) request.getSession(false).getAttribute(ATTR_USER);
+			Object result = request.getSession(false).getAttribute(ATTR_USER);
+			return result == null && !(result instanceof User) ? null : (User) result;
 		} catch (Exception e) {
 			log.info("invalid session object: {}", e);
 			return null;
@@ -59,14 +63,14 @@ public class SessionUtil {
 		request.getSession().setAttribute(ATTR_REQUEST_URI, request.getRequestURI());
 		log.info("REQUESTED URI: " + request.getRequestURI());
 	}
-	
+
 	public static void updateSessionUser(HttpServletRequest httpRequest, User user) {
 		User currentUser = getSessionUser(httpRequest);
-		if(null == currentUser) {
+		if (null == currentUser) {
 			log.info("current user session not found");
 			return;
 		}
-		if(user.getLoginKey() == null || user.getLoginKey().isEmpty()) {
+		if (user.getLoginKey() == null || user.getLoginKey().isEmpty()) {
 			user.setLoginKey(currentUser.getLoginKey());
 		}
 		user.setPassword(null);
@@ -125,7 +129,7 @@ public class SessionUtil {
 	public static void setSessionPageCode(HttpServletRequest request, String pageCode) {
 		try {
 			request.getSession(false).setAttribute(PAGE_CODE, pageCode);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 	}
@@ -149,7 +153,7 @@ public class SessionUtil {
 	}
 
 	public static void setUserInRequest(HttpServletRequest request, User authenticatedUser) {
-		if(null == authenticatedUser) {
+		if (null == authenticatedUser) {
 			return;
 		}
 		String requestId = getPageRequestId(request);

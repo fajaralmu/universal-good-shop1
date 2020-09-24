@@ -48,7 +48,7 @@ public class Menu extends BaseEntity {
 	private String page;
 	@JoinColumn(name = "page_id", nullable = false)
 	@ManyToOne
-	@FormField(lableName = "Page", type = FieldType.FIELD_TYPE_FIXED_LIST, optionItemName = "name")
+	@FormField(lableName = "Parent Page", type = FieldType.FIELD_TYPE_FIXED_LIST, optionItemName = "name")
 	private Page menuPage;
 	@FormField(type = FieldType.FIELD_TYPE_IMAGE, required = false, defaultValue = "DefaultIcon.BMP")
 	@Column(name = "icon_url")

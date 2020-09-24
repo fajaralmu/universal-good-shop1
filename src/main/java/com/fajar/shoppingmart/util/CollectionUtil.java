@@ -39,9 +39,10 @@ public class CollectionUtil {
 
 	public static <K, T> List<T> mapToList(Map<K, T> map) {
 		List<T> list = new ArrayList<T>();
-		for (K key : map.keySet()) {
-			list.add(map.get(key));
-		}
+		if(null != map)
+			for (K key : map.keySet()) {
+				list.add(map.get(key));
+			}
 
 		return list;
 	}
