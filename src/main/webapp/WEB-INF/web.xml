@@ -20,7 +20,7 @@
 		<servlet-name>app</servlet-name>
 		<!-- <servlet-class>org.springframework.web.servlet.DispatcherServlet
 		</servlet-class> -->
-		<servlet-class>com.fajar.shoppingmart.config.CustomDispatcherSerlvet</servlet-class>
+		<servlet-class>com.fajar.shoppingmart.config.CustomDispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 		<!-- <init-param> <param-name>contextConfigLocation</param-name> <param-value>/WEB-INF/app-config.xml</param-value> 
 			</init-param> -->

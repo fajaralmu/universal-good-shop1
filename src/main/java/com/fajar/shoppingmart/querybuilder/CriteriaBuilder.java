@@ -25,7 +25,6 @@ import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.Unit;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.UserRole;
-import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;

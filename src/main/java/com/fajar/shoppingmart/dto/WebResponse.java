@@ -14,6 +14,8 @@ import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.custom.CashFlow;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +27,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(value=Include.NON_NULL)
 public class WebResponse implements Serializable {
 
 	/**
@@ -44,6 +47,7 @@ public class WebResponse implements Serializable {
 	private List<BaseEntity> supplies = new ArrayList<>();
 	@Builder.Default
 	private List<BaseEntity> purchases = new ArrayList<>();
+	private List<?> generalList;
 	private BaseEntity entity;
 	private Filter filter;
 	private Integer totalData;
@@ -57,8 +61,7 @@ public class WebResponse implements Serializable {
 	private int[] transactionYears;
 	private SessionData sessionData;
 	private Profile applicationProfile;
-	@JsonIgnore
-	private Class<? extends BaseEntity> entityClass;
+	
 	private String imageData;
 	private String partnerId;
 	
@@ -67,8 +70,13 @@ public class WebResponse implements Serializable {
 	 
 	private Map<String, CashFlow> dailyCashflow;
 	
-	private boolean success;
 	private boolean loggedIn;
+	
+	@Builder.Default
+	@JsonIgnore
+	private boolean success = true;
+	@JsonIgnore
+	private Class<? extends BaseEntity> entityClass;
 	
 	public static WebResponse failedResponse() {
 		return new WebResponse("01","INVALID REQUEST");

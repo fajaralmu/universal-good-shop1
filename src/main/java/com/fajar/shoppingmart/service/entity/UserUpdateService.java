@@ -11,9 +11,13 @@ public class UserUpdateService extends BaseEntityUpdateService<User>{
 	
 	@Override
 	public WebResponse saveEntity(User baseEntity, boolean newRecord) {
-		User user = (User) copyNewElement(baseEntity, newRecord);
-		this.validateEntityFields(user, newRecord);
-		User newUser = entityRepository.save(user);
-		return WebResponse.builder().success(true).entity(newUser).build();
+		try {
+			User user = (User) copyNewElement(baseEntity, newRecord);
+			this.validateEntityFields(user, newRecord);
+			User newUser = entityRepository.save(user);
+			return WebResponse.builder().success(true).entity(newUser).build();
+		}catch (Exception e) {
+			return WebResponse.builder().success(false).entity(null).build();
+		}
 	}
 }

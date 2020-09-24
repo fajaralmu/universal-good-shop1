@@ -9,18 +9,18 @@ import org.springframework.web.servlet.DispatcherServlet;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CustomDispatcherSerlvet extends DispatcherServlet {
+public class CustomDispatcherServlet extends DispatcherServlet {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8040052984943558941L;
 	
-	public CustomDispatcherSerlvet() {
+	public CustomDispatcherServlet() {
 		super(); 
 		log.debug(" Initialized CustomDispatcherSerlvet ");
 	}
-	public CustomDispatcherSerlvet(WebApplicationContext webApplicationContext) {
+	public CustomDispatcherServlet(WebApplicationContext webApplicationContext) {
 		super(webApplicationContext); 
 		log.debug(" Initialized CustomDispatcherSerlvet with webApplicationContext ");
 	}

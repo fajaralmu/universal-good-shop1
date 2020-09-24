@@ -4,6 +4,7 @@ import static com.fajar.shoppingmart.util.MvcUtil.constructCommonModel;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Menu;
 import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
@@ -21,9 +23,11 @@ import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.service.MenuInitiationService;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
+import com.fajar.shoppingmart.util.MapUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
 
 import lombok.extern.slf4j.Slf4j;
+
 @Service
 @Slf4j
 public class EntityManagementPageService {
@@ -38,11 +42,12 @@ public class EntityManagementPageService {
 		EntityManagementConfig entityConfig = entityRepository.getConfig(key);
 
 		if (null == entityConfig) {
-			throw new IllegalArgumentException("Invalid entity key ("+key+")!");
+			throw new IllegalArgumentException("Invalid entity key (" + key + ")!");
 		}
 
 		HashMap<String, List<?>> additionalListObject = getFixedListObjects(entityConfig.getEntityClass());
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(entityConfig.getEntityClass(), additionalListObject );
+		EntityProperty entityProperty = EntityUtil.createEntityProperty(entityConfig.getEntityClass(),
+				additionalListObject);
 		model = constructCommonModel(request, entityProperty, model, entityConfig.getEntityClass().getSimpleName(),
 				"management");
 
@@ -58,20 +63,20 @@ public class EntityManagementPageService {
 
 			for (int i = 0; i < fixedListFields.size(); i++) {
 				Field field = fixedListFields.get(i);
-				Class<? extends BaseEntity> type; 
-				
-				if(CollectionUtil.isCollectionOfBaseEntity(field)) {
+				Class<? extends BaseEntity> type;
+
+				if (CollectionUtil.isCollectionOfBaseEntity(field)) {
 					Type classType = CollectionUtil.getGenericTypes(field)[0];
 					type = (Class<? extends BaseEntity>) classType;
-					
-				}else {
+
+				} else {
 					type = (Class<? extends BaseEntity>) field.getType();
-				} 
+				}
 				log.info("(populating fixed list values) findALL FOR type: {}", type);
-				List<? extends BaseEntity> list = entityRepository.findAll(type); 
+				List<? extends BaseEntity> list = entityRepository.findAll(type);
 				listObject.put(field.getName(), CollectionUtil.convertList(list));
-			} 
-		} catch (Exception e) { 
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return listObject;
@@ -86,6 +91,21 @@ public class EntityManagementPageService {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public WebResponse getManagementPages(HttpServletRequest httpRequest) {
+		List<Object> result = new ArrayList<>();
+		result.add(MapUtil.singleMap("entityName", "product"));
+		result.add(MapUtil.singleMap("entityName", "supplier"));
+		result.add(MapUtil.singleMap("entityName", "customer"));
+		result.add(MapUtil.singleMap("entityName", "menu"));
+		result.add(MapUtil.singleMap("entityName", "page"));
+
+		HashMap<String, Object> transactionMenu = new HashMap<>();
+		transactionMenu.put("entityName", "transaction");
+		transactionMenu.put("disabled", true);
+		result.add(transactionMenu);
+		return WebResponse.builder().generalList(result).build();
 	}
 
 }

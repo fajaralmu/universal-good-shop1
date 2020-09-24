@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.fajar.shoppingmart.annotation.AdditionalQuestionField;
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.util.MyJsonUtil;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

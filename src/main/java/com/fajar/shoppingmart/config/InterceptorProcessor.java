@@ -22,7 +22,6 @@ import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.controller.BaseController;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.User;
-import com.fajar.shoppingmart.service.ComponentService;
 import com.fajar.shoppingmart.service.ProgressService;
 import com.fajar.shoppingmart.service.UserAccountService;
 import com.fajar.shoppingmart.service.UserSessionService;
@@ -45,8 +44,6 @@ public class InterceptorProcessor {
 	private UserAccountService userAccountService;
 	@Autowired
 	private ProgressService progressService;
-	@Autowired
-	private ComponentService componentService;
 
 	public InterceptorProcessor() {
 

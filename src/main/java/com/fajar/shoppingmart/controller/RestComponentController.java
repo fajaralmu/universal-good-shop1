@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fajar.shoppingmart.annotation.Authenticated;
 import com.fajar.shoppingmart.dto.FontAwesomeIcon;
 import com.fajar.shoppingmart.exception.InvalidRequestException;
 import com.fajar.shoppingmart.service.LogProxyFactory;
@@ -47,7 +46,7 @@ public class RestComponentController extends BaseController{
 		}catch (Exception e) {
 			 
 		}
-		return "<i></i>";
+		return "<i>no result</i>";
 	}
 	
 	
