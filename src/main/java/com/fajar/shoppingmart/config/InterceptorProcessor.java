@@ -62,7 +62,7 @@ public class InterceptorProcessor {
 			response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			response.getWriter().write(objectMapper.writeValueAsString(WebResponse.failed(msg)));
 			response.setHeader("error_message", "Invalid Authentication");
-		} catch (IOException e) {
+		} catch ( Exception e) {
 			log.error("Error writing JSON Error Response: {}", e);
 		}
 	}

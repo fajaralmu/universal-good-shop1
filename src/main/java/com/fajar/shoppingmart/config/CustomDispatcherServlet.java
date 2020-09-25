@@ -18,6 +18,7 @@ public class CustomDispatcherServlet extends DispatcherServlet {
 	
 	public CustomDispatcherServlet() {
 		super(); 
+		System.out.println("JAVA CLASSPATH:"+System.getProperties().get("java.class.path"));
 		log.debug(" Initialized CustomDispatcherSerlvet ");
 	}
 	public CustomDispatcherServlet(WebApplicationContext webApplicationContext) {
