@@ -25,7 +25,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Dto(updateService = BaseEntityUpdateService.class,value = "Transaction Records")
+@Dto(updateService = BaseEntityUpdateService.class,value = "Transaction Records", editable = false)
 @Entity
 @Table(name="transaction")
 @Data

@@ -86,7 +86,7 @@ public class RestEntityController extends BaseController{
 	@PostMapping(value = "/managementpages", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse managementpages(HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) {
-		log.info("get managementpages"); 
+		log.info("get managementpages");
 		return entityManagementPageService.getManagementPages(httpRequest);
 		 
 	}

@@ -94,17 +94,14 @@ public class EntityManagementPageService {
 	}
 
 	public WebResponse getManagementPages(HttpServletRequest httpRequest) {
+		
 		List<Object> result = new ArrayList<>();
-		result.add(MapUtil.singleMap("entityName", "product"));
-		result.add(MapUtil.singleMap("entityName", "supplier"));
-		result.add(MapUtil.singleMap("entityName", "customer"));
-		result.add(MapUtil.singleMap("entityName", "menu"));
-		result.add(MapUtil.singleMap("entityName", "page"));
-
-		HashMap<String, Object> transactionMenu = new HashMap<>();
-		transactionMenu.put("entityName", "transaction");
-		transactionMenu.put("disabled", true);
-		result.add(transactionMenu);
+		result.add(entityRepository.getConfig("product"));
+		result.add(entityRepository.getConfig("category"));
+		result.add(entityRepository.getConfig("unit"));
+		result.add(entityRepository.getConfig("customer"));
+		result.add(entityRepository.getConfig("transaction")); 
+		
 		return WebResponse.builder().generalList(result).build();
 	}
 
