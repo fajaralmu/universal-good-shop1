@@ -19,7 +19,8 @@ public class CollectionUtil {
 		List<T> list = new ArrayList<T>();
 		for (T t : array) {
 			list.add(t);
-		}
+		} 
+		
 		return list;
 
 	}

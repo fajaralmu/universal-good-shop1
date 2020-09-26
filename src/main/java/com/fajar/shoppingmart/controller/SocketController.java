@@ -9,10 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,22 +28,19 @@ import com.fajar.shoppingmart.service.RealtimeService2;
 @RestController
 public class SocketController {
 	Logger log = LoggerFactory.getLogger(SocketController.class);
-//	@Autowired
-//	private SimpMessagingTemplate webSocket;
+
 	@Autowired
-	RealtimeService2 realtimeUserService;
+	private RealtimeService2 realtimeUserService;
 	@Autowired
 	private EventMessagingService eventMessagingService;
-	 
+
 	public SocketController() {
 		log.info("------------------SOCKET CONTROLLER #1-----------------");
 	}
 
 	@PostConstruct
-	public void init() { 
-	
-			LogProxyFactory.setLoggers(this);
-		 
+	public void init() {
+		LogProxyFactory.setLoggers(this);
 	}
 
 	@PostMapping(value = "/api/stream/disconnect", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -56,24 +50,21 @@ public class SocketController {
 		return new WebResponse();
 	}
 
-	
-
 	@GetMapping(value = "/api/kafkasend/{msg}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse kafkasend(@PathVariable(name = "msg") String message, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse)  { 
-	 
+			HttpServletResponse httpResponse) {
+
 		String success = "True";
-		try{
-			eventMessagingService.sendEvent("TEST_KEY_"+message, "TEST_VALUE_"+message);
-		}catch (Exception e) {
+		try {
+			eventMessagingService.sendEvent("TEST_KEY_" + message, "TEST_VALUE_" + message);
+		} catch (Exception e) {
 			e.printStackTrace();
 			success = "False";
 		}
-		
+
 		return new WebResponse("00", success);
 	}
- 
-	
+
 	// @MessageMapping("/move")
 //	//@SendTo("/wsResp/players")
 //	public RealtimeResponse join2( RealtimeResponse response) throws IOException {
