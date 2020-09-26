@@ -22,6 +22,8 @@ public class KafkaCustomBeanFactory implements BeanFactoryAware {
 
 	@Value(value = "${kafka.bootstrapAddress}")
 	private String bootstrapAddress;
+	@Value("${kafka.topic}")
+	private String kafkaTopic;
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) {
@@ -40,7 +42,7 @@ public class KafkaCustomBeanFactory implements BeanFactoryAware {
 		ConfigurableBeanFactory configurableBeanFactory = (ConfigurableBeanFactory) beanFactory;
 
 		List<DynamicBean> beansToRegister = new ArrayList<>();
-		beansToRegister.add(new KafkaAdminConfiguration(bootstrapAddress, configurableBeanFactory));
+		beansToRegister.add(new KafkaAdminConfiguration(bootstrapAddress, configurableBeanFactory, kafkaTopic));
 		beansToRegister.add(new KafkaProducerConfiguration(bootstrapAddress, configurableBeanFactory));
 		for (DynamicBean dynamicBean : beansToRegister) {
 			dynamicBean.registerBean();

@@ -6,7 +6,6 @@ import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaAdmin;
 
 import lombok.extern.slf4j.Slf4j;
@@ -14,11 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class KafkaAdminConfiguration implements DynamicBean {
 	private final String bootstrapAddress;
-	private final ConfigurableBeanFactory factory;
+	private final ConfigurableBeanFactory factory; 
+	private final String topic;
 
-	public KafkaAdminConfiguration(String bootstrapAddress, ConfigurableBeanFactory factory) {
+	public KafkaAdminConfiguration(String bootstrapAddress, ConfigurableBeanFactory factory, String topic) {
 		this.bootstrapAddress = bootstrapAddress;
 		this.factory = factory;
+		this.topic = topic;
 		log.debug("KafkaAdminConfiguration instantiated bootstrapAddress: {}", bootstrapAddress);
 	}
 
@@ -44,6 +45,6 @@ public class KafkaAdminConfiguration implements DynamicBean {
 
 	 
 	public NewTopic productTopic() {
-		return new NewTopic("FAJAR_TEST", 1, (short) 1);
+		return new NewTopic(topic, 1, (short) 1);
 	}
 }

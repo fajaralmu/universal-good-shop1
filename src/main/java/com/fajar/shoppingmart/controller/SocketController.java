@@ -64,7 +64,7 @@ public class SocketController {
 	 
 		String success = "True";
 		try{
-			eventMessagingService.sendEvent("product", "TEST_KEY_"+message, "TEST_VALUE_"+message);
+			eventMessagingService.sendEvent("TEST_KEY_"+message, "TEST_VALUE_"+message);
 		}catch (Exception e) {
 			e.printStackTrace();
 			success = "False";

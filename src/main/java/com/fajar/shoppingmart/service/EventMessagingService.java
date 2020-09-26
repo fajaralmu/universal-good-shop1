@@ -3,11 +3,10 @@ package com.fajar.shoppingmart.service;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-
-import com.fajar.shoppingmart.util.ThreadUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 public class EventMessagingService {
 	@Autowired
 	private ApplicationContext applicationContext;
+	@Value("${kafka.topic}")
+	private String kafkaTopic;
+	
 	private KafkaTemplate<String, Object> kafkaTemplate;
 	
 	@PostConstruct
@@ -34,13 +36,13 @@ public class EventMessagingService {
 		
 	}
 
-	public void sendEvent(String topic, String key, Object data) {
+	public void sendEvent( String key, Object data) {
 		 
 		if(null != kafkaTemplate) {
-			ThreadUtil.run(()->{
-				kafkaTemplate.send(topic, key, data);
-				log.debug("Event sent to topic: {}", topic);
-			});
+//			ThreadUtil.run(()->{
+				kafkaTemplate.send(kafkaTopic, key, data);
+				log.debug("Event sent to topic: {}", kafkaTopic);
+//			});
 		}
 		
 	}
