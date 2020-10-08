@@ -7,7 +7,7 @@
 			<div class="dynamic-dropdown-form">
 				<input id="input-customer" placeholder="customer name" type="text"
 					onkeyup="loadCustomerList()" class="form-control" />
-				<input id="input-customer-id" on-enter="loadCustomerListByCode()" placeholder="customer code" type="text"
+				<input id="input-customer-id" on-enter="loadCustomerListById()" placeholder="customer ID" type="text"
 					  class="form-control onenter" /> <select
 					 id="customer-dropdown" class="form-control"
 					multiple="multiple">
@@ -33,7 +33,7 @@
 		loadStakeHolderList(customerListDropDown, 'customer', 'name', filterValue, handleSelectCustomer);
 	}
 	
-	function loadCustomerListByCode(){
+	function loadCustomerListById()(){
 		const filterValue = inputCustomerIdField.value;
 		
 		loadStakeHolderListDetailed(customerListDropDown, 'customer', 'id',

@@ -18,7 +18,10 @@
 							<div class="card-body">
 								<div class="dynamic-dropdown-form">
 									<input id="input-product" placeholder="product name"
-										type="text" onkeyup="loadPrductList()" class="form-control" /><select
+										type="text" onkeyup="loadProductList('name', 'input-product', false)" class="form-control" />
+									<input id="input-product-code" placeholder="product code"
+										type="text" on-enter="loadProductList('code', 'input-product-code', true)" class="form-control onenter" />
+									<select
 										id="product-dropdown" class="form-control" multiple="multiple">
 									</select>
 								</div>
@@ -85,7 +88,10 @@
 	var currentProductFlow;
 	var currentProduct;
 	var currentSupplier;
-	var inputProductField = byId("input-product");
+	
+	const inputProductField = byId("input-product");
+	const inputProductCode = byId("input-product-code");
+	
 	var totalPriceLabel = byId("total-price");
 	var productListDropDown = byId("product-dropdown");
 	var productFlowTable = byId("product-flows");
@@ -131,16 +137,19 @@
 		processReceipt(transaction);
 	}
 
-	function loadPrductList() {
+	function loadProductList(fieldName, inputId, exacts) {
 		productListDropDown.innerHTML = "";
+		const inputElement = byId(inputId);
+		const fieldsFilter = {};
+		fieldsFilter[fieldName] = inputElement.value;
+		
 		var requestObject = {
 			"entity" : "product",
 			"filter" : {
 				"page" : 0,
 				"limit" : 10,
-				"fieldsFilter" : {
-					"name" : inputProductField.value
-				}
+				"fieldsFilter" :  fieldsFilter,
+				'exacts' : exacts
 			}
 		};
 
@@ -199,13 +208,14 @@
 	}
 
 	function clearProduct() {
-		clearElement(inputProductField, priceField, quantityField,
+		clearElement(inputProductField, inputProductCode, priceField, quantityField,
 				expiryDateField);
 		clearElement("unit-name", "product-dropdown", "current-price");
 	}
 
 	function setCurrentProduct(entity) {
 		inputProductField.value = entity.name;
+		inputProductCode.value = entity.code;
 		byId("unit-name").innerHTML = entity.unit.name;
 		byId("current-price").innerHTML = beautifyNominal(entity.price);
 		currentProduct = entity;

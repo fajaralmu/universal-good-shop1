@@ -7,7 +7,7 @@
 			<div class="dynamic-dropdown-form">
 				<input id="input-supplier" placeholder="supplier name" type="text"
 					onkeyup="loadSupplierList()" class="form-control" />
-				<input id="input-supplier-id" placeholder="supplier name" type="text"
+				<input id="input-supplier-id" placeholder="supplier ID" type="text"
 					on-enter="loadSupplierListById()" class="form-control onenter" /> <select
 					 id="supplier-dropdown" class="form-control"
 					multiple="multiple">
