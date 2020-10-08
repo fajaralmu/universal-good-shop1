@@ -6,7 +6,9 @@
 		<div class="card-body">
 			<div class="dynamic-dropdown-form">
 				<input id="input-supplier" placeholder="supplier name" type="text"
-					onkeyup="loadSupplierList()" class="form-control" /> <select
+					onkeyup="loadSupplierList()" class="form-control" />
+				<input id="input-supplier-id" placeholder="supplier name" type="text"
+					on-enter="loadSupplierListById()" class="form-control onenter" /> <select
 					 id="supplier-dropdown" class="form-control"
 					multiple="multiple">
 				</select>
@@ -22,18 +24,32 @@
 </div>
 <script type="text/javascript">
 	const inputSupplierField = byId("input-supplier");
+	const inputSupplierIdField = byId("input-supplier-id");
 	const supplierListDropDown = byId("supplier-dropdown");
+	
+	function loadSupplierListById(){
+		const filterValue = inputSupplierIdField.value;
+		
+		loadStakeHolderListDetailed(supplierListDropDown, 'supplier', 'id',
+				filterValue, handleSelectSupplier, 'name', 0, 10, true);
+	}
+	
 	function loadSupplierList() {
 
 		const filterValue = inputSupplierField.value;
 
 		loadStakeHolderList(supplierListDropDown, 'supplier', 'name',
-				filterValue, function(entity) {
-					inputSupplierField.value = entity.name;
-					byId("supplier-name").innerHTML = entity.name;
-					byId("supplier-address").innerHTML = entity.address;
-					byId("supplier-contact").innerHTML = entity.contact;
-					currentSupplier = entity;
-				});
+				filterValue, handleSelectSupplier);
+	}
+	
+	function handleSelectSupplier(entity) {
+		 
+		inputSupplierField.value = entity.name;
+		inputSupplierIdField.value = entity.id;
+		byId("supplier-name").innerHTML = entity.name;
+		byId("supplier-address").innerHTML = entity.address;
+		byId("supplier-contact").innerHTML = entity.contact;
+		currentSupplier = entity;
+		 
 	}
 </script>

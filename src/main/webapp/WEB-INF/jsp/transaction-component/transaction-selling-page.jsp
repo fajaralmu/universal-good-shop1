@@ -256,7 +256,7 @@
 				inputQuantityField, expiryDateField);
 		clearElement("unit-name", "product-dropdown", "total-change-label",
 				"purchase-price");
-
+		
 		//quantityField.value = 0;
 		//priceField.value = 0;
 		//quantityField.value = 0; 
