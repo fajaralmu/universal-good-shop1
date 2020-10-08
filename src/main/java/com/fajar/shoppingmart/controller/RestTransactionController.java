@@ -77,14 +77,7 @@ public class RestTransactionController extends BaseController{
 		return response;
 	}
 	
-	@PostMapping(value = "/stockinfo", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse stockInfo(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
-		log.info("stockinfo {}", request);
-		 
-		WebResponse response = transactionService.stockInfo(request);
-		return response;
-	}
+	 
 	
 	@PostMapping(value = "/cashflowinfo", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse cashflowinfo(@RequestBody WebRequest request, HttpServletRequest httpRequest,

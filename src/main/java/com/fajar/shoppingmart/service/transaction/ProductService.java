@@ -385,10 +385,7 @@ public class ProductService {
 			for (int runningMonth = monthFrom; runningMonth <= monthTo; runningMonth++) {
 				totalPeriod++;
 			}
-
 		}
-		;
-
 		return totalPeriod;
 	}
 
@@ -426,7 +423,7 @@ public class ProductService {
 	}
 
 	/**
-	 * get entities available for public
+	 * get entities available for public; currently product and supplier
 	 * 
 	 * @param request
 	 * @param requestId

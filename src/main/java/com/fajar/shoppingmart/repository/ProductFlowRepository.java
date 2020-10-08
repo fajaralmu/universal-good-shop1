@@ -26,7 +26,7 @@ public interface ProductFlowRepository extends JpaRepository<ProductFlow, Long> 
 			+ " left join product on product_flow.product_id = product.id "
 			+ " left join `transaction` on transaction.id = product_flow.transaction_id "
 			+ " where transaction.`type` = ?1 and product.id = ?2")
-	Object findFlowCount(String type, Long productId);
+	Object findProductFlowCount(String type, Long productId);
 
 	@Query(nativeQuery = true, value = "select * from `product_flow` "
 			+ "	 LEFT JOIN `transaction` ON  `transaction`.`id` = `product_flow`.`transaction_id`   "

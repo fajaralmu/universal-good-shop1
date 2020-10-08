@@ -261,86 +261,6 @@ public class ProductInventoryService {
 		}
 	}
 
-	/**
-	 * customer buy product from shop
-	 * 
-	 * @param d
-	 * @param productFlows
-	 * @param requestId
-	 * @param user
-	 * @param customer
-	 * @return
-	 */
-//	public synchronized Transaction savePurchaseTransaction(Date d, List<ProductFlow> productFlows, String requestId,
-//			User user, Customer customer) {
-//		if (productFlows == null || productFlows.size() == 0) {
-//			throw new RuntimeException("INVALID PRODUCTS");
-//		}
-//	 
-//		try {
-//			Transaction transaction = buildTransactionObject(TYPE_OUT, user, customer, null, d);
-//			Transaction newTransaction = entityRepository.save(transaction);
-//			progressService.sendProgress(1, 1, 10, false, requestId);
-//			int purchasedProduct = 0;
-//			for (ProductFlow productFlow : productFlows) {
-//				if (productFlow.getCount() <= 0)
-//					continue;
-//				// IMPORTANT!!
-//				productFlow.setTransaction(newTransaction);
-//				productFlow.setPrice(productFlow.getProduct().getPrice());
-//
-//				//UPDATE inventory item row
-//				InventoryItem inventoryItem = inventoryItemRepository
-//						.findByIncomingFlowId(productFlow.getFlowReferenceId());
-//				InventoryItem inventoryItemV2 = inventoryItemRepository
-//						.findTop1ByProduct_IdAndNewVersion(productFlow.getProduct().getId(), true);
-//
-//				if (null == inventoryItem) {
-//					throw new RuntimeException("Inventory Item not found:" + productFlow.getFlowReferenceId());
-//				}
-//
-//				//save NEW productFlow record to database
-//				productFlow = entityRepository.save(productFlow);
-//
-//				//update cash balance 
-//				cashBalanceService.updateCashBalance(productFlow);
-//
-//				// update count 
-//				inventoryItem.setCount(inventoryItem.getCount() - productFlow.getCount());
-//
-//				if (inventoryItem.getCount() < 0) {
-//					// SKIP
-//					continue;
-//				}
-//
-//				entityRepository.save(inventoryItem);
-//
-//				//inventory item NEW VERSION 
-//				int currentCount = inventoryItemV2.getCount();
-//				int finalCount = currentCount - productFlow.getCount();
-//				if (finalCount < 0) {
-//					// SKIP
-//					continue;
-//				}
-//				inventoryItemV2.setCount(finalCount);
-//
-//				entityRepository.save(inventoryItemV2);
-//
-//				purchasedProduct++;
-//				progressService.sendProgress(1, productFlows.size(), 30, false, requestId);
-//
-//			}
-//			System.out.println("PURCHASES PRODUCTS: " + purchasedProduct);
-//			newTransaction.setProductFlows(productFlows);
-//			return newTransaction;
-//		} catch (Exception ex) {
-//			ex.printStackTrace();
-//			throw ex;
-//		} finally {
-//			progressService.sendComplete(requestId);
-//		}
-//	}
-
 	private List<ProductFlow> saveProductFlows(List<ProductFlow> productFlows, final Transaction transaction,
 			String requestId) {
 
@@ -362,16 +282,9 @@ public class ProductInventoryService {
 			Product product = productFlow.getProduct();
 
 			if (transaction.getType().equals(TYPE_OUT)) {
-				InventoryItem inventoryItemV2 = inventoryItemRepository
-						.findTop1ByProduct_IdAndNewVersion(product.getId(), NEW_VERSION);
+				InventoryItem inventoryItemV2 = inventoryItemRepository.findTop1ByProduct_IdAndNewVersion(product.getId(), NEW_VERSION);
 
 				if (null == inventoryItemV2 || inventoryItemV2.getCount() < productFlow.getCount()) {
-
-					log.debug("Skipped Product Flow of {}: inventoryItemV2.getCount() < productFlow.getCount()",
-							product.getName());
-					log.debug("inventoryItemV2.getCount(): {} - product count: {}",
-							inventoryItemV2 == null ? "NULL" : inventoryItemV2.getCount(), productFlow.getCount());
-					log.debug("inventoryItemV2.id: {}", inventoryItemV2 == null ? "NULL" : inventoryItemV2.getId());
 					skippedProductFlows.add(productFlow);
 					continue;
 				}

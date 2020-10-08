@@ -127,69 +127,7 @@ public class TransactionService {
 			 
 		}
 	}
-
-	/**
-	 * check remaining stock of a product flow 
-	 * @param productFlow
-	 * @return
-	 */
-	private ProductFlowStock getSingleStock(ProductFlow productFlow) {
-
-		System.out.println("Will get single stock");
-		
-		// validate product flow 
-		Optional<ProductFlow> dbProductFlow = productFlowRepository.findByIdAndTransaction_Type(productFlow.getId(),
-				TransactionType.IN);
-		
-		if (dbProductFlow.isPresent() == false) {
-			return null;
-		}
-		productFlow = dbProductFlow.get();
-
-		productFlow.setTransactionId(productFlow.getTransaction().getId());
-
-		String sql = "select (select `count` from product_flow where id=$FLOW_ID) as total, "
-				+ "(select sum(count) as total_count from product_flow where flow_ref_id=$FLOW_ID and deleted!=1) as used ";
-		sql = sql.replace("$FLOW_ID", productFlow.getId().toString());
-
-		Query query = repositoryCustomImpl.createNativeQuery(sql);
-		Object result = query.getSingleResult();
-
-		Object[] objectList = (Object[]) result;
-
-		Integer total = objectList[0] == null ? 0 : Integer.parseInt(objectList[0].toString());
-		Integer used = objectList[1] == null ? 0 : Integer.parseInt(objectList[1].toString());
-		Integer remaining = total - used;
-
-		ProductFlowStock productFlowStock = new ProductFlowStock();
-		productFlowStock.setProductFlow(productFlow);
-		productFlowStock.setUsedStock(used);
-		productFlowStock.setRemainingStock(remaining);
-		productFlowStock.setTotalStock(total);
-		// System.out.println("RESULT getSingleStock: " + result );
-		return productFlowStock;
-	}
-
-	/**
-	 * get stock by product flow ID
-	 * 
-	 * @param request
-	 * @return
-	 */
-	public WebResponse stockInfo(WebRequest request) {
-		ProductFlowStock productFlowStock = getSingleStock(request.getProductFlow());
-
-		if (productFlowStock == null) {
-			return WebResponse.failedResponse();
-		}
-
-		Product product = productFlowStock.getProductFlow().getProduct();
-
-		productFlowStock.getProductFlow().getTransaction().setUser(null);
-		productFlowStock.getProductFlow().setProduct(EntityValidation.validateDefaultValue(product, null));
-
-		return WebResponse.builder().productFlowStock(productFlowStock).build();
-	}
+ 
 
 	/**
 	 * get stock for product list
@@ -203,19 +141,19 @@ public class TransactionService {
 
 		for (Product product : products) {
 			int totalCount = 0;
-			int used = 0;
+			int usedCount = 0;
 
-			Object resultUsedProduct = productFlowRepository.findFlowCount(TransactionType.OUT.toString(),
+			Object resultUsedProduct = productFlowRepository.findProductFlowCount(TransactionType.OUT.toString(),
 					product.getId());
 
-			Object resultTotalProduct = productFlowRepository.findFlowCount(TransactionType.IN.toString(),
+			Object resultTotalProduct = productFlowRepository.findProductFlowCount(TransactionType.IN.toString(),
 					product.getId());
 
 			int remainingCount = 0;
 			try {
-				used = Integer.parseInt(resultUsedProduct.toString());
+				usedCount = Integer.parseInt(resultUsedProduct.toString());
 			} catch (Exception ex) {
-				used = 0;
+				usedCount = 0;
 				ex.printStackTrace();
 			}
 			try {
@@ -224,14 +162,12 @@ public class TransactionService {
 				totalCount = 0;
 				ex.printStackTrace();
 			}
-			if (totalCount - used > 0) {
-				remainingCount = totalCount - used;
+			if (totalCount - usedCount > 0) {
+				remainingCount = totalCount - usedCount;
 			}
 
 			product.setCount(remainingCount);
-
 			sendProgress(1, products.size(), 30, false, requestId);
-
 		}
 
 		return products;
@@ -239,8 +175,7 @@ public class TransactionService {
 
 	public WebResponse getStocksByProductName(WebRequest request, boolean withCount, String requestId) { 
 
-		List<BaseEntity> productFlows = getProductFlowsByProduct("name", request.getProduct().getName(), withCount, 20,
-				NOT_EXACTS, requestId);
+		List<BaseEntity> productFlows = getProductFlowsByProductName(request.getProduct(), withCount, requestId);
 
 		if (productFlows == null) {
 			progressService.sendComplete(requestId);
@@ -249,6 +184,11 @@ public class TransactionService {
 
 		progressService.sendComplete(requestId);
 		return WebResponse.builder().entities(productFlows).build();
+	}
+	
+	private List<BaseEntity> getProductFlowsByProductName(Product product,  boolean withCount, String requestId) {
+		return getProductFlowsByProduct("name", product.getName(), withCount, 20,
+				NOT_EXACTS, requestId);
 	}
 
 	private List<BaseEntity> getProductFlowsByProduct(String key, Object value, boolean withCount, int limit,
@@ -260,6 +200,7 @@ public class TransactionService {
 
 			sendProgress(1, 1, 10, false, requestId);
 			log.info("inventories: {}", inventories.size());
+			
 			for (InventoryItem inventoryItem : inventories) {
 				Optional<ProductFlow> productFlow = productFlowRepository.findById(inventoryItem.getIncomingFlowId());
 				sendProgress(1, inventories.size(), 90, false, requestId);
