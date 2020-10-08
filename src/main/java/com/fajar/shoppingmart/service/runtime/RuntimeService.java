@@ -69,7 +69,7 @@ public class RuntimeService {
 			tempSessionService.put(key, value);
 			return true;
 		} catch (Exception e) {
-			log.error("runtime data error");
+			log.error("set runtime data error");
 			e.printStackTrace();
 		}
 		return false;

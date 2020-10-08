@@ -25,7 +25,7 @@ public class SessionData implements Serializable{
 	public static final String ATTR_REQUEST_URI = "requestURI";
 	private User user;
 	
-	public void addNewApp(RegisteredRequest registeredRequest) {
+	public void registerNewRequest(RegisteredRequest registeredRequest) {
 		if(registeredApps == null) {
 			registeredApps = new HashMap<>();
 		}

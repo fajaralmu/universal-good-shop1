@@ -37,7 +37,10 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("management")
 @Authenticated
-@CustomRequestInfo(stylePaths = "entitymanagement", scriptPaths = "entitymanagement", pageUrl = "webpage/entity-management-page")
+@CustomRequestInfo(
+		stylePaths = "entitymanagement", 
+		scriptPaths = "entitymanagement", 
+		pageUrl = "entity-management-component/entity-management-page")
 public class MvcManagementController extends BaseController {
  
 	@Autowired

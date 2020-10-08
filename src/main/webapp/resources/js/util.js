@@ -16,7 +16,7 @@ const loadingDiv = createDiv('loading-div','loading_div');
 function infoLoading() {
 	console.log("infoLoading..");
 	document.body.prepend(loadingDiv);
-	loadingDiv.style.zIndex = 10;
+	loadingDiv.style.zIndex = 1500;
 	loadingDiv.innerHTML = `<button class="btn btn-info">
 		  <span class="spinner-border spinner-border-sm"></span>
 		  Loading..

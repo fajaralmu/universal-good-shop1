@@ -72,7 +72,7 @@
 	const loginBtn = byId("btn-login");
 	
 	function loadingButton(){
-		loginBtn.innerHTML = "<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>";
+		loginBtn.innerHTML = "<span class=\"spinner-border spinner-border\" role=\"status\" aria-hidden=\"true\"></span>";
 	}
 	function loadingButtonDone(){
 		loginBtn.innerHTML = "Login";

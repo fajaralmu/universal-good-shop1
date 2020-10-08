@@ -31,7 +31,6 @@ import com.fajar.shoppingmart.dto.FieldType;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.setting.EntityElement;
 import com.fajar.shoppingmart.entity.setting.EntityProperty;
-import com.fajar.shoppingmart.service.ProgressService;
 import com.fajar.shoppingmart.service.report.data.CurrencyCell;
 import com.fajar.shoppingmart.service.report.data.CustomCell;
 import com.fajar.shoppingmart.service.report.data.NumericCell;

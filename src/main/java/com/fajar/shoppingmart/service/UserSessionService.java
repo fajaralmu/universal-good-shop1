@@ -329,7 +329,7 @@ public class UserSessionService {
 		}
 
 		RegisteredRequest requestv2 = SessionUtil.buildRegisteredRequest(servletRequest, requestId);
-		sessionData.addNewApp(requestv2);
+		sessionData.registerNewRequest(requestv2);
 		return sessionData;
 	}
 
