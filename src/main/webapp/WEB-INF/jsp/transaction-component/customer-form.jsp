@@ -6,7 +6,9 @@
 		<div class="card-body">
 			<div class="dynamic-dropdown-form">
 				<input id="input-customer" placeholder="customer name" type="text"
-					onkeyup="loadCustomerList()" class="form-control" /> <select
+					onkeyup="loadCustomerList()" class="form-control" />
+				<input id="input-customer-id" placeholder="customer code" type="text"
+					  class="form-control" /> <select
 					 id="customer-dropdown" class="form-control"
 					multiple="multiple">
 				</select>
@@ -22,18 +24,34 @@
 </div>
 <script type="text/javascript">
 	const inputCustomerField = byId("input-customer");
+	const inputCustomerIdField = byId("input-customer-id");
 	const customerListDropDown = byId("customer-dropdown");
 
 	function loadCustomerList() {
 		const filterValue = inputCustomerField.value;
 
-		loadStakeHolderList(customerListDropDown, 'customer', 'name',
-				filterValue, function(entity) {
-					inputCustomerField.value = entity.name;
-					byId("customer-name").innerHTML = entity.name;
-					/* byId("customer-address").innerHTML = entity.address;
-					byId("customer-contact").innerHTML = entity.contact; */
-					currentCustomer = entity;
-				});
+		loadStakeHolderList(customerListDropDown, 'customer', 'name', filterValue, handleSelectCustomer);
+	}
+	
+	function loadCustomerListByCode(){
+		const filterValue = inputCustomerIdField.value;
+		
+		loadStakeHolderListDetailed(customerListDropDown, 'customer', 'id',
+				filterValue, handleSelectCustomer, 'name', 0, 10, true);
+	}
+	
+	function handleSelectCustomer(entity){
+		inputCustomerField.value = entity.name;
+		byId("customer-name").innerHTML = entity.name;
+		inputCustomerIdField.value = entity.id;
+		/* byId("customer-address").innerHTML = entity.address;
+		byId("customer-contact").innerHTML = entity.contact; */
+		currentCustomer = entity;
+	}
+	
+	inputCustomerIdField.onkeyup = function(e){
+		if(e.keyCode == 13) { //press enter
+			loadCustomerListByCode();
+		}
 	}
 </script>

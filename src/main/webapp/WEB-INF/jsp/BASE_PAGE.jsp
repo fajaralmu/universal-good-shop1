@@ -186,5 +186,26 @@ a:hover {
 		
 		
 	</script>
+	<script type="text/javascript">
+		const elementHavingOnEnters = document.getElementsByClassName("onenter");
+		
+		function initOnEnterListener(){
+			for (var i = 0; i < elementHavingOnEnters.length; i++) {
+				const element = elementHavingOnEnters[i];
+				const onEnter = element.getAttribute("on-enter");
+				
+				if(onEnter) {
+					element.onkeyup = function(event){
+						if (event.keyCode === 13) { //when key is 'Enter'
+						    event.preventDefault(); 
+						    eval(onEnter);
+						}
+					}
+				}
+			}
+		}
+		
+		initOnEnterListener();
+	</script>
 </body>
 </html>

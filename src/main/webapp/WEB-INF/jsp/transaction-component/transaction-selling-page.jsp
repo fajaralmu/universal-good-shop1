@@ -18,7 +18,9 @@
 							<div class="card-body">
 								<div class="dynamic-dropdown-form">
 									<input id="input-product" placeholder="product name"
-										type="text" onkeyup="loadProductList()" class="form-control" />
+										type="text" onkeyup="loadProductList('name', 'input-product', false)" class="form-control" />
+									<input id="input-product-code" placeholder="product code"
+										type="text" class="form-control" />
 									<select id="product-dropdown" class="form-control"
 										multiple="multiple">
 									</select>
@@ -105,12 +107,13 @@
 	var currentCustomer;
 
 	const inputProductName = byId("input-product");
+	const inputProductCode = byId("input-product-code");
 	//const stockIdField = byId("stock-id");
 	const totalPriceLabel = byId("total-price");
 	const productListDropDown = byId("product-dropdown");
 	const productFlowTable = byId("product-flows");
-	const tableReceipt = byId("table-receipt");
-
+	const tableReceipt = byId("table-receipt");  
+	
 	function send() {
 		if (!confirm("Are You Ready To Submit Transaction?"))
 			return;
@@ -145,15 +148,23 @@
 
 		processReceipt(transaction);
 	}
+	
+	inputProductCode.onkeyup = function(e){
+		if(e.keyCode == 13) //enter
+		{
+			loadProductList('code', 'input-product-code', true);
+		}
+	}
 
-	function loadProductList() {
+	function loadProductList(fieldName, inputId, exacts) {
 		productListDropDown.innerHTML = "";
+		const inputElement = byId(inputId);
+		
 		var requestObject = {
 			'entity' : 'product',
 			'filter' : {
-				'fieldsFilter' : {
-					"name" : inputProductName.value
-				}
+				'exacts': exacts,
+				'fieldsFilter' : { fieldName : inputElement.value }
 			}
 		};
 

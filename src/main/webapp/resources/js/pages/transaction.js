@@ -55,8 +55,11 @@ function receiptHeaderRow(summaryPrice) {
 	});
 }
 
-
 function loadStakeHolderList(entityDropDown, entityName, entityFieldName, filterValue, onOptionClick) {
+	loadStakeHolderListDetailed(entityDropDown, entityName, entityFieldName, filterValue, onOptionClick, entityFieldName, 0, 10, false);
+}
+
+function loadStakeHolderListDetailed(entityDropDown, entityName, entityFieldName, filterValue, onOptionClick, displayedFieldName, page, limit, exacts) {
 	if(ENTITY_GET_URL == null){
 		alert("ENTITY_GET_URL not defined!");
 	}
@@ -65,8 +68,9 @@ function loadStakeHolderList(entityDropDown, entityName, entityFieldName, filter
 	var requestObject = {
 		"entity" : entityName,
 		"filter" : {
-			"page" : 0,
-			"limit" : 10
+			"page" : page,
+			"limit" : limit,
+			"exacts": exacts
 		}
 	};
 	requestObject.filter.fieldsFilter = {};
@@ -81,7 +85,7 @@ function loadStakeHolderList(entityDropDown, entityName, entityFieldName, filter
 					const option = createHtmlTag({
 						tagName: 'option',
 						value: entity["id"],
-						innerHTML:  entity[entityFieldName],
+						innerHTML:  entity[displayedFieldName],
 						onclick :  function() {
 							onOptionClick(entity);
 						}

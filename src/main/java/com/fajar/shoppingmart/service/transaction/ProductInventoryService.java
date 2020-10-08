@@ -44,8 +44,6 @@ public class ProductInventoryService {
 	public static final TransactionType TYPE_OUT = TransactionType.OUT;
 	public static final TransactionType TYPE_IN = TransactionType.IN;
 	public static final boolean NEW_VERSION = Boolean.TRUE;
-
-	
 	 
 	public Transaction savePurchasingTransaction(List<ProductFlow> productFlows, User user, Supplier supplier,
 			Date transactionDate) {

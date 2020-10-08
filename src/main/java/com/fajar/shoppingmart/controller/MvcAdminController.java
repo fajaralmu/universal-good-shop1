@@ -163,7 +163,7 @@ public class MvcAdminController extends BaseController {
 
 	@RequestMapping(value = { "/transaction/in", "/transaction/in/", "/transaction/in/{transactionCode}" })
 	@CustomRequestInfo(scriptPaths = { "transaction" }, stylePaths = {
-			"transaction-sell-purc" }, title = "Purchase", pageUrl = "webpage/transaction-purchasing-page")
+			"transaction-sell-purc" }, title = "Purchase", pageUrl = "transaction-component/transaction-purchasing-page")
 	public String purchasingTransaction(@PathVariable(required = false) String transactionCode, Model model,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -177,7 +177,7 @@ public class MvcAdminController extends BaseController {
 
 	@RequestMapping(value = { "/transaction/out", "/transaction/out/", "/transaction/out/{transactionCode}" })
 	@CustomRequestInfo(scriptPaths = { "transaction" }, stylePaths = {
-			"transaction-sell-purc" }, title = "Selling", pageUrl = "webpage/transaction-selling-page")
+			"transaction-sell-purc" }, title = "Selling", pageUrl = "transaction-component/transaction-selling-page")
 	public String sellingTransaction(@PathVariable(required = false) String transactionCode, Model model,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 
