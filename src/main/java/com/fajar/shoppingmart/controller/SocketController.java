@@ -43,12 +43,7 @@ public class SocketController {
 		LogProxyFactory.setLoggers(this);
 	}
 
-	@PostMapping(value = "/api/stream/disconnect", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse getRequestId(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
-		realtimeUserService.disconnectLiveStream(request);
-		return new WebResponse();
-	}
+	
 
 	@GetMapping(value = "/api/kafkasend/{msg}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse kafkasend(@PathVariable(name = "msg") String message, HttpServletRequest httpRequest,

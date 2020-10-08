@@ -3,6 +3,7 @@ package com.fajar.shoppingmart.service;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,6 +16,9 @@ import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.UserRole;
 import com.fajar.shoppingmart.repository.UserRepository;
 import com.fajar.shoppingmart.repository.UserRoleRepository;
+import com.fajar.shoppingmart.service.sessions.RegisteredRequestService;
+import com.fajar.shoppingmart.service.sessions.UserSessionService;
+import com.fajar.shoppingmart.service.sessions.SessionValidationService;
 import com.fajar.shoppingmart.util.SessionUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +28,11 @@ import lombok.extern.slf4j.Slf4j;
 public class UserAccountService {
 
 	@Autowired
-	private UserSessionService userSessionService;
+	private UserSessionService userDataService;
+	@Autowired
+	private SessionValidationService sessionValidationService;
+	@Autowired
+	private RegisteredRequestService registeredRequestService;
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -84,31 +92,41 @@ public class UserAccountService {
 	 */
 	public WebResponse login(WebRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse)
 			throws Exception {
-		User dbUser = userSessionService.getUserByUsernameAndPassword(request);
-
+		
+		User dbUser = userDataService.addUserSession(request, httpRequest, httpResponse); 
+		
 		if (dbUser == null) {
 			return new WebResponse("01", "invalid credential");
 		}
- 
-		userSessionService.addUserSession(dbUser, httpRequest, httpResponse); 
+		
 		registerRequestId(httpRequest, httpResponse); 
+		setSessionRequestUri(httpRequest, httpResponse); 
+		
+		try {
+			httpRequest.login(dbUser.getUsername(), dbUser.getPassword());
+			httpRequest.authenticate(httpResponse);
+		}catch (Exception e) {
+			log.error("Error servlet login");
+			e.printStackTrace();
+		}
+		
+		log.info("Login Success"); 
+		return WebResponse.success();
+	}
 
-		log.info("LOGIN SUCCESS");
-
+	private static void setSessionRequestUri(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+		 
 		String sessionRequestUri = SessionUtil.getSessionRequestUri(httpRequest);
 
 		if (sessionRequestUri != null) {
 			log.debug("goto page after login: " + sessionRequestUri);
- 
 			httpResponse.setHeader("location", sessionRequestUri); 
-//			response.setRedirectUrl(sessionRequestUri);
 		} 
-		return WebResponse.success();
 	}
 
 	private void registerRequestId(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 		 
-		WebResponse requestIdResponse = userSessionService.generateRequestId(httpRequest, httpResponse);
+		WebResponse requestIdResponse = registeredRequestService.generateRequestId(httpRequest, httpResponse);
 		SessionUtil.setSessionRegisteredRequestId(httpRequest, requestIdResponse);
 
 	}
@@ -121,7 +139,13 @@ public class UserAccountService {
 	 */
 	public boolean logout(HttpServletRequest httpRequest) {
 
-		boolean logoutResult = userSessionService.logout(httpRequest);
+		boolean logoutResult = userDataService.removeUserSession(httpRequest);
+		try {
+			httpRequest.logout();
+		} catch (ServletException e) {
+			log.error("Error Logging Out");
+			e.printStackTrace();
+		}
 		return logoutResult;
 	}
 
@@ -136,7 +160,7 @@ public class UserAccountService {
 		/**
 		 * TESTING
 		 */
-		boolean pageRequestValidated = userSessionService.validatePageRequest(httpRequest);
+		boolean pageRequestValidated = sessionValidationService.validatePageRequest(httpRequest);
 		if (pageRequestValidated) {
 			return true;
 		} else {
@@ -159,7 +183,7 @@ public class UserAccountService {
 
 		} else {
 
-			String existingToken = userSessionService.getTokenByServletRequest(httpRequest);
+			String existingToken = sessionValidationService.getTokenByServletRequest(httpRequest);
 			log.info("|| REQUEST_TOKEN: " + requestToken + " vs EXISTING:" + existingToken + "||");
 
 			boolean tokenEquals = requestToken.equals(existingToken);

@@ -51,7 +51,7 @@ public class RestAdminController extends BaseController {
 	public WebResponse appsessions(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 
-		WebResponse response = userSessionService.getAvailableSessions();
+		WebResponse response = registeredRequestService.getAvailableSessions();
 		return response;
 	}
 
@@ -59,7 +59,7 @@ public class RestAdminController extends BaseController {
 	public WebResponse deletesession(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 
-		WebResponse response = userSessionService.deleteSession(request);
+		WebResponse response = registeredRequestService.deleteSession(request);
 		return response;
 	}
 
@@ -92,7 +92,7 @@ public class RestAdminController extends BaseController {
 	public WebResponse clearsessions(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 
-		WebResponse response = userSessionService.clearSessions();
+		WebResponse response = registeredRequestService.clearSessions();
 		return response;
 	}
 

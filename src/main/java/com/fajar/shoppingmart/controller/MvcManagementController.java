@@ -79,7 +79,7 @@ public class MvcManagementController extends BaseController {
 	public String profile(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/profile");
+			checkUserAccess(userSessionService.getUserFromSession(request), "/management/profile");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ERROR_404_PAGE;
@@ -103,7 +103,7 @@ public class MvcManagementController extends BaseController {
 	public String messages(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/messages");
+			checkUserAccess(userSessionService.getUserFromSession(request), "/management/messages");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ERROR_404_PAGE;
@@ -120,12 +120,12 @@ public class MvcManagementController extends BaseController {
 //	public String productflow(Model model, HttpServletRequest request, HttpServletResponse response)
 //			throws IOException {
 //
-//		if (!userService.hasSession(request)) {
+//		if (!userSessionService.hasSession(request)) {
 //			sendRedirectLogin(request, response);
 //			return basePage;
 //		}
 //		try {
-//			checkUserAccess(userService.getUserFromSession(request), "/management/productFlow");
+//			checkUserAccess(userSessionService.getUserFromSession(request), "/management/productFlow");
 //		} catch (Exception e) {
 //			e.printStackTrace(); return ERROR_404_PAGE;
 //		}
@@ -139,7 +139,7 @@ public class MvcManagementController extends BaseController {
 			HttpServletResponse response) throws Exception {
 
 		try {
-			checkUserAccess(userService.getUserFromSession(request), "/management/transaction");
+			checkUserAccess(userSessionService.getUserFromSession(request), "/management/transaction");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ERROR_404_PAGE;
@@ -160,12 +160,12 @@ public class MvcManagementController extends BaseController {
 //	@RequestMapping(value = { "/menu" })
 //	public String menu(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 //
-//		if (!userService.hasSession(request)) {
+//		if (!userSessionService.hasSession(request)) {
 //			sendRedirectLogin(request, response);
 //			return basePage;
 //		}
 //		try {
-//			checkUserAccess(userService.getUserFromSession(request), "/management/menu");
+//			checkUserAccess(userSessionService.getUserFromSession(request), "/management/menu");
 //		} catch (Exception e) {
 //			e.printStackTrace(); return ERROR_404_PAGE;
 //		}

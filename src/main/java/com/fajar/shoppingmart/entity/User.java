@@ -1,11 +1,17 @@
 package com.fajar.shoppingmart.entity;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
@@ -25,7 +31,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User extends BaseEntity {
+public class User extends BaseEntity implements UserDetails {
 
 	/**
 	 * 
@@ -55,10 +61,60 @@ public class User extends BaseEntity {
 	@Transient
 	@JsonIgnore
 	private String requestId;
+	@Transient
+	@JsonIgnore
+	@Builder.Default
+	private boolean enabled = true;
+	@Transient
+	@JsonIgnore
+	@Builder.Default
+	private boolean credentialsNonExpired = true;
+	@Transient
+	@JsonIgnore
+	@Builder.Default
+	private boolean accountNonLocked = true;
+	@Transient
+	@JsonIgnore
+	@Builder.Default
+	private boolean accountNonExpired = true;
+	@Transient
+	@JsonIgnore
+	@Builder.Default
+	private  Collection<? extends GrantedAuthority>  authorities = new ArrayList<>();
 	
 	public void setLoginKeyAndPasswordNull(String loginKey) {
 		this.loginKey = loginKey;
 		this.password = null;
 	}
+
+//	@Override
+//	@JsonIgnore
+//	public Collection<? extends GrantedAuthority> getAuthorities() {
+//		 
+//		return new ArrayList<>();
+//	}
+
+//	@JsonIgnore
+//	@Override
+//	public boolean isAccountNonExpired() {
+//		 
+//		return true;
+//	}
+
+//	@JsonIgnore
+//	@Override
+//	public boolean isAccountNonLocked() {
+//		 
+//		return true;
+//	}
+
+//	@JsonIgnore
+//	@Override
+//	public boolean isCredentialsNonExpired() {
+//		 
+//		return true;
+//	}
+
+	 
 
 }

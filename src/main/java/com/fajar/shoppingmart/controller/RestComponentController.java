@@ -51,7 +51,7 @@ public class RestComponentController extends BaseController{
 	
 	
 	public void validatePageRequest(HttpServletRequest req) { 
-		boolean validated = userSessionService.validatePageRequest(req );
+		boolean validated = sessionValidationService.validatePageRequest(req );
         if(!validated)  {
         	throw new InvalidRequestException("Invalid page request");
         }

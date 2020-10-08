@@ -23,7 +23,8 @@ import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.service.ProgressService;
 import com.fajar.shoppingmart.service.UserAccountService;
-import com.fajar.shoppingmart.service.UserSessionService;
+import com.fajar.shoppingmart.service.sessions.SessionValidationService;
+import com.fajar.shoppingmart.service.sessions.UserSessionService;
 import com.fajar.shoppingmart.util.SessionUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,6 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class InterceptorProcessor {
 
+	@Autowired
+	private SessionValidationService sessionValidationService;
 	@Autowired
 	private UserSessionService userSessionService;
 	@Autowired
@@ -87,7 +90,7 @@ public class InterceptorProcessor {
 				User authenticatedUser = getAuthenticatedUser(request);
 				SessionUtil.setUserInRequest(request, authenticatedUser);
 			} else {
-				if (!userSessionService.validatePageRequest(request)) {
+				if (!sessionValidationService.validatePageRequest(request)) {
 					printNotAuthenticated(response, loginRequired);
 					return false;
 				}
@@ -177,7 +180,7 @@ public class InterceptorProcessor {
 	}
 
 	private boolean hasSessionToAccessWebPage(HttpServletRequest request) {
-		return userSessionService.hasSession(request);
+		return sessionValidationService.hasSession(request);
 	}
 
 	//// https://stackoverflow.com/questions/45595203/how-i-get-the-handlermethod-matchs-a-httpservletrequest-in-a-filter

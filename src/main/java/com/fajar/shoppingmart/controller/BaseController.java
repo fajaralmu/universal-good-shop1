@@ -22,9 +22,11 @@ import com.fajar.shoppingmart.entity.Profile;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.service.ComponentService;
 import com.fajar.shoppingmart.service.UserAccountService;
-import com.fajar.shoppingmart.service.UserSessionService;
 import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.service.runtime.RuntimeService;
+import com.fajar.shoppingmart.service.sessions.RegisteredRequestService;
+import com.fajar.shoppingmart.service.sessions.SessionValidationService;
+import com.fajar.shoppingmart.service.sessions.UserSessionService;
 import com.fajar.shoppingmart.service.transaction.ProductService;
 import com.fajar.shoppingmart.service.transaction.TransactionService;
 import com.fajar.shoppingmart.util.DateUtil;
@@ -45,17 +47,19 @@ public class BaseController {
 	@Autowired
 	protected UserSessionService userSessionService;
 	@Autowired
+	protected SessionValidationService sessionValidationService;
+	@Autowired
 	protected UserAccountService accountService;
 	@Autowired
-	protected RuntimeService registryService;
-	@Autowired
-	protected UserSessionService userService;
+	protected RuntimeService registryService; 
 	@Autowired
 	protected TransactionService transactionService;
 	@Autowired
 	protected ProductService productService;
 	@Autowired
 	protected ComponentService componentService;
+	@Autowired
+	protected RegisteredRequestService registeredRequestService;
 
 	@ModelAttribute("shopProfile")
 	@Deprecated // new @ModelAttribute = 'profile'
@@ -76,7 +80,7 @@ public class BaseController {
 
 	@ModelAttribute("loggedUser")
 	public User getLoggedUser(HttpServletRequest request) {
-		if (userSessionService.hasSession(request, false)) {
+		if (sessionValidationService.hasSession(request, false)) {
 			return userSessionService.getUserFromSession(request);
 		} else
 			return null;
@@ -124,7 +128,7 @@ public class BaseController {
 	@ModelAttribute("pageToken")
 	public String pageToken(HttpServletRequest request) {
 		try {
-			return userSessionService.getTokenByServletRequest(request);
+			return sessionValidationService.getTokenByServletRequest(request);
 		} catch (Exception e) {
 			return "";
 		}
@@ -162,12 +166,12 @@ public class BaseController {
 
 	@ModelAttribute("authenticated")
 	public boolean authenticated(HttpServletRequest request) {
-		return userSessionService.hasSession(request);
+		return sessionValidationService.hasSession(request);
 	}
 
-	public String activePage(HttpServletRequest request) {
-		return userSessionService.getPageCode(request);
-	}
+//	public String activePage(HttpServletRequest request) {
+//		return userSessionService.getPageCode(request);
+//	}
 
 	/**
 	 * ====================================================== Statics

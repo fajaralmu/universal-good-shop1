@@ -23,6 +23,8 @@ import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.MenuRepository;
 import com.fajar.shoppingmart.repository.PageRepository;
 import com.fajar.shoppingmart.service.entity.EntityValidation;
+import com.fajar.shoppingmart.service.sessions.SessionValidationService;
+import com.fajar.shoppingmart.service.sessions.UserSessionService;
 import com.fajar.shoppingmart.util.CollectionUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,8 @@ public class ComponentService {
 	@Autowired
 	private UserSessionService userSessionService;
 	@Autowired
+	private SessionValidationService sessionValidationService;
+	@Autowired
 	private UserAccountService userAccountService;
 	@Autowired
 	private PageRepository pageRepository; 
@@ -47,7 +51,7 @@ public class ComponentService {
 
 	public List<Page> getPages(HttpServletRequest request){
 		
-		boolean hasSession = userSessionService.hasSession(request);
+		boolean hasSession = sessionValidationService.hasSession(request);
 		
 		if(hasSession)
 			return pageRepository.findByOrderBySequenceAsc();
@@ -94,7 +98,7 @@ public class ComponentService {
 	public Page getPage(String code, HttpServletRequest request) { 
 		Page page = pageRepository.findByCode(code); 
 		
-		if (page.getAuthorized() == 1 && !userSessionService.hasSession(request)) {
+		if (page.getAuthorized() == 1 && !sessionValidationService.hasSession(request)) {
 			
 			return null;
 		}

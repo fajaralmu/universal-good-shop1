@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
+import com.fajar.shoppingmart.service.sessions.SessionValidationService;
 
 @Service
 public class RealtimeService2 {
@@ -16,7 +17,7 @@ public class RealtimeService2 {
 	@Autowired
 	private SimpMessagingTemplate webSocket; 
 	@Autowired
-	private UserSessionService userSessionService;
+	private SessionValidationService userSessionService;
 
 	public RealtimeService2() {
 		LogProxyFactory.setLoggers(this);
@@ -58,14 +59,6 @@ public class RealtimeService2 {
 		
 		sendLiveStramResponse(response);
 		return response;
-	}
-
-
-	public void disconnectLiveStream(WebRequest request) {
-		 
-		userSessionService.setActiveSession(request.getOriginId(), false);
-		WebResponse response = WebResponse.builder().code("01").requestId(request.getOriginId()).build();
-		sendLiveStramResponse(response );
-	}
+	} 
 
 }

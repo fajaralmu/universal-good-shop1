@@ -71,7 +71,7 @@ public class RestPublicController extends BaseController {
 	public WebResponse getRequestId(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("register {}", request);
-		WebResponse response = userSessionService.generateRequestId(httpRequest, httpResponse);
+		WebResponse response = registeredRequestService.generateRequestId(httpRequest, httpResponse);
 		return response;
 	}
 
@@ -79,7 +79,7 @@ public class RestPublicController extends BaseController {
 	@Authenticated(loginRequired = false)
 	public WebResponse getCurrentPageCode(HttpServletRequest request, HttpServletResponse response) {
 		validatePageRequest(request);
-		return WebResponse.builder().code(super.activePage(request)).build();
+		return WebResponse.builder().code("00").build();
 	}
 
 	@PostMapping(value = "/menus/{pageCode}")
@@ -91,7 +91,7 @@ public class RestPublicController extends BaseController {
 	}
 
 	public void validatePageRequest(HttpServletRequest req) {
-		boolean validated = userSessionService.validatePageRequest(req);
+		boolean validated = sessionValidationService.validatePageRequest(req);
 		if (!validated) {
 			throw new InvalidRequestException("Invalid page request");
 		}

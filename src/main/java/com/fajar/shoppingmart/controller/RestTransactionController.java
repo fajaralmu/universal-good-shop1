@@ -70,7 +70,7 @@ public class RestTransactionController extends BaseController{
 	public WebResponse stockinfo(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("stocks {}", request);
-		if(!userSessionService.hasSession(httpRequest)) {
+		if(!sessionValidationService.hasSession(httpRequest)) {
 			return WebResponse.failedResponse();
 		}
 		WebResponse response = transactionService.getStocksByProductName(request, false, httpRequest.getHeader("requestId"));

@@ -40,7 +40,7 @@ public class MvcAccountController extends BaseController {
 	@RequestMapping(value = { "/login" })
 	@CustomRequestInfo(title="Login", pageUrl = "webpage/login-page", stylePaths = "loginpage")
 	public String login(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-		if (userSessionService.hasSession(request, false)) {
+		if (sessionValidationService.hasSession(request, false)) {
 			response.sendRedirect(request.getContextPath() + "/admin/home");
 		} 
 
@@ -52,7 +52,7 @@ public class MvcAccountController extends BaseController {
 	@Authenticated
 	public String logout(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		 try {
-			userSessionService.logout(request);
+			userSessionService.removeUserSession(request);
 		 }catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -63,7 +63,7 @@ public class MvcAccountController extends BaseController {
 
 	@RequestMapping(value = { "/register" })
 	public String register(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-		if (userSessionService.hasSession(request)) {
+		if (sessionValidationService.hasSession(request)) {
 			response.sendRedirect(request.getContextPath() + "/admin/home");
 		}
 		return "webpage/register-page";

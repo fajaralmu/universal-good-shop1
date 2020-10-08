@@ -15,7 +15,7 @@ import com.fajar.shoppingmart.controller.BaseController;
 import com.fajar.shoppingmart.dto.SessionData;
 import com.fajar.shoppingmart.dto.UserSessionModel;
 import com.fajar.shoppingmart.service.LogProxyFactory;
-import com.fajar.shoppingmart.service.UserSessionService;
+import com.fajar.shoppingmart.service.sessions.SessionValidationService;
 import com.fajar.shoppingmart.util.MapUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
 import com.fajar.shoppingmart.util.StringUtil;
@@ -34,7 +34,7 @@ public class RuntimeService {
 	@PostConstruct
 	public void init() {
 		LogProxyFactory.setLoggers(this);
-		set(UserSessionService.SESSION_DATA, new SessionData());
+		set(SessionValidationService.SESSION_DATA, new SessionData());
 	}
 
 	/**
@@ -171,12 +171,16 @@ public class RuntimeService {
 	}
 
 	public boolean createNewSessionData() { 
-		return set(UserSessionService.SESSION_DATA, new SessionData());
+		return set(SessionValidationService.SESSION_DATA, new SessionData());
 	}
 	
 	private String generateIdKey() {
 
 		return StringUtil.generateRandomNumber(15);
+	}
+	
+	public UserSessionModel getUserSessionModel(String key) {
+		return this.getModel(key, UserSessionModel.class);
 	}
 
 }

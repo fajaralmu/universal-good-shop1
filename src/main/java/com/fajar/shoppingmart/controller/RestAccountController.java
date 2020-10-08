@@ -56,7 +56,7 @@ public class RestAccountController extends BaseController {
 	public WebResponse logout(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
 
 		boolean success = false;
-		if (userSessionService.hasSession(httpRequest, false)) {
+		if (sessionValidationService.hasSession(httpRequest, false)) {
 			success = accountService.logout(httpRequest);
 		}
 

@@ -18,7 +18,7 @@ import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Message;
 import com.fajar.shoppingmart.entity.RegisteredRequest;
 import com.fajar.shoppingmart.repository.EntityRepository;
-import com.fajar.shoppingmart.repository.MessageRepository;
+import com.fajar.shoppingmart.service.sessions.RegisteredRequestService;
 import com.fajar.shoppingmart.util.StringUtil; 
 
 @Service
@@ -27,11 +27,11 @@ public class MessagingService {
 	@Autowired
 	private RealtimeService2 realtimeService;
 	
-	@Autowired
-	private MessageRepository messageRepository;
+//	@Autowired
+//	private MessageRepository messageRepository;
 	
 	@Autowired
-	private UserSessionService userSessionService; 
+	private RegisteredRequestService registeredRequestService; 
 	
 	@Autowired
 	private EntityRepository entityRepository;
@@ -60,7 +60,7 @@ public class MessagingService {
 		String content= request.getValue();
 		String reqId = httpRequest.getHeader("requestId");
 		
-		RegisteredRequest registeredRequest = userSessionService.getRegisteredRequest(reqId);
+		RegisteredRequest registeredRequest = registeredRequestService.getRegisteredRequest(reqId);
 		
 		Message message = new Message(reqId, content, new Date(), Long.valueOf(StringUtil.generateRandomNumber(3)), reqId);
 		message.setAlias(request.getUsername() == null? "":request.getUsername());
@@ -76,7 +76,7 @@ public class MessagingService {
 	public WebResponse replyMessage(WebRequest request, HttpServletRequest httpRequest) { 
 		String content= request.getValue(); 
 		
-		RegisteredRequest registeredRequest = userSessionService.getRegisteredRequest(request.getDestination());
+		RegisteredRequest registeredRequest = registeredRequestService.getRegisteredRequest(request.getDestination());
 		
 		Message message = new Message("ADMIN", content, new Date(), Long.valueOf(StringUtil.generateRandomNumber(3)), request.getDestination());
 		message.setAdmin(1);

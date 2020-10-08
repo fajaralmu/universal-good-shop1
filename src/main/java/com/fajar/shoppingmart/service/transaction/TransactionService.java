@@ -34,7 +34,6 @@ import com.fajar.shoppingmart.repository.SupplierRepository;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.ProgressService;
 import com.fajar.shoppingmart.service.ReportingService;
-import com.fajar.shoppingmart.service.UserSessionService;
 import com.fajar.shoppingmart.service.entity.EntityValidation;
 import com.fajar.shoppingmart.service.financial.CashBalanceService;
 import com.fajar.shoppingmart.util.CollectionUtil;
@@ -53,9 +52,7 @@ public class TransactionService {
 	@Autowired
 	private ProductFlowRepository productFlowRepository;
 	@Autowired
-	private SupplierRepository supplierRepository;
-	@Autowired
-	private UserSessionService userSessionService;
+	private SupplierRepository supplierRepository; 
 	@Autowired
 	private CustomerRepository customerRepository;
 	@Autowired
@@ -279,35 +276,7 @@ public class TransactionService {
 			return null;
 		}
 	}
-
-	/**
-	 * get authenticated user before transaction
-	 * 
-	 * @param httpRequest
-	 * @return
-	 */
-	private User validateUserBeforeTransaction(HttpServletRequest httpRequest) {
-
-		// get from HTTP session 
-		User user = userSessionService.getUserFromSession(httpRequest);
-
-		if (null == user) {
-			// get from registry 
-			user = userSessionService.getUserFromRuntime(httpRequest);
-			if (null == user) {
-				return null;
-			}
-		}
-
-		boolean hasSession = userSessionService.hasSession(httpRequest);
-
-		if (!hasSession) {
-			return null;
-		}
-
-		return user;
-	}
- 
+	
 	public WebResponse sellProduct(WebRequest request, HttpServletRequest httpRequest) { 
 
 		User user = SessionUtil.getUserFromRequest(httpRequest);
