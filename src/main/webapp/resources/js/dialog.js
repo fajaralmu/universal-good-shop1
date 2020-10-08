@@ -9,10 +9,11 @@ function confirmDialog(msg) {
 				tagName : 'div',
 				className : 'modal fade show',
 				role : 'dialog',
-				style : { display : 'block', 'text-align' : 'center', 'margin-top' : '30vh', },
+				style : { display : 'block', 'z-index': Z_INDEX+1, 'text-align' : 'center', 'margin-top' : '30vh', },
 				ch0 : {
 					tagName : 'div',
 					className : 'modal-dialog',
+					style:{ 'z-index': Z_INDEX+2 },
 					role : "document",
 					ch1 : {
 						tagName : 'div',
@@ -65,10 +66,11 @@ function promptDialog(msg, inputType) {
 				tagName : 'div',
 				className : 'modal fade show',
 				role : 'dialog',
-				style : { display : 'block', 'text-align' : 'center', 'margin-top' : '30vh', },
+				style : { display : 'block', 'text-align' : 'center', 'margin-top' : '30vh', 'z-index': Z_INDEX+1 },
 				ch0 : {
 					tagName : 'div',
 					className : 'modal-dialog',
+					style:{ 'z-index': Z_INDEX+2 },
 					role : "document",
 					ch1 : {
 						tagName : 'div',
@@ -141,11 +143,12 @@ function infoDialog(msg) {
 				tagName : 'div',
 				className : 'modal fade show',
 				role : 'dialog',
-				style : { display : 'block', 'text-align' : 'center', 'margin-top' : '30vh', },
+				style : { display : 'block', 'text-align' : 'center', 'margin-top' : '30vh', 'z-index': Z_INDEX+1 },
 				ch0 : {
 					tagName : 'div',
 					className : 'modal-dialog',
 					role : "document",
+					style:{ 'z-index': Z_INDEX+2 },
 					ch1 : {
 						tagName : 'div',
 						className : 'modal-content',

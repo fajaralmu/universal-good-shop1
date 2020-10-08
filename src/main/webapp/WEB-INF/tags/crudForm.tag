@@ -195,7 +195,7 @@
 					<button id="btn-submit" class="btn btn-primary">Save
 						Changes</button>
 					<c:if test="${singleRecord == false }">
-						<button class="btn" id="btn-clear">Clear</button>
+						<button class="btn btn-warning" id="btn-clear">Clear</button>
 					</c:if>
 				</c:if>
 				<c:if test="${singleRecord == false }">
