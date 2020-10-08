@@ -16,12 +16,12 @@
 <link rel="stylesheet" type="text/css"
 	href="<c:url value="/res/css/shop.css?version=1"></c:url>" />
 <link rel="stylesheet" type="text/css"
-	href="<c:url value="/res/css/bootstrap.min.css" />" />
+	href="<c:url value="/res/css/bootstrap/bootstrap.min.css" />" />
 <link rel="stylesheet" type="text/css"
 	href="<c:url value="/res/fa/css/all.css" />" />
 <script src="<c:url value="/res/js/jquery-3.3.1.slim.min.js" />"></script>
 <script src="<c:url value="/res/js/popper.min.js" />"></script>
-<script src="<c:url value="/res/js/bootstrap.min.js"  />"></script>
+<script src="<c:url value="/res/js/bootstrap/bootstrap.min.js"  />"></script>
 <script src="<c:url value="/res/js/sockjs-0.3.2.min.js"></c:url >"></script>
 <script src="<c:url value="/res/js/stomp.js"></c:url >"></script>
 <script src="<c:url value="/res/js/websocket-util.js"></c:url >"></script>
@@ -95,13 +95,8 @@
 	cursor: pointer;
 }
 
-a {
-	color: ${shopProfile.fontColor}
-
-}
-a:hover {
-	text-decoration: none;
-}
+a {  color: ${shopProfile.fontColor}  }
+a:hover { text-decoration: none;  }
 
 </style>
 </head>
@@ -148,36 +143,36 @@ a:hover {
 	<script type="text/javascript">
 		const mainHeader = byId("main-header");
 		const websocketUrl = '${contextPath}/realtime-app';
+		
 		function initProgressWebsocket() {
 			hide('progress-bar-wrapper');
 
-			addWebsocketRequest('/wsResp/progress/${requestId}', function(
-					response) {
+			addWebsocketRequest('/wsResp/progress/${requestId}', function(response) {
 
 				show('progress-bar-wrapper');
+				
 				byId('progress-bar').style.width = response.percentage + "%";
-				byId('progress-bar').setAttribute("aria-valuenow",
-						Math.floor(response.percentage));
+				byId('progress-bar').setAttribute("aria-valuenow", Math.floor(response.percentage));
 
 				if (response.percentage >= 100) {
 					hide('progress-bar-wrapper');
 				}
 			});
 		}
-
+		
 		document.body.onload = function() {
 			initProgressWebsocket();
 			connectToWebsocket();
-
 		}
 		
 		function handleOnScroll(e){
-			const limit = screen.height*15/100; /////////////25 vh
-			if(scrollY > limit){
+			const documentHeight = getDocumentHeight();
+			/* const limit = screen.height*11/100; /////////////25 vh
+			if(scrollY > limit && documentHeight > 900){
 				mainHeader.style.position = 'fixed';
 			}else{
 				mainHeader.style.position = 'relative';
-			}
+			} */
 		}
 		
 		document.body.onscroll = function(e){

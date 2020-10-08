@@ -1,6 +1,5 @@
 package com.fajar.shoppingmart.config;
 
-import java.io.IOException;
 import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
@@ -69,7 +68,8 @@ public class InterceptorProcessor {
 
 	public boolean interceptApiRequest(HttpServletRequest request, HttpServletResponse response,
 			HandlerMethod handlerMethod) {
-
+		 
+		log.info("request Principal: {}", request.getUserPrincipal());
 		log.info("intercept api handler: {}", request.getRequestURI());
 
 		Authenticated authenticated = getAuthenticationAnnotation(handlerMethod);

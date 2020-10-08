@@ -66,7 +66,6 @@ public class RestAccountController extends BaseController {
 	@PostMapping(value = "/getprofile", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Authenticated
 	public WebResponse getProfile(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
-
 		return WebResponse.builder().entity(getLoggedUser(httpRequest)).build();
 	}
 	
@@ -74,7 +73,6 @@ public class RestAccountController extends BaseController {
 	@Authenticated
 	public User user(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
 		return userSessionService.getLoggedUser(httpRequest);
-//		return getLoggedUser(httpRequest);
 	}
 
 }

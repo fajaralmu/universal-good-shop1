@@ -1,9 +1,11 @@
 const Z_INDEX = 1500;
+
+
 function confirmDialog(msg) {
 	return new Promise(function(resolve, reject) {
 		const dialog = createHtmlTag({
 			tagName : 'div',
-			style:{ 'z-index': Z_INDEX },
+			 
 			ch0 : modalBackdropJson(),
 			ch1 : {
 				tagName : 'div',
@@ -60,7 +62,7 @@ function promptDialog(msg, inputType) {
 	return new Promise(function(resolve, reject) {
 		const dialog = createHtmlTag({
 			tagName : 'div',
-			style:{ 'z-index': Z_INDEX },
+			 
 			ch0 : modalBackdropJson(),
 			ch1 : {
 				tagName : 'div',
@@ -137,7 +139,7 @@ function infoDialog(msg) {
 	return new Promise(function(resolve, reject) {
 		const dialog = createHtmlTag({
 			tagName : 'div',
-			style:{ 'z-index': Z_INDEX },
+			 
 			ch0 : modalBackdropJson(),
 			ch1 : {
 				tagName : 'div',
@@ -195,7 +197,7 @@ function modalBackdropJson(){
 	return {
 		tagName : 'div',
 		className : 'modal-backdrop', 
-		style:{ 'background-color': 'rgba(150,150,150,0.5)' }
+		style:{ 'background-color': 'rgba(150,150,150,0.5)' , 'z-index': Z_INDEX }
 	}
 }
 

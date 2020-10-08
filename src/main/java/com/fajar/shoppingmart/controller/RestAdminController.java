@@ -75,6 +75,7 @@ public class RestAdminController extends BaseController {
 	public WebResponse getMessages(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		restPublicController.validatePageRequest(httpRequest);
+		 
 		WebResponse response = messagingService.getMessages(httpRequest);
 		return response;
 	}
