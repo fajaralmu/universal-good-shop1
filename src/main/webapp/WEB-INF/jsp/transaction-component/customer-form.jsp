@@ -7,8 +7,8 @@
 			<div class="dynamic-dropdown-form">
 				<input id="input-customer" placeholder="customer name" type="text"
 					onkeyup="loadCustomerList()" class="form-control" />
-				<input id="input-customer-id" placeholder="customer code" type="text"
-					  class="form-control" /> <select
+				<input id="input-customer-id" on-enter="loadCustomerListByCode()" placeholder="customer code" type="text"
+					  class="form-control onenter" /> <select
 					 id="customer-dropdown" class="form-control"
 					multiple="multiple">
 				</select>
@@ -49,9 +49,5 @@
 		currentCustomer = entity;
 	}
 	
-	inputCustomerIdField.onkeyup = function(e){
-		if(e.keyCode == 13) { //press enter
-			loadCustomerListByCode();
-		}
-	}
+	 
 </script>

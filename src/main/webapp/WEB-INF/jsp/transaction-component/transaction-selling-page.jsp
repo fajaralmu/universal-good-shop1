@@ -20,7 +20,7 @@
 									<input id="input-product" placeholder="product name"
 										type="text" onkeyup="loadProductList('name', 'input-product', false)" class="form-control" />
 									<input id="input-product-code" placeholder="product code"
-										type="text" class="form-control" />
+										type="text" on-enter="loadProductList('code', 'input-product-code', true)" class="form-control onenter" />
 									<select id="product-dropdown" class="form-control"
 										multiple="multiple">
 									</select>
@@ -148,23 +148,19 @@
 
 		processReceipt(transaction);
 	}
-	
-	inputProductCode.onkeyup = function(e){
-		if(e.keyCode == 13) //enter
-		{
-			loadProductList('code', 'input-product-code', true);
-		}
-	}
+	 
 
 	function loadProductList(fieldName, inputId, exacts) {
 		productListDropDown.innerHTML = "";
 		const inputElement = byId(inputId);
+		const fieldsFilter = {};
+		fieldsFilter[fieldName] = inputElement.value;
 		
 		var requestObject = {
 			'entity' : 'product',
 			'filter' : {
 				'exacts': exacts,
-				'fieldsFilter' : { fieldName : inputElement.value }
+				'fieldsFilter' :  fieldsFilter
 			}
 		};
 
@@ -256,7 +252,7 @@
 	}
 
 	function clearProductInputs() {
-		clearElement(inputProductName, priceField, quantityField,
+		clearElement(inputProductName, inputProductCode, priceField, quantityField,
 				inputQuantityField, expiryDateField);
 		clearElement("unit-name", "product-dropdown", "total-change-label",
 				"purchase-price");
@@ -268,6 +264,7 @@
 
 	function setCurrentProduct(entity, loadNewStock) {
 		inputProductName.value = entity.product.name;
+		inputProductCode.value = entity.product.code;
 		priceField.value = beautifyNominal(entity.product.price);
 		quantityField.value = entity.product.count;
 
