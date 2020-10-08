@@ -97,12 +97,18 @@
 	var productFlowTable = byId("product-flows");
 	var tableReceipt = byId("table-receipt");
 
-	function send() {
-		if (!confirm("Are You Ready To Submit Transaction?"))
-			return;
+	function send(){
+		confirmDialog("Are You Ready To Submit Transaction?").then(function(ok){
+			if(ok){
+				submitTransaction();
+			}
+		});
+	}
+	
+	function submitTransaction() {
 
 		if (!currentSupplier) {
-			alert("Supplier is not defined!");
+			infoDialog("Supplier is not defined!").then(function(e){});
 			return;
 		}
 
@@ -112,15 +118,17 @@
 		}
 		postReq("<spring:url value="/api/transaction/purchasing" />",
 				requestObject, function(xhr) {
-					var response = (xhr.data);
-					var code = response.code;
+					const response = (xhr.data);
+					const code = response.code;
 					if (code == "00") {
-						alert("transaction success")
-						productFlows = [];
-						populateProductFlow(productFlows);
-						showReceipt(response.transaction);
+						
+						infoDialog("transaction success").then(function(e){
+							populateProductFlow([]);
+							showReceipt(response.transaction);
+						});
+						
 					} else {
-						alert("transaction failed");
+						infoDialog("transaction failed").then(function(e){});
 					}
 				});
 	}

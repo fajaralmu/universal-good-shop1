@@ -112,27 +112,35 @@
 	const totalPriceLabel = byId("total-price");
 	const productListDropDown = byId("product-dropdown");
 	const productFlowTable = byId("product-flows");
-	const tableReceipt = byId("table-receipt");  
+	const tableReceipt = byId("table-receipt"); 
 	
 	function send() {
-		if (!confirm("Are You Ready To Submit Transaction?"))
-			return;
+		confirmDialog("Are You Ready To Submit Transaction?").then(function(ok){
+			if(ok){
+				submitTransaction();
+			}
+		});
+	}
+	
+	function submitTransaction() {
+		
 		var requestObject = {
 			"customer" : currentCustomer,
 			"productFlows" : productFlows
 		}
 		postReq("<spring:url value="/api/transaction/selling" />",
 				requestObject, function(xhr) {
-					var response = (xhr.data);
-					var code = response.code;
+					const response = (xhr.data);
+					const code = response.code;
 					if (code == "00") {
-						alert("transaction success")
-						productFlows = [];
-						populateProductFlow(productFlows);
-						showReceipt(response.transaction)
-						clearProductInputs();
+						
+						infoDialog("transaction success").then(function(e){
+							populateProductFlow([]);
+							showReceipt(response.transaction);
+						});
+						
 					} else {
-						alert("transaction failed");
+						infoDialog("transaction failed").then(function(e){});
 					}
 				});
 	}
