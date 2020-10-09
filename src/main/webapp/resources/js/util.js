@@ -381,9 +381,9 @@ function createTableBody(columns, entities, beginNumber,ignoreNumber){
 		for (let i = 0; i < columns.length; i++) {
 			let column = columns[i];
 			let isUrl = false;
-			if(column.includes("setting=")){
-				let setting = column.split("setting=")[1];
-				column = column.split("setting=")[0].trim();
+			if(column.includes("ATTRIBUTE>>")){
+				let setting = column.split("ATTRIBUTE>>")[1];
+				column = column.split("ATTRIBUTE>>")[0].trim();
 				
 				if(setting.includes("link")){
 					isUrl = true;	
@@ -465,7 +465,7 @@ function randomID(){
 
 /**
  * 
- * @param rowList
+ * @param rowList 2 dimensional array
  * @returns <tbody>
  */
 function createTBodyWithGivenValue(rowList){
@@ -479,20 +479,18 @@ function createTBodyWithGivenValue(rowList){
 			let cell = columns[j];
 			const column = createElement("td");
 			
-			if(null!=cell && typeof(cell) == "string" && cell.includes("setting=")){
-				var setting = cell.split("setting=")[1];
-				// colspan
-				if(setting.includes("<colspan>")){
-					var collspan = setting.split("<colspan>")[1];
-					column.setAttribute("colspan",collspan.split("</colspan>")[0]);
-				}
-				// style
-				if(setting.includes("<style>")){
-					var style = setting.split("<style>")[1].split("</style>")[0];
-					column.setAttribute("style",style);
-				}
+			if(null != cell && typeof(cell) == "string" && cell.includes("ATTRIBUTE>>")){
+				const rawAttribute = cell.split("ATTRIBUTE>>")[1];
+				const attribute = rawAttribute.split(",");
 				
-				cell = cell.split("setting=")[0];
+				for (var i = 0; i < attribute.length; i++) {
+					try{
+						const keyVal = attribute[i].split("=");
+						column.setAttribute(keyVal[0], keyVal[1]);
+					}catch(e){ }
+					
+				}
+				cell = cell.split("ATTRIBUTE>>")[0];
 			}
 			if(cell!=null && typeof(cell) == "number"){
 				cell = beautifyNominal(cell);

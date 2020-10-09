@@ -183,23 +183,25 @@
 
 	function populateTableSales(salesList) {
 		tableSales.innerHTML = "";
-		var tableColumns = [ [ "No setting= <style>width:50px</style>",
-				"Period setting= <style>width:60px</style>",
-				"Sales setting=<colspan>6</colspan>" ]
+		var tableColumns = [ [ "No ATTRIBUTE>>style=width:50px",
+				"Period ATTRIBUTE>>style=width:60px",
+				"Sales ATTRIBUTE>>colspan=6" ]
 
 		];
 		for (var i = 0; i < salesList.length; i++) {
-			var sales = salesList[i];
-			var bar = "<div class=\"rounded-right\" style=\"width: "
+			const sales = salesList[i];
+			const bar = "<div class=\"rounded-right\" style=\"width: "
 					+ sales.percentage
-					+ "%;color:white; height:25px; background-color: green \"></div>setting=<colspan>5</colspan>";
+					+ "%;color:white; height:25px; background-color: green \"></div>ATTRIBUTE>>colspan=5";
+			const period = sales.month + "-" + sales.year;
+			const number = 1 + i;
 			tableColumns.push([
-					i + 1,
-					sales.month + "-" + sales.year,
+					number,
+					period,
 					beautifyNominal(sales.sales)
-							+ "setting= <style>width:100px</style>", bar ]);
+							+ "ATTRIBUTE>>style=width:100px", bar ]);
 		}
-		let tbody = createTBodyWithGivenValue(tableColumns);
+		const tbody = createTBodyWithGivenValue(tableColumns);
 		tableSales.innerHTML = tbody.innerHTML;
 	}
 

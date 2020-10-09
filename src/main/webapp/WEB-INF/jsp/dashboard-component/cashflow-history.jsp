@@ -71,9 +71,9 @@
 					const maxValue = xhr.data.maxValue;
 					const purchases = xhr.data.purchases;
 					const tableColumns = [ [
-							"No setting= <style>width:50px</style>",
-							"Period setting= <style>width:60px</style>",
-							"Amount setting=<colspan>6</colspan>" ]
+							"No ATTRIBUTE>>style=width:50px",
+							"Period ATTRIBUTE>>style=width:60px",
+							"Amount ATTRIBUTE>>colspan=6" ]
 
 					];
 					for (let i = 0; i < supplies.length; i++) {
@@ -97,7 +97,7 @@
 								+ beautifyNominal(cashflowPurchases.amount)
 								+ " ("
 								+ beautifyNominal(cashflowPurchases.count)
-								+ " unit)</span> setting= <style>width:200px</style>";
+								+ " unit)</span>ATTRIBUTE>>style=width:200px";
 
 						const chartBody = //supply
 						"<div class=\"rounded-right chart-item-hr\" "+
@@ -106,7 +106,7 @@
 								//purchase
 								+ "<div class=\"rounded-right chart-item-hr\" "
 								+"style=\" width:"+percentPurchases+"; font-size:0.7em; background-color:green\">"
-								+ "</div>" + "setting= <colspan>5</colspan>";
+								+ "</div>" + " ATTRIBUTE>>colspan=5";
 
 						const columns = [
 								i + 1,
