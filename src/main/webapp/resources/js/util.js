@@ -471,10 +471,12 @@ function randomID(){
 function createTBodyWithGivenValue(rowList){
 	const tbody = createElement("tbody",randomID(),null);
 	
+	//rows
 	for (var i = 0; i < rowList.length; i++) {
 		const columns = rowList[i];
 		const row = createElement("tr");
 		
+		//columns
 		for (var j = 0; j < columns.length; j++) {
 			let cell = columns[j];
 			const column = createElement("td");
@@ -483,16 +485,15 @@ function createTBodyWithGivenValue(rowList){
 				const rawAttribute = cell.split("ATTRIBUTE>>")[1];
 				const attribute = rawAttribute.split(",");
 				
-				for (var i = 0; i < attribute.length; i++) {
+				for (var a = 0; a < attribute.length; a++) {
 					try{
-						const keyVal = attribute[i].split("=");
+						const keyVal = attribute[a].split("=");
 						column.setAttribute(keyVal[0], keyVal[1]);
 					}catch(e){ }
-					
 				}
 				cell = cell.split("ATTRIBUTE>>")[0];
 			}
-			if(cell!=null && typeof(cell) == "number"){
+			if(cell != null && typeof(cell) == "number"){
 				cell = beautifyNominal(cell);
 			}
 			column.innerHTML = cell;
