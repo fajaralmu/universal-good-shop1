@@ -23,7 +23,6 @@ import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.service.MenuInitiationService;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
-import com.fajar.shoppingmart.util.MapUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
 
 import lombok.extern.slf4j.Slf4j;

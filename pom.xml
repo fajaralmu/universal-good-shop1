@@ -13,6 +13,7 @@
 
 	</properties>
 	<build>
+		<finalName>universal-good-shop</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

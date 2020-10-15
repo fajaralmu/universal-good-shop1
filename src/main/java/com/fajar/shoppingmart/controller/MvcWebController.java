@@ -29,6 +29,13 @@ public class MvcWebController extends BaseController {
 	public MvcWebController() {
 		log.info("-----------------MvcUtilController------------------");
 	}
+	
+	@GetMapping(value = "/")
+	public String index(Model model, HttpServletRequest request) throws IOException {
+		model.addAttribute("title", getProfile(request).getName());
+		
+		return "standalone-frontend/index";
+	}
 
 	@GetMapping(value = "notfound")
 	public String halamanNotFound(Model model) throws IOException {
