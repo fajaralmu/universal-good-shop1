@@ -30,7 +30,7 @@ public class MvcWebController extends BaseController {
 		log.info("-----------------MvcUtilController------------------");
 	}
 	
-	@GetMapping(value = "/")
+	@GetMapping(value = { "/" })
 	public String index(Model model, HttpServletRequest request) throws IOException {
 		model.addAttribute("title", getProfile(request).getName());
 		
