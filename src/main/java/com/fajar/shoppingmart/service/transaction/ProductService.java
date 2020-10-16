@@ -439,4 +439,14 @@ public class ProductService {
 		}
 		return WebResponse.failed("invalid option");
 	}
+	
+	public WebResponse getProductSuppliedBySupplier(WebRequest request) {
+		try {
+			long supplierId = request.getSupplier().getId();
+			List<Product> products = productRepository.getProductsSuppliedBySupplier(supplierId);
+			return WebResponse.builder().entities(CollectionUtil.convertList(products)).build();
+		}catch (Exception e) {
+			return WebResponse.failed(e);
+		}
+	}
 }

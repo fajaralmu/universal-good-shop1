@@ -45,20 +45,7 @@ public class RealtimeService2 {
 	public void sendMessageChat(WebResponse response) {
 		webSocket.convertAndSend("/wsResp/messages", response); 
 	}
-	
-	private void sendLiveStramResponse(WebResponse response) {
-		webSocket.convertAndSend("/wsResp/videostream/"+response.getRequestId(), response);
-	}
-
-
-	public WebResponse stream(WebRequest request) {
-		WebResponse response = new WebResponse();
-		
-		response.setImageData(request.getImageData());
-		response.setRequestId(request.getOriginId());
-		
-		sendLiveStramResponse(response);
-		return response;
-	} 
+	 
+ 
 
 }

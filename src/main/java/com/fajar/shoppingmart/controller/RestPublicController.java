@@ -49,9 +49,8 @@ public class RestPublicController extends BaseController {
 	@PostMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@CustomRequestInfo(withRealtimeProgress = true)
 	@Authenticated(loginRequired = false)
-	public WebResponse get(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
-		validatePageRequest(httpRequest);
+	public WebResponse get(@RequestBody WebRequest request, HttpServletRequest httpRequest) throws IOException {
+		
 		log.info("register {}", request);
 		WebResponse response = productService.getPublicEntities(request, httpRequest.getHeader("requestId"));
 		return response;
@@ -59,33 +58,33 @@ public class RestPublicController extends BaseController {
 
 	@PostMapping(value = "/moresupplier", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Authenticated(loginRequired = false)
-	public WebResponse moresupplier(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
-		validatePageRequest(httpRequest);
-		log.info("more supplier {}", request);
+	public WebResponse moresupplier(@RequestBody WebRequest request, HttpServletRequest httpRequest) throws IOException {
+		
+		log.info("get more suppliers {}", request);
 		WebResponse response = productService.getMoreProductSupplier(request);
+		return response;
+	}
+	
+	@PostMapping(value = "/productssupplied", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Authenticated(loginRequired = false)
+	public WebResponse productsSuppliedBySupplier(@RequestBody WebRequest request, HttpServletRequest httpRequest) throws IOException {
+		
+		log.info("get products supplied by supplier {}", request);
+		WebResponse response = productService.getProductSuppliedBySupplier(request);
 		return response;
 	}
 
 	@PostMapping(value = "/requestid", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse getRequestId(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
-		log.info("register {}", request);
+	public WebResponse getRequestId(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+		
+		log.info("generate or update requestId {}");
 		WebResponse response = registeredRequestService.generateRequestId(httpRequest, httpResponse);
 		return response;
 	}
 
-	@PostMapping(value = "/pagecode")
-	@Authenticated(loginRequired = false)
-	public WebResponse getCurrentPageCode(HttpServletRequest request, HttpServletResponse response) {
-		validatePageRequest(request);
-		return WebResponse.builder().code("00").build();
-	}
-
 	@PostMapping(value = "/menus/{pageCode}")
 	@Authenticated(loginRequired = false)
-	public WebResponse getMenusByPage(@PathVariable(value = "pageCode") String pageCode, HttpServletRequest request,
-			HttpServletResponse response) {
+	public WebResponse getMenusByPage(@PathVariable(value = "pageCode") String pageCode, HttpServletRequest request ) {
 		validatePageRequest(request);
 		return componentService.getMenuByPageCode(pageCode);
 	}

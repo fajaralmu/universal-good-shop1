@@ -797,5 +797,13 @@ public enum FontAwesomeIcon {
 		this.value = _class;
 	 
 	} 
+	
+	public static void main(String[] args) {
+		FontAwesomeIcon[] vals = values();
+		for (FontAwesomeIcon fontAwesomeIcon : vals) {
+			String value = fontAwesomeIcon.value.replace("fa ", " fas ");
+			System.out.println("<p><i class=\""+value+"\"></i>"+value+"</p>");
+		}
+	}
 
 }

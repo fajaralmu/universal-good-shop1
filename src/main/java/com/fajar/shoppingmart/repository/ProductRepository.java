@@ -37,5 +37,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 	@Query(nativeQuery = true, value="select * from product where image_url is not null limit 7")
 	public List<Product> getRandomProducts();
+	
+	@Query(nativeQuery = true, value="select  *  from product  " + 
+			"left join product_flow on product_flow.product_id = product.id " + 
+			"left join `transaction` on product_flow.transaction_id = transaction.id " + 
+			"left join supplier on supplier.id = transaction.supplier_id " + 
+			"where transaction.supplier_id = ?1 group by product.id")
+	public List<Product> getProductsSuppliedBySupplier(long supplierId);
+	
+	
 
 }
