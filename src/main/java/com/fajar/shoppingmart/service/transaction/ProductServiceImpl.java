@@ -52,7 +52,7 @@ public class ProductServiceImpl implements ProductService{
 	@Autowired
 	private ProgressService progressService;
 	@Autowired
-	private ProductInventoryService productInventoryService;
+	private ProductInventoryService  productInventoryService;
 
 	@PostConstruct
 	public void init() {

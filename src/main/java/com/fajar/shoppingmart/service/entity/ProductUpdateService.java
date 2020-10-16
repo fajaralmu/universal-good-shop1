@@ -24,7 +24,7 @@ public class ProductUpdateService extends BaseEntityUpdateService<Product>{
 	@Autowired
 	private ProductRepository productRepository;
 	@Autowired
-	private ProductInventoryService productInventoryService;
+	private ProductInventoryService  productInventoryService;
 	
 	/**
 	 * add & update product
