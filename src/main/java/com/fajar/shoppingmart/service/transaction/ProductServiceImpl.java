@@ -163,13 +163,14 @@ public class ProductServiceImpl implements ProductService{
 		}
 		Filter filter = request.getFilter();
 		List<ProductSales> salesList = getProductSalesListInPeriod(product, filter, requestId);
-		Integer maxValue = filter.getMaxValue();
+		Integer maxValue = 0;
 		
 		/**
 		 * set sales proportion for each product sales
 		 */
 		for (ProductSales sales : salesList) {
 
+			maxValue = sales.getMaxValue(); //always same
 			double ratio = (Double.parseDouble(String.valueOf(sales.getSales()))
 					/ Double.parseDouble(maxValue.toString()));
 			double percentage = ratio * 100;
@@ -394,7 +395,11 @@ public class ProductServiceImpl implements ProductService{
 				progressService.sendProgress(1, totalPeriod, 100, false, requestId);
 			}
 		}
-		filter.setMaxValue(maxValue);
+		final int m = maxValue;
+		productSalesList.forEach(p->{
+			p.setMaxValue(m);
+		});
+		
 		return productSalesList;
 	}
 	

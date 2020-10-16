@@ -16,6 +16,7 @@ import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.Supplier;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.User;
+import com.fajar.shoppingmart.querybuilder.QueryHolder;
 import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.InventoryItemRepository;
 import com.fajar.shoppingmart.repository.PersistenceOperation;
@@ -90,6 +91,7 @@ public class ProductInventoryService {
 	 * @return
 	 */
 	public List<InventoryItem> getInventoriesByProduct(String field, Object value, boolean match, int limit) {
+		 
 		String sql = "select * from inventoryitem left join product on inventoryitem.product_id = product.id "
 				+ " where inventoryitem.count > 0 and product." + field + " ";
 		if (match) {

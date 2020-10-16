@@ -21,6 +21,7 @@ public class ProductSales extends BaseEntity {
 	private int sales;
 	private int month;
 	private int year;
-	private double percentage;
+	private double percentage; 
+	private int maxValue;
 
 }
