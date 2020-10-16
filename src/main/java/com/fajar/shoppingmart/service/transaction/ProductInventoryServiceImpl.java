@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -81,10 +84,10 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 	}
 
 	@Override
-	public List<InventoryItem> getInventoriesByProduct(String field, Object value, boolean match, int limit) {
+	public List<InventoryItem> getInventoriesByProduct(String fieldName, Object value, boolean match, int limit) {
 		 
 		String sql = "select * from inventoryitem left join product on inventoryitem.product_id = product.id "
-				+ " where inventoryitem.count > 0 and product." + field + " ";
+				+ " where inventoryitem.count > 0 and product." + fieldName + " ";
 		if (match) {
 			sql += " = '" + value + "'";
 		} else {
@@ -93,6 +96,34 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 		if (limit > 0) {
 			sql += " limit " + limit;
 		}
+		
+		List<InventoryItem> result  = repositoryCustom.pesistOperation(new PersistenceOperation<List<InventoryItem>>() {
+
+			@Override
+			public List<InventoryItem> doPersist(Session hibernateSession) {
+				Criteria criteria = hibernateSession.createCriteria(InventoryItem.class, "inventoryItem");
+				criteria.createAlias("product", "p");
+				Criterion[] filter = new Criterion[2];
+				
+				filter[0] = Restrictions.gt("count", 0);
+				if (match) {
+					filter[1] = Restrictions.eq("p."+fieldName, value);
+				} else {
+					filter[1] = Restrictions.like("p."+fieldName, value);
+				}
+				if (limit > 0) {
+					criteria.setMaxResults(limit);				
+				}
+				
+				criteria.add(Restrictions.and(filter ));
+				log.info("_______SQL_HIBERNATE_BUILT: {}", repositoryCustom.getWhereQuery(criteria));
+				
+				return criteria.list();
+			}
+			
+		});
+		log.info("_______SQL_RAW__BUILT: {}", sql);
+		
 		return repositoryCustom.filterAndSort(sql, InventoryItem.class);
 	}
 

@@ -80,8 +80,6 @@ public class RestTransactionController extends BaseController{
 		return response;
 	}
 	
-	 
-	
 	@PostMapping(value = "/cashflowinfo", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse cashflowinfo(@RequestBody WebRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
@@ -115,7 +113,7 @@ public class RestTransactionController extends BaseController{
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("monthlycashflow {}", request);
 		 
-		WebResponse response = transactionHistoryService.getCashflowDetail(request, httpRequest.getHeader("requestId"));
+		WebResponse response = transactionHistoryService.getCashflowDaily(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	

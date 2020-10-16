@@ -35,7 +35,7 @@ public class ReportingService {
 	@Autowired
 	private TransactionRepository transactionRepository;
 	@Autowired
-	private ProgressService progressService; 
+	private ProgressService progressService;
 	
 	public WebResponse getCashFlow(WebRequest request) {
 
@@ -305,10 +305,12 @@ public class ReportingService {
 	 * @return
 	 */
 	public WebResponse getCashflowDetail(WebRequest request, String requestId) { 
+		
 		int monthFrom = request.getFilter().getMonth();
 		int yearFrom = request.getFilter().getYear();
 		int monthTo = request.getFilter().getMonthTo();
 		int yearTo = request.getFilter().getYearTo();
+		
 		int diffMonth = getDiffMonth(monthFrom, yearFrom, monthTo, yearTo);
 		
 		Calendar periodTo = Calendar.getInstance(); 

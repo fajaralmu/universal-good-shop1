@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
+
 <div id="content-product-sales" style="display: none"> 
 	<h3>
 		Product Sales <small>
@@ -16,6 +17,7 @@
 		<button class="btn btn-outline-success" onclick="loadMoreProduct()">More</button>
 	</div>
 </div>
+
 <script type="text/javascript">
 	var currentOffset = 0;
 	//product sales
