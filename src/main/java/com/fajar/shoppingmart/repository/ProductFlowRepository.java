@@ -70,4 +70,11 @@ public interface ProductFlowRepository extends JpaRepository<ProductFlow, Long> 
 	@Query(value = "select sum(count)  from product_flow left join `transaction` on transaction_id = transaction.id  "
 			+ "where transaction.`type` = ?1 and product_id = ?2 ", nativeQuery = true)
 	public int getCount(String trxType, long productId);
+
+	
+	@Query(value = "select sum(`product_flow`.count) as count, sum(`product_flow`.count * `product_flow`.price) as price,`transaction`.`type` as module from `product_flow`  " + 
+			"  LEFT JOIN `transaction` ON  `transaction`.`id` = `product_flow`.`transaction_id` " + 
+			"  WHERE `transaction`.`type` = ?1 and month(`transaction`.transaction_date) = ?2  " + 
+			"  and year(`transaction`.transaction_date) = ?3 and `transaction`.deleted = false and `product_flow`.deleted = false "  , nativeQuery = true)
+	public Object findCashflowByModuleAndMonthAndYear(String module, Integer month, Integer year);
 }

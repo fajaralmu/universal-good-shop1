@@ -197,4 +197,31 @@ public class DateUtil {
 		return years ;
 	}
 
+	/**
+	 * 
+	 * @param m0 from month
+	 * @param y0 from year
+	 * @param m1 to month
+	 * @param y1 to year
+	 * @return
+	 */
+	public static int getDiffMonth(int m0, int y0, int m1, int y1) {
+		int diff = 0;
+		for (int i = y0; i <= y1; i++) {
+
+			int beginMonth = 1; 
+			if (i == y0) { 
+				beginMonth = m0;
+			}
+
+			for (int j = beginMonth; j <= 12; j++) { 
+				if (i == y1 && j == m1) { 
+					return diff;
+				}
+				diff++;
+			}
+
+		}
+		return diff;
+	}
 }

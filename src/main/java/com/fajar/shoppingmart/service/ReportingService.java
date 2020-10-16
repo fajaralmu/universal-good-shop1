@@ -1,5 +1,7 @@
 package com.fajar.shoppingmart.service;
 
+import static com.fajar.shoppingmart.util.DateUtil.getDiffMonth;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,6 +13,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.shoppingmart.annotation.CustomEntity;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.TransactionType;
 import com.fajar.shoppingmart.dto.WebRequest;
@@ -21,6 +24,7 @@ import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.Supplier;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.custom.CashFlow;
+import com.fajar.shoppingmart.repository.PersistenceOperation;
 import com.fajar.shoppingmart.repository.ProductFlowRepository;
 import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.repository.TransactionRepository;
@@ -31,7 +35,7 @@ public class ReportingService {
 	@Autowired
 	private ProductFlowRepository productFlowRepository;
 	@Autowired
-	private RepositoryCustomImpl repositoryCustomImpl;
+	private RepositoryCustomImpl customRepository;
 	@Autowired
 	private TransactionRepository transactionRepository;
 	@Autowired
@@ -66,15 +70,20 @@ public class ReportingService {
 	 */
 	private CashFlow getCashflow(Integer month, Integer year, final String module) {
 
-		String sql = " select sum(`product_flow`.count) as count, sum(`product_flow`.count * `product_flow`.price) as price,`transaction`.`type` as module from `product_flow`  "
-				+ " LEFT JOIN `transaction` ON  `transaction`.`id` = `product_flow`.`transaction_id`  "
-				+ " WHERE  `transaction`.`type` = '$MODULE' and month(`transaction`.transaction_date) =$MM "
-				+ " and year(`transaction`.transaction_date) = $YYYY and `transaction`.deleted = false and `product_flow`.deleted = false";
-
-		sql = sql.replace("$YYYY", year.toString()).replace("$MODULE", module).replace("$MM", month.toString());
-
-		Object cashflow = repositoryCustomImpl.getCustomedObjectFromNativeQuery(sql, CashFlow.class);
-		return (CashFlow) cashflow;
+		Object result = productFlowRepository.findCashflowByModuleAndMonthAndYear(module, month, year);
+		CustomEntity customEntitySetting = (CustomEntity) CashFlow.class.getAnnotation(CustomEntity.class);
+		String[] propertyOrder = customEntitySetting.propOrder();
+		Object[] propertiesArray = (Object[]) result;
+		CashFlow cashflow;
+		try {
+			cashflow = RepositoryCustomImpl.fillObject(CashFlow.class, propertiesArray, propertyOrder);
+		} catch (Exception e) {
+			
+			throw new RuntimeException(e);
+		}
+		
+//		Object cashflow = customRepository.getCustomedObjectFromNativeQuery(sql, CashFlow.class);
+		return  cashflow;
 	}
 
 	/**
@@ -124,27 +133,7 @@ public class ReportingService {
 
 		// Return the reversed arraylist
 		return reversedArrayList;
-	}
-
-	public static int getDiffMonth(int m0, int y0, int m1, int y1) {
-		int diff = 0;
-		for (int i = y0; i <= y1; i++) {
-
-			int beginMonth = 1; 
-			if (i == y0) { 
-				beginMonth = m0;
-			}
-
-			for (int j = beginMonth; j <= 12; j++) { 
-				if (i == y1 && j == m1) { 
-					return diff;
-				}
-				diff++;
-			}
-
-		}
-		return diff;
-	}
+	} 
 
 	public static List<int[]> getMonths(Calendar calendar, int diff) {
 
