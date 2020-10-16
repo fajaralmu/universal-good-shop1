@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fajar.shoppingmart.annotation.Dto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,5 +47,8 @@ public class Filter implements Serializable {
 	
 	private Integer monthTo;
 	private Integer yearTo; 
+	
+	@JsonIgnore
+	private int maxValue;
 
 }

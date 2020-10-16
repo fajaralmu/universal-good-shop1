@@ -22,7 +22,8 @@ import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.MessagingService;
-import com.fajar.shoppingmart.service.transaction.TransactionService;
+import com.fajar.shoppingmart.service.transaction.SellingAndPurchasingServiceImpl;
+import com.fajar.shoppingmart.service.transaction.TransactionHistoryService;
 
 @CrossOrigin
 @RestController
@@ -36,7 +37,7 @@ public class RestAdminController extends BaseController {
 	@Autowired
 	private RestPublicController restPublicController;
 	@Autowired
-	private TransactionService transactionService;
+	private TransactionHistoryService transactionService;
 
 	public RestAdminController() {
 		log.info("------------------RestAdminController-----------------");

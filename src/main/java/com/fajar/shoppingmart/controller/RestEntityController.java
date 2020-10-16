@@ -1,7 +1,5 @@
 package com.fajar.shoppingmart.controller;
 
-import java.io.IOException;
-
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

@@ -12,7 +12,8 @@ import com.fajar.shoppingmart.dto.ReportCategory;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.service.report.builder.MonthlyReportBuilder;
-import com.fajar.shoppingmart.service.transaction.TransactionService;
+import com.fajar.shoppingmart.service.transaction.SellingAndPurchasingServiceImpl;
+import com.fajar.shoppingmart.service.transaction.TransactionHistoryService;
 import com.fajar.shoppingmart.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class BalanceReportDataService {
 	@Autowired
 	private WebConfigService webConfigService;
 	@Autowired
-	private TransactionService transactionService;
+	private TransactionHistoryService transactionService;
 	@Autowired
 	private ReportDataService reportDataService;
 	

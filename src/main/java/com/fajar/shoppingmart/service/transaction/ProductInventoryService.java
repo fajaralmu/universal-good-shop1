@@ -45,9 +45,8 @@ public class ProductInventoryService {
 	public static final TransactionType TYPE_IN = TransactionType.IN;
 	public static final boolean NEW_VERSION = Boolean.TRUE;
 	 
-	public Transaction savePurchasingTransaction(List<ProductFlow> productFlows, User user, Supplier supplier,
-			Date transactionDate) {
-		final Transaction transaction = buildTransactionObject(TYPE_IN, user, null, supplier, transactionDate);
+	public Transaction savePurchasingTransaction(List<ProductFlow> productFlows, User user, Supplier supplier) {
+		final Transaction transaction = buildTransactionObject(TYPE_IN, user, null, supplier, new Date());
 		final String requestId = user.getRequestId();
 
 		repositoryCustom.keepTransaction();
@@ -60,13 +59,13 @@ public class ProductInventoryService {
 
 	}
  
-	public synchronized Transaction saveSellingTransaction(Date transactionDate, List<ProductFlow> productFlows,
+	public synchronized Transaction saveSellingTransaction( List<ProductFlow> productFlows,
 			User user, Customer customer) {
 		if (productFlows == null || productFlows.size() == 0) {
 			throw new RuntimeException("INVALID PRODUCTS");
 		}
 		final String requestId = user.getRequestId();
-		final Transaction transaction = buildTransactionObject(TYPE_OUT, user, customer, null, transactionDate);
+		final Transaction transaction = buildTransactionObject(TYPE_OUT, user, customer, null, new Date());
 
 		repositoryCustom.keepTransaction();
 		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId);

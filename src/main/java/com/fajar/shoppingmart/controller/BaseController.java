@@ -28,7 +28,7 @@ import com.fajar.shoppingmart.service.sessions.RegisteredRequestService;
 import com.fajar.shoppingmart.service.sessions.SessionValidationService;
 import com.fajar.shoppingmart.service.sessions.UserSessionService;
 import com.fajar.shoppingmart.service.transaction.ProductService;
-import com.fajar.shoppingmart.service.transaction.TransactionService;
+import com.fajar.shoppingmart.service.transaction.TransactionHistoryService;
 import com.fajar.shoppingmart.util.DateUtil;
 import com.fajar.shoppingmart.util.MvcUtil;
 import com.fajar.shoppingmart.util.NetworkUtil;
@@ -53,7 +53,7 @@ public class BaseController {
 	@Autowired
 	protected RuntimeService registryService; 
 	@Autowired
-	protected TransactionService transactionService;
+	protected TransactionHistoryService transactionService;
 	@Autowired
 	protected ProductService productService;
 	@Autowired

@@ -187,6 +187,13 @@ public class CollectionUtil {
 		}
 	}
 
+	static final List empty = new ArrayList<>();
+	
+	public static <T> List<T> emptyList() {
+		 
+		return empty;
+	}
+
 	 
 
 }

@@ -21,7 +21,8 @@ import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.transaction.ProductService;
-import com.fajar.shoppingmart.service.transaction.TransactionService;
+import com.fajar.shoppingmart.service.transaction.SellingAndPurchasingService;
+import com.fajar.shoppingmart.service.transaction.TransactionHistoryService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 public class RestTransactionController extends BaseController{
 	
 	@Autowired
-	private TransactionService transactionService;
+	private SellingAndPurchasingService  transactionService;
+	@Autowired
+	private TransactionHistoryService transactionHistoryService;
 	@Autowired
 	private ProductService productService;
 
@@ -73,7 +76,7 @@ public class RestTransactionController extends BaseController{
 		if(!sessionValidationService.hasSession(httpRequest)) {
 			return WebResponse.failedResponse();
 		}
-		WebResponse response = transactionService.getStocksByProductName(request, false, httpRequest.getHeader("requestId"));
+		WebResponse response = transactionService.getStocksByProductName(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	
@@ -84,7 +87,7 @@ public class RestTransactionController extends BaseController{
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("cashflowinfo {}", request);
 		 
-		WebResponse response = transactionService.getCashFlow(request);
+		WebResponse response = transactionHistoryService.getCashFlow(request);
 		return response;
 	}
 	
@@ -93,7 +96,7 @@ public class RestTransactionController extends BaseController{
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("cashflowdetail {}", request);
 		 
-		WebResponse response = transactionService.getCashflowDetail(request, httpRequest.getHeader("requestId"));
+		WebResponse response = transactionHistoryService.getCashflowDetail(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	
@@ -103,7 +106,7 @@ public class RestTransactionController extends BaseController{
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("monthlycashflow {}", request);
 		 
-		WebResponse response = transactionService.getCashflowMonthly(request, httpRequest.getHeader("requestId"));
+		WebResponse response = transactionHistoryService.getCashflowMonthly(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	
@@ -112,7 +115,7 @@ public class RestTransactionController extends BaseController{
 			HttpServletResponse httpResponse) throws IOException {
 		log.info("monthlycashflow {}", request);
 		 
-		WebResponse response = transactionService.getCashflowDaily(request, httpRequest.getHeader("requestId"));
+		WebResponse response = transactionHistoryService.getCashflowDetail(request, httpRequest.getHeader("requestId"));
 		return response;
 	}
 	

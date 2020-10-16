@@ -23,6 +23,7 @@ import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
 import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.service.entity.BaseEntityUpdateService;
 import com.fajar.shoppingmart.service.entity.EntityUpdateInterceptor;
+import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.StringUtil;
 
@@ -243,7 +244,7 @@ public class EntityRepository {
 	public <T extends BaseEntity> List<T> findAll(Class<T> clazz) {
 		JpaRepository repository = findRepo(clazz);
 		if (repository == null) {
-			return new ArrayList<>();
+			return CollectionUtil.emptyList();
 		}
 		return repository.findAll();
 	}

@@ -28,6 +28,7 @@ import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.querybuilder.CriteriaBuilder;
 import com.fajar.shoppingmart.querybuilder.QueryHolder;
 import com.fajar.shoppingmart.querybuilder.QueryUtil;
+import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -179,7 +180,7 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 			log.error("Error filter and sort v2: {}", e);
 			e.printStackTrace();
 		}
-		return new ArrayList<>();
+		return CollectionUtil.emptyList();
 	}
 
 	@Override
@@ -387,7 +388,7 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 		
 		if(values == null ) {
 			log.error("break findByKeyAndValues >> VALUES IS NULL");
-			return new ArrayList<>();
+			return CollectionUtil.emptyList();
 		}
 		
 		log.info("findByKeyAndValues, class: {}, key: {}, values.length: {}", entityClass, key, values.length);

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +13,8 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+
+import com.fajar.shoppingmart.util.CollectionUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -85,7 +86,7 @@ public class FlatFileAccessor {
 		} catch (IOException e) {
 			log.error("ERROR getting file lines");
 			e.printStackTrace();
-			return new ArrayList<String>();
+			return CollectionUtil.emptyList();
 		}
 	}
 
