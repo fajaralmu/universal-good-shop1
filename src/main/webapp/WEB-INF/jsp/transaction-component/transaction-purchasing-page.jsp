@@ -241,6 +241,7 @@
 	function populateProductFlow(productFlows) {
 		this.productFlows = productFlows;
 		doPopulateProductFlow(productFlows, function(i, productFlow, row) {
+			
 			row.append(createCell((i * 1 + 1) + ""));
 			row.append(createCell(productFlow.id));
 			row.append(createCell(productFlow.product.name));
