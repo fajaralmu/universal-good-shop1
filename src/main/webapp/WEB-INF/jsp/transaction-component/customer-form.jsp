@@ -33,7 +33,7 @@
 		loadStakeHolderList(customerListDropDown, 'customer', 'name', filterValue, handleSelectCustomer);
 	}
 	
-	function loadCustomerListById()(){
+	function loadCustomerListById(){
 		const filterValue = inputCustomerIdField.value;
 		
 		loadStakeHolderListDetailed(customerListDropDown, 'customer', 'id',

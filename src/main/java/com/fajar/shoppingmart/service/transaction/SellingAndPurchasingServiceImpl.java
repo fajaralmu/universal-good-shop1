@@ -83,7 +83,7 @@ public class SellingAndPurchasingServiceImpl implements SellingAndPurchasingServ
 				return WebResponse.failed("invalid supplier");
 			}
  
-			TransactionMode mode = request.getTransaction().getMode() == null ? TransactionMode.REGULAR : request.getTransaction().getMode();			
+			TransactionMode mode = request.getTransaction() == null || request.getTransaction().getMode() == null ? TransactionMode.REGULAR : request.getTransaction().getMode();			
 			Transaction savedTransaction = processPurchasing(productFlows, supplier.get(), user, mode);
 
 			return WebResponse.builder().transaction(savedTransaction).build();
@@ -174,7 +174,7 @@ public class SellingAndPurchasingServiceImpl implements SellingAndPurchasingServ
 			if (dbCustomer.isPresent() == false) {
 				return WebResponse.failed("invalid customer");
 			}
-			TransactionMode mode = request.getTransaction().getMode() == null ? TransactionMode.REGULAR : request.getTransaction().getMode();
+			TransactionMode mode = request.getTransaction() == null || request.getTransaction().getMode() == null ? TransactionMode.REGULAR : request.getTransaction().getMode();
 			Transaction transaction = processSelling(request.getProductFlows(), dbCustomer.get(), user, mode);
 			return WebResponse.builder().transaction(transaction).build();
 
