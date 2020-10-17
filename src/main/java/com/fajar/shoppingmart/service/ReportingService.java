@@ -455,6 +455,7 @@ public class ReportingService {
 			return null;
 		}
 		List<ProductFlow> productFlows = productFlowRepository.findByTransaction_Id(transaction.getId());
+		productFlows.forEach(p->{p.setTransaction(null);});
 		transaction.setProductFlows(productFlows);
 		return transaction;
 	}
