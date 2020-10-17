@@ -48,7 +48,7 @@ public class RandomDataService {
 	
 	static final String insertTrx = "INSERT INTO goodshop.`transaction` "
 			+ "(id, created_date, deleted, transaction_date, `type`, customer_id, user_id, supplier_id,  code) "
-			+ "VALUES($ID, '$YYYY-$MM-$DD $h:$m:50.000', 0, '$YYYY-$MM-$DD $h:$m:50.000', 'IN', NULL, 1, $SUPPLIER_ID,  '$CODE'); "
+			+ "VALUES($ID, '$YYYY-$MM-$DD $h:$m:50.000', 0, '$YYYY-$MM-$DD $h:$m:50.000', 'PURCHASING', NULL, 1, $SUPPLIER_ID,  '$CODE'); "
 			+ "";
 
 	static final String insertFlow = "INSERT INTO goodshop.product_flow "

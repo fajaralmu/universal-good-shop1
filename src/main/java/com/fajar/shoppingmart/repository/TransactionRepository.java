@@ -10,29 +10,29 @@ import com.fajar.shoppingmart.entity.Transaction;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-	List<Transaction> findByType(TransactionType type);
+	public List<Transaction> findByType(TransactionType type);
 
-	List<Transaction> findByTypeAndIdGreaterThan(TransactionType type, long l);
+	public List<Transaction> findByTypeAndIdGreaterThan(TransactionType type, long l);
 
-	List<Transaction> findByTypeAndIdGreaterThanAndIdLessThan(TransactionType type, long from, long to);
+	public List<Transaction> findByTypeAndIdGreaterThanAndIdLessThan(TransactionType type, long from, long to);
 
 	@Query(nativeQuery = true, value = "select year( `transaction`.transaction_date) from `transaction` where "
 			+ "`transaction`.transaction_date is not null  " + "order by transaction_date asc limit 1")
-	Object findTransactionYearAsc();
+	public Object findTransactionYearAsc();
 
 	@Query(nativeQuery = true, value = "select * from `transaction` "
 			+ "left join product_flow on product_flow.transaction_id = transaction.id "
-			+ "where product_flow.product_id = ?1 and `transaction`.`type` = 'IN' "
+			+ "where product_flow.product_id = ?1 and `transaction`.`type` = 'PURCHASING' "
 			+ "group by supplier_id limit ?2 offset ?3")
-	List<Transaction> findProductSupplier(Long id, int limit, int offset);
+	public List<Transaction> findProductSupplier(Long id, int limit, int offset);
 
 	@Query(nativeQuery = true, value = "select  * from `transaction` left join product_flow on `product_flow`.transaction_id=`transaction`.id  "
-			+ "WHERE `product_flow`.product_id = ?1  and `transaction`.`type` = 'IN' "
+			+ "WHERE `product_flow`.product_id = ?1  and `transaction`.`type` = 'PURCHASING' "
 			+ "order by `transaction`.transaction_date asc limit 1")
-	List<Transaction> findFirstTransaction(Long productId);
+	public List<Transaction> findFirstTransaction(Long productId);
 
 	@Query(nativeQuery = true, value = "select * from `transaction`where type=?1"
 			+ " and year(`transaction_date`) = ?3 and month(`transaction_date`) = ?2 ")
-	List<Transaction> findTransactionByTypeAndPeriod(String type, int month, int year);
+	public List<Transaction> findTransactionByTypeAndPeriod(String type, int month, int year);
 
 }
