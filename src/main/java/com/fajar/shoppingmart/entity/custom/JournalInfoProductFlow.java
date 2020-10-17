@@ -24,7 +24,7 @@ public class JournalInfoProductFlow extends BalanceJournalInfo<ProductFlow> {
 		 
 		Transaction transaction = financialEntity.getTransaction(); 
 		
-		if(transaction.getType().equals(TransactionType.IN)) {
+		if(transaction.getType().equals(TransactionType.PURCHASING)) {
 			//purchase from supplier
 			creditAmount 	= financialEntity.getCount() * financialEntity.getPrice();
 			cashType = CashType.PURCHASING;

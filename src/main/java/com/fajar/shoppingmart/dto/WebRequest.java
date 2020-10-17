@@ -87,6 +87,8 @@ public class WebRequest implements Serializable {
 	@Builder.Default
 	private List<ProductFlow> productFlows = new ArrayList<ProductFlow>();
 	
+	private boolean regularTransaction;
+	
 	private String imageData;
 	private String partnerId;
 	private String originId;

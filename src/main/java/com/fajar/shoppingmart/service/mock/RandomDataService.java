@@ -116,7 +116,7 @@ public class RandomDataService {
 		transaction.setTransactionDate(cal.getTime());
 		transaction.setCreatedDate(cal.getTime());
 		transaction.setCode("90000000002");
-		transaction.setType(TransactionType.IN);
+		transaction.setType(TransactionType.PURCHASING);
 		
 		Supplier supplier = supplierRepository.findById(1L).get();
 		transaction.setSupplier(supplier );
@@ -189,7 +189,7 @@ public class RandomDataService {
 			System.out.println("#..TRX ID: "+i+", count: "+flowCount);
 			Transaction trx = new Transaction();
 			
-			trx.setType(TransactionType.OUT);
+			trx.setType(TransactionType.SELLING);
 			trx.setCode(StringUtil.generateRandomNumber(12));
 			trx.setDeleted(false);
 			Customer customer = new Customer();

@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TransactionType {
 
-	IN, OUT;
+	PURCHASING, SELLING;
 
 	@JsonCreator
 	public static TransactionType forValue(String value) {
-		TransactionType[] enumKeys = TransactionType.values();
+		TransactionType[] enumKeys = values();
 		for (int i = 0; i < enumKeys.length; i++) {
 			if (enumKeys[i].toString().equals(value)) {
 				return enumKeys[i];
@@ -21,7 +21,7 @@ public enum TransactionType {
 
 	@JsonValue
 	public String toValue() {
-		TransactionType[] enumKeys = TransactionType.values();
+		TransactionType[] enumKeys = values();
 		for (int i = 0; i < enumKeys.length; i++) {
 			if (enumKeys[i].equals(this)) {
 				return enumKeys[i].toString();

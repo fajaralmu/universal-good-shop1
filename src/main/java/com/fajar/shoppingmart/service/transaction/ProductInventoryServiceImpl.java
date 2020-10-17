@@ -11,6 +11,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.shoppingmart.dto.TransactionMode;
 import com.fajar.shoppingmart.dto.TransactionType;
 import com.fajar.shoppingmart.entity.Customer;
 import com.fajar.shoppingmart.entity.InventoryItem;
@@ -45,8 +46,8 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 	private RepositoryCustomImpl repositoryCustom; 
 	 
 	@Override
-	public synchronized Transaction savePurchasingTransaction(List<ProductFlow> productFlows, User user, Supplier supplier) {
-		final Transaction transaction = buildTransactionObject(TYPE_IN, user, null, supplier, new Date());
+	public synchronized Transaction savePurchasingTransaction(List<ProductFlow> productFlows, User user, Supplier supplier, TransactionMode mode) {
+		final Transaction transaction = buildTransactionObject(PURCHASING, user, null, supplier, mode);
 		final String requestId = user.getRequestId();
 
 		repositoryCustom.keepTransaction();
@@ -61,12 +62,12 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
  
 	@Override
 	public synchronized Transaction saveSellingTransaction( List<ProductFlow> productFlows,
-			User user, Customer customer) {
+			User user, Customer customer, TransactionMode mode) {
 		if (productFlows == null || productFlows.size() == 0) {
 			throw new RuntimeException("INVALID PRODUCTS");
 		}
 		final String requestId = user.getRequestId();
-		final Transaction transaction = buildTransactionObject(TYPE_OUT, user, customer, null, new Date());
+		final Transaction transaction = buildTransactionObject(SELLING, user, customer, null, mode);
 
 		repositoryCustom.keepTransaction();
 		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId);
@@ -153,16 +154,17 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 	 * create common transaction object
 	 */
 	private Transaction buildTransactionObject(TransactionType type, User user, Customer customer, Supplier supplier,
-			Date date) {
+			TransactionMode mode) {
 		Transaction transaction = new Transaction();
 		transaction.setCode(StringUtil.generateRandomNumber(10));
 		transaction.setUser(user);
 		transaction.setType(type);
-		transaction.setTransactionDate(date);
+		transaction.setTransactionDate(new Date());
+		transaction.setMode(mode);
 
-		if (TYPE_IN.equals(type)) {
+		if (PURCHASING.equals(type)) {
 			transaction.setSupplier(supplier);
-		} else if (TYPE_OUT.equals(type)) {
+		} else if (SELLING.equals(type)) {
 			transaction.setCustomer(customer);
 		}
 
@@ -230,7 +232,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 		log.debug("inventoryItemV2, productID: {} => : {}", productId,
 				inventoryItemV2 == null ? "NULL" : inventoryItemV2.getId());
 
-		if (transactionType.equals(TYPE_OUT)) {
+		if (transactionType.equals(SELLING)) {
 			 
 			if (!inventoryItemV2.hasEnoughStock(productFlow)) {
 				log.debug("stock of {} insufficient!", productFlow.getProduct().getName());
@@ -238,7 +240,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 			}
 			inventoryItemV2.takeProduct(productFlow.getCount());// .setCount(finalCount);
 
-		} else if (transactionType.equals(TYPE_IN)) {
+		} else if (transactionType.equals(PURCHASING)) {
 			
 			if (null == inventoryItemV2) {
 				log.info("add new record of inventoryItemV2");
@@ -268,7 +270,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 	 * @param savedProductFlows
 	 */
 	private void saveNewInventoryRecords(List<ProductFlow> savedProductFlows, Transaction transaction, Session hibernateSession) {
-		if (transaction.getType().equals(TYPE_OUT)) {
+		if (transaction.getType().equals(SELLING)) {
 			return;
 		}
 
@@ -300,15 +302,21 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 			productFlow.setTransaction(transaction);
 			Product product = productFlow.getProduct();
 
-			if (transaction.getType().equals(TYPE_OUT)) {
+			if (transaction.getType().equals(SELLING)) {
 				InventoryItem inventoryItemV2 = inventoryItemRepository.findTop1ByProduct_IdAndNewVersion(product.getId(), NEW_VERSION);
 
 				if (null == inventoryItemV2 || inventoryItemV2.getCount() < productFlow.getCount()) {
 					skippedProductFlows.add(productFlow);
 					continue;
 				}
-
-				productFlow.setPrice(productFlow.getProduct().getPrice());
+				if(transaction.getMode().equals(TransactionMode.REGULAR)) {
+					//price by product
+					productFlow.setPrice(productFlow.getProduct().getPrice());
+					
+				} else if (transaction.getMode().equals(TransactionMode.RETURN)) {
+					//set price manually
+				}
+				
 			}
 			// save
 			ProductFlow savedProductFlow = repositoryCustom.saveObject(productFlow);

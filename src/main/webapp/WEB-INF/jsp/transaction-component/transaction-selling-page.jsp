@@ -9,52 +9,58 @@
 
 	<div id="content-form">
 		<h2>Selling</h2>
-		<table style="layout: fixed" class="table">
-			<tr>
-				<td>
-					<div class="form">
-						<div class="card">
-							<div class="card-header"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i> Product</div>
-							<div class="card-body">
-								<div class="dynamic-dropdown-form">
-									<input id="input-product" placeholder="product name"
-										type="text" onkeyup="loadProductList('name', 'input-product', false)" class="form-control" />
-									<input id="input-product-code" placeholder="product code"
-										type="text" on-enter="loadProductList('code', 'input-product-code', true)" class="form-control onenter" />
-									<select id="product-dropdown" class="form-control"
-										multiple="multiple">
-									</select>
-								</div>
+		<div class="row">
+			<div class="col-6">
+				<div class="form">
+					<div class="card">
+						<div class="card-header"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i> Product</div>
+						<div class="card-body">
+							<div class="dynamic-dropdown-form">
+								<input id="input-product" placeholder="product name"
+									type="text" onkeyup="loadProductList('name', 'input-product', false)" class="form-control" />
+								<input id="input-product-code" placeholder="product code"
+									type="text" on-enter="loadProductList('code', 'input-product-code', true)" class="form-control onenter" />
+								<select id="product-dropdown" class="form-control"
+									multiple="multiple">
+								</select>
 							</div>
 						</div>
-						<div class="panel trans-form">
-							<p>Unit</p>
-							<span id="unit-name"></span>
-							<p>Stock</p>
-							<input disabled="disabled" type="number" class="form-control"
-								id="stock-quantity" required="required" />
-							<p>Product Quantity</p>
-							<input type="number" class="form-control" id="product-quantity"
-								required="required" />
-							<p>Price @Unit</p>
-							<input disabled="disabled" class="form-control"
-								id="product-price" required="required" />
-							<p hidden="true">Expiry Date</p>
-							<input hidden="true" disabled="disabled" type="date"
-								class="form-control" id="product-exp-date" />
-
-							<button class="btn btn-outline-info btn-sm" id="add-product"
-								onclick="addToCart()"><i class="fa fa-cart-plus" aria-hidden="true"></i></button>
-							<button class="btn btn-primary btn-sm" id="btn-send"
-								onclick="send()">Submit Transaction</button>
-						</div>
 					</div>
-				</td>
-				<td><jsp:include
-						page="../transaction-component/customer-form.jsp"></jsp:include></td>
-			</tr>
-		</table>
-		
+					<div class="panel trans-form">
+						<p>Unit</p>
+						<span id="unit-name"></span>
+						<p>Stock</p>
+						<input disabled="disabled" type="number" class="form-control"
+							id="stock-quantity" required="required" />
+						<p>Product Quantity</p>
+						<input type="number" class="form-control" id="product-quantity"
+							required="required" />
+						<p>Price @Unit</p>
+						<input disabled="disabled" class="form-control"
+							id="product-price" required="required" />
+						<p hidden="true">Expiry Date</p>
+						<input hidden="true" disabled="disabled" type="date"
+							class="form-control" id="product-exp-date" />
+
+						<button class="btn btn-outline-info btn-sm" id="add-product"
+							onclick="addToCart()"><i class="fa fa-cart-plus" aria-hidden="true"></i></button>
+						<button class="btn btn-primary btn-sm" id="btn-send"
+							onclick="send()">Submit Transaction</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-6">
+				<jsp:include page="../transaction-component/customer-form.jsp"></jsp:include>
+			</div>
+			<div class="col-6">
+				<p>Transaction Mode</p>
+				<select class="form-control" id="select-transaction-mode">
+					<c:forEach items="${transactionModes }" var="mode">
+						<option value="${mode.value }">${mode.value }</option>
+					</c:forEach>
+				</select>
+			</div>
+		</div>
 		<table class="table">
 			<thead>
 				<tr>
@@ -114,6 +120,8 @@
 	const productFlowTable = byId("product-flows");
 	const tableReceipt = byId("table-receipt"); 
 	
+	const inputTransactionMode = byId("select-transaction-mode");
+	
 	function send() {
 		confirmDialog("Are You Ready To Submit Transaction?").then(function(ok){
 			if(ok){
@@ -126,7 +134,8 @@
 		
 		var requestObject = {
 			"customer" : currentCustomer,
-			"productFlows" : productFlows
+			"productFlows" : productFlows,
+			"transaction": {"mode":inputTransactionMode.value}
 		}
 		postReq("<spring:url value="/api/transaction/selling" />",
 				requestObject, function(xhr) {

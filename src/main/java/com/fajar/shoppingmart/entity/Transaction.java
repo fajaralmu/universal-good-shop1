@@ -16,6 +16,7 @@ import javax.persistence.Transient;
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
+import com.fajar.shoppingmart.dto.TransactionMode;
 import com.fajar.shoppingmart.dto.TransactionType;
 import com.fajar.shoppingmart.service.entity.BaseEntityUpdateService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -57,6 +58,11 @@ public class Transaction extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	@FormField
 	private TransactionType type;
+	
+	@Column(nullable = true)
+	@Enumerated(EnumType.STRING)
+	@FormField
+	private TransactionMode mode;
 	
 	@Column(name = "transaction_date")
 	@FormField(type = FieldType.FIELD_TYPE_DATE)

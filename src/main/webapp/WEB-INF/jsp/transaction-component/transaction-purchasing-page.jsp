@@ -9,76 +9,83 @@
 
 	<div id="content-form">
 		<h2>Purchasing</h2>
-		<table style="layout: fixed" class="table">
-			<tr>
-				<td>
-					<div class="form">
-						<div class="card">
-							<div class="card-header"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i> Product</div>
-							<div class="card-body">
-								<div class="dynamic-dropdown-form">
-									<input id="input-product" placeholder="product name"
-										type="text" onkeyup="loadProductList('name', 'input-product', false)" class="form-control" />
-									<input id="input-product-code" placeholder="product code"
-										type="text" on-enter="loadProductList('code', 'input-product-code', true)" class="form-control onenter" />
-									<select
-										id="product-dropdown" class="form-control" multiple="multiple">
-									</select>
-								</div>
+		<div class="row">
+			<div class="col-6">
+				<div class="form">
+					<div class="card">
+						<div class="card-header"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i> Product</div>
+						<div class="card-body">
+							<div class="dynamic-dropdown-form">
+								<input id="input-product" placeholder="product name"
+									type="text" onkeyup="loadProductList('name', 'input-product', false)" class="form-control" />
+								<input id="input-product-code" placeholder="product code"
+									type="text" on-enter="loadProductList('code', 'input-product-code', true)" class="form-control onenter" />
+								<select
+									id="product-dropdown" class="form-control" multiple="multiple">
+								</select>
 							</div>
 						</div>
-						<div class="panel trans-form">
-							<p>Unit</p>
-							<span id="unit-name"></span>
-							<p>Current Price</p>
-							<span id="current-price"></span>
-							<p>Qty</p>
-							<input type="number" class="form-control" id="product-quantity"
-								required="required" />
-							<p>Price @Unit</p>
-							<input class="form-control" id="product-price"
-								required="required" />
-							<p>Expiry Date</p>
-							<input type="date" class="form-control" id="product-exp-date" />
-
-							<button class="btn btn-outline-info btn-sm" id="add-product"
-								onclick="addToCart()"><i class="fa fa-cart-plus" aria-hidden="true"></i></button>
-							<button class="btn btn-primary btn-sm" id="btn-send" onclick="send()">Submit-Transaction</button>
-						</div>
 					</div>
-				</td>
-				<td><jsp:include
-						page="../transaction-component/supplier-form.jsp"></jsp:include></td>
-			</tr>
-			</table>
-			 
-			<table class="table">
-				<thead>
-					<tr>
-						<th>No</th>
-						<th>Flow ID</th>
-						<th>Product Name</th>
-						<th>Expiry Date</th>
-						<th>Quantity</th>
-						<th>Price @Item</th>
-						<th>Option</th>
-					</tr>
-					<tr>
-						<th></th>
-						<th></th>
-						<th></th>
-						<th></th>
-						<th></th>
-						<th>Total:<span id="total-price"></span>
-						</th>
-						<th></th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody id="product-flows">
+					<div class="panel trans-form">
+						<p>Unit</p>
+						<span id="unit-name"></span>
+						<p>Current Price</p>
+						<span id="current-price"></span>
+						<p>Qty</p>
+						<input type="number" class="form-control" id="product-quantity"
+							required="required" />
+						<p>Price @Unit</p>
+						<input class="form-control" id="product-price"
+							required="required" />
+						<p>Expiry Date</p>
+						<input type="date" class="form-control" id="product-exp-date" />
 
-				</tbody>
-			</table>
+						<button class="btn btn-outline-info btn-sm" id="add-product"
+							onclick="addToCart()"><i class="fa fa-cart-plus" aria-hidden="true"></i></button>
+						<button class="btn btn-primary btn-sm" id="btn-send" onclick="send()">Submit-Transaction</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-6">
+				<jsp:include page="../transaction-component/supplier-form.jsp"></jsp:include>
+			</div>
+			<div class="col-6">
+				<p>Transaction Mode</p>
+				<select class="form-control" id="select-transaction-mode">
+					<c:forEach items="${transactionModes }" var="mode">
+						<option value="${mode.value }">${mode.value }</option>
+					</c:forEach>
+				</select>
+			</div>
+		</div>
+		 
+		<table class="table">
+			<thead>
+				<tr>
+					<th>No</th>
+					<th>Flow ID</th>
+					<th>Product Name</th>
+					<th>Expiry Date</th>
+					<th>Quantity</th>
+					<th>Price @Item</th>
+					<th>Option</th>
+				</tr>
+				<tr>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th>Total:<span id="total-price"></span>
+					</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody id="product-flows">
+
+			</tbody>
+		</table>
 	</div>
 </div>
 <script type="text/javascript">
@@ -92,10 +99,12 @@
 	const inputProductField = byId("input-product");
 	const inputProductCode = byId("input-product-code");
 	
-	var totalPriceLabel = byId("total-price");
-	var productListDropDown = byId("product-dropdown");
-	var productFlowTable = byId("product-flows");
-	var tableReceipt = byId("table-receipt");
+	const totalPriceLabel = byId("total-price");
+	const productListDropDown = byId("product-dropdown");
+	const productFlowTable = byId("product-flows");
+	const tableReceipt = byId("table-receipt");
+	
+	const inputTransactionMode = byId("select-transaction-mode");
 
 	function send(){
 		confirmDialog("Are You Ready To Submit Transaction?").then(function(ok){
@@ -114,7 +123,8 @@
 
 		var requestObject = {
 			"supplier" : currentSupplier,
-			"productFlows" : productFlows
+			"productFlows" : productFlows,
+			"transaction": {"mode":inputTransactionMode.value}
 		}
 		postReq("<spring:url value="/api/transaction/purchasing" />",
 				requestObject, function(xhr) {
@@ -231,6 +241,7 @@
 	}
 
 	function populateProductFlow(productFlows) {
+		this.productFlows = productFlows;
 		doPopulateProductFlow(productFlows, function(i, productFlow, row) {
 			row.append(createCell((i * 1 + 1) + ""));
 			row.append(createCell(productFlow.id));

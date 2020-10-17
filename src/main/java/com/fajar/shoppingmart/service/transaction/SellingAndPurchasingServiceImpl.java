@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.shoppingmart.dto.TransactionMode;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
@@ -82,7 +83,8 @@ public class SellingAndPurchasingServiceImpl implements SellingAndPurchasingServ
 				return WebResponse.failed("invalid supplier");
 			}
  
-			Transaction savedTransaction = processPurchasing(productFlows, supplier.get(), user);
+			TransactionMode mode = request.getTransaction().getMode() == null ? TransactionMode.REGULAR : request.getTransaction().getMode();			
+			Transaction savedTransaction = processPurchasing(productFlows, supplier.get(), user, mode);
 
 			return WebResponse.builder().transaction(savedTransaction).build();
 
@@ -95,7 +97,7 @@ public class SellingAndPurchasingServiceImpl implements SellingAndPurchasingServ
 		}
 	} 
 
-	private Transaction processPurchasing(List<ProductFlow> productFlows, Supplier supplier, User user) {
+	private Transaction processPurchasing(List<ProductFlow> productFlows, Supplier supplier, User user, TransactionMode mode) {
 		 
 		String requestId = user.getRequestId();  
 
@@ -110,8 +112,8 @@ public class SellingAndPurchasingServiceImpl implements SellingAndPurchasingServ
 			}
 			productFlow.setProduct(product.get());
 		}
-		
-		Transaction savedTransaction = productInventoryService.savePurchasingTransaction(productFlows, user,supplier);
+		 
+		Transaction savedTransaction = productInventoryService.savePurchasingTransaction(productFlows, user,supplier, mode);
 		return savedTransaction;
 	}
 	
@@ -172,7 +174,8 @@ public class SellingAndPurchasingServiceImpl implements SellingAndPurchasingServ
 			if (dbCustomer.isPresent() == false) {
 				return WebResponse.failed("invalid customer");
 			}
-			Transaction transaction = processSelling(request.getProductFlows(), dbCustomer.get(), user);
+			TransactionMode mode = request.getTransaction().getMode() == null ? TransactionMode.REGULAR : request.getTransaction().getMode();
+			Transaction transaction = processSelling(request.getProductFlows(), dbCustomer.get(), user, mode);
 			return WebResponse.builder().transaction(transaction).build();
 
 		} catch (Exception ex) {
@@ -183,7 +186,7 @@ public class SellingAndPurchasingServiceImpl implements SellingAndPurchasingServ
 		}
 	}
 	
-	private Transaction processSelling(List<ProductFlow> productFlows, Customer customer, User user) {
+	private Transaction processSelling(List<ProductFlow> productFlows, Customer customer, User user, TransactionMode mode) {
 		String requestId = user.getRequestId();
 		sendProgress(1, 1, 10, false, requestId); 
 
@@ -206,7 +209,7 @@ public class SellingAndPurchasingServiceImpl implements SellingAndPurchasingServ
 		}
 
 		// save to DB  
-		Transaction transaction = productInventoryService.saveSellingTransaction( productFlows, user,customer);
+		Transaction transaction = productInventoryService.saveSellingTransaction( productFlows, user,customer, mode);
 		return transaction;
 	}
 

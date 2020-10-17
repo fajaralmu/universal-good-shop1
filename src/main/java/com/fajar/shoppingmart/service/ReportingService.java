@@ -1,5 +1,6 @@
 package com.fajar.shoppingmart.service;
 
+import static com.fajar.shoppingmart.util.CollectionUtil.reverse;
 import static com.fajar.shoppingmart.util.DateUtil.getDiffMonth;
 
 import java.util.ArrayList;
@@ -24,7 +25,6 @@ import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.Supplier;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.custom.CashFlow;
-import com.fajar.shoppingmart.repository.PersistenceOperation;
 import com.fajar.shoppingmart.repository.ProductFlowRepository;
 import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.repository.TransactionRepository;
@@ -33,9 +33,7 @@ import com.fajar.shoppingmart.repository.TransactionRepository;
 public class ReportingService {
 
 	@Autowired
-	private ProductFlowRepository productFlowRepository;
-	@Autowired
-	private RepositoryCustomImpl customRepository;
+	private ProductFlowRepository productFlowRepository; 
 	@Autowired
 	private TransactionRepository transactionRepository;
 	@Autowired
@@ -74,16 +72,15 @@ public class ReportingService {
 		CustomEntity customEntitySetting = (CustomEntity) CashFlow.class.getAnnotation(CustomEntity.class);
 		String[] propertyOrder = customEntitySetting.propOrder();
 		Object[] propertiesArray = (Object[]) result;
-		CashFlow cashflow;
+		 
 		try {
-			cashflow = RepositoryCustomImpl.fillObject(CashFlow.class, propertiesArray, propertyOrder);
-		} catch (Exception e) {
+			CashFlow cashflow = RepositoryCustomImpl.fillObject(CashFlow.class, propertiesArray, propertyOrder);
+			return  cashflow;
 			
+		} catch (Exception e) {			
 			throw new RuntimeException(e);
 		}
 		
-//		Object cashflow = customRepository.getCustomedObjectFromNativeQuery(sql, CashFlow.class);
-		return  cashflow;
 	}
 
 	/**
@@ -94,9 +91,9 @@ public class ReportingService {
 
 		Object result = transactionRepository.findTransactionYearAsc();
 
-		if (result == null)
+		if (result == null) {
 			return Calendar.getInstance().get(Calendar.YEAR);
-
+		}
 		int resultInt = Integer.parseInt(result.toString());
 		return resultInt;
 
@@ -122,18 +119,6 @@ public class ReportingService {
 		}
 		return null;
 	}
-
-	public static <T> List<T> reverse(List<T> arrayList) {
-		List<T> reversedArrayList = new ArrayList<T>();
-		for (int i = arrayList.size() - 1; i >= 0; i--) {
-
-			// Append the elements in reverse order
-			reversedArrayList.add(arrayList.get(i));
-		}
-
-		// Return the reversed arraylist
-		return reversedArrayList;
-	} 
 
 	public static List<int[]> getMonths(Calendar calendar, int diff) {
 
@@ -239,10 +224,10 @@ public class ReportingService {
 			System.out.println("Report month : "+month);
 			System.out.println("Report year : "+year);
 
-			List<ProductFlow> flowIncome = productFlowRepository.findByTransactionTypeAndPeriod(TransactionType.OUT.toString(), month, year);
+			List<ProductFlow> flowIncome = productFlowRepository.findByTransactionTypeAndPeriod(TransactionType.SELLING.toString(), month, year);
 			progressService.sendProgress(1, 1, 20, requestId);
 			
-			List<ProductFlow> flowCost = productFlowRepository.findByTransactionTypeAndPeriod(TransactionType.IN.toString(), month, year);
+			List<ProductFlow> flowCost = productFlowRepository.findByTransactionTypeAndPeriod(TransactionType.PURCHASING.toString(), month, year);
 			progressService.sendProgress(1, 1, 20, requestId);
 			
 			response.setMonthlyDetailIncome(parseCashflow("OUT", flowIncome));
@@ -368,7 +353,7 @@ public class ReportingService {
 			int day 		= filter.getDay();
 			int month 		= filter.getMonth();
 			int year		= filter.getYear(); 
-			TransactionType type		= TransactionType.OUT;// filter.getModule();
+			TransactionType type		= TransactionType.SELLING;// filter.getModule();
 			
 			List<ProductFlow> productSold = productFlowRepository.findByTransactionTypeAndPeriod(type.toString(), day, month, year);
 		//	List<ProductFlow> productSupp = productFlowRepository.findByTransactionTypeAndPeriod(type, day, month, year); 

@@ -193,6 +193,20 @@ public class CollectionUtil {
 		 
 		return empty;
 	}
+	
+
+
+	public static <T> List<T> reverse(List<T> arrayList) {
+		List<T> reversedArrayList = new ArrayList<T>();
+		for (int i = arrayList.size() - 1; i >= 0; i--) {
+
+			// Append the elements in reverse order
+			reversedArrayList.add(arrayList.get(i));
+		}
+
+		// Return the reversed arraylist
+		return reversedArrayList;
+	} 
 
 	 
 

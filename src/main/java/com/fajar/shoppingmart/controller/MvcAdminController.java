@@ -2,6 +2,7 @@ package com.fajar.shoppingmart.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.test.context.jdbc.SqlConfig.TransactionMode;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -169,9 +171,9 @@ public class MvcAdminController extends BaseController {
 
 		if (null != transactionCode) {
 			model.addAttribute("requestCode", transactionCode);
-		}
-		model.addAttribute("page", "transaction");
-
+		} 
+		model.addAttribute("transactionModes", CollectionUtil.listToKeyVal(Arrays.asList(TransactionMode.values())));
+		
 		return basePage;
 	}
 
@@ -183,9 +185,8 @@ public class MvcAdminController extends BaseController {
 
 		if (null != transactionCode) {
 			model.addAttribute("requestCode", transactionCode);
-		}
-
-		model.addAttribute("page", "transaction");
+		} 
+		model.addAttribute("transactionModes", CollectionUtil.listToKeyVal(Arrays.asList(TransactionMode.values())));
 
 		return basePage;
 	}
