@@ -1,5 +1,7 @@
 package com.fajar.shoppingmart.service;
 
+import static com.fajar.shoppingmart.dto.TransactionType.PURCHASING;
+import static com.fajar.shoppingmart.dto.TransactionType.SELLING;
 import static com.fajar.shoppingmart.util.CollectionUtil.reverse;
 import static com.fajar.shoppingmart.util.DateUtil.getDiffMonth;
 
@@ -47,7 +49,7 @@ public class ReportingService {
 		int month = request.getFilter().getMonth();
 		int year = request.getFilter().getYear();
 		String module = request.getFilter().getModule();
-		CashFlow cashflow = getCashflow(month, year, module);
+		CashFlow cashflow = getCashflow(month, year, module.equals("IN")?PURCHASING:SELLING);
 
 		if (cashflow != null) {
 			cashflow.setYear(request.getFilter().getYear());
@@ -66,9 +68,9 @@ public class ReportingService {
 	 * @param module
 	 * @return
 	 */
-	private CashFlow getCashflow(Integer month, Integer year, final String module) {
+	private CashFlow getCashflow(Integer month, Integer year, final TransactionType transactionType) {
 
-		Object result = productFlowRepository.findCashflowByModuleAndMonthAndYear(module, month, year);
+		Object result = productFlowRepository.findCashflowByModuleAndMonthAndYear(transactionType, month, year);
 		CustomEntity customEntitySetting = (CustomEntity) CashFlow.class.getAnnotation(CustomEntity.class);
 		String[] propertyOrder = customEntitySetting.propOrder();
 		Object[] propertiesArray = (Object[]) result;
@@ -224,10 +226,10 @@ public class ReportingService {
 			System.out.println("Report month : "+month);
 			System.out.println("Report year : "+year);
 
-			List<ProductFlow> flowIncome = productFlowRepository.findByTransactionTypeAndPeriod(TransactionType.SELLING.toString(), month, year);
+			List<ProductFlow> flowIncome = productFlowRepository.findByTransactionTypeAndPeriod(SELLING.toString(), month, year);
 			progressService.sendProgress(1, 1, 20, requestId);
 			
-			List<ProductFlow> flowCost = productFlowRepository.findByTransactionTypeAndPeriod(TransactionType.PURCHASING.toString(), month, year);
+			List<ProductFlow> flowCost = productFlowRepository.findByTransactionTypeAndPeriod(PURCHASING.toString(), month, year);
 			progressService.sendProgress(1, 1, 20, requestId);
 			
 			response.setMonthlyDetailIncome(parseCashflow("OUT", flowIncome));
@@ -299,7 +301,7 @@ public class ReportingService {
 			System.out.println("o o PERIOD: "+period[0]+", "+period[1]);
 
 			// supply
-			CashFlow cashflowSupply = getCashflow(period[1], period[0], "IN");
+			CashFlow cashflowSupply = getCashflow(period[1], period[0], PURCHASING);
 			cashflowSupply.setMonth(period[1]);
 			cashflowSupply.setYear(period[0]);
 
@@ -310,7 +312,7 @@ public class ReportingService {
 			}
 
 			// purchase
-			CashFlow cashflowPurchase = getCashflow(period[1], period[0], "OUT");
+			CashFlow cashflowPurchase = getCashflow(period[1], period[0], SELLING);
 			cashflowPurchase.setMonth(period[1]);
 			cashflowPurchase.setYear(period[0]);
 
@@ -353,7 +355,7 @@ public class ReportingService {
 			int day 		= filter.getDay();
 			int month 		= filter.getMonth();
 			int year		= filter.getYear(); 
-			TransactionType type		= TransactionType.SELLING;// filter.getModule();
+			TransactionType type		= SELLING;// filter.getModule();
 			
 			List<ProductFlow> productSold = productFlowRepository.findByTransactionTypeAndPeriod(type.toString(), day, month, year);
 		//	List<ProductFlow> productSupp = productFlowRepository.findByTransactionTypeAndPeriod(type, day, month, year); 
