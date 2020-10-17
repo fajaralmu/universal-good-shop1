@@ -85,9 +85,7 @@
 					<th></th>
 				</tr>
 			</thead>
-			<tbody id="product-flows">
-
-			</tbody>
+			<tbody id="product-flows"></tbody>
 		</table>
 		<div class="trans-form" style="width: 50%">
 			<p>Total Price</p>
@@ -218,7 +216,7 @@
 			return;
 		}
 
-		const inputQty = +inputQuantityField.value;
+		const inputQty = parseInt(inputQuantityField.value);
 
 		if (!inputQty || inputQty > quantityField.value * 1) {
 			alert("Quantity insufficient");
@@ -232,7 +230,7 @@
 		const productFlow = {
 			"id" : ID,
 			"product" : currentProduct,
-			"price" : currentProduct.price,
+			"price" : isReturnMode() ? priceField.value : currentProduct.price,
 			"count" : inputQuantityField.value,
 			"expiryDate" : expiryDateField.value,
 		//"flowReferenceId":stockIdField.value
@@ -344,6 +342,29 @@
 		//	quantityField.value = entity.productFlowStock.remainingStock;
 		//	expiryDateField.value = entity.expiryDate;
 		setCurrentProduct(entity, true);
+	}
+	
+	function changeMode(){
+		clearProductInputs();
+		populateProductFlow([]);
+		
+		if(isReturnMode()){
+			priceField.removeAttribute("disabled");
+		} else {
+			priceField.setAttribute("disabled", "disabled");
+		}
+	}
+	
+	function isReturnMode(){
+		return inputTransactionMode.value == "RETURN";
+	}
+	
+	inputTransactionMode.onchange = function(e){
+		confirmDialog("Change Mode?").then(function(ok){
+			if(ok){
+				changeMode();
+			}
+		});
 	}
 </script>
 <c:if test="${requestCode != null }">

@@ -82,9 +82,7 @@
 					<th></th>
 				</tr>
 			</thead>
-			<tbody id="product-flows">
-
-			</tbody>
+			<tbody id="product-flows"></tbody>
 		</table>
 	</div>
 </div>
