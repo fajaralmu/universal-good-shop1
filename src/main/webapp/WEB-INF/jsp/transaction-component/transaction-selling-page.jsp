@@ -142,7 +142,7 @@
 					if (code == "00") {
 						
 						infoDialog("transaction success").then(function(e){
-							populateProductFlow([]);
+							setRegularMode();
 							showReceipt(response.transaction);
 						});
 						
@@ -343,6 +343,11 @@
 		//	quantityField.value = entity.productFlowStock.remainingStock;
 		//	expiryDateField.value = entity.expiryDate;
 		setCurrentProduct(entity, true);
+	}
+	
+	function setRegularMode(){
+		inputTransactionMode.value = "REGULAR";
+		changeMode();
 	}
 	
 	function changeMode(){

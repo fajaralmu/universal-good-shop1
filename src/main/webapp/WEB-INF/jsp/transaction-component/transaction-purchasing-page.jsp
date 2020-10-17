@@ -131,7 +131,7 @@
 					if (code == "00") {
 						
 						infoDialog("transaction success").then(function(e){
-							populateProductFlow([]);
+							setRegularMode();
 							showReceipt(response.transaction);
 						});
 						
@@ -257,6 +257,28 @@
 		priceField.value = beautifyNominal(entity.price);
 		quantityField.value = entity.count;
 		expiryDateField.value = entity.expiryDate;
+	}
+	
+	function setRegularMode(){
+		inputTransactionMode.value = "REGULAR";
+		changeMode();
+	}
+	
+	function changeMode(){
+		clearProduct();
+		populateProductFlow([]);
+	}
+	
+	function isReturnMode(){
+		return inputTransactionMode.value == "RETURN";
+	}
+	
+	inputTransactionMode.onchange = function(e){
+		confirmDialog("Change Mode?").then(function(ok){
+			if(ok){
+				changeMode();
+			}
+		});
 	}
 </script>
 <c:if test="${requestCode != null }">
