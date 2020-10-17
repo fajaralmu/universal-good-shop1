@@ -294,7 +294,7 @@
 				"contains" : false,
 				"fieldsFilter" : {
 					"code" : requestTransactionCode,
-					"type" : "IN"
+					"type" : "PURCHASING"
 				}
 			}
 		};
