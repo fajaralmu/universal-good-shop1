@@ -105,7 +105,7 @@
 	const inputTransactionMode = byId("select-transaction-mode");
 
 	function send(){
-		confirmDialog("Are You Ready To Submit Transaction?").then(function(ok){
+		confirmDialog("Are You Ready To Submit "+inputTransactionMode.value+" Transaction?").then(function(ok){
 			if(ok){
 				submitTransaction();
 			}
