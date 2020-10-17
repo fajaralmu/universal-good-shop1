@@ -31,7 +31,10 @@ import com.fajar.shoppingmart.repository.ProductFlowRepository;
 import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.repository.TransactionRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ReportingService {
 
 	@Autowired
@@ -78,12 +81,13 @@ public class ReportingService {
 	 * get cash flow with specified month and year and module
 	 * @param month
 	 * @param year
-	 * @param module
+	 * @param transactionType
 	 * @return
 	 */
 	private CashFlow getCashflow(Integer month, Integer year, final TransactionType transactionType) {
-
-		Object result = productFlowRepository.findCashflowByModuleAndMonthAndYear(transactionType, month, year);
+		log.info("get cashflow month: {}, year: {}, transactionType: {}", month, year, transactionType);
+		
+		Object result = productFlowRepository.findCashflowByModuleAndMonthAndYear(String.valueOf(transactionType), month, year);
 		CustomEntity customEntitySetting = (CustomEntity) CashFlow.class.getAnnotation(CustomEntity.class);
 		String[] propertyOrder = customEntitySetting.propOrder();
 		Object[] propertiesArray = (Object[]) result;

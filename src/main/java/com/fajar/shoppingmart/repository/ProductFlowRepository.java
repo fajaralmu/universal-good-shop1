@@ -64,5 +64,5 @@ public interface ProductFlowRepository extends JpaRepository<ProductFlow, Long> 
 			"  LEFT JOIN `transaction` ON  `transaction`.`id` = `product_flow`.`transaction_id` " + 
 			"  WHERE `transaction`.`type` = ?1 and month(`transaction`.transaction_date) = ?2  " + 
 			"  and year(`transaction`.transaction_date) = ?3 and `transaction`.deleted = false and `product_flow`.deleted = false "  , nativeQuery = true)
-	public Object findCashflowByModuleAndMonthAndYear(TransactionType transactionType, Integer month, Integer year);
+	public Object findCashflowByModuleAndMonthAndYear(String transactionType, Integer month, Integer year);
 }
