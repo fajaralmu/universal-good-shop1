@@ -49,7 +49,20 @@ public class ReportingService {
 		int month = request.getFilter().getMonth();
 		int year = request.getFilter().getYear();
 		String module = request.getFilter().getModule();
-		CashFlow cashflow = getCashflow(month, year, module.equals("IN")?PURCHASING:SELLING);
+		
+		TransactionType transactionType;
+		switch (module) {
+			case "IN":
+			case "PURCHASING":
+				transactionType = PURCHASING;
+				break;
+			case "OUT":
+			case "SELLING":
+			default:
+				transactionType = SELLING;
+				break;
+		}
+		CashFlow cashflow = getCashflow(month, year, transactionType);
 
 		if (cashflow != null) {
 			cashflow.setYear(request.getFilter().getYear());
