@@ -35,4 +35,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 			+ " and year(`transaction_date`) = ?3 and month(`transaction_date`) = ?2 ")
 	public List<Transaction> findTransactionByTypeAndPeriod(String type, int month, int year);
 
+	public Transaction findTop1ByCode(String code);
+
 }

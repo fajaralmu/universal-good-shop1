@@ -135,6 +135,14 @@ public class RestTransactionController extends BaseController{
 		return response;
 	}
 	
+	@PostMapping(value = "/transactiondata/{code}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public WebResponse transactiondata(@PathVariable(required = true, name="code") String code, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws IOException { 
+		 
+		WebResponse response = transactionHistoryService.getTransactionData(code);
+		return response;
+	}
+	
 	
 
 }

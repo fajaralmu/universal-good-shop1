@@ -448,5 +448,15 @@ public class ReportingService {
 		
 		return maxValue;
 	}
+	
+	public Transaction getTransactionByCode(String code) {
+		Transaction transaction = transactionRepository.findTop1ByCode(code);
+		if(null == transaction) {
+			return null;
+		}
+		List<ProductFlow> productFlows = productFlowRepository.findByTransaction_Id(transaction.getId());
+		transaction.setProductFlows(productFlows);
+		return transaction;
+	}
 
 }

@@ -13,14 +13,17 @@ import com.fajar.shoppingmart.entity.Profile;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.custom.CashFlow;
+import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Dto
 @Data
@@ -42,6 +45,7 @@ public class WebResponse implements Serializable {
 	@Builder.Default
 	private String message = "success";
 	@Builder.Default
+	@Setter(value = AccessLevel.NONE)
 	private List<BaseEntity> entities = new ArrayList<>();
 	@Builder.Default
 	private List<BaseEntity> supplies = new ArrayList<>();
@@ -77,16 +81,22 @@ public class WebResponse implements Serializable {
 	private boolean success = true;
 	@JsonIgnore
 	private Class<? extends BaseEntity> entityClass;
-
-	public static WebResponse failedResponse() {
-		return new WebResponse("01", "INVALID REQUEST");
-	}
-
+	
 	public WebResponse(String code, String message) {
 		this.code = code;
 		this.message = message;
 		this.date = new Date();
 	}
+
+	public <T extends BaseEntity> void setEntities(List<T > entities) {
+		this.entities = CollectionUtil.convertList(entities);
+	}
+	
+	public static WebResponse failedResponse() {
+		return new WebResponse("01", "INVALID REQUEST");
+	}
+
+	
 
 	public static WebResponse failed() {
 		return failed("INVALID REQUEST");
@@ -107,4 +117,8 @@ public class WebResponse implements Serializable {
 	public static WebResponse invalidSession() {
 		return new WebResponse("02", "Invalid Session");
 	}
+
+	
+	
+	
 }

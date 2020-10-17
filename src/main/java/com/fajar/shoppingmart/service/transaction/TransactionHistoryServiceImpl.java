@@ -57,5 +57,17 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
 	public int getMinTransactionYear() {
 		return reportingService.getMinTransactionYear();
 	}
+	@Override
+	public WebResponse getTransactionData(String transactionCode) {
+		
+		Transaction transaction = reportingService.getTransactionByCode(transactionCode);
+		if(null == transaction) {
+			return WebResponse.failed("Transaction Not Found");
+		}
+		WebResponse response = new WebResponse(); 
+		response.setTransaction(transaction);
+		response.setEntities(transaction.getProductFlows());
+		return response;
+	}
 
 }
