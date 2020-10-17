@@ -171,13 +171,13 @@
 
 		loadEntityList(ENTITY_GET_URL, requestObject, function(entities) {
 			for (let i = 0; i < entities.length; i++) {
-				const entity = entities[i];
+				const product = entities[i];
 				const option = createHtmlTag({
 					tagName : 'option',
-					id : entity["id"],
-					innerHTML : entity['name'],
+					id : product["id"],
+					innerHTML : product['name'],
 					onclick : function() {
-						setCurrentProduct(entity);
+						setCurrentProduct(product);
 					}
 				});
 				productListDropDown.append(option);
@@ -196,8 +196,13 @@
 			alert("Product is not specified!");
 			return;
 		}
+		
+		if (!isEditMode() && getCurrentProductFlow(currentProduct.code)) {
+			alert("product is exist in the cart!");
+			return;
+		}
 
-		let ID = randomID();
+		var ID = randomID();
 		if (currentProductFlow != null && currentProductFlow.id != null) {
 			ID = currentProductFlow.id;
 			removeFromProductFlowsById(ID);
@@ -212,10 +217,11 @@
 		};
 
 		addProductFlow(productFlow);
-		console.log("Product Flows", productFlows);
+		//console.log("Product Flows", productFlows);
 		currentProduct = null;
 		currentProductFlow = null;
 		clearProduct();
+		disableEditMode();
 	}
 
 	function addProductFlow(productFlow) {
@@ -254,7 +260,7 @@
 	function setCurrentProductFlow(entity) {
 		currentProductFlow = entity;
 		setCurrentProduct(entity.product);
-		priceField.value = beautifyNominal(entity.price);
+		priceField.value = parseInt(entity.price);
 		quantityField.value = entity.count;
 		expiryDateField.value = entity.expiryDate;
 	}

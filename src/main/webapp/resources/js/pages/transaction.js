@@ -1,4 +1,12 @@
 var ENTITY_GET_URL;
+var editMode = false;
+
+function disableEditMode(){ editMode = false; }
+
+function enableEditMode(){ editMode = true; }
+
+function isEditMode(){ return editMode; }
+
 function receiptFooterRow(summaryPrice) {
 	return createHtmlTag({
 		"tagName" : "tr",
@@ -122,6 +130,11 @@ function containsNull(...objects){
 	return false;
 }
 
+function editCart(productFlow){
+	enableEditMode();
+	setCurrentProductFlow(productFlow);
+}
+
 function doPopulateProductFlow(productFlows, rowCreationFunction) {
 	if(containsNull(productFlowTable, productFlows, totalPriceLabel)){
 		alert("One of variables: productFlowTable, productFlows, totalPriceLabel is null!!");
@@ -137,7 +150,8 @@ function doPopulateProductFlow(productFlows, rowCreationFunction) {
 		
 		const optionCell = createCell(""); 
 		const btnEdit = createButtonWarning("edit-" + productFlow.id, "edit", function() {
-			setCurrentProductFlow(productFlow);
+			editCart(productFlow);
+			
 		});
 		const btnDelete = createButtonDanger("delete-" + productFlow.id, "remove", function() {
 			if (!confirm("Are you sure wnat to delete?")) {
@@ -160,6 +174,18 @@ function doPopulateProductFlow(productFlows, rowCreationFunction) {
 	if(byId("total-price-label")){ 
 		byId("total-price-label").value = totalPrice;
 	}
+}
+
+
+function getCurrentProductFlow(code) {
+	if (productFlows) {
+		for (var i = 0; i < productFlows.length; i++) {
+			if (productFlows[i].product.code == code) {
+				return productFlows[i];
+			}
+		}
+	}
+	return null;
 }
 
 function processReceipt(transaction){

@@ -211,7 +211,7 @@
 			return;
 		}
 
-		if (getCurrentProductFlow(currentProduct.code)) {
+		if (!isEditMode() && getCurrentProductFlow(currentProduct.code)) {
 			alert("product is exist in the cart!");
 			return;
 		}
@@ -222,7 +222,7 @@
 			alert("Quantity insufficient");
 			return;
 		}
-		let ID = randomID();
+		var ID = randomID();
 		if (currentProductFlow != null && currentProductFlow.id != null) {
 			ID = currentProductFlow.id;
 			removeFromProductFlowsById(ID);
@@ -238,21 +238,11 @@
 		};
 
 		addProductFlow(productFlow);
-		console.log("Product Flows", productFlows);
+		//console.log("Product Flows", productFlows);
 		currentProduct = null;
 		currentProductFlow = null;
 		clearProductInputs();
-	}
-
-	function getCurrentProductFlow(code) {
-		if (productFlows) {
-			for (var i = 0; i < productFlows.length; i++) {
-				if (productFlows[i].product.code == code) {
-					return productFlows[i];
-				}
-			}
-		}
-		return null;
+		disableEditMode();
 	}
 
 	function addProductFlow(productFlow) {
@@ -280,7 +270,7 @@
 	function setCurrentProduct(entity, loadNewStock) {
 		inputProductName.value = entity.product.name;
 		inputProductCode.value = entity.product.code;
-		priceField.value = beautifyNominal(entity.product.price);
+		priceField.value = parseInt(entity.product.price);
 		quantityField.value = entity.product.count;
 
 		unitNameLabel.innerHTML = entity.product.unit.name;
