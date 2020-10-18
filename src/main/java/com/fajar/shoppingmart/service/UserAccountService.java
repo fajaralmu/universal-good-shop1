@@ -156,16 +156,22 @@ public class UserAccountService {
 	 * @return
 	 */
 	public boolean validateToken(HttpServletRequest httpRequest) {
+		boolean hasSession = sessionValidationService.hasSession(httpRequest);
+		if(hasSession) {
+			return true;
+		}
 		String requestToken = SessionUtil.getRequestToken(httpRequest);
+		
+		return validateToken(requestToken, httpRequest);
 		/**
 		 * TESTING
 		 */
-		boolean pageRequestValidated = sessionValidationService.validatePageRequest(httpRequest);
-		if (pageRequestValidated) {
-			return true;
-		} else {
-			return validateToken(requestToken, httpRequest);
-		}
+//		boolean pageRequestValidated = sessionValidationService.validatePageRequest(httpRequest);
+//		if (pageRequestValidated) {
+//			return true;
+//		} else {
+//			return validateToken(requestToken, httpRequest);
+//		}
 	}
 
 	/**
