@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
+import com.fajar.shoppingmart.entity.Category;
 import com.fajar.shoppingmart.entity.Product;
 import com.fajar.shoppingmart.entity.ProductSales;
 import com.fajar.shoppingmart.entity.Supplier;
@@ -35,13 +36,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProductServiceImpl implements ProductService{
 
-	private static final String WITH_STOCK = "withStock";
+	private static final String withStock = "withStock";
 
-	private static final String WITH_NEW_INFO = "withNewInfo";
+	private static final String withNewInfo = "withNewInfo";
 
-	private static final String WITH_SUPPLIER = "withSupplier";
+	private static final String withSupplier = "withSupplier";
 
 	private static final String FIELD_PRODUCT_ID = "productId";
+
+	private static final String withCategories = "withCategories";
 
 	@Autowired
 	private EntityService entityService;
@@ -52,10 +55,10 @@ public class ProductServiceImpl implements ProductService{
 	@Autowired
 	private ProgressService progressService;
 	@Autowired
-	private ProductInventoryService  productInventoryService;
+	private ProductInventoryService  productInventoryService; 
 
 	@PostConstruct
-	public void init() {
+	public void init() { 
 		LogProxyFactory.setLoggers(this);
 	} 
 	
@@ -70,34 +73,35 @@ public class ProductServiceImpl implements ProductService{
 		Map<String, Object> fieldsFilter = request.getFilter().getFieldsFilter();
 		Filter filter = SerializationUtils.clone(request.getFilter());
 
-		boolean withStock = isTrue(fieldsFilter.get(WITH_STOCK));
-		boolean withSupplier = isTrue(fieldsFilter.get(WITH_SUPPLIER));
-		boolean withNewInfo = isTrue(fieldsFilter.get(WITH_NEW_INFO));
+		boolean isWithStock = isTrue(fieldsFilter.get(withStock));
+		boolean isWithSupplier = isTrue(fieldsFilter.get(withSupplier));
+		boolean isWithNewInfo = isTrue(fieldsFilter.get(withNewInfo));
+		boolean isWithCategories = isTrue(fieldsFilter.get(withCategories));
 
-		log.info("withStock: {}, withSupplier: {}, withNewInfo: {}", withStock, withSupplier, withNewInfo);
+		log.info("withStock: {}, withSupplier: {}, withNewInfo: {}, isWithCategories: {}", isWithStock, isWithSupplier, isWithNewInfo, isWithCategories);
 
-		request.getFilter().getFieldsFilter().remove(WITH_STOCK);
+		request.getFilter().getFieldsFilter().remove(withStock);
 
-		WebResponse filteredProducts = entityService.filter(request, null);
+		WebResponse response = entityService.filter(request, null);
 
 		progressService.sendProgress(1, 1, 20.0, true, requestId);
 
-		if (filteredProducts == null || filteredProducts.getEntities() == null || filteredProducts.getEntities().size() == 0) {
+		if (response == null || response.getEntities() == null || response.getEntities().size() == 0) {
 			return new WebResponse("01", "Data Not Found");
 		}
 		
-		List<Product> products = convertList(filteredProducts.getEntities());
-
+		List<Product> products = convertList(response.getEntities());
+		
 		for (Product product : products) {
 
-			if (withNewInfo) {
+			if (isWithNewInfo) {
 				product.setNewProduct(isNewProduct(product.getId()));
 			}
-			if (withStock) {
+			if (isWithStock) {
 				int remaining = productInventoryService.getProductInventory(product);
 				product.setCount(remaining);
 			}
-			if (withSupplier) {
+			if (isWithSupplier) {
 				List<Supplier> suppliers = transactionHistoryService.getProductSupplier(product.getId(), 5, 0);
 				product.setSuppliers(suppliers);
 			}
@@ -105,12 +109,17 @@ public class ProductServiceImpl implements ProductService{
 			progressService.sendProgress(1, products.size(), 80, false, requestId);
 		} 
 		
+		if(isWithCategories) {
+			List<Category> categories = entityService.findAll(Category.class);
+			response.setGeneralList(categories);
+		}
+		
 		productInventoryService.refreshSessions();
 		progressService.sendComplete(requestId);
 		
-		filteredProducts.setFilter(filter);
-		filteredProducts.setEntities(convertList(products));
-		return filteredProducts;
+		response.setFilter(filter);
+		response.setEntities(products);
+		return response;
 	} 
 
 	@Override
