@@ -29,11 +29,10 @@ public class Message extends BaseEntity{
 	 */
 	private static final long serialVersionUID = -8717505831657905055L;
 	
-	public Message(String sender, String content, Date date2, Long valueOf, String reqId2) { 
+	public Message(String sender, String content, Date date2, String reqId2) { 
     	this.sender = sender;
     	this.text = content;
-    	this.date = date2;
-    	this.setId(valueOf);
+    	this.date = date2; 
     	this.requestId =reqId2;
     	 
 	}
