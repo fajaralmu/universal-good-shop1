@@ -92,7 +92,7 @@ public class EntityManagementPageService {
 		}
 	}
 
-	public WebResponse getManagementPages(HttpServletRequest httpRequest) {
+	public WebResponse getManagementPages() {
 		
 		List<Object> result = new ArrayList<>();
 		result.add(entityRepository.getConfig("product"));

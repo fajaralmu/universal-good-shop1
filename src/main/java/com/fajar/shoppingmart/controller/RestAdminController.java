@@ -22,12 +22,10 @@ import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.MessagingService;
-import com.fajar.shoppingmart.service.transaction.SellingAndPurchasingServiceImpl;
 import com.fajar.shoppingmart.service.transaction.TransactionHistoryService;
 
 @CrossOrigin
-@RestController
-@Authenticated
+@RestController 
 @RequestMapping("/api/admin")
 public class RestAdminController extends BaseController {
 	Logger log = LoggerFactory.getLogger(RestAdminController.class);
@@ -47,67 +45,59 @@ public class RestAdminController extends BaseController {
 	public void init() {
 		LogProxyFactory.setLoggers(this);
 	}
-
+	@Authenticated
 	@PostMapping(value = "/appsessions", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse appsessions(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
+	public WebResponse appsessions(@RequestBody WebRequest request)  {
 
 		WebResponse response = registeredRequestService.getAvailableSessions();
 		return response;
 	}
-
+	@Authenticated
 	@PostMapping(value = "/deletesession", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse deletesession(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
+	public WebResponse deletesession(@RequestBody WebRequest request) {
 
 		WebResponse response = registeredRequestService.deleteSession(request);
 		return response;
 	}
-
+	@Authenticated(loginRequired = false)
 	@PostMapping(value = "/sendmessage", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse sendMessage(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
+	public WebResponse sendMessage(@RequestBody WebRequest request, HttpServletRequest httpRequest) {
 		restPublicController.validatePageRequest(httpRequest);
 		WebResponse response = messagingService.sendMessage(request, httpRequest);
 		return response;
 	}
-
+	@Authenticated(loginRequired = false)
 	@PostMapping(value = "/getmessages", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse getMessages(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
+	public WebResponse getMessages(@RequestBody WebRequest request, HttpServletRequest httpRequest){
 		restPublicController.validatePageRequest(httpRequest);
 		 
 		WebResponse response = messagingService.getMessages(httpRequest);
 		return response;
 	}
-
+	@Authenticated(loginRequired = false)
 	@PostMapping(value = "/replymessage", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse replyMessage(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
+	public WebResponse replyMessage(@RequestBody WebRequest request, HttpServletRequest httpRequest){
 
 		WebResponse response = messagingService.replyMessage(request, httpRequest);
 		return response;
 	}
-
+	@Authenticated
 	@PostMapping(value = "/clearsession", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse clearsessions(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
+	public WebResponse clearsessions(@RequestBody WebRequest request)   {
 
 		WebResponse response = registeredRequestService.clearSessions();
 		return response;
 	}
-
+	@Authenticated
 	@PostMapping(value = "/saveentityorder/{entityName}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse savePageSequence(@PathVariable("entityName") String entityName, @RequestBody WebRequest request,
-			HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+	public WebResponse savePageSequence(@PathVariable("entityName") String entityName, @RequestBody WebRequest request) {
 
 		WebResponse response = componentService.saveEntitySequence(request, entityName);
 		return response;
 	}
-	
+	@Authenticated
 	@PostMapping(value = "/balance", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public WebResponse getBalance(@RequestBody WebRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) throws IOException {
+	public WebResponse getBalance(@RequestBody WebRequest request) {
 		
 		WebResponse response = transactionService.getBalance(request);
 		return response;

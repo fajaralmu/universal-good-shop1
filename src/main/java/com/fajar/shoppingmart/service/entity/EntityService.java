@@ -261,14 +261,14 @@ public class EntityService {
 		return resultList;
 	}
 
-	public EntityProperty getConfig(WebRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+	public EntityProperty getConfig(WebRequest request, HttpServletRequest httpRequest) {
 		try {
 			final String key = request.getEntity().toLowerCase();
 			Model model = entityManagementPageService.setModel(httpRequest, new ConcurrentModel(), key); 
 			 
 			return (EntityProperty) ((ConcurrentModel)model).get("entityProperty");
 		}catch (Exception e) {
-			httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+			
 			return null;
 		}
 	}

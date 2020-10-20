@@ -16,7 +16,9 @@ import com.fajar.shoppingmart.dto.UserSessionModel;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.entity.Message;
 import com.fajar.shoppingmart.entity.RegisteredRequest;
+import com.fajar.shoppingmart.repository.MessageRepository;
 import com.fajar.shoppingmart.repository.RegisteredRequestRepository;
 import com.fajar.shoppingmart.service.RealtimeService2;
 import com.fajar.shoppingmart.service.WebConfigService;
@@ -40,6 +42,8 @@ public class RegisteredRequestServiceImpl implements RegisteredRequestService {
 	private SessionValidationService sessionValidationService;
 	@Autowired
 	private WebConfigService webConfigService;
+	@Autowired
+	private MessageRepository messageRepository;
 	
 	@Override
 	public RegisteredRequest getRegisteredRequest(String requestId) {
@@ -60,8 +64,14 @@ public class RegisteredRequestServiceImpl implements RegisteredRequestService {
 	@Override
 	public WebResponse getAvailableSessions() {
 		
-		List<BaseEntity> appSessions = CollectionUtil.convertList(this.getAvailableSessionList());
-		return WebResponse.builder().code("00").entities(appSessions).build();
+		List<RegisteredRequest> appSessions =  this.getAvailableSessionList();
+		for (RegisteredRequest session : appSessions) {
+			List<Message> messages = messageRepository.findByRequestId(session.getRequestId());
+			session.setMessages(messages);
+		}
+		WebResponse response = new WebResponse();
+		response.setEntities(appSessions);
+		return response; 
 	}
 
 	@Override
