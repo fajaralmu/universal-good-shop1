@@ -31,19 +31,29 @@ public class CriteriaBuilder {
 	private final Session hibernateSession;
 
 	private int joinIndex = 1;
-	private final Class<? extends BaseEntity> entityClass;
-	private final Filter filter;
-	private final Map<String, Integer> aliases = new HashMap<>();
 	private final boolean allItemExactSearch;  
+	
+	private final Class<? extends BaseEntity> entityClass;
+	private final Filter filter; 
 	private final Criteria criteria;
+	private final Map<String, Object> fieldsFilter;
+	private final Map<String, Integer> aliases = new HashMap<>();
+	private final List<Field> entityDeclaredFields;
+
+	
+	private static final String THIS = "this";
 
 	public CriteriaBuilder(Session hibernateSession, Class<? extends BaseEntity> _class, Filter filter) {
 		this.hibernateSession = hibernateSession;
 		this.entityClass = _class;
 		this.filter = SerializationUtils.clone(filter);
 		this.allItemExactSearch = filter.isExacts(); 
-		this.criteria = this.hibernateSession.createCriteria(entityClass, entityClass.getSimpleName());
+		this.criteria = this.hibernateSession.createCriteria(entityClass, entityClass.getSimpleName()); 
+		this.fieldsFilter = filter.getFieldsFilter();
+		this.entityDeclaredFields = EntityUtil.getDeclaredFields(entityClass);
+		
 		this.setJoinColumnAliases();
+		log.info("=======CriteriaBuilder Field Filters: {}", fieldsFilter);
 	}
 
 	private Criterion restrictionEquals(Class<?> entityClass, String fieldName, Object fieldValue) {
@@ -111,7 +121,7 @@ public class CriteriaBuilder {
 		if (null == aliasName || aliases.get(aliasName) != null)
 			return;
 
-		if (aliasName.equals("this")) {
+		if (aliasName.equals(THIS)) {
 			// this.currentAlias = "this_";
 		} else {
 
@@ -132,7 +142,7 @@ public class CriteriaBuilder {
 	}
 
 	private String getAlias(String aliasName) {
-		if ("this".equals(aliasName)) {
+		if (THIS.equals(aliasName)) {
 			return "this_";
 		}
 		return aliasName.toLowerCase() + aliases.get(aliasName) + "_";
@@ -157,17 +167,14 @@ public class CriteriaBuilder {
 		return createCriteria(false);
 	}
  
-	private Criteria createCriteria(boolean onlyRowCount) {
-		Map<String, Object> fieldsFilter = filter.getFieldsFilter();
-		List<Field> entityDeclaredFields = EntityUtil.getDeclaredFields(entityClass);
-
-		log.info("=======FILTER: {}", fieldsFilter);
+	private Criteria createCriteria(boolean onlyRowCount) { 
+	
 		String entityName = entityClass.getSimpleName();
 		
-		setCurrentAlias("this");
+		setCurrentAlias(THIS);
 
 		for (final String rawKey : fieldsFilter.keySet()) {
-			setCurrentAlias("this");
+			setCurrentAlias(THIS);
 
 			log.info("##" + rawKey + ":" + fieldsFilter.get(rawKey));
 
@@ -302,7 +309,7 @@ public class CriteriaBuilder {
 		String tableName = _class.getName();// QueryUtil.getTableName(_class); NOW USING ALIAS
 
 		boolean isJoinColumn = field.getAnnotation(JoinColumn.class) != null;
-		String alias = isJoinColumn ? getAlias(field.getName()) : getAlias("this");
+		String alias = isJoinColumn ? getAlias(field.getName()) : getAlias(THIS);
 		Criterion sqlRestriction = Restrictions.sqlRestriction(alias + "." + columnName + " LIKE '%" + value + "%'");
 
 		return sqlRestriction;
