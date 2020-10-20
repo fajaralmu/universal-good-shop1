@@ -29,10 +29,10 @@ public class CriteriaTester {
 		setSession();
 		
 		//String filterJSON = "{\"entity\":\"product\",\"filter\":{\"exacts\":false,\"limit\":10,\"page\":0,\"fieldsFilter\":{\"withStock\":false,\"withSupplier\":false,\"withCategories\":false,\"category,id[EXACTS]\":\"4\",\"name\":\"\"},\"orderBy\":null,\"orderType\":null}}";
-		String filterJSON = "{\"entity\":\"product\",\"filter\":{\"exacts\":false,\"limit\":10,\"page\":0,\"fieldsFilter\":{\"withStock\":false,\"withSupplier\":false,\"withCategories\":false,\"category,id[EXACTS]\":\"1\",\"name\":\"\"},\"orderBy\":null,\"orderType\":null}}";
+		String filterJSON = "{\"entity\":\"product\",\"filter\":{\"exacts\":false,\"limit\":10,\"page\":0,\"fieldsFilter\":{\"withStock\":false,\"withSupplier\":false,\"withCategories\":false,\"category,id[EXACTS]\":2,\"name\":\"\"},\"orderBy\":null,\"orderType\":null}}";
 		WebRequest request = mapper.readValue(filterJSON, WebRequest.class);
 		CriteriaBuilder cb = new CriteriaBuilder(testSession, Product.class, request.getFilter());
-		Criteria criteria = cb.createCriteria();
+		Criteria criteria = cb.createRowCountCriteria();
 
 //		Criteria criteria = cb.createRowCountCriteria();
 		 

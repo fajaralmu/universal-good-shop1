@@ -57,8 +57,7 @@ public class CriteriaBuilder {
 		if (multiKey) {
 			Field hisField = EntityUtil.getDeclaredField(entityClass, fieldName.split(",")[0]);
 			field = EntityUtil.getDeclaredField(hisField.getType(), fieldName.split(",")[1]);
-			String alias = getAlias(hisField.getName());
-			System.out.println(getAlias(hisField.getName())+"='"+fieldValue+"'");
+			String alias = getAlias(hisField.getName())+"."+QueryUtil.getColumnName(field); 
 			return Restrictions.sqlRestriction(alias+"='"+fieldValue+"'");
 		} else {
 			Field hisField = EntityUtil.getDeclaredField(entityClass, fieldName);
