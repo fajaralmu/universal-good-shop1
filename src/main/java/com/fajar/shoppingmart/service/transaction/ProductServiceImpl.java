@@ -27,6 +27,7 @@ import com.fajar.shoppingmart.repository.ProductRepository;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.ProgressService;
 import com.fajar.shoppingmart.service.entity.EntityService;
+import com.fajar.shoppingmart.service.entity.EntityService.EntityResult;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.DateUtil;
 
@@ -82,15 +83,15 @@ public class ProductServiceImpl implements ProductService{
 
 		request.getFilter().getFieldsFilter().remove(withStock);
 
-		WebResponse response = entityService.filter(request, null);
+		EntityService.EntityResult entityResult = entityService.filterEntities(request.getFilter(), Product.class);
 
 		progressService.sendProgress(1, 1, 20.0, true, requestId);
 
-		if (response == null || response.getEntities() == null || response.getEntities().size() == 0) {
+		if (entityResult == null || entityResult.getEntities() == null || entityResult.getEntities().size() == 0) {
 			return new WebResponse("01", "Data Not Found");
 		}
 		
-		List<Product> products = convertList(response.getEntities());
+		List<Product> products = convertList(entityResult.getEntities());
 		
 		for (Product product : products) {
 
@@ -108,15 +109,16 @@ public class ProductServiceImpl implements ProductService{
 
 			progressService.sendProgress(1, products.size(), 80, false, requestId);
 		} 
+		 
+		productInventoryService.refreshSessions();
+		progressService.sendComplete(requestId);
 		
+		WebResponse response = new WebResponse();
 		if(isWithCategories) {
 			List<Category> categories = entityService.findAll(Category.class);
 			response.setGeneralList(categories);
 		}
-		
-		productInventoryService.refreshSessions();
-		progressService.sendComplete(requestId);
-		
+		response.setTotalData(entityResult.getCount());
 		response.setFilter(filter);
 		response.setEntities(products);
 		return response;

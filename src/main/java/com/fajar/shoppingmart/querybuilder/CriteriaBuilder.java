@@ -1,10 +1,13 @@
 package com.fajar.shoppingmart.querybuilder;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
+import javax.persistence.JoinColumn;
+
+import org.apache.commons.lang3.SerializationUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
@@ -14,73 +17,34 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
 
+import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.KeyValue;
 import com.fajar.shoppingmart.entity.BaseEntity;
-import com.fajar.shoppingmart.entity.Category;
-import com.fajar.shoppingmart.entity.Customer;
-import com.fajar.shoppingmart.entity.Product;
-import com.fajar.shoppingmart.entity.Supplier;
-import com.fajar.shoppingmart.entity.Transaction;
-import com.fajar.shoppingmart.entity.Unit;
-import com.fajar.shoppingmart.entity.User;
-import com.fajar.shoppingmart.entity.UserRole;
 import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CriteriaBuilder {
+	
+	
 
 	private final Session hibernateSession;
 
-	private String currentAlias;
-	private int joinIndex;
-	private final Class<? extends BaseEntity> _class;
+//	private String currentAlias;
+	private int joinIndex = 1;
+	private final Class<? extends BaseEntity> entityClass;
+	private final Filter filter;
+	private final Map<String , Integer> aliases = new HashMap<>();
 
-	public CriteriaBuilder(Session hibernateSession, Class<? extends BaseEntity> _class) {
+	public CriteriaBuilder(Session hibernateSession, Class<? extends BaseEntity> _class,  Filter filter) {
 		this.hibernateSession = hibernateSession;
-		this._class = _class;
+		this.entityClass = _class;
+		this.filter = SerializationUtils.clone(filter);
 	}
 
-	{
-
-		org.hibernate.cfg.Configuration configuration = new org.hibernate.cfg.Configuration();
-
-		configuration.setProperties(additionalProperties());
-		configuration.addAnnotatedClass(Product.class);
-		configuration.addAnnotatedClass(Unit.class);
-		configuration.addAnnotatedClass(Category.class);
-		configuration.addAnnotatedClass(Transaction.class);
-		configuration.addAnnotatedClass(Supplier.class);
-		configuration.addAnnotatedClass(Customer.class);
-		configuration.addAnnotatedClass(User.class);
-		configuration.addAnnotatedClass(UserRole.class);
-//		addAnnotatedClass(configuration);
-
-//		factory = configuration./* setInterceptor(new HibernateInterceptor()). */buildSessionFactory();
-//		session = factory.openSession();
-	}
-
-	private Properties additionalProperties() {
-
-		String dialect = "org.hibernate.dialect.MySQLDialect";
-		String ddlAuto = "update";
-
-		Properties properties = new Properties();
-		properties.setProperty("hibernate.dialect", dialect);
-		properties.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/goodshop");
-		properties.setProperty("hibernate.connection.username", "root");
-		properties.setProperty("hibernate.connection.password", "");
-
-		properties.setProperty("hibernate.connection.driver_class", com.mysql.jdbc.Driver.class.getCanonicalName());
-		properties.setProperty("hibernate.current_session_context_class", "thread");
-		properties.setProperty("hibernate.show_sql", "true");
-		properties.setProperty("hibernate.connection.pool_size", "1");
-		properties.setProperty("hbm2ddl.auto", ddlAuto);
-
-		return properties;
-	}
+	
 
 	public Criterion restrictionEquals(Class<?> entityClass, String fieldName, Object fieldValue) {
 		String entityName = entityClass.getSimpleName();
@@ -91,14 +55,23 @@ public class CriteriaBuilder {
 		if (multiKey) {
 			Field hisField = EntityUtil.getDeclaredField(entityClass, fieldName.split(",")[0]);
 			field = EntityUtil.getDeclaredField(hisField.getType(), fieldName.split(",")[1]);
-			 
-			fieldName = fieldName.replace(",", ".");
-			fieldName = fieldName.replace( fieldName.split("\\.")[0], this.currentAlias);
+			
+			fieldName = fieldName.replace(",", ".").replace( fieldName.split("\\.")[0], getAlias(hisField.getName()));
 			columnName = fieldName;
 			
 			return Restrictions.sqlRestriction(columnName+"='"+fieldValue+"'");
 		} else {
+			Field hisField = EntityUtil.getDeclaredField(entityClass, fieldName);
+			
+			KeyValue joinColumnResult = QueryUtil.checkIfJoinColumn(fieldName, hisField, true); 
 			field = EntityUtil.getDeclaredField(entityClass, fieldName);
+			if(null != joinColumnResult) {
+				//process join column
+				setCurrentAlias(fieldName);
+				FormField formField = hisField.getAnnotation(FormField.class);
+				fieldName=getAlias(fieldName)+"."+formField.optionItemName();
+				return Restrictions.sqlRestriction(fieldName+"='"+fieldValue+"'");
+			}
 			columnName = entityName + '.' + fieldName;
 		}
 
@@ -133,35 +106,51 @@ public class CriteriaBuilder {
 		return fieldValue;
 	}
 
+	/**
+	 * 
+	 * @param aliasName must match fieldName of entityClass
+	 */
 	private void setCurrentAlias(String aliasName) {
-		if (null == aliasName)
+		if (null == aliasName || aliases.get(aliasName)!=null)
 			return;
 
 		if (aliasName.equals("this")) {
-			this.currentAlias = "this_";
+			//this.currentAlias = "this_";
 		} else {
-
-			joinIndex = getJoinColumnIndex(aliasName) + 1;
 			
+			Field correspondingField = EntityUtil.getDeclaredField(entityClass, aliasName);
+			if(null == correspondingField) {
+				return;
+			}
+			aliases.put(aliasName, joinIndex);
+			criteria.createAlias(entityClass.getSimpleName() + "." + aliasName, aliasName);
 			if (aliasName.length() > 10) {
 				aliasName = aliasName.substring(0, 10);
 			}
 
-			this.currentAlias = aliasName.toLowerCase() + joinIndex + '_';
+			//this.currentAlias = aliasName.toLowerCase() + joinIndex + '_';
+			
+			joinIndex++;
 		}
-	}
-	
-	private int getJoinColumnIndex(String fieldName) {
-		List<Field> joinColumns = QueryUtil.getJoinColumnFields(_class);
-		for (int i = 0; i < joinColumns.size(); i++) {
-			if(joinColumns.get(i).getName().equals(fieldName)) {
-				return i;
-			}
-		}
-		return -1;
 	}
 
-	public Criteria createCriteria(Class<?> entityClass, Filter filter, final boolean _allItemExactSearch) {
+	
+	private String getAlias(String aliasName) {
+		if("this".equals(aliasName)) {
+			return "this_";
+		}
+		return aliasName.toLowerCase()+aliases.get(aliasName)+"_";
+	}
+	
+	private void setJoinColumnAliases( ) {
+		List<Field> joinColumns = QueryUtil.getJoinColumnFields(entityClass);
+		for (int i = 0; i < joinColumns.size(); i++) {
+			setCurrentAlias(joinColumns.get(i).getName());
+		}
+		 
+	}
+	private Criteria criteria;
+	public Criteria createCriteria(final boolean _allItemExactSearch) {
 		Map<String, Object> fieldsFilter = filter.getFieldsFilter();
 		List<Field> entityDeclaredFields = EntityUtil.getDeclaredFields(entityClass);
 
@@ -169,8 +158,9 @@ public class CriteriaBuilder {
 		boolean allItemExactSearch = filter.isExacts();
 
 		String entityName = entityClass.getSimpleName();
-		Criteria criteria = hibernateSession.createCriteria(entityClass, entityName);
-		setCurrentAlias("this");
+		criteria = hibernateSession.createCriteria(entityClass, entityName);
+		setJoinColumnAliases();
+		setCurrentAlias("this"); 
 
 		for (final String rawKey : fieldsFilter.keySet()) {
 			setCurrentAlias("this");
@@ -229,9 +219,8 @@ public class CriteriaBuilder {
 
 			if (null != joinColumnResult) {
 				if (joinColumnResult.isValid()) {
-
-					setCurrentAlias(fieldName);
-					criteria.createAlias(entityName + "." + fieldName, fieldName);
+ 
+					
 					criteria.add(restrictionLike(fieldName + "." + joinColumnResult.getValue(), field.getType(),
 							fieldsFilter.get(rawKey)));
 				} else {
@@ -258,14 +247,9 @@ public class CriteriaBuilder {
 
 	}
 
-	public Criteria createRowCountCriteria(Class<?> _class, final Filter rawFilter) {
-		Filter filter = EntityUtil.cloneSerializable(rawFilter);
+	public Criteria createRowCountCriteria() { 
 
-		filter.setLimit(0);
-		filter.setPage(0);
-		filter.setOrderBy(null);
-
-		Criteria criteria = createCriteria(_class, filter, false);
+		Criteria criteria = createCriteria(false);
 		criteria.setProjection(Projections.rowCount());
 		return criteria;
 	}
@@ -292,7 +276,7 @@ public class CriteriaBuilder {
 
 	}
 
-	Criterion restrictionLike(final String fieldName, Class<?> _class, Object value) {
+	private Criterion restrictionLike(final String fieldName, Class<?> _class, Object value) {
 		String extractedFieldName = fieldName;
 		if (fieldName.contains(".") && fieldName.split("\\.").length == 2) {
 			extractedFieldName = fieldName.split("\\.")[1];
@@ -317,32 +301,15 @@ public class CriteriaBuilder {
 		String columnName = field.getName();// QueryUtil.getColumnName(field);
 		String tableName = _class.getName();// QueryUtil.getTableName(_class); NOW USING ALIAS
 
+		boolean	isJoinColumn = field.getAnnotation(JoinColumn.class)!=null;		
+		String alias = isJoinColumn ? getAlias(field.getName()) : getAlias("this");
 		Criterion sqlRestriction = Restrictions
-				.sqlRestriction(currentAlias + "." + columnName + " LIKE '%" + value + "%'");
+				.sqlRestriction(alias  + "." + columnName + " LIKE '%" + value + "%'");
 
 		return sqlRestriction;
 	}
 
-	public static void main(String[] args) {
-		String name = "kk.ll";
-		log.info("contains: {}", name.contains("."));
-		String str = "capitaltype"; // 10 digits
-		System.out.println(str.substring(0, 10));
-		System.out.println(str.replace("e", "."));
-
-//		Map<String, Object> filter = new HashMap<String, Object>() {
-//			{
-//				 
-//				put("transactionDate-month", 2);
-//			}
-//		};
-//		Criteria criteria = createWhereClause(Transaction.class, filter, false);
-//		criteria.setMaxResults(2);
-//		System.out.println("CRITERIA BUILT");
-//		List list = criteria.list();
-//		CollectionUtil.printArray(list.toArray());
-//		System.out.println(criteria.getClass());
-	}
+	
 
 	private Criterion getDateFilter(String rawKey, String key, List<Field> entityDeclaredFields,
 			Map<String, Object> filter) {

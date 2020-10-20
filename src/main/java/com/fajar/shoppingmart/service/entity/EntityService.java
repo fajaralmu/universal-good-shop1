@@ -185,7 +185,7 @@ public class EntityService {
 		}
 	}
 
-	private <T extends BaseEntity> EntityResult filterEntities(Filter filter, Class<T> entityClass) {
+	public <T extends BaseEntity> EntityResult filterEntities(Filter filter, Class<T> entityClass) {
 		final List<T> entities = new ArrayList<>();
 		final Map<String, Long> count = new HashMap<>();
 		try {
@@ -241,7 +241,7 @@ public class EntityService {
 	@Builder
 	@AllArgsConstructor
 	@NoArgsConstructor
-	static class EntityResult implements Serializable {
+	public static class EntityResult implements Serializable {
 		/**
 		 * 
 		 */

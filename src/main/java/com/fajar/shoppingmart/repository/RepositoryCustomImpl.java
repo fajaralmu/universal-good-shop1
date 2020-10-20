@@ -166,10 +166,10 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	@Override
 	public <T extends BaseEntity> List<T> filterAndSortv2(Class<T> _class, Filter filter) {
 		try {
-			CriteriaBuilder criteriaBuilder = new CriteriaBuilder(hibernateSession, _class);
-			Criteria criteria = criteriaBuilder.createCriteria(_class, filter, false);
+			CriteriaBuilder criteriaBuilder = new CriteriaBuilder(hibernateSession, _class, filter);
+			Criteria criteria = criteriaBuilder.createCriteria(false);
 			List<T> resultList = criteria.list();
-
+			 
 			if (null == resultList) {
 				resultList = new ArrayList<>();
 			}
@@ -187,8 +187,10 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	public long getRowCount(Class<? extends BaseEntity> _class, Filter filter) {
 
 		try {
-			CriteriaBuilder criteriaBuilder = new CriteriaBuilder(hibernateSession, _class);
-			Criteria criteria = criteriaBuilder.createRowCountCriteria(_class, filter);
+			CriteriaBuilder criteriaBuilder = new CriteriaBuilder(hibernateSession, _class, filter);
+			Criteria criteria = criteriaBuilder.createRowCountCriteria();
+			String sql = getWhereQuery(criteria);
+			log.info("Row Count SQL: {}",sql );
 			return (long) criteria.uniqueResult();
 		} catch (Exception e) {
 			return 0;
