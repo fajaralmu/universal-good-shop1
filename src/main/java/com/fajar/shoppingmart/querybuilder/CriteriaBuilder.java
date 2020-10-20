@@ -27,64 +27,63 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CriteriaBuilder {
-	
-	
 
 	private final Session hibernateSession;
 
-//	private String currentAlias;
 	private int joinIndex = 1;
 	private final Class<? extends BaseEntity> entityClass;
 	private final Filter filter;
-	private final Map<String , Integer> aliases = new HashMap<>();
-	private final boolean allItemExactSearch;
+	private final Map<String, Integer> aliases = new HashMap<>();
+	private final boolean allItemExactSearch;  
+	private final Criteria criteria;
 
-	public CriteriaBuilder(Session hibernateSession, Class<? extends BaseEntity> _class,  Filter filter) {
+	public CriteriaBuilder(Session hibernateSession, Class<? extends BaseEntity> _class, Filter filter) {
 		this.hibernateSession = hibernateSession;
 		this.entityClass = _class;
 		this.filter = SerializationUtils.clone(filter);
-		this.allItemExactSearch = filter.isExacts();
+		this.allItemExactSearch = filter.isExacts(); 
+		this.criteria = this.hibernateSession.createCriteria(entityClass, entityClass.getSimpleName());
+		this.setJoinColumnAliases();
 	}
 
-	
-
-	public Criterion restrictionEquals(Class<?> entityClass, String fieldName, Object fieldValue) {
+	private Criterion restrictionEquals(Class<?> entityClass, String fieldName, Object fieldValue) {
 		String entityName = entityClass.getSimpleName();
 		String columnName;
 		boolean multiKey = fieldName.contains(",");
 		Field field;
-		
+
 		if (multiKey) {
 			Field hisField = EntityUtil.getDeclaredField(entityClass, fieldName.split(",")[0]);
 			field = EntityUtil.getDeclaredField(hisField.getType(), fieldName.split(",")[1]);
-			String alias = getAlias(hisField.getName())+"."+QueryUtil.getColumnName(field); 
-			return Restrictions.sqlRestriction(alias+"='"+fieldValue+"'");
+			String alias = getAlias(hisField.getName()) + "." + QueryUtil.getColumnName(field);
+			return Restrictions.sqlRestriction(alias + "='" + fieldValue + "'");
 		} else {
 			Field hisField = EntityUtil.getDeclaredField(entityClass, fieldName);
-			
-			KeyValue joinColumnResult = QueryUtil.checkIfJoinColumn(fieldName, hisField, true); 
+
+			KeyValue joinColumnResult = QueryUtil.checkIfJoinColumn(fieldName, hisField, true);
 			field = EntityUtil.getDeclaredField(entityClass, fieldName);
-			if(null != joinColumnResult) {
-				//process join column
+
+			if (null != joinColumnResult) {
+				// process join column
 				FormField formField = hisField.getAnnotation(FormField.class);
-				fieldName=getAlias(fieldName)+"."+formField.optionItemName();
-				return Restrictions.sqlRestriction(fieldName+"='"+fieldValue+"'");
+				fieldName = getAlias(fieldName) + "." + formField.optionItemName();
+				return Restrictions.sqlRestriction(fieldName + "='" + fieldValue + "'");
 			}
+
 			columnName = entityName + '.' + fieldName;
 		}
 
 		if (field.getType().equals(String.class) == false) {
-			return nonStringEqualsExp(entityClass, fieldName, fieldValue);
+			return nonStringEqualsExp(fieldName, fieldValue);
 		}
 
 		Object validatedValue = validateFieldValue(field, fieldValue);
 		return Restrictions.naturalId().set(columnName, validatedValue);
 	}
 
-	private Criterion nonStringEqualsExp(Class<?> entityClass, String fieldName, Object value) {
+	private Criterion nonStringEqualsExp(String fieldName, Object value) {
 
 		Criterion sqlRestriction = Restrictions.sqlRestriction("{alias}." + fieldName + " = '" + value + "'");
-
 		return sqlRestriction;
 	}
 
@@ -109,15 +108,15 @@ public class CriteriaBuilder {
 	 * @param aliasName must match fieldName of entityClass
 	 */
 	private void setCurrentAlias(String aliasName) {
-		if (null == aliasName || aliases.get(aliasName)!=null)
+		if (null == aliasName || aliases.get(aliasName) != null)
 			return;
 
 		if (aliasName.equals("this")) {
-			//this.currentAlias = "this_";
+			// this.currentAlias = "this_";
 		} else {
-			
+
 			Field correspondingField = EntityUtil.getDeclaredField(entityClass, aliasName);
-			if(null == correspondingField) {
+			if (null == correspondingField) {
 				return;
 			}
 			aliases.put(aliasName, joinIndex);
@@ -126,38 +125,46 @@ public class CriteriaBuilder {
 				aliasName = aliasName.substring(0, 10);
 			}
 
-			//this.currentAlias = aliasName.toLowerCase() + joinIndex + '_';
-			
+			// this.currentAlias = aliasName.toLowerCase() + joinIndex + '_';
+
 			joinIndex++;
 		}
 	}
 
-	
 	private String getAlias(String aliasName) {
-		if("this".equals(aliasName)) {
+		if ("this".equals(aliasName)) {
 			return "this_";
 		}
-		return aliasName.toLowerCase()+aliases.get(aliasName)+"_";
+		return aliasName.toLowerCase() + aliases.get(aliasName) + "_";
 	}
-	
-	private void setJoinColumnAliases( ) {
+
+	private void setJoinColumnAliases() {
 		List<Field> joinColumns = QueryUtil.getJoinColumnFields(entityClass);
 		for (int i = 0; i < joinColumns.size(); i++) {
 			setCurrentAlias(joinColumns.get(i).getName());
 		}
-		 
+
 	}
-	private Criteria criteria;
+	
+	public Criteria createRowCountCriteria() {
+
+		Criteria criteria = createCriteria(true);
+		criteria.setProjection(Projections.rowCount());
+		return criteria;
+	}
+	
 	public Criteria createCriteria() {
+		return createCriteria(false);
+	}
+ 
+	private Criteria createCriteria(boolean onlyRowCount) {
 		Map<String, Object> fieldsFilter = filter.getFieldsFilter();
 		List<Field> entityDeclaredFields = EntityUtil.getDeclaredFields(entityClass);
 
-		log.info("=======FILTER: {}", fieldsFilter); 
-
+		log.info("=======FILTER: {}", fieldsFilter);
 		String entityName = entityClass.getSimpleName();
-		criteria = hibernateSession.createCriteria(entityClass, entityName);
-		setJoinColumnAliases();
-		setCurrentAlias("this"); 
+		
+		setCurrentAlias("this");
 
 		for (final String rawKey : fieldsFilter.keySet()) {
 			setCurrentAlias("this");
@@ -172,15 +179,15 @@ public class CriteriaBuilder {
 			String finalNameAfterExactChecking = currentItemExact(rawKey);
 
 			if (null != finalNameAfterExactChecking) {
-				
+
 				currentKey = finalNameAfterExactChecking;
 				itemExacts = true;
 				boolean multiKey = currentKey.contains(",");
-				
-				if(multiKey) {
+
+				if (multiKey) {
 					setCurrentAlias(currentKey.split(",")[0]);
 				}
-				
+
 				criteria.add(restrictionEquals(entityClass, currentKey, fieldsFilter.get(rawKey)));
 				continue;
 			}
@@ -216,8 +223,7 @@ public class CriteriaBuilder {
 
 			if (null != joinColumnResult) {
 				if (joinColumnResult.isValid()) {
- 
-					
+
 					criteria.add(restrictionLike(fieldName + "." + joinColumnResult.getValue(), field.getType(),
 							fieldsFilter.get(rawKey)));
 				} else {
@@ -233,8 +239,12 @@ public class CriteriaBuilder {
 
 		}
 
+		if(onlyRowCount) {
+			return criteria;
+		}
+		
 		try {
-			addOrderOffsetLimit(criteria, filter);
+			addOrderOffsetLimit( filter);
 		} catch (Exception e) {
 			log.error("Error adding order/offset/limit");
 			e.printStackTrace();
@@ -242,16 +252,9 @@ public class CriteriaBuilder {
 
 		return criteria;
 
-	}
+	} 
 
-	public Criteria createRowCountCriteria() { 
-
-		Criteria criteria = createCriteria();
-		criteria.setProjection(Projections.rowCount());
-		return criteria;
-	}
-
-	private void addOrderOffsetLimit(Criteria criteria, Filter filter) {
+	private void addOrderOffsetLimit( Filter filter) {
 		if (filter.getLimit() > 0) {
 			criteria.setMaxResults(filter.getLimit());
 			if (filter.getPage() > 0) {
@@ -298,15 +301,12 @@ public class CriteriaBuilder {
 		String columnName = field.getName();// QueryUtil.getColumnName(field);
 		String tableName = _class.getName();// QueryUtil.getTableName(_class); NOW USING ALIAS
 
-		boolean	isJoinColumn = field.getAnnotation(JoinColumn.class)!=null;		
+		boolean isJoinColumn = field.getAnnotation(JoinColumn.class) != null;
 		String alias = isJoinColumn ? getAlias(field.getName()) : getAlias("this");
-		Criterion sqlRestriction = Restrictions
-				.sqlRestriction(alias  + "." + columnName + " LIKE '%" + value + "%'");
+		Criterion sqlRestriction = Restrictions.sqlRestriction(alias + "." + columnName + " LIKE '%" + value + "%'");
 
 		return sqlRestriction;
 	}
-
-	
 
 	private Criterion getDateFilter(String rawKey, String key, List<Field> entityDeclaredFields,
 			Map<String, Object> filter) {
