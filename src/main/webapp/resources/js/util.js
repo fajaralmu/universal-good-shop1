@@ -408,7 +408,7 @@ function createTableBody(columns, entities, beginNumber,ignoreNumber){
 			isUrl = typeof (entityValue) == "string" && (entityValue.trim().startsWith("http://") || entityValue.trim().startsWith("https://"));
 			
 			if(notNull && isUrl){
-				entityValue  ="<a href=\""+entityValue+"\">"+entityValue+"</a>";
+				entityValue  ="<a class=\"btn\" href=\""+entityValue+"\">"+entityValue+"</a>";
 			}
 			cell.innerHTML = entityValue;
 			row.append(cell);

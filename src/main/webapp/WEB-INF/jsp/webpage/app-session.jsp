@@ -21,7 +21,7 @@
 	function deleteSession(requestId) {
 		infoLoading();
 		var requestObject = {
-			'registeredRequest' : {
+			'registeredrequest' : {
 				'requestId' : requestId
 			}
 		};

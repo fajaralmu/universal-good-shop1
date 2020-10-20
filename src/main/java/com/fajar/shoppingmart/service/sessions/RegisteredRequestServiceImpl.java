@@ -75,6 +75,7 @@ public class RegisteredRequestServiceImpl implements RegisteredRequestService {
 
 	@Override
 	public WebResponse deleteSession(WebRequest request) {
+		log.info("will delete session: {}", request);
 		
 		SessionData sessionData = getSessionData();
 		String requestId = request.getRegisteredrequest().getRequestId();
