@@ -91,18 +91,21 @@
 		const button = createButton("delete-" + i, "<i class=\"fas fa-trash\"></i>");
 		button.setAttribute("class", "btn btn-danger btn-sm");
 		button.onclick = function(e) {
-			if (!confirm("Invalidate Session: " + entity.requestId + "?")) {
-				return;
-			}
-			deleteSession(entity.requestId);
+			confirmDialog("Invalidate Session: " + entity.requestId + "?")
+				.then(function(confirmed){
+				if(confirmed){
+					deleteSession(entity.requestId);
+				}
+			});
 		}; 
 		
 		optionCell.appendChild(button);
 		
-		if(entity.requestId != "${registeredRequestId}"){
+		/* if(entity.requestId != "${registeredRequestId}"){
 			const linkVidCall = createAnchor("link-" + i, "VidCall", "<spring:url value="/stream/videocall" />/"+ entity.requestId);
+			linkVidCall.setAttribute("class", "button button-info");
 			optionCell.appendChild(linkVidCall);
-		}
+		} */
 		
 		return optionCell;
 	}
@@ -124,18 +127,22 @@
 	}
 
 	function clearSessions() {
-		if (!confirm("Are you sure to clear ALL SESSIONS?"))
-			return;
-		infoLoading();
-		var requestObject = {};
-		postReq("<spring:url value="/api/admin/clearsession" />",
-				requestObject, function(xhr) {
-					infoDone();
-					var response = (xhr.data);
-					if (response != null && response.code != "00") {
-						alert("Error clear session");
-					}
-				});
+		confirmDialog("Are you sure to clear ALL SESSIONS?").then(function(confirmed){
+			if(confirmed){
+				infoLoading();
+				var requestObject = {};
+				postReq("<spring:url value="/api/admin/clearsession" />",
+						requestObject, function(xhr) {
+							infoDone();
+							var response = (xhr.data);
+							if (response != null && response.code != "00") {
+								alert("Error clear session");
+							}
+						});
+			}
+		})
+		 
+		
 	}
 
 	function updateMessage(response) {
@@ -163,10 +170,10 @@
 				}
 			}
 
-			let rows = createTableBody([ "text" ], messages, 0, true);
-			let tableMsg = createTableFromRows(rows, "chat-msg-"
+			const rows = createTableBody([ "text" ], messages, 0, true);
+			const tableMsg = createTableFromRows(rows, "chat-msg-"
 					+ response.code);
-			let rowReply = createRow("<td colspan=\"2\"><input  class=\"form-control\" type=\"text\" id=\"reply-msg"+response.code+"\" placeholder=\"reply\" />"
+			const rowReply = createRow("<td colspan=\"2\"><input  class=\"form-control\" type=\"text\" id=\"reply-msg"+response.code+"\" placeholder=\"reply\" />"
 					+ "<button class=\"btn btn-success\" id=\"do-reply-msg"+response.code+"\" ><i class=\"fas fa-paper-plane\"></i></button></td>");
 
 			tableMsg.style.tableLayout = "fixed";
@@ -176,13 +183,12 @@
 			byId(response.code).appendChild(tableMsg);
 			byId("do-reply-msg" + response.code).onclick = function(
 					e) {
-				let message = byId("reply-msg"
-						+ response.code).value;
+				const message = byId("reply-msg"+ response.code).value;
 				sendReply(response.code, message);
 			}
 
 			byId("do-toggle-msg" + response.code).onclick = function(e) {
-				let display = "block";
+				var display = "block";
 				if (byId("chat-msg-" + response.code).style.display == "block") {
 					display = "none";
 				}

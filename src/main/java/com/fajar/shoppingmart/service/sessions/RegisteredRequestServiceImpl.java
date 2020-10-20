@@ -15,7 +15,6 @@ import com.fajar.shoppingmart.dto.SessionData;
 import com.fajar.shoppingmart.dto.UserSessionModel;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
-import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Message;
 import com.fajar.shoppingmart.entity.RegisteredRequest;
 import com.fajar.shoppingmart.repository.MessageRepository;
