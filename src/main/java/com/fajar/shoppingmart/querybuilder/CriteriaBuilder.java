@@ -37,11 +37,13 @@ public class CriteriaBuilder {
 	private final Class<? extends BaseEntity> entityClass;
 	private final Filter filter;
 	private final Map<String , Integer> aliases = new HashMap<>();
+	private final boolean allItemExactSearch;
 
 	public CriteriaBuilder(Session hibernateSession, Class<? extends BaseEntity> _class,  Filter filter) {
 		this.hibernateSession = hibernateSession;
 		this.entityClass = _class;
 		this.filter = SerializationUtils.clone(filter);
+		this.allItemExactSearch = filter.isExacts();
 	}
 
 	
@@ -55,11 +57,9 @@ public class CriteriaBuilder {
 		if (multiKey) {
 			Field hisField = EntityUtil.getDeclaredField(entityClass, fieldName.split(",")[0]);
 			field = EntityUtil.getDeclaredField(hisField.getType(), fieldName.split(",")[1]);
-			
-			fieldName = fieldName.replace(",", ".").replace( fieldName.split("\\.")[0], getAlias(hisField.getName()));
-			columnName = fieldName;
-			
-			return Restrictions.sqlRestriction(columnName+"='"+fieldValue+"'");
+			String alias = getAlias(hisField.getName());
+			System.out.println(getAlias(hisField.getName())+"='"+fieldValue+"'");
+			return Restrictions.sqlRestriction(alias+"='"+fieldValue+"'");
 		} else {
 			Field hisField = EntityUtil.getDeclaredField(entityClass, fieldName);
 			
@@ -67,7 +67,6 @@ public class CriteriaBuilder {
 			field = EntityUtil.getDeclaredField(entityClass, fieldName);
 			if(null != joinColumnResult) {
 				//process join column
-				setCurrentAlias(fieldName);
 				FormField formField = hisField.getAnnotation(FormField.class);
 				fieldName=getAlias(fieldName)+"."+formField.optionItemName();
 				return Restrictions.sqlRestriction(fieldName+"='"+fieldValue+"'");
@@ -150,12 +149,11 @@ public class CriteriaBuilder {
 		 
 	}
 	private Criteria criteria;
-	public Criteria createCriteria(final boolean _allItemExactSearch) {
+	public Criteria createCriteria() {
 		Map<String, Object> fieldsFilter = filter.getFieldsFilter();
 		List<Field> entityDeclaredFields = EntityUtil.getDeclaredFields(entityClass);
 
-		log.info("=======FILTER: {}", fieldsFilter);
-		boolean allItemExactSearch = filter.isExacts();
+		log.info("=======FILTER: {}", fieldsFilter); 
 
 		String entityName = entityClass.getSimpleName();
 		criteria = hibernateSession.createCriteria(entityClass, entityName);
@@ -249,7 +247,7 @@ public class CriteriaBuilder {
 
 	public Criteria createRowCountCriteria() { 
 
-		Criteria criteria = createCriteria(false);
+		Criteria criteria = createCriteria();
 		criteria.setProjection(Projections.rowCount());
 		return criteria;
 	}

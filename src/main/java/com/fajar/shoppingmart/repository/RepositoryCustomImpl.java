@@ -167,7 +167,7 @@ public class RepositoryCustomImpl implements RepositoryCustom {
 	public <T extends BaseEntity> List<T> filterAndSortv2(Class<T> _class, Filter filter) {
 		try {
 			CriteriaBuilder criteriaBuilder = new CriteriaBuilder(hibernateSession, _class, filter);
-			Criteria criteria = criteriaBuilder.createCriteria(false);
+			Criteria criteria = criteriaBuilder.createCriteria();
 			List<T> resultList = criteria.list();
 			 
 			if (null == resultList) {

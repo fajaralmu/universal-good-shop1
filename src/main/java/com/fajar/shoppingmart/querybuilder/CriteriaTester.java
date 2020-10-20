@@ -25,19 +25,24 @@ public class CriteriaTester {
 	static ObjectMapper mapper = new ObjectMapper();
 	
 	public static void main(String[] args) throws Exception { 
+		try {
 		setSession();
 		
 		//String filterJSON = "{\"entity\":\"product\",\"filter\":{\"exacts\":false,\"limit\":10,\"page\":0,\"fieldsFilter\":{\"withStock\":false,\"withSupplier\":false,\"withCategories\":false,\"category,id[EXACTS]\":\"4\",\"name\":\"\"},\"orderBy\":null,\"orderType\":null}}";
-		String filterJSON = "{\"entity\":\"product\",\"filter\":{\"limit\":5,\"orderBy\":null,\"orderType\":null,\"fieldsFilter\":{\"category[EXACTS]\":\"Tool-Workbench\"}}}";
+		String filterJSON = "{\"entity\":\"product\",\"filter\":{\"exacts\":false,\"limit\":10,\"page\":0,\"fieldsFilter\":{\"withStock\":false,\"withSupplier\":false,\"withCategories\":false,\"category,id[EXACTS]\":\"1\",\"name\":\"\"},\"orderBy\":null,\"orderType\":null}}";
 		WebRequest request = mapper.readValue(filterJSON, WebRequest.class);
 		CriteriaBuilder cb = new CriteriaBuilder(testSession, Product.class, request.getFilter());
-		Criteria criteria = cb.createCriteria(false);
+		Criteria criteria = cb.createCriteria();
 
 //		Criteria criteria = cb.createRowCountCriteria();
 		 
 		criteria.list();
 		System.out.println(RepositoryCustomImpl.getWhereQuery(criteria));
+		}catch (Exception e) {
+			// TODO: handle exception
+		}finally {
 		System.exit(0);
+		}
 	}
 	
 	static void setSession() {
