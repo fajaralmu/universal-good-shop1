@@ -28,7 +28,9 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
 	}
 	@Override
 	public WebResponse getCashflowDetail(WebRequest request, String requestId) {
-		return reportingService.getCashflowDetail(request, requestId);
+		WebResponse response = reportingService.getCashflowDetail(request, requestId);
+		response.setFilter(request.getFilter());
+		return response;
 	}
 	@Override
 	public WebResponse getCashflowMonthly(WebRequest request, String requestId) {
