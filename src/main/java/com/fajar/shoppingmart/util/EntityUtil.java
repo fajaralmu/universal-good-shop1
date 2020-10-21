@@ -208,12 +208,12 @@ public class EntityUtil {
 			return field;
 
 		} catch (Exception e) {
-			log.error("Error get declared field in the class, and try access super class");
+			//log.error("Error get declared field in the class, and try access super class");
 		}
 		if (clazz.getSuperclass() != null) {
 
 			try {
-				log.info("TRY ACCESS SUPERCLASS");
+				//log.info("TRY ACCESS SUPERCLASS");
 
 				Field superClassField = clazz.getSuperclass().getDeclaredField(fieldName);
 				superClassField.setAccessible(true);

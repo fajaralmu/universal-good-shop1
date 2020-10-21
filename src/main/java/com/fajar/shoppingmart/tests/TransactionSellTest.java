@@ -31,7 +31,7 @@ public class TransactionSellTest {
 
 	static WebRequest createTransactionRequest(int m, int y) { 
 		List<ProductFlow> productFlows = new ArrayList<ProductFlow>(); 
-		List<Product> products = TransactionStakeHolders.randomProducts(10);
+		List<Product> products = TransactionStakeHolders.randomProducts(15);
 		for (Product product : products) {
 			ProductFlow pf = createProductFlow(product);
 			if(null == pf) {
@@ -59,7 +59,7 @@ public class TransactionSellTest {
 		if(stock == 0) {
 			return null;
 		}
-		int count = random.nextInt(5)+1;
+		int count = random.nextInt(10)+1;
 		if(count>stock) {
 			count = 1;
 		}
@@ -105,7 +105,7 @@ public class TransactionSellTest {
 			final int seq = i;
 			ThreadUtil.run(()->{
 				System.out.println("SEQUENCE: "+seq);
-				doTransaction(2, 2016, seq);
+				doTransaction(3, 2016, seq);
 			});
 		}
 	}

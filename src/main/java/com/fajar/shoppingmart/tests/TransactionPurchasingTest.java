@@ -16,6 +16,7 @@ import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.Product;
 import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.Transaction;
+import com.fajar.shoppingmart.util.DateUtil;
 import com.fajar.shoppingmart.util.ThreadUtil;
 
 public class TransactionPurchasingTest {
@@ -23,7 +24,7 @@ public class TransactionPurchasingTest {
 	static final RestTemplate REST_TEMPLATE = new RestTemplate();
 	static final String endPoint = "http://localhost:8080/universal-good-shop/api/transaction/purchasing";
 
-	static WebRequest createTransactionRequest(int m, int y) { 
+	static WebRequest createTransactionRequest(int day, int m, int y) { 
 		List<ProductFlow> productFlows = new ArrayList<ProductFlow>(); 
 		List<Product> products = TransactionStakeHolders.randomProducts(50);
 		for (Product product : products) {
@@ -32,7 +33,7 @@ public class TransactionPurchasingTest {
 		
 		WebRequest webRequest = new WebRequest();
 		webRequest.setSupplier(TransactionStakeHolders.randomSupplier());
-		webRequest.setTransaction(Transaction.builder().transactionDate(TransactionStakeHolders.randomDate(m, y)).build());
+		webRequest.setTransaction(Transaction.builder().transactionDate(DateUtil.getDate(y, m, day)).build());
 		webRequest.setProductFlows(productFlows);
 		return webRequest;
 	}
@@ -47,8 +48,8 @@ public class TransactionPurchasingTest {
 		return productFlow ;
 	}
 	
-	static void doTransaction(int month, int year, int index) {
-		HttpEntity<WebRequest> req = RestComponent.buildAuthRequest(createTransactionRequest(month, year), true);
+	static void doTransaction(int day, int month, int year, int index) {
+		HttpEntity<WebRequest> req = RestComponent.buildAuthRequest(createTransactionRequest(day, month, year), true);
 		ResponseEntity<WebResponse> response = REST_TEMPLATE.postForEntity( (endPoint), req, WebResponse.class);
 		System.out.println("index:"+index+"   "+response.getBody());
 	}
@@ -62,7 +63,7 @@ public class TransactionPurchasingTest {
 			final int seq = i;
 			ThreadUtil.run(()->{
 				System.out.println("SEQUENCE: "+seq);
-				doTransaction(1, 2016, seq);
+				doTransaction(1, 1, 2016, seq);
 			});
 		}
 	}
