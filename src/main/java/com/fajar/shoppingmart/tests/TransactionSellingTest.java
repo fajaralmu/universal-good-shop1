@@ -1,5 +1,7 @@
 package com.fajar.shoppingmart.tests;
 
+import static com.fajar.shoppingmart.tests.TransactionStakeHolders.randomProduct;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +18,7 @@ import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.util.ThreadUtil;
 
-public class TransactionSupplyTest {
+public class TransactionSellingTest {
 	static Random random = new Random();
 	static final RestTemplate REST_TEMPLATE = new RestTemplate();
 	static final String endPoint = "http://localhost:8080/universal-good-shop/api/transaction/purchasing";
@@ -39,7 +41,8 @@ public class TransactionSupplyTest {
 		
 		ProductFlow productFlow = new ProductFlow();
 		productFlow.setProduct(p);
-		productFlow.setPrice(p.getPrice()*((Double)(80.d/100.d)).longValue());
+		 
+		productFlow.setPrice(((Double)(p.getPrice()*80.d/100.d)).longValue());
 		productFlow.setCount(random.nextInt(100)+1);
 		return productFlow ;
 	}
@@ -47,19 +50,19 @@ public class TransactionSupplyTest {
 	static void doTransaction(int month, int year, int index) {
 		HttpEntity<WebRequest> req = RestComponent.buildAuthRequest(createTransactionRequest(month, year), true);
 		ResponseEntity<WebResponse> response = REST_TEMPLATE.postForEntity( (endPoint), req, WebResponse.class);
-		System.out.println("index:"+index+response.getBody());
+		System.out.println("index:"+index+"   "+response.getBody());
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(TransactionStakeHolders.randomProduct().getPrice()*(80.d/100.d));
+		randomTrx();
 	}
 	
 	static void randomTrx() {
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 50; i++) {
 			final int seq = i;
 			ThreadUtil.run(()->{
 				System.out.println("SEQUENCE: "+seq);
-				doTransaction(10, 2020, seq);
+				doTransaction(1, 2016, seq);
 			});
 		}
 	}

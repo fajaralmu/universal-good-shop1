@@ -161,6 +161,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 		transaction.setType(type);
 		if(user.getProcessingDate() != null) {
 			transaction.setTransactionDate(user.getProcessingDate());
+			transaction.setCreatedDate(user.getProcessingDate());
 		} else {
 			transaction.setTransactionDate(new Date()); 
 		}
