@@ -1,6 +1,5 @@
 package com.fajar.shoppingmart.tests;
 
-import static com.fajar.shoppingmart.tests.TransactionStakeHolders.randomProduct;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,15 +30,25 @@ public class TransactionSellTest {
 
 	static WebRequest createTransactionRequest(int m, int y) { 
 		List<ProductFlow> productFlows = new ArrayList<ProductFlow>(); 
-		List<Product> products = TransactionStakeHolders.randomProducts(15);
-		for (Product product : products) {
+		final List<Product> products = TransactionStakeHolders.randomProducts(15);
+		List<Thread> threads = new ArrayList<>();
+		for (final Product product : products) {
+			threads.add(ThreadUtil.run(()->{
 			ProductFlow pf = createProductFlow(product);
 			if(null == pf) {
-				continue;
+				return;
 			}
 			productFlows.add(pf );
+			}));
 		}
-		
+		for (Thread thread : threads) {
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		if(productFlows.size() == 0) {
 			return null;
 		}
@@ -103,10 +112,10 @@ public class TransactionSellTest {
 	static void randomTrx() {
 		for (int i = 0; i < 200; i++) {
 			final int seq = i;
-			ThreadUtil.run(()->{
+			//ThreadUtil.run(()->{
 				System.out.println("SEQUENCE: "+seq);
-				doTransaction(3, 2016, seq);
-			});
+				doTransaction(5, 2016, seq);
+			//});
 		}
 	}
 }

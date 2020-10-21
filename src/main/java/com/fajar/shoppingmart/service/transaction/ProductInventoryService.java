@@ -18,9 +18,7 @@ public interface ProductInventoryService {
 	public static final TransactionType PURCHASING = TransactionType.PURCHASING;
 	public static final boolean NEW_VERSION = Boolean.TRUE;
 	
-	public int getProductInventory(Product product);
-
-	public void refreshSessions();
+	public int getProductInventory(Product product); 
 
 	public Transaction savePurchasingTransaction(List<ProductFlow> productFlows, User user, Supplier supplier, TransactionMode mode);
 

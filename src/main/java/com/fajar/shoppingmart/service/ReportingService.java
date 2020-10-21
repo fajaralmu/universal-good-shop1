@@ -27,8 +27,8 @@ import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.Supplier;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.custom.CashFlow;
+import com.fajar.shoppingmart.repository.CustomRepositoryImpl;
 import com.fajar.shoppingmart.repository.ProductFlowRepository;
-import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.repository.TransactionRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -93,7 +93,7 @@ public class ReportingService {
 		Object[] propertiesArray = (Object[]) result;
 		 
 		try {
-			CashFlow cashflow = RepositoryCustomImpl.fillObject(CashFlow.class, propertiesArray, propertyOrder);
+			CashFlow cashflow = CustomRepositoryImpl.fillObject(CashFlow.class, propertiesArray, propertyOrder);
 			return  cashflow;
 			
 		} catch (Exception e) {			

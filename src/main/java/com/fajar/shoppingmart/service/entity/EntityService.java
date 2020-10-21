@@ -9,10 +9,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.ui.Model;
@@ -25,8 +23,9 @@ import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.UserRole;
 import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
 import com.fajar.shoppingmart.entity.setting.EntityProperty;
+import com.fajar.shoppingmart.repository.CustomRepositoryImpl;
+import com.fajar.shoppingmart.repository.DatabaseProcessor;
 import com.fajar.shoppingmart.repository.EntityRepository;
-import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
@@ -45,15 +44,16 @@ public class EntityService {
 	public static final String ORIGINAL_PREFFIX = "{ORIGINAL>>";
 
 	@Autowired
-	private RepositoryCustomImpl repositoryCustom;
+	private CustomRepositoryImpl customRepository;
 	@Autowired
 	private EntityRepository entityRepository; 
 	@Autowired
 	private EntityManagementPageService entityManagementPageService;
-
+	private DatabaseProcessor filterDatabaseProcessor;
 	@PostConstruct
 	public void init() {
 		LogProxyFactory.setLoggers(this);
+		filterDatabaseProcessor = customRepository.createDatabaseProcessor();
 	}
 
 	private EntityManagementConfig getEntityManagementConfig(String key) {
@@ -188,10 +188,11 @@ public class EntityService {
 	public <T extends BaseEntity> EntityResult filterEntities(Filter filter, Class<T> entityClass) {
 		final List<T> entities = new ArrayList<>();
 		final Map<String, Long> count = new HashMap<>();
+		
 		try {
-			List<T> resultList = repositoryCustom.filterAndSortv2(entityClass, filter);
+			List<T> resultList = filterDatabaseProcessor.filterAndSortv2(entityClass, filter);
 			entities.addAll(resultList); 
-			long resultCount = repositoryCustom.getRowCount(entityClass, filter);
+			long resultCount = filterDatabaseProcessor.getRowCount(entityClass, filter);
 			count.put("value", resultCount); 
 
 		} catch (Exception e) {

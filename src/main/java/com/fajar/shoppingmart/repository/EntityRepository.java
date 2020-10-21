@@ -41,7 +41,7 @@ public class EntityRepository {
 	private WebConfigService webConfigService;
 
 	@Autowired
-	private RepositoryCustomImpl repositoryCustom;
+	private CustomRepositoryImpl customRepository;
 	@Autowired
 	private ApplicationContext applicationContext;
 
@@ -149,7 +149,8 @@ public class EntityRepository {
 	}
 
 	public <T extends BaseEntity> T savev2(T entity) {
-		return repositoryCustom.saveObject(entity);
+		DatabaseProcessor databatseProcessor = customRepository.createDatabaseProcessor();
+		return databatseProcessor.saveObject(entity);
 
 	}
 
@@ -258,7 +259,8 @@ public class EntityRepository {
 	 */
 	public <T extends BaseEntity> boolean deleteById(Long id, Class<T> class1) {
 		log.info("Will delete entity: {}, id: {}", class1.getClass(), id);
-		return repositoryCustom.deleteObjectById(class1, id);
+		DatabaseProcessor databatseProcessor = customRepository.createDatabaseProcessor();
+		return databatseProcessor.deleteObjectById(class1, id);
 
 	}
 
@@ -268,8 +270,8 @@ public class EntityRepository {
 
 	public List findByKey(Class entityClass, Field idField, Object... objectArray) {
 		 
-	 
-		return repositoryCustom.findByKeyAndValues(entityClass,idField.getName() , objectArray);
+		DatabaseProcessor databatseProcessor = customRepository.createDatabaseProcessor();
+		return databatseProcessor.findByKeyAndValues(entityClass,idField.getName() , objectArray);
 	}
 
 }

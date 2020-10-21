@@ -20,10 +20,12 @@ import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.Supplier;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.User;
+import com.fajar.shoppingmart.repository.CustomRepositoryImpl;
+import com.fajar.shoppingmart.repository.DatabaseProcessor;
 import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.InventoryItemRepository;
 import com.fajar.shoppingmart.repository.PersistenceOperation;
-import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
+//import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fajar.shoppingmart.service.ProgressService;
 import com.fajar.shoppingmart.service.financial.CashBalanceService;
 import com.fajar.shoppingmart.util.StringUtil;
@@ -43,17 +45,17 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 	@Autowired
 	private EntityRepository entityRepository;
 	@Autowired
-	private RepositoryCustomImpl repositoryCustom; 
+	private CustomRepositoryImpl customRepository; 
 	 
 	@Override
 	public synchronized Transaction savePurchasingTransaction(List<ProductFlow> productFlows, User user, Supplier supplier, TransactionMode mode) {
 		final Transaction transaction = buildTransactionObject(PURCHASING, user, null, supplier, mode);
 		final String requestId = user.getRequestId();
+		DatabaseProcessor databaseProcessor = customRepository.createDatabaseProcessor();
+		databaseProcessor.keepTransaction();
+		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId, databaseProcessor);
 
-		repositoryCustom.keepTransaction();
-		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId);
-
-		repositoryCustom.pesistOperation(op);
+		databaseProcessor.pesistOperation(op);
 
 		transaction.setProductFlows(productFlows);
 		return transaction;
@@ -68,37 +70,24 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 		}
 		final String requestId = user.getRequestId();
 		final Transaction transaction = buildTransactionObject(SELLING, user, customer, null, mode);
+		DatabaseProcessor databaseProcessor = customRepository.createDatabaseProcessor();
+		databaseProcessor.keepTransaction();
+		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId, databaseProcessor);
 
-		repositoryCustom.keepTransaction();
-		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId);
-
-		repositoryCustom.pesistOperation(op);
+		databaseProcessor.pesistOperation(op);
 		transaction.setProductFlows(productFlows);
 
 		return transaction;
 	}
  
-	@Override
-	public void refreshSessions() {
-		repositoryCustom.refresh();
-		
-	}
+ 
 
 	@Override
 	public List<InventoryItem> getInventoriesByProduct(String fieldName, Object value, boolean match, int limit) {
 		 
-		String sql = "select * from inventoryitem left join product on inventoryitem.product_id = product.id "
-				+ " where inventoryitem.count > 0 and product." + fieldName + " ";
-		if (match) {
-			sql += " = '" + value + "'";
-		} else {
-			sql += " like '%" + value + "%'";
-		}
-		if (limit > 0) {
-			sql += " limit " + limit;
-		}
+		DatabaseProcessor databaseProcessor = customRepository.createDatabaseProcessor();
 		
-		List<InventoryItem> result  = repositoryCustom.pesistOperation(new PersistenceOperation<List<InventoryItem>>() {
+		List<InventoryItem> result  = databaseProcessor.pesistOperation(new PersistenceOperation<List<InventoryItem>>() {
 
 			@Override
 			public List<InventoryItem> doPersist(Session hibernateSession) {
@@ -117,15 +106,14 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 				}
 				
 				criteria.add(Restrictions.and(filter ));
-				log.info("_______SQL_HIBERNATE_BUILT: {}", repositoryCustom.getWhereQuery(criteria));
+//				log.info("_______SQL_HIBERNATE_BUILT: {}", repositoryCustom.getWhereQuery(criteria));
 				
 				return criteria.list();
 			}
 			
-		});
-		log.info("_______SQL_RAW__BUILT: {}", sql);
+		}); 
 		
-		return repositoryCustom.filterAndSort(sql, InventoryItem.class);
+		return result;// databaseProcessor.filterAndSort(sql, InventoryItem.class);
 	}
 
 	@Override
@@ -177,7 +165,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 	} 
 	
 	private PersistenceOperation<Transaction> getTransactionPersistenceOperation(final Transaction transaction,
-			List<ProductFlow> productFlows, String requestId) {
+			List<ProductFlow> productFlows, String requestId, final DatabaseProcessor databaseProcessor) {
 		log.info("Persistence Operation For trasaction type: {}, code: {}", transaction.getType(),
 				transaction.getCode());
 
@@ -186,14 +174,14 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 			@Override
 			public Transaction doPersist(Session hibernateSession) {
 
-				RepositoryCustomImpl.saveNewRecord(transaction, hibernateSession);
+				DatabaseProcessor.saveNewRecord(transaction, hibernateSession);
 				progressService.sendProgress(1, 1, 10, false, requestId);
 
-				List<ProductFlow> savedProductFlows = saveProductFlows(productFlows, transaction, requestId);
+				List<ProductFlow> savedProductFlows = saveProductFlows(productFlows, transaction, requestId, databaseProcessor);
 				saveNewInventoryRecords(savedProductFlows, transaction, hibernateSession);
 				updateInventoryRecords(savedProductFlows, transaction, requestId, hibernateSession);
 
-				repositoryCustom.notKeepingTransaction();
+				databaseProcessor.notKeepingTransaction();
 				return transaction;
 			}
 		};
@@ -288,7 +276,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 	}
 
 	private List<ProductFlow> saveProductFlows(List<ProductFlow> productFlows, final Transaction transaction,
-			String requestId) {
+			String requestId, DatabaseProcessor databaseProcessor) {
 
 		log.info("saveProductFlowsAndUpdateCashBalance, count: {}", productFlows.size());
 		List<ProductFlow> savedProductFlows = new ArrayList<ProductFlow>();
@@ -324,7 +312,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 				
 			}
 			// save
-			ProductFlow savedProductFlow = repositoryCustom.saveObject(productFlow);
+			ProductFlow savedProductFlow = databaseProcessor.saveObject(productFlow);
 
 			// update cash balance
 			cashBalanceService.updateCashBalance(savedProductFlow);

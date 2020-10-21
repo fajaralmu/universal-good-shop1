@@ -15,7 +15,6 @@ import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.Unit;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.entity.UserRole;
-import com.fajar.shoppingmart.repository.RepositoryCustomImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CriteriaTester {
@@ -37,7 +36,7 @@ public class CriteriaTester {
 //		Criteria criteria = cb.createRowCountCriteria();
 		 
 		criteria.list();
-		System.out.println(RepositoryCustomImpl.getWhereQuery(criteria));
+	//	System.out.println(RepositoryCustomImpl.getWhereQuery(criteria));
 		}catch (Exception e) {
 			// TODO: handle exception
 		}finally {

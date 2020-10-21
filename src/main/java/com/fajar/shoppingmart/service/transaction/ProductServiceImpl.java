@@ -110,7 +110,7 @@ public class ProductServiceImpl implements ProductService{
 			progressService.sendProgress(1, products.size(), 80, false, requestId);
 		} 
 		 
-		productInventoryService.refreshSessions();
+//		productInventoryService.refreshSessions();
 		progressService.sendComplete(requestId);
 		
 		WebResponse response = new WebResponse();

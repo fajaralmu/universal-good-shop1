@@ -67,10 +67,13 @@ public class DateUtil {
 	public static int getCalendarDayOfMonth(Date date) {
 		return getCalendarItem(date, Calendar.DAY_OF_MONTH);
 	}
+	
+	static Integer[] kabisatMonths = new Integer[] { 31, (  29  ), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+	static Integer[] regularMonths = new Integer[] { 31, (  28  ), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 	public static Integer[] getMonthsDay(int year) {
 		boolean kabisat = year % 4 == 0;
-		return new Integer[] { 31, (kabisat ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+		return  kabisat ? kabisatMonths : regularMonths;
 	}
 	
 	public static final String[] MONTH_NAMES = new String[] {
