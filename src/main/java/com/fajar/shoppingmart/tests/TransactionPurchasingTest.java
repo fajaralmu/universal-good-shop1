@@ -18,7 +18,7 @@ import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.util.ThreadUtil;
 
-public class TransactionSellingTest {
+public class TransactionPurchasingTest {
 	static Random random = new Random();
 	static final RestTemplate REST_TEMPLATE = new RestTemplate();
 	static final String endPoint = "http://localhost:8080/universal-good-shop/api/transaction/purchasing";

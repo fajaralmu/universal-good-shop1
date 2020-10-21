@@ -1,5 +1,6 @@
 package com.fajar.shoppingmart.tests;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpEntity;
@@ -14,7 +15,8 @@ public class RestComponent {
 	private static final String HEADER_ATTR_REQ_ID = "requestId";
 	private static final String HEADER_ATTR_CONTENT_TYPE = "content-type";
 	private static final String HEADER_ATTR_LOGIN_KEY = "loginKey";
-
+	private final static Object HASHMAP_EMPTY = new HashMap<Object, Object>();
+	
 	public static RestTemplate getRestTemplate() {
 //		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();        
 //		//Add the Jackson Message converter
@@ -48,6 +50,14 @@ public class RestComponent {
 
 	public static HttpEntity<Map<?, ?>> buildAuthRequest(Map<?, ?> WebRequest, boolean withLoginKey) {
 		return new HttpEntity<Map<?, ?>>(WebRequest, buildAuthHeader(withLoginKey));
+	}
+	@SuppressWarnings("unchecked")
+	private static <T> Class<T> getClass(Object o){
+		return (Class<T>) o.getClass();
+	}
+	
+	public static <T> Class<T> getEmptyHashMapClass() {
+		return getClass(HASHMAP_EMPTY );
 	}
 
 }
