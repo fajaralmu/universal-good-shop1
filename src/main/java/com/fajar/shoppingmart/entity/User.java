@@ -2,6 +2,7 @@ package com.fajar.shoppingmart.entity;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -81,6 +82,10 @@ public class User extends BaseEntity implements UserDetails {
 	@JsonIgnore
 	@Builder.Default
 	private  Collection<? extends GrantedAuthority>  authorities = new ArrayList<>();
+	
+	@Transient
+	@JsonIgnore
+	private Date processingDate; //for transaction
 	
 	public void setLoginKeyAndPasswordNull(String loginKey) {
 		this.loginKey = loginKey;

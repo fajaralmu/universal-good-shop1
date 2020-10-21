@@ -159,7 +159,11 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 		transaction.setCode(StringUtil.generateRandomNumber(10));
 		transaction.setUser(user);
 		transaction.setType(type);
-		transaction.setTransactionDate(new Date());
+		if(user.getProcessingDate() != null) {
+			transaction.setTransactionDate(user.getProcessingDate());
+		} else {
+			transaction.setTransactionDate(new Date()); 
+		}
 		transaction.setMode(mode);
 
 		if (PURCHASING.equals(type)) {

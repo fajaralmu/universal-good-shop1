@@ -72,10 +72,14 @@ public class SellingAndPurchasingServiceImpl implements SellingAndPurchasingServ
 	 */
 	@Override
 	public WebResponse purchaseProduct(WebRequest request, HttpServletRequest httpRequest) {  
-		User user = SessionUtil.getUserFromRequest(httpRequest); 
- 
+		
 		try {
 			validateProductFlows(request);
+			User user = SessionUtil.getUserFromRequest(httpRequest);  
+			if(request.getTransaction()!=null) {
+				user.setProcessingDate(request.getTransaction().getTransactionDate());
+			}
+			
 			List<ProductFlow> productFlows = request.getProductFlows();   
 			Optional<Supplier> supplier = supplierRepository.findById(request.getSupplier().getId());
 			
@@ -169,6 +173,9 @@ public class SellingAndPurchasingServiceImpl implements SellingAndPurchasingServ
 		try {
 			validateProductFlows(request);
 			User user = SessionUtil.getUserFromRequest(httpRequest);
+			if(request.getTransaction()!=null) {
+				user.setProcessingDate(request.getTransaction().getTransactionDate());
+			}
 			Optional<Customer> dbCustomer = customerRepository.findById(request.getCustomer().getId());
 
 			if (dbCustomer.isPresent() == false) {

@@ -16,6 +16,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
+import org.hibernate.sql.JoinType;
 
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.Filter;
@@ -130,7 +131,7 @@ public class CriteriaBuilder {
 				return;
 			}
 			aliases.put(aliasName, joinIndex);
-			criteria.createAlias(entityClass.getSimpleName() + "." + aliasName, aliasName);
+			criteria.createAlias(entityClass.getSimpleName() + "." + aliasName, aliasName, JoinType.LEFT_OUTER_JOIN);
 			if (aliasName.length() > 10) {
 				aliasName = aliasName.substring(0, 10);
 			}
