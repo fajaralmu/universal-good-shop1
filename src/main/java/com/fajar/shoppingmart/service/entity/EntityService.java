@@ -194,7 +194,7 @@ public class EntityService {
 			entities.addAll(resultList); 
 			long resultCount = filterDatabaseProcessor.getRowCount(entityClass, filter);
 			count.put("value", resultCount); 
-
+			filterDatabaseProcessor.refresh();
 		} catch (Exception e) {
 			log.error("Error filterEntities: {}", e.getCause());
 			count.put("value", 0L);
