@@ -110,11 +110,11 @@ public class TransactionSellTest {
 	}
 	
 	static void randomTrx() {
-		for (int i = 0; i < 300; i++) {
+		for (int i = 0; i < 100; i++) {
 			final int seq = i;
 			//ThreadUtil.run(()->{
 				System.out.println("SEQUENCE: "+seq);
-				doTransaction(3, 2017, seq);
+				doTransaction(4, 2017, seq);
 			//});
 		}
 	}
