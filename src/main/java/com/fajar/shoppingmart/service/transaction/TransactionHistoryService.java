@@ -27,4 +27,6 @@ public interface TransactionHistoryService {
 	public int getMinTransactionYear();
 
 	public WebResponse getTransactionData(String transactionCode);
+
+	public WebResponse getAllInventoriesStock();
 }

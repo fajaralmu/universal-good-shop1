@@ -11,6 +11,7 @@ import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.CashBalance;
 import com.fajar.shoppingmart.entity.Supplier;
 import com.fajar.shoppingmart.entity.Transaction;
+import com.fajar.shoppingmart.repository.InventoryItemRepository;
 import com.fajar.shoppingmart.service.ReportingService;
 import com.fajar.shoppingmart.service.financial.CashBalanceService;
 
@@ -21,6 +22,8 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
 	private ReportingService reportingService;
 	@Autowired
 	private CashBalanceService cashBalanceService;
+	@Autowired
+	private InventoryItemRepository inventoryItemRepository;
 	
 	@Override
 	public WebResponse getCashFlow(WebRequest request) {
@@ -70,6 +73,11 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
 		response.setTransaction(transaction);
 		response.setEntities(transaction.getProductFlows());
 		return response;
+	}
+	@Override
+	public WebResponse getAllInventoriesStock() {
+		Integer count = inventoryItemRepository.getAllInventoriesStock();
+		return WebResponse.builder().quantity(count).build();
 	}
 
 }

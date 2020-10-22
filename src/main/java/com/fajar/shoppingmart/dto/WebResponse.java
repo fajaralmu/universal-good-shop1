@@ -61,6 +61,7 @@ public class WebResponse implements Serializable {
 	private Map<String, Object> storage;
 	
 	private Long maxValue;
+	private Integer quantity;
 	private SessionData sessionData;
 	private Profile applicationProfile;
 
