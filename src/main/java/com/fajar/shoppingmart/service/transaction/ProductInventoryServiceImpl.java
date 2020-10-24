@@ -56,7 +56,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId, databaseProcessor);
 
 		databaseProcessor.pesistOperation(op);
-
+		databaseProcessor.close();
 		transaction.setProductFlows(productFlows);
 		return transaction;
 
@@ -75,6 +75,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId, databaseProcessor);
 
 		databaseProcessor.pesistOperation(op);
+		databaseProcessor.close();
 		transaction.setProductFlows(productFlows);
 
 		return transaction;

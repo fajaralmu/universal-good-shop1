@@ -22,6 +22,7 @@ import com.fajar.shoppingmart.entity.Supplier;
 import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.repository.CustomerRepository;
+import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.ProductFlowRepository;
 import com.fajar.shoppingmart.repository.ProductRepository;
 import com.fajar.shoppingmart.repository.SupplierRepository;
@@ -50,6 +51,8 @@ public class SellingAndPurchasingServiceImpl implements SellingAndPurchasingServ
 	private ProgressService progressService;
 	@Autowired
 	private ProductInventoryService productInventoryService; 
+	@Autowired
+	private EntityRepository entityRepository;
 
 	@PostConstruct
 	public void init() {
@@ -76,7 +79,7 @@ public class SellingAndPurchasingServiceImpl implements SellingAndPurchasingServ
 		try {
 			validateProductFlows(request);
 			User user = SessionUtil.getUserFromRequest(httpRequest);  
-			if(request.getTransaction()!=null) {
+			if(request.getTransaction() != null) {
 				user.setProcessingDate(request.getTransaction().getTransactionDate());
 			}
 			
@@ -109,12 +112,12 @@ public class SellingAndPurchasingServiceImpl implements SellingAndPurchasingServ
 		
 		// check if product is exist
 		for (ProductFlow productFlow : productFlows) {
-			Optional<Product> product = productRepository.findById(productFlow.getProduct().getId());
+			Product product =  entityRepository.findById(Product.class, productFlow.getProduct().getId());
 			sendProgress(1, productFlows.size(), 10, false, requestId);
-			if (!product.isPresent()) {
+			if (null == product ) {
 				throw new RuntimeException("One of product is invalid");
 			}
-			productFlow.setProduct(product.get());
+			productFlow.setProduct(product);
 		}
 		 
 		Transaction savedTransaction = productInventoryService.savePurchasingTransaction(productFlows, user,supplier, mode);

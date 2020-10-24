@@ -1,5 +1,6 @@
 package com.fajar.shoppingmart.repository;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.security.InvalidParameterException;
@@ -44,6 +45,8 @@ public class EntityRepository {
 	private CustomRepositoryImpl customRepository;
 	@Autowired
 	private ApplicationContext applicationContext;
+	
+	private DatabaseProcessor databaseReader;
 
 	@Setter(value = AccessLevel.NONE)
 	@Getter(value = AccessLevel.NONE)
@@ -65,6 +68,7 @@ public class EntityRepository {
 	@PostConstruct
 	public void init() throws Exception {
 		putEntitiesConfig();
+		databaseReader = customRepository.createDatabaseProcessor();
 	}
 
 	private void putEntitiesConfig() throws Exception {
@@ -234,6 +238,12 @@ public class EntityRepository {
 		}
 		log.debug("{} is NULL", clazz.getSimpleName());
 		return null;
+	}
+	
+	public <ID extends Serializable, T extends BaseEntity> T findByIdv2(Class<T> _class, ID id) {
+		T result = databaseReader.getById(_class, id);
+		
+		return result;
 	}
 
 	/**

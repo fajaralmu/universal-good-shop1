@@ -1,5 +1,6 @@
 package com.fajar.shoppingmart.repository;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,10 +54,27 @@ public class DatabaseProcessor {
 		try {
 			CriteriaBuilder criteriaBuilder = new CriteriaBuilder(hibernateSession, _class, filter);
 			Criteria criteria = criteriaBuilder.createRowCountCriteria();
-			 
+			
 			return (long) criteria.uniqueResult();
 		} catch (Exception e) {
 			return 0;
+		}
+	}
+	
+	public <T> T getById(Class<T> _class, Serializable id){
+		T object = (T) hibernateSession.get(_class, id);
+		refresh();
+		return object;
+	}
+	
+	public void close() {
+		
+		try {
+			if(null!=hibernateSession) {
+			//	hibernateSession.close();
+			}
+		}catch (Exception e) {
+			// TODO: handle exception
 		}
 	}
 	public <T> List<T> findByKeyAndValues(Class<T> entityClass, String key, Object... values) {

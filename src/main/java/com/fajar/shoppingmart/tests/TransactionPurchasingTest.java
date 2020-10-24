@@ -63,7 +63,7 @@ public class TransactionPurchasingTest {
 			final int seq = i;
 			//ThreadUtil.run(()->{
 				System.out.println("SEQUENCE: "+seq);
-				doTransaction(1, 0, 2017, seq);
+				doTransaction(1, 2, 2018, seq);
 //			});
 		}
 	}
