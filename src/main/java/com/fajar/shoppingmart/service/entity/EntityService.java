@@ -50,6 +50,7 @@ public class EntityService {
 	@Autowired
 	private EntityManagementPageService entityManagementPageService;
 	private DatabaseProcessor filterDatabaseProcessor;
+	private volatile boolean needRefresh;
 	@PostConstruct
 	public void init() {
 		LogProxyFactory.setLoggers(this);
@@ -191,12 +192,11 @@ public class EntityService {
 		final Map<String, Long> count = new HashMap<>();
 		
 		try {
-			filterDatabaseProcessor.refresh();
+			
 			List<T> resultList = filterDatabaseProcessor.filterAndSortv2(entityClass, filter);
 			entities.addAll(resultList); 
 			long resultCount = filterDatabaseProcessor.getRowCount(entityClass, filter);
-			count.put("value", resultCount); 
-			filterDatabaseProcessor.refresh();
+			count.put("value", resultCount);
 		} catch (Exception e) {
 			log.error("Error filterEntities: {}", e.getCause());
 			count.put("value", 0L);
