@@ -256,10 +256,6 @@ public class DatabaseProcessor {
 	}
 	
 	public  void refresh() {
-		refresh(null);
-	}
-	
-	public <T extends BaseEntity> void refresh(T o) {
 		
 		try {
 			/*
@@ -267,8 +263,10 @@ public class DatabaseProcessor {
 			 * hibernateSession.clear(); // internal cache clear //
 			 * sessionFactory.getCurrentSession().clear(); // // } // if(o != null) { //
 			 * hibernateSession.refresh(o); // }
-			 */			
+			 */		
+			
 			hibernateSession.clear();
+			hibernateSession.flush();
 			hibernateSession.close();
 			hibernateSession = sessionFactory.openSession();
 		}catch (Exception e) {
@@ -278,32 +276,26 @@ public class DatabaseProcessor {
 		
 	}
 	
-	public boolean deleteObjectById(Class<? extends BaseEntity> _class, Long id) {
-		PersistenceOperation<Boolean> deleteOperation = new PersistenceOperation<Boolean>() {
-
-			@Override
-			public Boolean doPersist(Session hibernateSession) {
-				try {
-					Object existingObject = hibernateSession.load(_class, id);
-					if (null == existingObject) {
-						log.info("existingObject of {} with id: {} does not exist!!", _class, id);
-						return false;
-					}
-					hibernateSession.delete(existingObject);
-					log.debug("Deleted Successfully");
-					return true;
-				} catch (Exception e) {
-					log.error("Error deleting object!");
-					e.printStackTrace();
-					return false;
-				}
-			}
-		};
+	public <T extends BaseEntity> boolean deleteObjectById(Class<T> _class, Long id) {
+		log.info("delete {} by id: {}", _class.getSimpleName(), id );
 		try {
-			return this.pesistOperation(deleteOperation);
+			T existingObject = (T) hibernateSession.load(_class, id);
+			if (null == existingObject) {
+				log.info("existingObject of {} with id: {} does not exist!!", _class, id);
+				return false;
+			}
+			hibernateSession.delete(existingObject);
+			hibernateSession.flush();
+			log.info("Deleted Successfully");
+			return true;
 		} catch (Exception e) {
-			return false;
+			log.error("Error deleting object!");
+			e.printStackTrace();
+			//return false;
+			throw e;
 		}
+			 
+		 
 	}
 
 }

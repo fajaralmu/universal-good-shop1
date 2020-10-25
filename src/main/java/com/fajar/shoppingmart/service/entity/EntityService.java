@@ -103,7 +103,7 @@ public class EntityService {
 						}
 						validateInMemoryEntities(entityConfig);
 					}
-					filterDatabaseProcessor.refresh();
+					databaseProcessorNotifier.refresh();
 					return saved;
 				} else {
 					return WebResponse.failed();
@@ -228,8 +228,11 @@ public class EntityService {
 				throw new Exception("Invalid entity");
 			}
 
-			boolean result = entityRepository.deleteById(id, entityClass);
-
+			boolean result = filterDatabaseProcessor.deleteObjectById(entityClass, id);
+			if(!result) {
+				throw new RuntimeException("Failed deleting");
+			}
+			filterDatabaseProcessor.refresh();
 			return WebResponse.builder().code("00").message("deleted :" + result).build();
 
 		} catch (Exception ex) {
