@@ -59,11 +59,11 @@ public class TransactionPurchasingTest {
 	}
 	
 	static void randomTrx() {
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 25; i++) {
 			final int seq = i;
 			//ThreadUtil.run(()->{
 				System.out.println("SEQUENCE: "+seq);
-				doTransaction(1, 2, 2018, seq);
+				doTransaction(1,0, 2016, seq);
 //			});
 		}
 	}

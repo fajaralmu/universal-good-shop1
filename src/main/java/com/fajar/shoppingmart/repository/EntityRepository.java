@@ -45,6 +45,8 @@ public class EntityRepository {
 	private CustomRepositoryImpl customRepository;
 	@Autowired
 	private ApplicationContext applicationContext;
+	@Autowired
+	private DatabaseProcessorNotifier databaseProcessorNotifier;
 	
 	private DatabaseProcessor databaseReader;
 
@@ -69,6 +71,7 @@ public class EntityRepository {
 	public void init() throws Exception {
 		putEntitiesConfig();
 		databaseReader = customRepository.createDatabaseProcessor();
+		databaseProcessorNotifier.register(databaseReader);
 	}
 
 	private void putEntitiesConfig() throws Exception {
@@ -149,6 +152,8 @@ public class EntityRepository {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw ex;
+		} finally {
+			databaseProcessorNotifier.refresh();
 		}
 	}
 

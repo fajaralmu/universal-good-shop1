@@ -25,6 +25,7 @@ import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
 import com.fajar.shoppingmart.entity.setting.EntityProperty;
 import com.fajar.shoppingmart.repository.CustomRepositoryImpl;
 import com.fajar.shoppingmart.repository.DatabaseProcessor;
+import com.fajar.shoppingmart.repository.DatabaseProcessorNotifier;
 import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.util.CollectionUtil;
@@ -50,11 +51,14 @@ public class EntityService {
 	@Autowired
 	private EntityManagementPageService entityManagementPageService;
 	private DatabaseProcessor filterDatabaseProcessor;
-	private volatile boolean needRefresh;
+	@Autowired
+	private DatabaseProcessorNotifier databaseProcessorNotifier;
+	
 	@PostConstruct
 	public void init() {
 		LogProxyFactory.setLoggers(this);
 		filterDatabaseProcessor = customRepository.createDatabaseProcessor();
+		databaseProcessorNotifier.register(filterDatabaseProcessor);
 	}
 
 	private EntityManagementConfig getEntityManagementConfig(String key) {
