@@ -97,6 +97,7 @@ public class EntityService {
 							SessionUtil.updateSessionUser(servletRequest, (User) saved.getEntity());
 						}
 						validateInMemoryEntities(entityConfig);
+						filterDatabaseProcessor.refresh();
 					}
 
 					return saved;

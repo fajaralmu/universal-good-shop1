@@ -248,6 +248,7 @@ public class DatabaseProcessor {
 	}
 	
 	public void refresh() {
+		 
 		try {
 		if (hibernateSession != null) {
 			hibernateSession.clear(); // internal cache clear
