@@ -2,6 +2,7 @@ package com.fajar.shoppingmart.service.transaction;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -53,12 +54,16 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 		final String requestId = user.getRequestId();
 		DatabaseProcessor databaseProcessor = customRepository.createDatabaseProcessor();
 		databaseProcessor.keepTransaction();
-		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId, databaseProcessor);
+		PersistenceOperation<Transaction> op = getTransactionPersistenceOperation(transaction, productFlows, requestId, databaseProcessor);
 
-		databaseProcessor.pesistOperation(op);
+		Transaction transactionSaved = databaseProcessor.pesistOperation(op);
 		databaseProcessor.close();
-		transaction.setProductFlows(productFlows);
-		return transaction;
+		if(null!=transactionSaved) {
+			updateCashBalance(transactionSaved);
+		}else {
+			throw new RuntimeException("Transaction Failed");
+		}
+		return transactionSaved;
 
 	}
  
@@ -72,16 +77,29 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 		final Transaction transaction = buildTransactionObject(SELLING, user, customer, null, mode);
 		DatabaseProcessor databaseProcessor = customRepository.createDatabaseProcessor();
 		databaseProcessor.keepTransaction();
-		PersistenceOperation<?> op = getTransactionPersistenceOperation(transaction, productFlows, requestId, databaseProcessor);
+		PersistenceOperation<Transaction> op = getTransactionPersistenceOperation(transaction, productFlows, requestId, databaseProcessor);
 
-		databaseProcessor.pesistOperation(op);
+		Transaction transactionSaved = databaseProcessor.pesistOperation(op);
 		databaseProcessor.close();
-		transaction.setProductFlows(productFlows);
-
-		return transaction;
+		if(null!=transactionSaved) {
+			updateCashBalance(transactionSaved);
+		}else {
+			throw new RuntimeException("Transaction Failed");
+		}
+		return transactionSaved;
 	}
  
  
+
+	private void updateCashBalance(Transaction transactionSaved) {
+		log.info("Update Cash Balance for transaction: {}", transactionSaved.getType());
+		List<ProductFlow> productFlows = transactionSaved.getProductFlows();
+		for (ProductFlow productFlow : productFlows) {
+			log.info("update cashbalance with product flow id: {}", productFlow.getId());
+			cashBalanceService.updateCashBalance(productFlow);
+		}
+		
+	}
 
 	@Override
 	public List<InventoryItem> getInventoriesByProduct(String fieldName, Object value, boolean match, int limit) {
@@ -181,7 +199,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 				List<ProductFlow> savedProductFlows = saveProductFlows(productFlows, transaction, requestId, databaseProcessor);
 				saveNewInventoryRecords(savedProductFlows, transaction, hibernateSession);
 				updateInventoryRecords(savedProductFlows, transaction, requestId, hibernateSession);
-
+				transaction.setProductFlows(savedProductFlows);
 				databaseProcessor.notKeepingTransaction();
 				return transaction;
 			}
@@ -314,15 +332,13 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 			}
 			// save
 			ProductFlow savedProductFlow = databaseProcessor.saveObject(productFlow);
-
-			// update cash balance
-			cashBalanceService.updateCashBalance(savedProductFlow);
+			log.info("savedProductFlow id: {}", savedProductFlow.getId());
 			savedProductFlows.add(savedProductFlow);
 
 			progressService.sendProgress(1, productFlows.size(), 30, false, requestId);
 		}
-		log.info("Saved Product, count: {}", savedProductFlows.size());
-		log.info("Skipped Product, count: {}", skippedProductFlows.size());
+		log.info("Saved Product count: {}", savedProductFlows.size());
+		log.info("Skipped Product count: {}", skippedProductFlows.size());
 		return savedProductFlows;
 	} 
 	

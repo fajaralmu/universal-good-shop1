@@ -97,8 +97,9 @@ public class CashBalanceService {
 	 * @param baseEntity
 	 */
 	public synchronized void updateCashBalance(FinancialEntity baseEntity) {
-		
+		log.info("Will Update CashBalance");
 		if(baseEntity == null || baseEntity.getId() == null) {
+			log.info("Cannot Update Cash Balance: object is null or object id is Null");
 			return;
 		} 
 		
@@ -121,7 +122,8 @@ public class CashBalanceService {
 		cashBalance.setDate(date); 
 		cashBalance.setModifiedDate(new Date()); 
 		
-		entityRepository.save(cashBalance);
+		CashBalance saved = entityRepository.save(cashBalance);
+		log.info("updated cash balance: {}", saved.getId());
 	}
  
 

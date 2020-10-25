@@ -134,12 +134,17 @@ public class DatabaseProcessor {
 			log.error("rawEntity IS NULL");
 			return null;
 		}
-
+		String mode = "new record";
+		if(rawEntity.getId() != null) {
+			mode = "update record";
+		}
+		
 		PersistenceOperation<T> persistenceOperation = new PersistenceOperation<T>() {
 
 			@Override
 			public T doPersist(Session hibernateSession) {
 				T result, entity;
+				
 				try {
 					entity = validateJoinColumns(rawEntity);
 				} catch (Exception e) {
@@ -162,17 +167,17 @@ public class DatabaseProcessor {
 
 					result = (T) hibernateSession.merge(entity);
 
-					log.debug("success update record of {}  ", entity.getClass() );
+					log.debug("success update record of {}  ", entity.getClass() ); 
 				}
 
-				log.info("success save Object of {} >> savedObject: {}", entity.getClass(), result);
+				//log.info("success save Object of {} >> savedObject: {}", entity.getClass(), result);
 				return result;
 			}
 		};
 
 		T result = this.pesistOperation(persistenceOperation);
 		if (null != result) {
-			log.info("success save Object: {}", result.getClass());
+			log.info("SaveObjectSUCCESS {} Object: {}, id: {}", mode, result.getClass(), result.getId());
 		}
 
 		return result;
@@ -263,6 +268,7 @@ public class DatabaseProcessor {
 			 * sessionFactory.getCurrentSession().clear(); // // } // if(o != null) { //
 			 * hibernateSession.refresh(o); // }
 			 */			
+			hibernateSession.clear();
 			hibernateSession.close();
 			hibernateSession = sessionFactory.openSession();
 		}catch (Exception e) {
