@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
@@ -25,10 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 public class DatabaseProcessor {
  
 	private Transaction currentTransaction;
-	private final Session hibernateSession;
+	private Session hibernateSession;
 	boolean removeTransactionAfterPersistence = true;
+	private final SessionFactory sessionFactory;
 	
-	public DatabaseProcessor(Session sess) {  
+	public DatabaseProcessor(SessionFactory sessionFactory, Session sess) {  
+		this.sessionFactory = sessionFactory;
 		this.hibernateSession = sess;
 	}
 	
@@ -247,16 +250,26 @@ public class DatabaseProcessor {
 		return null;
 	}
 	
-	public void refresh() {
-		 
+	public  void refresh() {
+		refresh(null);
+	}
+	
+	public <T extends BaseEntity> void refresh(T o) {
+		
 		try {
-		if (hibernateSession != null) {
-			hibernateSession.clear(); // internal cache clear
-		}
+			/*
+			 * // if (hibernateSession != null) { // hibernateSession.flush(); //
+			 * hibernateSession.clear(); // internal cache clear //
+			 * sessionFactory.getCurrentSession().clear(); // // } // if(o != null) { //
+			 * hibernateSession.refresh(o); // }
+			 */			
+			hibernateSession.close();
+			hibernateSession = sessionFactory.openSession();
 		}catch (Exception e) {
 			// TODO: handle exception
 			log.error("ERROR refresh session: {}", e.getMessage());
 		}
+		
 	}
 	
 	public boolean deleteObjectById(Class<? extends BaseEntity> _class, Long id) {

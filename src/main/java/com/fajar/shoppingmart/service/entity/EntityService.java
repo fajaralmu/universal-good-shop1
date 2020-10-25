@@ -99,7 +99,7 @@ public class EntityService {
 						validateInMemoryEntities(entityConfig);
 						filterDatabaseProcessor.refresh();
 					}
-
+					
 					return saved;
 				} else {
 					return WebResponse.failed();
@@ -191,6 +191,7 @@ public class EntityService {
 		final Map<String, Long> count = new HashMap<>();
 		
 		try {
+			filterDatabaseProcessor.refresh();
 			List<T> resultList = filterDatabaseProcessor.filterAndSortv2(entityClass, filter);
 			entities.addAll(resultList); 
 			long resultCount = filterDatabaseProcessor.getRowCount(entityClass, filter);
