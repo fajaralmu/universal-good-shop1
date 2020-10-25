@@ -245,7 +245,7 @@ public class DatabaseProcessor {
 			if (isTransactionNotKept()) {
 				currentTransaction = null;
 			}
-			this.refresh();
+			//this.refresh();
 		}
 		return null;
 	}
