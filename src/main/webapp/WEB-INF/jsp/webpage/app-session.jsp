@@ -156,7 +156,7 @@
 
 			for (var i = 0; i < messages.length; i++) {
 				const message = messages[i];
-				const alias = !message.alias || message.alias.trim() == "" ? "" :"["+message.alias+"]"; 
+				
 				const messageContent = createMessageHtmlContent(message);
 				message.text = domToString(messageContent);
 				 

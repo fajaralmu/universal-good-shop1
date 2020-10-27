@@ -16,6 +16,7 @@ function createToggleChatButton(code, count) {
 }
 
 function createMessageHtmlContent(message) {
+	const alias = !message.alias || message.alias.trim() == "" ? "" :"["+message.alias+"]"; 
 	return createHtmlTag({
 		tagName : 'div',
 		ch0 : {
@@ -56,8 +57,8 @@ function createInputMessageHtml(code){
 			id: 'do-reply-msg'+code,
 			innerHTML: "<i class=\"fas fa-paper-plane\"></i>",
 			onclick: function(e) {
-				const messageContent = byId("reply-msg"+ response.code).value;
-				sendReply(response.code, messageContent);
+				const messageContent = byId("reply-msg"+ code).value;
+				sendReply(code, messageContent);
 			}
 		}
 	});
