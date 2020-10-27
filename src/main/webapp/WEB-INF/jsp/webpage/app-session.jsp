@@ -71,7 +71,7 @@
 			
 			row.appendChild(optionCell);
 
-			const rowMessage = createRow("<td colspan=\"6\" id=\""+entity.requestId+"\"></td>");
+			const rowMessage = createRow("<td colspan=\"6\" id=\"chat-item-"+entity.requestId+"\"></td>");
 			table.appendChild(row);
 			table.appendChild(rowMessage);
 			console.log("=>=>=>messages:", entity.messages);
@@ -140,24 +140,12 @@
 							}
 						});
 			}
-		})
-		 
-		
-	}
-	
-	function createToggleChatButton(code, count){
-		const buttonToggleChat = createHtmlTag({
-			tagName: 'button',
-			className: 'btn btn-secondary',
-			id: 'do-toggle-msg'+ code,
-			innerHTML: "Toggle Chat("+ count + ")",
 		});
-		return buttonToggleChat;
-	}
-
+	} 
+	
 	function updateMessage(response) {
 		 
-		const chatSection = byId(response.code);
+		const chatSection = byId("chat-item-"+response.code);
 		if (chatSection) {
 			
 			const buttonToggleChat = createToggleChatButton(response.code, response.entities.length);
@@ -169,47 +157,19 @@
 			for (var i = 0; i < messages.length; i++) {
 				const message = messages[i];
 				const alias = !message.alias || message.alias.trim() == "" ? "" :"["+message.alias+"]"; 
-				const messageContent = createHtmlTag({
-					tagName:'div',
-					ch0: {tagName:'h4',innerHTML: (message.admin == 1?'ADMIN':"USER "+alias)},
-					ch1: {
-						tagName:'span',
-						style:{ 'font-size':'0.7em' },
-						innerHTML: 'at '+message.date
-					},
-					ch2: {
-						tagName: 'div',
-						className: (message.admin == 1? 'chat-item-admin' : 'chat-item-client'),
-						innerHTML:  message.text
-					}
-				});
+				const messageContent = createMessageHtmlContent(message);
 				message.text = domToString(messageContent);
 				 
 			}
 			
 			const rows = createTableBody([ "text" ], messages, 0, true);
 			const tableMsg = createTableFromRows(rows, "chat-msg-"+ response.code);
-			const rowReply = createRow("<td colspan=\"2\"><input  class=\"form-control\" type=\"text\" id=\"reply-msg"+response.code+"\" placeholder=\"reply\" />"
-					+ "<button class=\"btn btn-success\" id=\"do-reply-msg"+response.code+"\" ><i class=\"fas fa-paper-plane\"></i></button></td>");
-
+			
 			tableMsg.style.tableLayout = "fixed";
 			tableMsg.style.width = "100%";
 			tableMsg.style.display = "block";
-			tableMsg.appendChild(rowReply);
-			chatSection.appendChild(tableMsg);
-			
-			byId("do-reply-msg" + response.code).onclick = function(e) {
-				const message = byId("reply-msg"+ response.code).value;
-				sendReply(response.code, message);
-			}
-
-			byId("do-toggle-msg" + response.code).onclick = function(e) {
-				var display = "block";
-				if (byId("chat-msg-" + response.code).style.display == "block") {
-					display = "none";
-				}
-				byId("chat-msg-" + response.code).style.display = display;
-			}
+			tableMsg.appendChild(createInputMessageHtml(response.code));
+			chatSection.appendChild(tableMsg); 
 
 		}
 	}

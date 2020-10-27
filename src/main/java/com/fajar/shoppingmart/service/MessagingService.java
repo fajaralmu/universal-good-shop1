@@ -112,7 +112,7 @@ public class MessagingService {
 		return responseAPI;
 	}
 
-	void putMessage(String requestId, Message message) {
+	private void putMessage(String requestId, Message message) {
 		entityRepository.save(message);
 	}
 

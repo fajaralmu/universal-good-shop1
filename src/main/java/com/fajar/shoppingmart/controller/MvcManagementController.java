@@ -181,7 +181,9 @@ public class MvcManagementController extends BaseController {
 	 */
 
 	@RequestMapping(value = { "/appsession" })
-	@CustomRequestInfo(title = "Apps Sessions", pageUrl = "webpage/app-session", stylePaths = "sessionmanagement")
+	@CustomRequestInfo(title = "Apps Sessions", pageUrl = "webpage/app-session", 
+		stylePaths = "sessionmanagement", 
+		scriptPaths = "sessionmanagement")
 	public String appsession(Model model, HttpServletRequest request, HttpServletResponse response)  { 
 		 
 		return basePage;
