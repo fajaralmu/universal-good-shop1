@@ -1,5 +1,7 @@
 package com.fajar.shoppingmart.util;
 
+import static com.fajar.shoppingmart.util.CollectionUtil.reverse;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -226,5 +228,57 @@ public class DateUtil {
 
 		}
 		return diff;
+	}
+	
+	/**
+	 * get list of months with length: diff
+	 * @param calendar
+	 * @param diff
+	 * @return
+	 */
+	public static List<int[]> getMonths(Calendar calendar, int diff) {
+
+		Integer currentMonth = calendar.get(Calendar.MONTH) + 1;
+		Integer currentYear = calendar.get(Calendar.YEAR);
+		List<int[]> periods = new ArrayList<>();
+		String monthString = currentMonth >= 10 ? currentMonth.toString() : "0" + currentMonth;
+
+		periods.add(new int[] { currentYear, Integer.parseInt(monthString) });
+
+		for (int i = 1; i <= diff  ; i++) {
+			currentMonth--;
+			if (currentMonth <= 0) {
+				currentMonth = 12;
+				currentYear--;
+			}
+			monthString = currentMonth >= 10 ? currentMonth.toString() : "0" + currentMonth;
+			periods.add(new int[] { currentYear, Integer.parseInt(monthString) });
+		}
+		return reverse(periods);
+	}
+	
+	/**
+	 * get day of month count
+	 * @param year
+	 * @param month
+	 * @return
+	 */
+	public static int getMonthDayCount(int year, int month) {
+		
+		int day = 30;
+		
+		if(month == 2 && year % 4 == 0) {
+			return 29;
+		}else if(month == 2) {
+			return 28;
+		}
+		
+		if(month < 8 && month % 2 != 0) {
+			return 30;
+		}else if(month >= 8 && month % 2 == 0) {
+			return 31;
+		}
+		
+		return day;
 	}
 }
