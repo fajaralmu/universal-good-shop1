@@ -63,7 +63,7 @@ public class RestAdminController extends BaseController {
 	@PostMapping(value = "/sendmessage", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse sendMessage(@RequestBody WebRequest request, HttpServletRequest httpRequest) {
 		restPublicController.validatePageRequest(httpRequest);
-		WebResponse response = messagingService.sendMessage(request, httpRequest);
+		WebResponse response = messagingService.sendMessageToAdmin(request, httpRequest);
 		return response;
 	}
 	@Authenticated(loginRequired = false)
@@ -78,7 +78,7 @@ public class RestAdminController extends BaseController {
 	@PostMapping(value = "/replymessage", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse replyMessage(@RequestBody WebRequest request, HttpServletRequest httpRequest){
 
-		WebResponse response = messagingService.replyMessage(request, httpRequest);
+		WebResponse response = messagingService.replyMessageToClient(request, httpRequest);
 		return response;
 	}
 	@Authenticated

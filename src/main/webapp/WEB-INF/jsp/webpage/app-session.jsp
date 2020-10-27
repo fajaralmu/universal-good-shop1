@@ -168,21 +168,25 @@
 
 			for (var i = 0; i < messages.length; i++) {
 				const message = messages[i];
-				const dateComponent = "<span style=\"font-size:0.7em\">at "+ message.date + "</span>";
-				if (message.admin == 1) {
-					message.text = "ADMIN "
-							+ dateComponent
-							+ "<div style=\"border-radius:4px; margin:2px;padding:3px;  background-color: cadetblue\">"
-							+ message.text + "</div>";
-				} else {
-					const alias = !message.alias || message.alias.trim() == ""?"" :"["+message.alias+"]";
-					message.text = "USER "+alias
-							+ dateComponent
-							+ "<div style=\"border-radius:4px; margin:2px;padding:3px; background-color: wheat\">"
-							+ message.text + "</div>";
-				}
+				const alias = !message.alias || message.alias.trim() == "" ? "" :"["+message.alias+"]"; 
+				const messageContent = createHtmlTag({
+					tagName:'div',
+					ch0: {tagName:'h4',innerHTML: (message.admin == 1?'ADMIN':"USER "+alias)},
+					ch1: {
+						tagName:'span',
+						style:{ 'font-size':'0.7em' },
+						innerHTML: 'at '+message.date
+					},
+					ch2: {
+						tagName: 'div',
+						className: (message.admin == 1? 'chat-item-admin' : 'chat-item-client'),
+						innerHTML:  message.text
+					}
+				});
+				message.text = domToString(messageContent);
+				 
 			}
-
+			
 			const rows = createTableBody([ "text" ], messages, 0, true);
 			const tableMsg = createTableFromRows(rows, "chat-msg-"+ response.code);
 			const rowReply = createRow("<td colspan=\"2\"><input  class=\"form-control\" type=\"text\" id=\"reply-msg"+response.code+"\" placeholder=\"reply\" />"
