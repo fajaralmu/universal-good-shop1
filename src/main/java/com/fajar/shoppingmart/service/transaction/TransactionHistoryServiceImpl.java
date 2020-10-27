@@ -75,11 +75,9 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
 				transactionType = SELLING;
 				break;
 		}
-		CashFlow cashflow = getCashflow(month, year, transactionType);
+		CashFlow cashflow = getCashflowByPeriod(month, year, transactionType);
 
 		if (cashflow != null) {
-			cashflow.setYear(request.getFilter().getYear());
-			cashflow.setMonth(request.getFilter().getMonth());
 			cashflow.setModule(request.getFilter().getModule());
 			response.setEntity(cashflow);
 		}
@@ -95,40 +93,37 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
 		int yearTo = request.getFilter().getYearTo();
 		
 		int diffMonth = getDiffMonth(monthFrom, yearFrom, monthTo, yearTo);
-		
-		Calendar periodTo = Calendar.getInstance(); 
 		int dayCount = DateUtil.getMonthDayCount(yearTo, monthTo);
+		
+		Calendar periodTo = Calendar.getInstance();
 		periodTo.set(request.getFilter().getYearTo(), request.getFilter().getMonthTo() - 1, dayCount);
 
 		List<int[]> periods = DateUtil.getMonths(periodTo, diffMonth);
-		List<BaseEntity> supplies = new ArrayList<>();
-		List<BaseEntity> purchases = new ArrayList<>();
+		List<BaseEntity> purchasings = new ArrayList<>();
+		List<BaseEntity> sellings = new ArrayList<>();
 		Long maxValue = 0L;
 
 		for (int[] period : periods) {
 			System.out.println("o o PERIOD: "+period[0]+", "+period[1]);
 
 			// supply
-			CashFlow cashflowSupply = getCashflow(period[1], period[0], PURCHASING);
-			cashflowSupply.setMonth(period[1]);
-			cashflowSupply.setYear(period[0]);
+			CashFlow cashflowPurchasing = getCashflowByPeriod(period[1], period[0], PURCHASING);
 
-			supplies.add(cashflowSupply);
+			purchasings.add(cashflowPurchasing);
 
-			if (cashflowSupply != null  && cashflowSupply.getAmount() > maxValue) {
-				maxValue = cashflowSupply.getAmount();
+			if (cashflowPurchasing != null  && cashflowPurchasing.getAmount() > maxValue) {
+				maxValue = cashflowPurchasing.getAmount();
 			}
 
 			// purchase
-			CashFlow cashflowPurchase = getCashflow(period[1], period[0], SELLING);
-			cashflowPurchase.setMonth(period[1]);
-			cashflowPurchase.setYear(period[0]);
+			CashFlow cashflowSelling = getCashflowByPeriod(period[1], period[0], SELLING);
+			
 
-			purchases.add(cashflowPurchase);
+			sellings.add(cashflowSelling);
 
-			if (cashflowPurchase != null  
-					&& cashflowPurchase.getAmount() > maxValue) {
-				maxValue = cashflowPurchase.getAmount();
+			if (cashflowSelling != null  
+					&& cashflowSelling.getAmount() > maxValue) {
+				maxValue = cashflowSelling.getAmount();
 			}
 			progressService.sendProgress(1, periods.size(), 100, false, requestId);
 
@@ -136,8 +131,12 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
 		WebResponse response = new WebResponse();
 
 		response.setMaxValue(maxValue);
-		response.setSupplies(supplies);
-		response.setPurchases(purchases);
+		//will be removed
+		response.setSupplies(purchasings);
+		response.setPurchases(sellings);
+		//and replaced by this
+		response.setPurchasings(purchasings);
+		response.setSellings(sellings);
 		response.setFilter(request.getFilter());
 		return response;
 	}
@@ -271,7 +270,7 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
 	
 	////////////////////////////// PRIVATES /////////////////////////////////////////
 	
-	private CashFlow getCashflow(Integer month, Integer year, final TransactionType transactionType) {
+	private CashFlow getCashflowByPeriod(Integer month, Integer year, final TransactionType transactionType) {
 		log.info("get cashflow month: {}, year: {}, transactionType: {}", month, year, transactionType);
 		
 		Object result = productFlowRepository.findCashflowByModuleAndMonthAndYear(String.valueOf(transactionType), month, year);
@@ -281,6 +280,8 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
 		 
 		try {
 			CashFlow cashflow = CustomRepositoryImpl.fillObject(CashFlow.class, propertiesArray, propertyOrder);
+			cashflow.setMonth(month);
+			cashflow.setYear(year);
 			return  cashflow;
 			
 		} catch (Exception e) {			

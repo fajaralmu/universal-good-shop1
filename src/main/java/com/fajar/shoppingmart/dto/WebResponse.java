@@ -47,10 +47,7 @@ public class WebResponse implements Serializable {
 	@Builder.Default
 	@Setter(value = AccessLevel.NONE)
 	private List<BaseEntity> entities = new ArrayList<>();
-	@Builder.Default
-	private List<BaseEntity> supplies = new ArrayList<>();
-	@Builder.Default
-	private List<BaseEntity> purchases = new ArrayList<>();
+	
 	private List<?> generalList;
 	
 	private BaseEntity entity;
@@ -82,6 +79,15 @@ public class WebResponse implements Serializable {
 	private boolean success = true;
 	@JsonIgnore
 	private Class<? extends BaseEntity> entityClass;
+	
+	@Builder.Default
+	private List<BaseEntity> supplies = new ArrayList<>();
+	@Builder.Default
+	private List<BaseEntity> purchases = new ArrayList<>();
+	@Builder.Default
+	private List<BaseEntity> purchasings = new ArrayList<>();
+	@Builder.Default
+	private List<BaseEntity> sellings = new ArrayList<>();
 	
 	public WebResponse(String code, String message) {
 		this.code = code;
