@@ -15,6 +15,7 @@ import com.fajar.shoppingmart.service.report.builder.DailyReportBuilder;
 import com.fajar.shoppingmart.service.report.builder.EntityReportService;
 import com.fajar.shoppingmart.service.report.builder.MonthlyReportBuilder;
 import com.fajar.shoppingmart.service.report.builder.OnProgress;
+import com.fajar.shoppingmart.service.report.builder.ReportBuilder;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,10 +46,7 @@ public class ReportService {
 
 		log.info("report row data size: {}", reportData.getDailyReportRows().size());
 		
-		DailyReportBuilder reportBuilder = new DailyReportBuilder(reportData);
-		reportBuilder.setOnProgressCallback(onProgressCallback(httpRequest)); 
-		CustomWorkbook file = reportBuilder.buildReport();
-		return file;
+		return writeTransactionReport(new DailyReportBuilder(reportData), httpRequest);
 	}
 
 	public CustomWorkbook buildMonthlyReport(WebRequest request, HttpServletRequest httpRequest) {
@@ -57,10 +55,23 @@ public class ReportService {
 		ReportData reportData = reportDataService.getMonthlyReportData(request);
 		initProgress(httpRequest);
 		
-		MonthlyReportBuilder reportBuilder = new MonthlyReportBuilder(reportData, true);
+		return writeTransactionReport(new MonthlyReportBuilder(reportData, true), httpRequest);
+	}
+	
+	public CustomWorkbook buildBalanceReport(WebRequest request, HttpServletRequest httpRequest) {
+		log.info("buildBalanceReport, request: {}", request);
+		
+		ReportData reportData = balanceReportDataService.getBalanceReportData(request);
+		initProgress(httpRequest);
+		 
+		return writeTransactionReport(new BalanceReportBuilder( reportData), httpRequest);
+	}
+	
+	private CustomWorkbook writeTransactionReport(ReportBuilder reportBuilder, HttpServletRequest httpRequest) {
+		
 		reportBuilder.setOnProgressCallback(onProgressCallback(httpRequest));
-		CustomWorkbook file = reportBuilder.buildReport();
-		return file;
+		CustomWorkbook workbook = reportBuilder.buildReport();
+		return workbook;
 	}
 	
 	private OnProgress onProgressCallback(HttpServletRequest httpRequest) {
@@ -85,16 +96,6 @@ public class ReportService {
 		return file;
 	}
  
-	public CustomWorkbook buildBalanceReport(WebRequest request, HttpServletRequest httpRequest) {
-		log.info("buildBalanceReport, request: {}", request);
-		
-		ReportData reportData = balanceReportDataService.getBalanceReportData(request);
-		initProgress(httpRequest);
-		
-		BalanceReportBuilder reportBuilder = new BalanceReportBuilder( reportData);
-		reportBuilder.setOnProgressCallback(onProgressCallback(httpRequest));
-		CustomWorkbook file = reportBuilder.buildReport();
-		return file;
-	}
+	
 
 }

@@ -27,6 +27,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DailyReportBuilder extends ReportBuilder{ 
 	
+	static final Object[] oneMonthReportHeader = new Object[] {
+			 "No", "Tgl", "Uraian", "Kode", "Debet", "Kredit","Saldo" ,
+			 "No", "Perkiraan", "Kode", "Debet", "Kredit"
+	}; 
+	
 	 public DailyReportBuilder( ReportData reportData) {
 		super(  reportData);
 	 } 
@@ -211,11 +216,8 @@ public class DailyReportBuilder extends ReportBuilder{
 
 
 	private XSSFRow createOneMonthReportHeader(int row, int columnOffset) {
-		final Object[] columnNames = new Object[] {
-				 "No", "Tgl", "Uraian", "Kode", "Debet", "Kredit","Saldo" ,
-				 "No", "Perkiraan", "Kode", "Debet", "Kredit"
-		}; 
-		final XSSFRow headerRow = createRow(xsheet, row, columnOffset, columnNames ); 
+		
+		final XSSFRow headerRow = createRow(xsheet, row, columnOffset, oneMonthReportHeader ); 
 		return headerRow;
 	}
 

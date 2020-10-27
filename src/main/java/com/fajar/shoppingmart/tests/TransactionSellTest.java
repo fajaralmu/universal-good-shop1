@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Vector;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -115,7 +114,7 @@ public class TransactionSellTest {
 			final int seq = i;
 			//ThreadUtil.run(()->{
 			//System.out.println("SEQUENCE: "+seq);
-			doTransaction(0, 2017, seq);
+			doTransaction(2, 2017, seq);
 			//});
 		}
 	}
