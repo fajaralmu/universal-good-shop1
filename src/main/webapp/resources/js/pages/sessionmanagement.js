@@ -6,10 +6,10 @@ function createToggleChatButton(code, count) {
 		innerHTML : "Toggle Chat(" + count + ")",
 		onclick: function(e){
 			var display = "block";
-			if (byId("chat-msg-" + response.code).style.display == "block") {
+			if (byId("chat-msg-" + code).style.display == "block") {
 				display = "none";
 			}
-			byId("chat-msg-" + response.code).style.display = display;
+			byId("chat-msg-" + code).style.display = display;
 		}
 	});
 	return buttonToggleChat;
