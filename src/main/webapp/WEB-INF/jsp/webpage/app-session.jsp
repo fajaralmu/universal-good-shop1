@@ -11,8 +11,9 @@
 	<h2>Sessions Management<small> [${registeredRequestId }]</small></h2>
 	<button id="btn-clear-sessions" onclick="clearSessions()" class="btn btn-danger">Clear
 		All Sessions</button>
-	<table id="app-sessions">
-	</table>
+	<div style="width:100%; overflow: scroll;">
+		<table class="table" id="app-sessions"></table>
+	</div>
 	<p></p>
 </div>
 <script type="text/javascript">
@@ -71,7 +72,7 @@
 			
 			row.appendChild(optionCell);
 
-			const rowMessage = createRow("<td colspan=\"6\" id=\"chat-item-"+entity.requestId+"\"></td>");
+			const rowMessage = createRow("<td colspan=\"7\" id=\"chat-item-"+entity.requestId+"\"></td>");
 			table.appendChild(row);
 			table.appendChild(rowMessage);
 			console.log("=>=>=>messages:", entity.messages);
@@ -153,23 +154,22 @@
 			chatSection.innerHTML = "";
 			chatSection.appendChild(buttonToggleChat);
 			const messages = response.entities;
-
+			const messageContent =  createHtmlTag({
+				tagName: 'div',
+				id: "chat-msg-"+ response.code,
+				style: {display:'block', width:'60%'}
+			});
+			
 			for (var i = 0; i < messages.length; i++) {
 				const message = messages[i];
 				
-				const messageContent = createMessageHtmlContent(message);
-				message.text = domToString(messageContent);
+				const messageItem = createMessageHtmlContent(message);
+				messageContent.appendChild(messageItem);
 				 
 			}
 			
-			const rows = createTableBody([ "text" ], messages, 0, true);
-			const tableMsg = createTableFromRows(rows, "chat-msg-"+ response.code);
-			
-			tableMsg.style.tableLayout = "fixed";
-			tableMsg.style.width = "100%";
-			tableMsg.style.display = "block";
-			tableMsg.appendChild(createInputMessageHtml(response.code));
-			chatSection.appendChild(tableMsg); 
+			messageContent.appendChild(createInputMessageHtml(response.code));
+			chatSection.appendChild(messageContent); 
 
 		}
 	}

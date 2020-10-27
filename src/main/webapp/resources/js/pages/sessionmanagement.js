@@ -20,7 +20,7 @@ function createMessageHtmlContent(message) {
 	return createHtmlTag({
 		tagName : 'div',
 		ch0 : {
-			tagName : 'h4',
+			tagName : 'p',
 			innerHTML : (message.admin == 1 ? 'ADMIN' : "USER " + alias)
 		},
 		ch1 : {
@@ -41,9 +41,8 @@ function createMessageHtmlContent(message) {
 
 
 function createInputMessageHtml(code){
-	const cell = createHtmlTag({
-		tagName:'td',
-		colspan: 2,
+	return createHtmlTag({
+		tagName:'div', 
 		ch0: {
 			tagName:'input',
 			className:'form-control',
@@ -61,9 +60,5 @@ function createInputMessageHtml(code){
 				sendReply(code, messageContent);
 			}
 		}
-	});
-	const row = document.createElement("tr");
-	row.appendChild(cell);
-	 
-	return row;
+	}); 
 }
