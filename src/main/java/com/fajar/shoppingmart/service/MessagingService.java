@@ -55,10 +55,17 @@ public class MessagingService {
 		String requestId = httpRequest.getHeader("requestId");
 		WebResponse response = WebResponse.builder().code(requestId).build();
 		response.setEntities(getMessages(requestId));
-		realtimeService.sendMessageChat(response);
+		
+		realtimeService.sendMessageChatToClient(response, requestId);
 		return response;
 	}
 
+	/**
+	 * send message to admin
+	 * @param request
+	 * @param httpRequest
+	 * @return
+	 */
 	public WebResponse sendMessage(WebRequest request, HttpServletRequest httpRequest) {
 		String content = request.getValue();
 		String requestId = httpRequest.getHeader("requestId");
@@ -73,10 +80,16 @@ public class MessagingService {
 
 		WebResponse response = WebResponse.builder().code(requestId).build();
 		response.setEntities(getMessages(requestId));
-		realtimeService.sendMessageChat(response);
+		realtimeService.sendChatMessageToAdmin(response);
 		return response;
 	}
 
+	/**
+	 * reply messages to client
+	 * @param request
+	 * @param httpRequest
+	 * @return
+	 */
 	public WebResponse replyMessage(WebRequest request, HttpServletRequest httpRequest) {
 		String content = request.getValue();
 
@@ -90,7 +103,8 @@ public class MessagingService {
 
 		WebResponse response = WebResponse.builder().code(request.getDestination()).build();
 		response.setEntities(getMessages(request.getDestination()));
-		realtimeService.sendMessageChat(response);
+		
+		realtimeService.sendMessageChatToClient(response, request.getDestination());
 		WebResponse responseAPI = new WebResponse();
 		BeanUtils.copyProperties(response, responseAPI);
 		responseAPI.setCode("00");

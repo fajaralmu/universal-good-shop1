@@ -17,6 +17,7 @@
 </div>
 <script type="text/javascript">
 	var ctxPath = "${contextPath}";
+	const TABLE_HEADERS = [ "ID", "Referer","IP Address", "Requested Date", "User Agent", "Option" ];
 
 	function deleteSession(requestId) {
 		infoLoading();
@@ -59,8 +60,7 @@
 
 		table.innerHTML = "";
 
-		const header = createTableHeaderByColumns([ "ID", "Referer","IP Address", "Requested Date",
-				"User Agent", "Option" ])
+		const header = createTableHeaderByColumns(TABLE_HEADERS)
 		table.appendChild(header);
 		const rows = createTableBody([ "requestId", "referrer", "ipAddress", "created", "userAgent" ],
 				entities);
@@ -144,25 +144,38 @@
 		 
 		
 	}
+	
+	function createToggleChatButton(code, count){
+		const buttonToggleChat = createHtmlTag({
+			tagName: 'button',
+			className: 'btn btn-secondary',
+			id: 'do-toggle-msg'+ code,
+			innerHTML: "Toggle Chat("+ count + ")",
+		});
+		return buttonToggleChat;
+	}
 
 	function updateMessage(response) {
 		 
-		if (byId(response.code)) {
-			byId(response.code).innerHTML = "<button class=\"btn btn-secondary\" id=\"do-toggle-msg"+response.code+"\" >Toggle Chat("
-					+ response.entities.length + ")</button>";
+		const chatSection = byId(response.code);
+		if (chatSection) {
+			
+			const buttonToggleChat = createToggleChatButton(response.code, response.entities.length);
+			
+			chatSection.innerHTML = "";
+			chatSection.appendChild(buttonToggleChat);
 			const messages = response.entities;
 
 			for (var i = 0; i < messages.length; i++) {
 				const message = messages[i];
-				const dateComponent = "<span style=\"font-size:0.7em\">at "
-						+ message.date + "</span>";
+				const dateComponent = "<span style=\"font-size:0.7em\">at "+ message.date + "</span>";
 				if (message.admin == 1) {
 					message.text = "ADMIN "
 							+ dateComponent
 							+ "<div style=\"border-radius:4px; margin:2px;padding:3px;  background-color: cadetblue\">"
 							+ message.text + "</div>";
 				} else {
-					let alias = !message.alias || message.alias.trim() == ""?"" :"["+message.alias+"]";
+					const alias = !message.alias || message.alias.trim() == ""?"" :"["+message.alias+"]";
 					message.text = "USER "+alias
 							+ dateComponent
 							+ "<div style=\"border-radius:4px; margin:2px;padding:3px; background-color: wheat\">"
@@ -171,8 +184,7 @@
 			}
 
 			const rows = createTableBody([ "text" ], messages, 0, true);
-			const tableMsg = createTableFromRows(rows, "chat-msg-"
-					+ response.code);
+			const tableMsg = createTableFromRows(rows, "chat-msg-"+ response.code);
 			const rowReply = createRow("<td colspan=\"2\"><input  class=\"form-control\" type=\"text\" id=\"reply-msg"+response.code+"\" placeholder=\"reply\" />"
 					+ "<button class=\"btn btn-success\" id=\"do-reply-msg"+response.code+"\" ><i class=\"fas fa-paper-plane\"></i></button></td>");
 
@@ -180,9 +192,9 @@
 			tableMsg.style.width = "100%";
 			tableMsg.style.display = "block";
 			tableMsg.appendChild(rowReply);
-			byId(response.code).appendChild(tableMsg);
-			byId("do-reply-msg" + response.code).onclick = function(
-					e) {
+			chatSection.appendChild(tableMsg);
+			
+			byId("do-reply-msg" + response.code).onclick = function(e) {
 				const message = byId("reply-msg"+ response.code).value;
 				sendReply(response.code, message);
 			}
@@ -200,7 +212,7 @@
 
 	function connectWesocket() {
 		
-		addWebsocketRequest('/wsResp/messages', function(
+		addWebsocketRequest('/wsResp/adminmessages', function(
 				response) {
 			console.log("Response connectWesocket updateMessage: ", response);
 			updateMessage(response);

@@ -199,7 +199,7 @@
 				+ monthNames[selectedMonth - 1] + " " + selectedYear;
 
 		const btnClose = createButton("btn-close", "Back");
-		btnClose.className = "btn";
+		btnClose.className = "btn btn-secondary";
 		btnClose.onclick = function() {
 			populateMonthlyDetail();
 		}
