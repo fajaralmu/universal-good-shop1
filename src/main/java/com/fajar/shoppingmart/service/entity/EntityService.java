@@ -25,7 +25,6 @@ import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
 import com.fajar.shoppingmart.entity.setting.EntityProperty;
 import com.fajar.shoppingmart.repository.CustomRepositoryImpl;
 import com.fajar.shoppingmart.repository.DatabaseProcessor;
-import com.fajar.shoppingmart.repository.DatabaseProcessorNotifier;
 import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.util.CollectionUtil;
@@ -49,16 +48,14 @@ public class EntityService {
 	@Autowired
 	private EntityRepository entityRepository; 
 	@Autowired
-	private EntityManagementPageService entityManagementPageService;
-	private DatabaseProcessor filterDatabaseProcessor;
-	@Autowired
-	private DatabaseProcessorNotifier databaseProcessorNotifier;
+	private EntityManagementPageService entityManagementPageService;  
 	
 	@PostConstruct
 	public void init() {
 		LogProxyFactory.setLoggers(this);
-		filterDatabaseProcessor = customRepository.createDatabaseProcessor();
-		databaseProcessorNotifier.register(filterDatabaseProcessor);
+//		filterDatabaseProcessor = customRepository.createDatabaseProcessor();
+//		databaseProcessorNotifier.register(filterDatabaseProcessor);
+//		filterDatabaseProcessor.setId(this.getClass().getSimpleName());
 	}
 
 	private EntityManagementConfig getEntityManagementConfig(String key) {
@@ -103,7 +100,7 @@ public class EntityService {
 						}
 						validateInMemoryEntities(entityConfig);
 					}
-					databaseProcessorNotifier.refresh();
+					//databaseProcessorNotifier.refresh();
 					return saved;
 				} else {
 					return WebResponse.failed();
@@ -193,7 +190,7 @@ public class EntityService {
 	public <T extends BaseEntity> EntityResult filterEntities(Filter filter, Class<T> entityClass) {
 		final List<T> entities = new ArrayList<>();
 		final Map<String, Long> count = new HashMap<>();
-		
+		DatabaseProcessor filterDatabaseProcessor = customRepository.createDatabaseProcessor(); 
 		try {
 			
 			List<T> resultList = filterDatabaseProcessor.filterAndSortv2(entityClass, filter);
@@ -205,6 +202,7 @@ public class EntityService {
 			count.put("value", 0L);
 			e.printStackTrace();
 		}
+		filterDatabaseProcessor.refresh();
 		return EntityResult.builder().entities(CollectionUtil.convertList(entities))
 				.count(count.get("value").intValue()).build();
 	}
@@ -216,7 +214,7 @@ public class EntityService {
 	 * @return
 	 */
 	public WebResponse delete(WebRequest request) {
-
+		DatabaseProcessor filterDatabaseProcessor = customRepository.createDatabaseProcessor();
 		try {
 			Map<String, Object> filter = request.getFilter().getFieldsFilter();
 			Long id = Long.parseLong(filter.get("id").toString());
@@ -227,18 +225,23 @@ public class EntityService {
 			if (null == entityClass || User.class.equals(entityClass)) {
 				throw new Exception("Invalid entity");
 			}
-
+			if(null == entityRepository.findById(entityClass, id)) {
+				throw new RuntimeException("Record does not exist");
+			}
+			
 			boolean result = filterDatabaseProcessor.deleteObjectById(entityClass, id);
 			if(!result) {
 				throw new RuntimeException("Failed deleting");
 			}
-			filterDatabaseProcessor.refresh();
+			//databaseProcessorNotifier.refresh();
 			return WebResponse.builder().code("00").message("deleted :" + result).build();
 
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
 			return WebResponse.builder().code("01").message("failed: " + ex.getMessage()).build();
+		} finally {
+			filterDatabaseProcessor.refresh();
 		}
 	}
 

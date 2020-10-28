@@ -48,7 +48,7 @@ public class EntityRepository {
 	@Autowired
 	private DatabaseProcessorNotifier databaseProcessorNotifier;
 	
-	private DatabaseProcessor databaseReader;
+//	private DatabaseProcessor databaseReader;
 
 	@Setter(value = AccessLevel.NONE)
 	@Getter(value = AccessLevel.NONE)
@@ -70,8 +70,8 @@ public class EntityRepository {
 	@PostConstruct
 	public void init() throws Exception {
 		putEntitiesConfig();
-		databaseReader = customRepository.createDatabaseProcessor();
-		databaseProcessorNotifier.register(databaseReader);
+//		databaseReader = customRepository.createDatabaseProcessor();
+//		databaseProcessorNotifier.register(databaseReader);
 	}
 
 	private void putEntitiesConfig() throws Exception {
@@ -247,11 +247,11 @@ public class EntityRepository {
 		return null;
 	}
 	
-	public <ID extends Serializable, T extends BaseEntity> T findByIdv2(Class<T> _class, ID id) {
-		T result = databaseReader.getById(_class, id);
-		
-		return result;
-	}
+//	public <ID extends Serializable, T extends BaseEntity> T findByIdv2(Class<T> _class, ID id) {
+//		T result = databaseReader.getById(_class, id);
+//		
+//		return result;
+//	}
 
 	/**
 	 * find all entity

@@ -19,6 +19,7 @@ import com.fajar.shoppingmart.querybuilder.CriteriaBuilder;
 import com.fajar.shoppingmart.querybuilder.QueryUtil;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
+import com.fajar.shoppingmart.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,10 +30,15 @@ public class DatabaseProcessor {
 	private Session hibernateSession;
 	boolean removeTransactionAfterPersistence = true;
 	private final SessionFactory sessionFactory;
+	private String id = StringUtil.generateRandomNumber(5);
 	
 	public DatabaseProcessor(SessionFactory sessionFactory, Session sess) {  
 		this.sessionFactory = sessionFactory;
 		this.hibernateSession = sess;
+	}
+	
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 	public boolean isTransactionNotKept() {
@@ -256,7 +262,7 @@ public class DatabaseProcessor {
 	}
 	
 	public  void refresh() {
-		
+		log.info("Refresh DB Processor with id: {}", id);
 		try {
 			/*
 			 * // if (hibernateSession != null) { // hibernateSession.flush(); //
@@ -286,6 +292,7 @@ public class DatabaseProcessor {
 			}
 			hibernateSession.delete(existingObject);
 			hibernateSession.flush();
+			hibernateSession.clear();
 			log.info("Deleted Successfully");
 			return true;
 		} catch (Exception e) {
