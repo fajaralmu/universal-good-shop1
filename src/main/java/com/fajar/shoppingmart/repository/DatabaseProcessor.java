@@ -284,23 +284,30 @@ public class DatabaseProcessor {
 	
 	public <T extends BaseEntity> boolean deleteObjectById(Class<T> _class, Long id) {
 		log.info("delete {} by id: {}", _class.getSimpleName(), id );
-		try {
-			T existingObject = (T) hibernateSession.load(_class, id);
-			if (null == existingObject) {
-				log.info("existingObject of {} with id: {} does not exist!!", _class, id);
-				return false;
-			}
-			hibernateSession.delete(existingObject);
-			hibernateSession.flush();
-			hibernateSession.clear();
-			log.info("Deleted Successfully");
-			return true;
-		} catch (Exception e) {
-			log.error("Error deleting object!");
-			e.printStackTrace();
-			//return false;
-			throw e;
-		}
+		
+		return this.pesistOperation(new PersistenceOperation<Boolean>() {
+
+				@Override
+				public Boolean doPersist(Session hibernateSession) {
+					try {
+						T existingObject = (T) hibernateSession.load(_class, id);
+						if (null == existingObject) {
+							log.info("existingObject of {} with id: {} does not exist!!", _class, id);
+							return false;
+						} 
+						hibernateSession.delete(existingObject);
+						log.info("Deleted Successfully");
+						return true;
+					} catch (Exception e) {
+						log.error("Error deleting object!");
+						e.printStackTrace();
+						//return false;
+						throw e;
+					}
+					 
+				}
+			});
+			
 			 
 		 
 	}

@@ -75,7 +75,9 @@
 			</tbody>
 		</table>
 	</div>
-
+	<div class="alert alert-secondary" style="margin-top: 5px;" role="alert">
+	  <p>Total Record: <span id="info-total-data"></span></p>
+	</div>
 </div>
 
 <script type="text/javascript">
@@ -192,8 +194,12 @@
 			return;
 		}
 
-		this.page = selectedPage;
+		setSelectedPage(selectedPage);
 		loadEntity(this.page);
+	}
+	
+	function setSelectedPage(selectedPage){
+		this.page = selectedPage;
 	}
 
 	function loadEntity(page) {
@@ -212,12 +218,17 @@
 						infoDialog("Server Error!");
 						return;
 					}
-					totalData = response.totalData;
-					this.page = response.filter.page;
+					setTotalData(response.totalData); 
+					setSelectedPage(response.filter.page);
 					populateTable(entities);
 					updateNavigationButtons();
 				});
 
+	}
+	
+	function setTotalData(_totalData) {
+		totalData = _totalData;
+		byId("info-total-data").innerHTML = totalData;
 	}
 
 	function printExcel() {

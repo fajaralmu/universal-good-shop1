@@ -1,6 +1,5 @@
 package com.fajar.shoppingmart.repository;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.security.InvalidParameterException;
@@ -44,11 +43,8 @@ public class EntityRepository {
 	@Autowired
 	private CustomRepositoryImpl customRepository;
 	@Autowired
-	private ApplicationContext applicationContext;
-	@Autowired
-	private DatabaseProcessorNotifier databaseProcessorNotifier;
-	
-//	private DatabaseProcessor databaseReader;
+	private ApplicationContext applicationContext; 
+	 
 
 	@Setter(value = AccessLevel.NONE)
 	@Getter(value = AccessLevel.NONE)
@@ -69,9 +65,7 @@ public class EntityRepository {
 
 	@PostConstruct
 	public void init() throws Exception {
-		putEntitiesConfig();
-//		databaseReader = customRepository.createDatabaseProcessor();
-//		databaseProcessorNotifier.register(databaseReader);
+		putEntitiesConfig(); 
 	}
 
 	private void putEntitiesConfig() throws Exception {
@@ -153,7 +147,7 @@ public class EntityRepository {
 			ex.printStackTrace();
 			throw ex;
 		} finally {
-			databaseProcessorNotifier.refresh();
+			//databaseProcessorNotifier.refresh();
 		}
 	}
 

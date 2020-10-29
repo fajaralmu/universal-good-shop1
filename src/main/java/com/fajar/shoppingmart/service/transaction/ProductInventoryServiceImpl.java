@@ -22,7 +22,6 @@ import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.repository.CustomRepositoryImpl;
 import com.fajar.shoppingmart.repository.DatabaseProcessor;
-import com.fajar.shoppingmart.repository.DatabaseProcessorNotifier;
 import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.repository.InventoryItemRepository;
 import com.fajar.shoppingmart.repository.PersistenceOperation;
@@ -46,9 +45,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 	@Autowired
 	private EntityRepository entityRepository;
 	@Autowired
-	private CustomRepositoryImpl customRepository; 
-	@Autowired
-	private DatabaseProcessorNotifier databaseProcessorNotifier;
+	private CustomRepositoryImpl customRepository;  
 	 
 	@Override
 	public synchronized Transaction savePurchasingTransaction(List<ProductFlow> productFlows, User user, Supplier supplier, TransactionMode mode) {
@@ -65,7 +62,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 		}else {
 			throw new RuntimeException("Transaction Failed");
 		}
-		databaseProcessorNotifier.refresh();
+		 
 		return transactionSaved;
 
 	}
@@ -89,7 +86,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 		}else {
 			throw new RuntimeException("Transaction Failed");
 		}
-		databaseProcessorNotifier.refresh();
+		 
 		return transactionSaved;
 	}
  
