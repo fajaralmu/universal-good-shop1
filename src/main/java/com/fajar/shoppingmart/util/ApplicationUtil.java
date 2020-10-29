@@ -6,7 +6,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-public class NetworkUtil {
+public class ApplicationUtil {
 	public static String getIpv4Address() {
 		String ip = "127.0.0.1";
 		try {
@@ -33,5 +33,19 @@ public class NetworkUtil {
 //		    throw new RuntimeException(e); 
 		}
 		return ip;
+	}
+	
+	
+	public static MemoryInfo getMemoryInfo() {
+		long heapSize = Runtime.getRuntime().totalMemory(); 
+
+		// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
+		long heapMaxSize = Runtime.getRuntime().maxMemory();
+
+		 // Get amount of free memory within the heap in bytes. This size will increase // after garbage collection and decrease as new objects are created.
+		long heapFreeSize = Runtime.getRuntime().freeMemory();
+		
+		return MemoryInfo.builder().heapFreeSize(heapFreeSize).heapMaxSize(heapMaxSize).heapSize(heapSize).build()
+				;
 	}
 }

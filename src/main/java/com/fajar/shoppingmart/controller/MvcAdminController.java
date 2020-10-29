@@ -119,9 +119,9 @@ public class MvcAdminController extends BaseController {
 
 	}
 
-	@RequestMapping(value = { "/balance-info" })
-	@CustomRequestInfo(pageUrl = "webpage/balance-info", title = "Cash Balance")
-	public String balanceInfo(Model model, HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value = { "/resourcesinfo" })
+	@CustomRequestInfo(pageUrl = "webpage/resources-info", title = "Cash Balance")
+	public String resourcesInfo(Model model, HttpServletRequest request, HttpServletResponse response) {
 
 		Date now = new Date();
 		

@@ -31,7 +31,7 @@ import com.fajar.shoppingmart.service.transaction.ProductService;
 import com.fajar.shoppingmart.service.transaction.TransactionHistoryService;
 import com.fajar.shoppingmart.util.DateUtil;
 import com.fajar.shoppingmart.util.MvcUtil;
-import com.fajar.shoppingmart.util.NetworkUtil;
+import com.fajar.shoppingmart.util.ApplicationUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -88,7 +88,7 @@ public class BaseController {
 
 	@ModelAttribute("ipv4Address")
 	public String getIpv4Address(HttpServletRequest request) {
-		return NetworkUtil.getIpv4Address();
+		return ApplicationUtil.getIpv4Address();
 	}
 
 	@ModelAttribute("pageIconUrl")

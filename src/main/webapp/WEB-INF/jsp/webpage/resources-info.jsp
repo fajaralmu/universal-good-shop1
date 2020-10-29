@@ -54,6 +54,23 @@
 				</div>
 			</div>
 		</div>
+		<div class="col-6">
+			<div class="card">
+				<div class="card-header">Memory Usage</div>
+				<div class="card-body">
+					
+					<p>Max Memory: </p>
+					<input id="max-memory" value="0" disabled="disabled" class="form-control" />
+					<p>Free Memory: </p>
+					<input id="free-memory" value="0" disabled="disabled" class="form-control" />
+					<p>Total Memory: </p>
+					<input id="total-memory" value="0" disabled="disabled" class="form-control" />
+				</div>
+				<div class="card-footer">
+					<button class="btn btn-primary" id="btn-submit-memory-usage">Load Latest Usage</button>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
 <script type="text/javascript">
@@ -62,6 +79,7 @@
 	const inputYear = byId("i_year");
 	var URL_GET_BALANCE = "<spring:url value="/api/admin/balance" />";
 	var URL_GET_INVENTORY_QTY = "<spring:url value="/api/transaction/inventoriesquantity" />";
+	var URL_GET_MEMORY_USAGE = "<spring:url value="/api/admin/resourceusage" />";
 
 	function populateBalanceInfo(balanceInfo) {
 		byId("o_income").value = beautifyNominal(balanceInfo.debitAmt);
@@ -74,7 +92,15 @@
 		byId("current-qty").value = beautifyNominal(qty);
 	}
 	
-	function submit() {
+	function showResourceUsage(response){
+		const memoryInfo = response.memoryInfo;
+		//heapFreeSize(heapFreeSize).heapMaxSize(heapMaxSize).heapSize(heapSize).build()
+		byId("max-memory").value = beautifyNominal(memoryInfo.heapMaxSize);
+		byId("free-memory").value = beautifyNominal(memoryInfo.heapFreeSize);
+		byId("total-memory").value = beautifyNominal(memoryInfo.heapSize);
+	}
+	
+	function loadBalance() {
 		const request = {
 			filter : {
 				day : inputDay.value,
@@ -110,14 +136,29 @@
 			showInventoryQuantity(response);
 		})
 	}
+	
+	function loadMemoryUsage(){
+		postReq(URL_GET_MEMORY_USAGE, {}, function(xhr){
+			const response = (xhr.data);
+			if (response == null) {
+				alert("Error requesting data");
+				return;
+			}
+			showResourceUsage(response);
+		})
+	}
 
 	function init() {
 		byId("btn-submit").onclick = function(e) {
-			submit();
+			loadBalance();
 		}
 		
 		byId("btn-submit-qty").onclick = function(e) {
 			loadInventoryQuantity();
+		}
+		
+		byId("btn-submit-memory-usage").onclick = function(e) {
+			loadMemoryUsage();
 		}
 	}
 

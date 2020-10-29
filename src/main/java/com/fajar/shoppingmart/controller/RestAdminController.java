@@ -1,10 +1,10 @@
 package com.fajar.shoppingmart.controller;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +23,8 @@ import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.MessagingService;
 import com.fajar.shoppingmart.service.transaction.TransactionHistoryService;
+import com.fajar.shoppingmart.util.ApplicationUtil;
+import com.fajar.shoppingmart.util.MemoryInfo;
 
 @CrossOrigin
 @RestController 
@@ -101,6 +103,14 @@ public class RestAdminController extends BaseController {
 		
 		WebResponse response = transactionService.getBalance(request);
 		return response;
+	}
+	@Authenticated
+	@PostMapping(value = "/resourceusage",  produces = MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> resourceusage() {
+		 
+		Map<String, Object> response = new HashMap<String, Object>();
+		response.put("memoryInfo", ApplicationUtil.getMemoryInfo());
+		return response ;
 	}
 
 }
