@@ -119,7 +119,7 @@ public class EntityService {
 	}
 
 	private boolean checkIfUser(Object entityValue, HttpServletRequest servletRequest) {
-		 
+		
 		User user = SessionUtil.getSessionUser(servletRequest);
 		if(entityValue instanceof User) {
 			if(!user.getId().equals(((User) entityValue).getId())){

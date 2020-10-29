@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +27,10 @@ import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.Page;
 import com.fajar.shoppingmart.entity.Product;
+import com.fajar.shoppingmart.entity.ProductFlow;
+import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.service.LogProxyFactory;
+import com.fajar.shoppingmart.service.transaction.TransactionHistoryService;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.DateUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
@@ -44,6 +48,9 @@ import lombok.extern.slf4j.Slf4j;
 @Authenticated
 public class MvcAdminController extends BaseController {
 
+	@Autowired
+	private TransactionHistoryService transactionHistoryService;
+	
 	public MvcAdminController() {
 		log.info("-----------------Mvc Admin Controller------------------");
 	}
@@ -205,5 +212,29 @@ public class MvcAdminController extends BaseController {
 		return basePage;
 
 	}
+	
+	@RequestMapping(value = { "/transactionreceipt", "/transactionreceipt/{code}" })
+	public String transactionReceipt(Model model, @PathVariable(name = "code", required = false)String code) {
+
+		if(code == null) {
+			
+			throw new IllegalArgumentException("transaction not found because the code is not provided");
+			//return null;
+		} 
+		
+		WebResponse reportData = transactionHistoryService.getTransactionData(code);
+		if(reportData.getTransaction() == null) {
+			throw new IllegalArgumentException("transaction not found with code:"+code);
+		}
+		Transaction transaction = reportData.getTransaction();
+		model.addAttribute("title", "Transaction :"+code); 
+		model.addAttribute("transaction", transaction);
+		model.addAttribute("totalPrice", ProductFlow.calculateTotalPrice(transaction.getProductFlows()));
+		model.addAttribute("totalQuantity", ProductFlow.calculateTotalQuantity(transaction.getProductFlows()));
+		return "transaction-component/receipt-page";
+
+	}
+	
+	
 
 }

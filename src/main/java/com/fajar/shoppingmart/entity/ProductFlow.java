@@ -1,6 +1,7 @@
 package com.fajar.shoppingmart.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -95,5 +96,22 @@ public class ProductFlow extends BaseEntity implements FinancialEntity {
 		 
 		return new JournalInfoProductFlow(this);
 	}
+	
+	public static long calculateTotalPrice(List<ProductFlow> productFlows) {
+		long result = 0L;
+		for (ProductFlow productFlow : productFlows) {
+			result += (productFlow.count * productFlow.price);
+		}
+		return result;
+	}
+	
+	public static int calculateTotalQuantity(List<ProductFlow> productFlows){
+         int totalQuantity = 0;
+         for (int i = 0; i < productFlows.size(); i++) {
+             totalQuantity += (productFlows.get(i).count);
+         }
+
+         return totalQuantity;
+     }
 
 }

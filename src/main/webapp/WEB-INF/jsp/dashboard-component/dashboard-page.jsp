@@ -35,9 +35,9 @@
 		</div>
 		<div>
 			<button class="btn btn-outline-info" onclick="report('daily')"><i class="fa fa-print" aria-hidden="true"></i> Report
-				This Month</button>
+				Selected Month</button>
 			<button class="btn btn-outline-info" onclick="report('monthly')"><i class="fa fa-print" aria-hidden="true"></i> Report
-				This Year</button>
+				Selected Year</button>
 			<button class="btn btn-outline-info"
 				onclick="report('balance1')"><i class="fa fa-print" aria-hidden="true"></i> Balance Report</button>
 		</div>
@@ -99,6 +99,10 @@
 			Detail</button>
 		<button class="btn btn-primary" onclick="showProductSales()">Product
 			Sales Detail</button>
+		<div style="width:50%; padding: 10px">
+			<input required="required" type="text" class="form-control" id="input-transaction-code" placeholder="Transaction Code" />
+			<button class="btn btn-info" onclick="seeTransactionData()">See Transaction Detail</button>
+		</div>
 		<p></p>
 	</div>
 </div>
@@ -172,6 +176,15 @@
 				}, true);
 	} 
 	 
+	
+	function seeTransactionData(){
+		const code = byId("input-transaction-code").value;
+		if(null == code || "" == code){
+			return;
+		}
+		var url =  "<spring:url value="/admin/transactionreceipt/" />"+code;
+		window.open(url,'_blank');
+	}
 	
 	
 	fetchCashflow(parseInt("${currentMonth}"), parseInt("${currentYear}"), "IN");
