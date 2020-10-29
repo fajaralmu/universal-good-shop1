@@ -99,8 +99,9 @@
 			Detail</button>
 		<button class="btn btn-primary" onclick="showProductSales()">Product
 			Sales Detail</button>
-		<div style="width:50%; padding: 10px">
+		<div style="width:50%; margin-top: 10px">
 			<input required="required" type="text" class="form-control" id="input-transaction-code" placeholder="Transaction Code" />
+			<br/>
 			<button class="btn btn-info" onclick="seeTransactionData()">See Transaction Detail</button>
 		</div>
 		<p></p>

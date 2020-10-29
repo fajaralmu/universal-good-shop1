@@ -18,7 +18,7 @@
 </head>
 <body>
 	<div class="container">
-		<h3 style="margin-top: 20px">${transaction.type}Transaction (${transaction.mode})</h3>
+		<h3 style="margin-top: 20px">${transaction.type} Transaction (${transaction.mode})</h3>
 		<div class="row">
 			<div class="col-3">Code</div>
 			<div class="col-9">${transaction.code}</div>

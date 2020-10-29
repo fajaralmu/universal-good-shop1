@@ -26,7 +26,8 @@ function confirmDialog(msg) {
 							tagName : 'div',
 							className : 'modal-footer',
 							ch1 : {
-								style : { margin : 'auto', style:{width:'max-content'} },
+								tagName:'div',
+								style : { margin : 'auto',  width:'max-content'  },
 								ch1:{
 									tagName : 'button',
 									innerHTML : 'Yes',
@@ -95,7 +96,8 @@ function promptDialog(msg, inputType) {
 							tagName : 'div',
 							className : 'modal-footer',
 							ch1 : {
-								style : { margin : 'auto', style:{width:'max-content'} },
+								tagName:'div',
+								style : { margin : 'auto',  width:'max-content' },
 								ch1:{
 									tagName : 'button',
 									innerHTML : 'Yes',
