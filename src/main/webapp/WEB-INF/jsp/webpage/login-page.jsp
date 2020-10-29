@@ -59,12 +59,13 @@
 						<span class="input-group-text"> <i class="fa fa-lock"></i></span>
 					</div>
 					<input placeholder="password" id="password" type="password" class="form-control" />
-				</div>
-				<button id="btn-login" class="btn btn-primary"  >Login</button>
-				<a role="button" class="btn btn-success"
-					href='<spring:url value="/account/register"></spring:url>'>Register</a>
-
+				</div> 
 			</div>
+		</div>
+		<div class="card-footer">
+			<button id="btn-login" class="btn btn-primary"  >Login</button>
+			<a role="button" class="btn btn-success"
+				href='<spring:url value="/account/register"></spring:url>'>Register</a>
 		</div>
 	</div>
 </div>
