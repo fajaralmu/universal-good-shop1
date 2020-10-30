@@ -1,6 +1,7 @@
 package com.fajar.shoppingmart.util;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,10 +10,16 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fajar.shoppingmart.entity.Menu;
+import com.fajar.shoppingmart.entity.Page;
 import com.fajar.shoppingmart.entity.setting.EntityProperty;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class MvcUtil {
 
 	public static String getHost(HttpServletRequest request) {
@@ -75,4 +82,40 @@ public class MvcUtil {
 		return result;
 	}
 
+	public static Menu constructAdminMenu(String baseMapping, Method method, Page adminPage) {
+		RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
+
+		log.info("constructAdminMenu: {} url: /{}", method.getName(), requestMapping.value());
+
+		Menu adminMenu = new Menu();
+		adminMenu.setCode(method.getName().toLowerCase());
+		adminMenu.setColor("#ffffff");
+		adminMenu.setFontColor("#000000");
+		adminMenu.setDescription(StringUtil.extractCamelCase(method.getName()));
+		adminMenu.setName(StringUtil.extractCamelCase(method.getName()));
+		adminMenu.setUrl("/"+baseMapping+"/" + requestMapping.value()[0]);
+		adminMenu.setMenuPage(adminPage);
+		adminMenu.setPathVariables(getPathVariables(method));
+		return adminMenu;
+	}
+	
+	private static String getPathVariables(Method method){
+		List<String> pathVariables = getPathVariableList(method);
+		String[] pathVariablesArray = pathVariables.toArray(new String[pathVariables.size()]);
+		return String.join(",", pathVariablesArray);
+	}
+	
+	private static List<String> getPathVariableList(Method method){ 
+		Parameter[] parameters = method.getParameters();
+		List<String> pathVariables = new ArrayList<>();
+		if(null != parameters) {
+			for (Parameter parameter : parameters) {
+				if(parameter.getAnnotation(PathVariable.class)!=null) {
+					PathVariable pathVariable = parameter.getAnnotation(PathVariable.class);
+					pathVariables.add(pathVariable.name());
+				}
+			}
+		} 
+		return pathVariables;
+	}
 }

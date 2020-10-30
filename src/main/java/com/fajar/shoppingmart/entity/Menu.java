@@ -42,10 +42,14 @@ public class Menu extends BaseEntity {
 	@FormField
 	@Column
 	private String url;
-	// TODO: remove
-	@FormField
+
+	@FormField(lableName = "Path Variables Separated by ','", required = false)
 	@Column
-	private String page;
+	private String pathVariables;
+	// TODO: remove
+//	@FormField
+//	@Column
+//	private String page;
 	@JoinColumn(name = "page_id", nullable = false)
 	@ManyToOne
 	@FormField(lableName = "Parent Page", type = FieldType.FIELD_TYPE_FIXED_LIST, optionItemName = "name")

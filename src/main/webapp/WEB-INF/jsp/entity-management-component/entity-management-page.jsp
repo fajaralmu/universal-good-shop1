@@ -129,7 +129,7 @@
 	}
 
 	//load dropdown list for multiple select
-	function loadList(inputElement) {
+	function loadListForDynamicListInput(inputElement) {
 
 		const element = byId(inputElement.name);
 		element.innerHTML = "";
@@ -428,7 +428,7 @@
 			entityValue = new Date(entityValue);
 		} 
 		else if (isNumeric(entityValue)) {
-			var dom = createHtmlTag({
+			const dom = createHtmlTag({
 				tagName : "span",
 				style : { 'font-family' : 'consolas' },
 				innerHTML : beautifyNominal(entityValue)
@@ -440,7 +440,7 @@
 			if (entityValue.split("~") != null) {
 				entityValue = entityValue.split("~")[0];
 			}
-			var dom = createHtmlTag({
+			const dom = createHtmlTag({
 				tagName : "img",
 				width : 30,
 				height : 30,
@@ -1074,8 +1074,9 @@
 		function initFilterFieldsOnKeyup(){
 			for (var i = 0; i < filterFields.length; i++) {
 				const filterField = filterFields[i];
-				var fieldName = filterField.getAttribute("field");
+				
 				filterField.onkeyup = function(e){
+					var fieldName = e.target.getAttribute("field");
 					const filterValue = e.target.value;
 					if (filterValue != "") {
 						const checkBoxExact = byId("checkbox-exact-" + fieldName);
@@ -1083,6 +1084,8 @@
 							fieldName = fieldName + "[EXACTS]";
 						}
 						SEARCH_FILTER[fieldName] = filterValue;
+					} else {
+						SEARCH_FILTER[fieldName]  = null;
 					}
 					
 					loadEntity(-1);

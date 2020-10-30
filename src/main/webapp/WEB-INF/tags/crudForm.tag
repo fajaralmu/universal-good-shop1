@@ -75,7 +75,7 @@
 										</script>
 									</c:when>
 									<c:when test="${element.type == 'dynamiclist'}">
-										<input onkeyup="loadList(this)" name="${element.id }"
+										<input onkeyup="loadListForDynamicListInput(this)" name="${element.id }"
 											id="input-${element.id }" class="form-control" type="text" />
 										<br />
 										<select style="width: 200px" class="input-field form-control"

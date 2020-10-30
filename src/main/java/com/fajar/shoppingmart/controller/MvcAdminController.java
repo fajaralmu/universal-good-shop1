@@ -67,8 +67,7 @@ public class MvcAdminController extends BaseController {
 	public String menuDashboard(Model model, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 		Calendar cal = Calendar.getInstance(); 
-
-		model.addAttribute("menus", componentService.getDashboardMenus(request));
+ 
 		model.addAttribute("imagePath", webAppConfiguration.getUploadedImagePath());
 		model.addAttribute("page", "dashboard");
 		model.addAttribute("currentMonth", cal.get(Calendar.MONTH) + 1);
@@ -214,7 +213,7 @@ public class MvcAdminController extends BaseController {
 
 	}
 	
-	@RequestMapping(value = { "/transactionreceipt", "/transactionreceipt/{code}" })
+	@RequestMapping(value = {  "/transactionreceipt/{code}", "/transactionreceipt" })
 	public String transactionReceipt(Model model, @PathVariable(name = "code", required = false)String code, HttpServletResponse httpServletResponse) {
 
 		if(code == null) {

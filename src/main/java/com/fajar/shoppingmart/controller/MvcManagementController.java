@@ -66,13 +66,7 @@ public class MvcManagementController extends BaseController {
 
 	@RequestMapping(value = { "/profile" })
 	public String profile(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-		try {
-			checkUserAccess(userSessionService.getUserFromSession(request), "/management/profile");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR_404_PAGE;
-		}
+ 
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(Profile.class, null);
 
 		model = constructCommonModel(request, entityProperty, model, "shopProfile", "management");
@@ -90,13 +84,7 @@ public class MvcManagementController extends BaseController {
 
 	@RequestMapping(value = { "/messages" })
 	public String messages(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-		try {
-			checkUserAccess(userSessionService.getUserFromSession(request), "/management/messages");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR_404_PAGE;
-		}
+ 
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(Message.class, null);
 		entityProperty.setEditable(false);
 		entityProperty.removeElements("color", "fontColor");
@@ -172,11 +160,7 @@ public class MvcManagementController extends BaseController {
 		 
 		return basePage;
 	}
-
-	private void checkUserAccess(User user, String url) throws Exception {
-		componentService.checkAccess(user, url);
-	}
-
+ 
 	public static void main(String[] args) throws ClassNotFoundException {
 		Class.forName("com.fajar.entity.costflow");
 	}
