@@ -47,7 +47,7 @@
 	var orderType = null;
 	var defaultOption = "${defaultOption}";
 
-	//filted
+	//filter
 	var selectOrder = byId("select-order");
 
 	//elements
@@ -73,6 +73,7 @@
 	var URL_GET_PRODUCT_PUBLIC = "<spring:url value="/api/public/get" />";
 	var URL_GET_SUPPLIER = "<spring:url value="/api/public/moresupplier" />";
 	var IMAGE_PATH = "${host}/${contextPath}/${imagePath}/";
+	var firstLoad = true;
 
 	var products = [];
 
@@ -82,6 +83,10 @@
 
 	function updateCatalog() {
 		populateCatalog(products);
+		if(firstLoad){
+			showFilter();
+			firstLoad = false;
+		}
 	}
 
 	function showproductsuppliers() {
@@ -191,7 +196,7 @@
 
 	loadEntity(page);
 	initEvents();
-	showFilter();
+	
 </script>
 <c:if test="${authenticated == true }">
 	<script type="text/javascript">

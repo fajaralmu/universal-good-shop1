@@ -84,6 +84,7 @@
 	//element list
 	var fields = document.getElementsByClassName("input-field");
 	var filterFields = document.getElementsByClassName("filter-field");
+	const SEARCH_FILTER = {};
 
 	var entityTBody = byId("entity-tb");
 	var entityTableHead = byId("entity-th");
@@ -270,20 +271,7 @@
 
 			}
 		};
-		requestObject.filter.fieldsFilter = {};
-		for (let i = 0; i < filterFields.length; i++) {
-			const filterField = filterFields[i];
-			const filterValue = filterField.value;
-			if (filterValue != "") {
-				var fieldName = filterField.getAttribute("field");
-				const checkBoxExact = byId("checkbox-exact-" + fieldName);
-
-				if (checkBoxExact != null && checkBoxExact.checked) {
-					fieldName = fieldName + "[EXACTS]";
-				}
-				requestObject.filter.fieldsFilter[fieldName] = filterValue;
-			}
-		}
+		requestObject.filter.fieldsFilter = SEARCH_FILTER;
 		return requestObject;
 	}
 
@@ -494,9 +482,7 @@
 		const input = createInputText("filter-" + fieldName,
 				"filter-field form-control");
 		input.setAttribute("field", fieldName);
-		input.onkeyup = function() {
-			loadEntity();
-		}
+		  
 		inputGroup.appendChild(input);
 		return inputGroup;
 	}
@@ -559,7 +545,7 @@
 			var filterInputGroup;
 
 			if (isDateField) {
-				filterInputGroup = createFilterInputDate(fieldName, loadEntity);
+				filterInputGroup = createFilterInputDate(fieldName, null);
 
 			} else {
 				filterInputGroup = createDataTableInputFilter(fieldName);
@@ -1081,8 +1067,28 @@
 					clear();
 				}
 			}
-		
+			initFilterFieldsOnKeyup(); 
 
+		}
+		
+		function initFilterFieldsOnKeyup(){
+			for (var i = 0; i < filterFields.length; i++) {
+				const filterField = filterFields[i];
+				var fieldName = filterField.getAttribute("field");
+				filterField.onkeyup = function(e){
+					const filterValue = e.target.value;
+					if (filterValue != "") {
+						const checkBoxExact = byId("checkbox-exact-" + fieldName);
+						if (checkBoxExact != null && checkBoxExact.checked) {
+							fieldName = fieldName + "[EXACTS]";
+						}
+						SEARCH_FILTER[fieldName] = filterValue;
+					}
+					
+					loadEntity(-1);
+					
+				}
+			}
 		}
 
 		initEvents();

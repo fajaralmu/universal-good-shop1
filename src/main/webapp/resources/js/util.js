@@ -282,7 +282,7 @@ function createHtmlTag(object){
 			if(isStyle){
 				tag.setAttribute(key, stringifyStyleObject(value));
 			}else{ // Html DOM
-				console.debug("will create HTML DOM of :", key);
+				//console.debug("will create HTML DOM of :", key);
 				const htmlObject = value;
 				const htmlTag = createHtmlTag(htmlObject);
 				tag.appendChild(htmlTag);
@@ -424,7 +424,7 @@ const TYPE_DAY = "day";
 const TYPE_MONTH = "month";
 const TYPE_YEAR = "year";
 
-function createPeriodFilterInput(fieldName, type, callback){
+function createPeriodFilterInput(fieldName, type, onkeyupCallback){
 	const id = "filter-" + fieldName + "-" + type;
 	 
 	const inputDay = createHtmlTag({
@@ -435,19 +435,22 @@ function createPeriodFilterInput(fieldName, type, callback){
 		'field': fieldName + "-"+ type,
 		'style': "width: 30%"
 	});
-	inputDay.onkeyup = function() { callback(); }
+	if(onkeyupCallback){
+		inputDay.onkeyup = function() { onkeyupCallback(); }
+	}
+	
 	
 	return inputDay;
 }
 
-function createFilterInputDate(fieldName, callback){
+function createFilterInputDate(fieldName, onkeyupCallback){
 	const inputGroup = createDiv("input-group-"+fieldName,"input-group input-group-sm mb-3"); 
 	// input day
-	let inputDay = createPeriodFilterInput(fieldName, TYPE_DAY, callback); 
+	let inputDay = createPeriodFilterInput(fieldName, TYPE_DAY, onkeyupCallback); 
 	// input month
-	let inputMonth = createPeriodFilterInput(fieldName, TYPE_MONTH, callback); 
+	let inputMonth = createPeriodFilterInput(fieldName, TYPE_MONTH, onkeyupCallback); 
 	// input year
-	let inputYear = createPeriodFilterInput(fieldName, TYPE_YEAR, callback); 
+	let inputYear = createPeriodFilterInput(fieldName, TYPE_YEAR, onkeyupCallback); 
 	
 	inputGroup.append(inputDay);
 	inputGroup.append(inputMonth);
