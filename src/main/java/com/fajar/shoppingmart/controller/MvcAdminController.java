@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -214,7 +215,7 @@ public class MvcAdminController extends BaseController {
 	}
 	
 	@RequestMapping(value = { "/transactionreceipt", "/transactionreceipt/{code}" })
-	public String transactionReceipt(Model model, @PathVariable(name = "code", required = false)String code) {
+	public String transactionReceipt(Model model, @PathVariable(name = "code", required = false)String code, HttpServletResponse httpServletResponse) {
 
 		if(code == null) {
 			
@@ -223,12 +224,16 @@ public class MvcAdminController extends BaseController {
 		} 
 		
 		WebResponse reportData = transactionHistoryService.getTransactionData(code);
-		if(reportData.getTransaction() == null) {
-			throw new IllegalArgumentException("transaction not found with code:"+code);
-		}
-		Transaction transaction = reportData.getTransaction();
-		model.addAttribute("title", "Transaction :"+code); 
+		Transaction transaction = reportData.getTransaction(); 
+		
+		model.addAttribute("transactionCode", code);
 		model.addAttribute("transaction", transaction);
+		model.addAttribute("title", transaction != null ? "Transaction :"+code : "Not Found");
+		if(transaction == null) { 
+			
+			httpServletResponse.setStatus(HttpStatus.NOT_FOUND.value());
+			return "transaction-component/receipt-page";
+		}		 
 		model.addAttribute("totalPrice", ProductFlow.calculateTotalPrice(transaction.getProductFlows()));
 		model.addAttribute("totalQuantity", ProductFlow.calculateTotalQuantity(transaction.getProductFlows()));
 		return "transaction-component/receipt-page";

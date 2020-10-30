@@ -6,9 +6,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>${title }</title> 
 <link rel="stylesheet" type="text/css"
 	href="<c:url value="/res/css/bootstrap/bootstrap.min.css" />" />
-<title>${title }</title>
+ 
 <style>
 	.container{
 		width: 85%;
@@ -18,6 +19,8 @@
 </head>
 <body>
 	<div class="container">
+	
+	<c:if test="${transaction != null}">
 		<h3 style="margin-top: 20px">${transaction.type} Transaction (${transaction.mode})</h3>
 		<div class="row">
 			<div class="col-3">Code</div>
@@ -60,6 +63,11 @@
 				<td class="font-weight-bold">${totalPrice}</td>
 			</tr>
 		</table>
+		</c:if>
+		<c:if test="${transaction == null}">
+			<h3>Transaction with code: ${transactionCode } not found</h3>
+		</c:if>
 	</div>
+
 </body>
 </html>
