@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.support.BindingAwareModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -24,7 +23,6 @@ import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.entity.EntityManagementPageService;
 import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.MyJsonUtil;
-import com.fajar.shoppingmart.util.SessionUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,16 +60,7 @@ public class MvcManagementController extends BaseController {
 	public String commonManahementPage(@PathVariable("name") String name, Model model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 
-		model = entityManagementPageService.setModel(request, model, name);
-		try {
-
-			BindingAwareModelMap modelImpl = (BindingAwareModelMap) model;
-			String pageCode = modelImpl.get(SessionUtil.PAGE_CODE).toString(); 
-
-			log.info("Management Page Code: {}", request.getSession().getAttribute(SessionUtil.PAGE_CODE));
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+		model = entityManagementPageService.setModel(request, model, name); 
 		return basePage;
 	}
 
@@ -138,12 +127,7 @@ public class MvcManagementController extends BaseController {
 	public String transaction(@PathVariable(required = false) String option, Model model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 
-		try {
-			checkUserAccess(userSessionService.getUserFromSession(request), "/management/transaction");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR_404_PAGE;
-		}
+		 
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(Transaction.class, null);
 		entityProperty.setEditable(false);
 		entityProperty.setWithDetail(true);

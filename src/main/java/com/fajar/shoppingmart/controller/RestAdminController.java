@@ -24,7 +24,6 @@ import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.MessagingService;
 import com.fajar.shoppingmart.service.transaction.TransactionHistoryService;
 import com.fajar.shoppingmart.util.ApplicationUtil;
-import com.fajar.shoppingmart.util.MemoryInfo;
 
 @CrossOrigin
 @RestController 

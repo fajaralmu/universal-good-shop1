@@ -63,8 +63,8 @@
 					</div>
 					<div class="card-footer">
 						<a role="button"  id="btn-detail-OUT" class="btn btn-secondary"
-							link="${contextPath}/management/common/transaction?type=OUT"
-							href="${contextPath}/management/common/transaction?type=OUT">
+							link="${contextPath}/management/transaction/type=SELLING"
+							href="${contextPath}/management/transaction/type=SELLING">
 							Detail</a>
 					</div>
 				</div>
@@ -88,8 +88,8 @@
 					</div>
 					<div class="card-footer">
 						<a role="button" id="btn-detail-IN" class="btn btn-secondary"
-							link="${contextPath}/management/common/transaction?type=IN"
-							href="${contextPath}/management/common/transaction?type=IN">Detail</a>
+							link="${contextPath}/management/transaction/type=PURCHASING"
+							href="${contextPath}/management/transaction/type=PURCHASING">Detail</a>
 					</div>
 				</div>
 			</div>
