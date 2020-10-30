@@ -118,7 +118,7 @@ a:hover { text-decoration: none;  }
 		<div class="row" style="margin-right: 0">
 			<c:choose>
 				<c:when test="${hideNavBar != null && hideNavBar == true }">
-					<div class="col-12 content-wrapper" style="min-height: 70vh;">
+					<div id="content-wrapper" class="col-12 content-wrapper" style="min-height: 70vh;">
 						<jsp:include
 							page="${pageUrl == null? 'error/notfound': pageUrl}.jsp"></jsp:include>
 					</div>
@@ -126,12 +126,11 @@ a:hover { text-decoration: none;  }
 				<c:otherwise>
 					<div class="col-2" style="background-color: ${shopProfile.color}">
 						<jsp:include page="include/navs.jsp"></jsp:include>
-						<input id="token-value" value="${pageToken }" type="hidden" /> <input
-							id="request-id" value="${requestId }" type="hidden" />
+						<input id="token-value" value="${pageToken }" type="hidden" /> 
+						<input id="request-id" value="${requestId }" type="hidden" />
 					</div>
-					<div class="col-10 content-wrapper" style="min-height: 70vh;">
-						<jsp:include
-							page="${pageUrl == null? 'error/notfound': pageUrl}.jsp"></jsp:include>
+					<div id="content-wrapper" class="col-10 content-wrapper" style="min-height: 70vh;">
+						<jsp:include page="${pageUrl == null? 'error/notfound': pageUrl}.jsp"></jsp:include>
 					</div>
 				</c:otherwise>
 			</c:choose>

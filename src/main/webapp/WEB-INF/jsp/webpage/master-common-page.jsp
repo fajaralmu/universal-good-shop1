@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
-<div class="content">
+<div class="content" style="background-color: ${page.color}; height: 100%; padding: 10px">
 	<h2><i class="fa fa-${page.getIconClass() }" aria-hidden="false"></i> ${page.name}</h2>
 	<p>Good ${timeGreeting}, ${loggedUser.displayName}. Have a great day!</p>
 	<p>${page.description }</p>
@@ -41,3 +41,6 @@
 	</div>
 	<p></p>
 </div>
+<script type="text/javascript">
+	byId("content-wrapper").style.padding= 0;
+</script>
