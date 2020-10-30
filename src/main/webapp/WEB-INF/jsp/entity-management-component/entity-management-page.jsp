@@ -53,7 +53,7 @@
 		</c:if>
 	
 		<input class="form-control" value="Page" disabled="disabled">
-		<input class="form-control" type="number" value="1" id="input-page" />
+		<input class="form-control" type="number" placeholder="page" value="1" id="input-page" style="-moz-appearance:textField" />
 		<div class="input-group-append">
 			<button class="btn btn-primary" id="btn-filter-ok"
 				onclick="setPage()"><i class="fa fa-search" aria-hidden="true"></i></button>

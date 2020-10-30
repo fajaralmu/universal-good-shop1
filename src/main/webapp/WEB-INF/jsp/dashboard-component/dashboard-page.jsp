@@ -46,14 +46,8 @@
 
 			<div class="col-md-3">
 				<div class="card" style="width: 100%;">
-					<img class="card-img-top" width="100" height="200"
-						src="<spring:url value="/res/img/income.jpg" />"
-						alt="Card image cap">
+					<div class="card-header">Incoming</div>
 					<div class="card-body">
-						<div class="card-title"><a role="button"  id="btn-detail-OUT" class="badge badge-secondary"
-							link="${contextPath}/management/transaction/type=OUT"
-							href="${contextPath}/management/transaction/type=OUT">
-							Income <i class="fa fa-th-list" aria-hidden="true"></i></a></div>
 						<ul class="list-group">
 							<li
 								class="list-group-item d-flex justify-content-between align-items-center">
@@ -66,18 +60,19 @@
 							</li>
 
 						</ul>
-							</div>
+					</div>
+					<div class="card-footer">
+						<a role="button"  id="btn-detail-OUT" class="btn btn-secondary"
+							link="${contextPath}/management/common/transaction?type=OUT"
+							href="${contextPath}/management/common/transaction?type=OUT">
+							Detail</a>
+					</div>
 				</div>
 			</div>
 			<div class="col-md-3">
 				<div class="card" style="width: 100%;">
-					<img class="card-img-top" width="100" height="200"
-						src="<spring:url value="/res/img/wallet1.png" />"
-						alt="Card image cap">
-					<div class="card-body">
-						<div class="card-title"><a role="button" id="btn-detail-IN" class="badge badge-secondary"
-							link="${contextPath}/management/transaction/type=IN"
-							href="${contextPath}/management/transaction/type=IN">Spent <i class="fa fa-th-list" aria-hidden="true"></i></a></div>
+					<div class="card-header">Spending</div>
+					<div class="card-body"> 
 						<ul class="list-group">
 							<li
 								class="list-group-item d-flex justify-content-between align-items-center">
@@ -90,6 +85,11 @@
 							</li>
 
 						</ul> 
+					</div>
+					<div class="card-footer">
+						<a role="button" id="btn-detail-IN" class="btn btn-secondary"
+							link="${contextPath}/management/common/transaction?type=IN"
+							href="${contextPath}/management/common/transaction?type=IN">Detail</a>
 					</div>
 				</div>
 			</div>

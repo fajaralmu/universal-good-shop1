@@ -21,7 +21,7 @@ function confirmDialog(msg) {
 						tagName : 'div',
 						className : 'modal-content',
 						ch1 : modalHeader("Confirmation"),
-						ch2 : modalBody('<i class="fas fa-exclamation-triangle"></i>&nbsp;' + msg),
+						ch2 : modalBody(msg),
 						ch3 : {
 							tagName : 'div',
 							className : 'modal-footer',
@@ -157,7 +157,7 @@ function infoDialog(msg) {
 						tagName : 'div',
 						className : 'modal-content',
 						ch1 : modalHeader("Info"),
-						ch2 : modalBody('<i class="fa fa-info-circle"></i>&nbsp'+ msg),
+						ch2 : modalBody(msg),
 						ch3 : {
 							tagName : 'div',
 							className : 'modal-footer',
