@@ -82,8 +82,7 @@ public class MvcAdminController extends BaseController {
 
 	@RequestMapping(value = { "/product/{code}" })
 	@CustomRequestInfo(pageUrl = "webpage/product-detail-page")
-	public String productDetail(@PathVariable(required = true) String code, Model model, HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
+	public String productDetail(@PathVariable(required = true) String code, Model model, HttpServletRequest request)  {
 		Calendar cal = Calendar.getInstance();
 
 		Map<String, Object> fieldsFilter = new HashMap<String, Object>();

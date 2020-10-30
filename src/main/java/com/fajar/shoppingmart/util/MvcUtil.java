@@ -13,9 +13,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fajar.shoppingmart.controller.MvcAccountController;
+import com.fajar.shoppingmart.controller.MvcAdminController;
 import com.fajar.shoppingmart.entity.Menu;
 import com.fajar.shoppingmart.entity.Page;
 import com.fajar.shoppingmart.entity.setting.EntityProperty;
+import com.fajar.shoppingmart.service.LogProxyFactory;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -105,17 +108,52 @@ public class MvcUtil {
 		return String.join(",", pathVariablesArray);
 	}
 	
+	public static void main(String[] args) throws NoSuchMethodException, SecurityException {
+		 
+		Method[] m = MvcAdminController.class.getMethods();
+		for (Method method : m) {
+			 if(method.getName().equals("productDetail")) {
+				 System.out.println(method.getName()+" path Variables: "+getPathVariables(method));
+			 }
+		}
+		
+	}
+	
 	private static List<String> getPathVariableList(Method method){ 
 		Parameter[] parameters = method.getParameters();
+		String[] paramNames = getParameterNames(method);
 		List<String> pathVariables = new ArrayList<>();
 		if(null != parameters) {
-			for (Parameter parameter : parameters) {
+			for (int i = 0; i < parameters.length; i++) {
+				Parameter parameter = parameters[i];
+				 
 				if(parameter.getAnnotation(PathVariable.class)!=null) {
 					PathVariable pathVariable = parameter.getAnnotation(PathVariable.class);
-					pathVariables.add(pathVariable.name());
+					final String name;
+					if(pathVariable.name().equals("")== false) {
+						name = pathVariable.name();
+					}else {
+						if(paramNames != null) {
+							name = paramNames[i];
+						 } else {
+							 name = parameter.getName();
+						 }
+						
+					}
+					pathVariables.add(name);
 				}
 			}
 		} 
 		return pathVariables;
+	}
+	
+	public static String[] getParameterNames(Method method) {
+		try {
+			String[] params = LogProxyFactory.discoverer.getParameterNames(method); 
+			return params;
+		}catch ( Exception |  NoSuchMethodError e) {
+			// TODO: handle exception
+		}
+		return null;
 	}
 }
