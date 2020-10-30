@@ -67,7 +67,7 @@
 	</nav>
 
 	<!-- DATA TABLE -->
-	<div style="overflow: scroll; width: 100%; border: solid 1px">
+	<div style="overflow: scroll; width: 100%; border: solid 1px #cccccc">
 		<table class="table" id="list-table" style="layout: fixed">
 			<thead id="entity-th">
 			</thead>

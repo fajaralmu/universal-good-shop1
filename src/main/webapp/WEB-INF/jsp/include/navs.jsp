@@ -31,7 +31,6 @@
 						<i class="${pageItem.getIconClass() }" aria-hidden="false"></i> ${pageItem.name } 
 					</a>
 				</div>
-
 			</c:forEach>
 
 		</div>

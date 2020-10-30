@@ -8,7 +8,7 @@
 	<p>Good ${timeGreeting}, ${loggedUser.displayName}. Have a great day!</p>
 	<p>${page.description }</p>
 	<div class="row" style="grid-row-gap: 10px">
-		<c:forEach var="menu" items="${page.menus }">
+		<%-- <c:forEach var="menu" items="${page.menus }">
 			<div class="col-sm-3">
 				<div class="card" style="width: 100%;">
 					<img class="card-img-top"  width="100" height="200" src="${host}/${contextPath}/${imagePath}/${menu.iconUrl }"
@@ -20,6 +20,20 @@
 						<a class="badge badge-primary"
 							data-toggle="tooltip" data-placement="bottom"
 							title="${menu.description }" href="<spring:url value= "${menu.url }" />">Detail</a>
+					</div>
+				</div>
+			</div>
+		</c:forEach> --%>
+		<c:forEach var="menu" items="${page.menus }">
+			<div class="col-2">
+				<div class="menu-item shadow-sm p-3 mb-5 rounded" 
+					style="width: 100%; height:80%; text-align: center; background-color:${menu.color }">
+					<img style="margin-top: 10px" width="50" height="50" src="${host}/${contextPath}/${imagePath}/${menu.iconUrl }">
+					<div>
+						<h6><a style="color:${menu.fontColor }"
+							data-toggle="tooltip" data-placement="bottom"
+							title="${menu.description }" 
+							href="<spring:url value= "${menu.url }" />">${menu.name }</a></h6>
 					</div>
 				</div>
 			</div>

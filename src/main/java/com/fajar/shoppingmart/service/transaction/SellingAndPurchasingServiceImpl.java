@@ -63,13 +63,8 @@ public class SellingAndPurchasingServiceImpl implements SellingAndPurchasingServ
 		}
 	}	
 
-	/**
-	 * add stock from supplier
-	 * 
-	 * @param request
-	 * @param httpRequest
-	 * @return
-	 */
+	////////////////////////////////// Purchasing //////////////////////////////////////////////
+	
 	@Override
 	public WebResponse purchaseProduct(WebRequest request, HttpServletRequest httpRequest) {  
 		
@@ -166,6 +161,8 @@ public class SellingAndPurchasingServiceImpl implements SellingAndPurchasingServ
 			return null;
 		}
 	}
+	
+	////////////////////////////////// Selling //////////////////////////////////////////////
 	
 	@Override
 	public WebResponse sellProduct(WebRequest request, HttpServletRequest httpRequest) {  

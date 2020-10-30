@@ -18,8 +18,8 @@ public class TransactionStakeHolders {
 	private static final List<Supplier> suppliers = createCustomerMap(RawTransactionObjects.SUPPLIER_IDs, Supplier.class);
 	private static final Random random = new Random();
 	
-	private static final String APP_ID = "33732748868571133"; 
-	private static final String LOGIN_KEY = "84e11cc2-53ef-4a2b-b91f-c91d13992962-7675577071";
+	private static final String APP_ID = "14642226238014748"; 
+	private static final String LOGIN_KEY = "cbfc0e22-b0f4-46bf-a548-6424688f1e25-2042167120";
 	
 	public static <T> T randomObject(List<T> list) {
 		int size = list.size();
