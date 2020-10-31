@@ -35,6 +35,7 @@
 							data-toggle="tooltip" data-placement="bottom"
 							path-variables=${menu.pathVariableAsJson() }
 							title="${menu.description }" 
+							href-original="<spring:url value= "${menu.url }" />"
 							href="<spring:url value= "${menu.url }" />">${menu.name }</a></h6>
 					</div>
 				</div>
@@ -51,9 +52,17 @@
 	function initMenuItemEvents(){
 		for (var i = 0; i < menuItemLinks.length; i++) {
 			const menuItemLink = menuItemLinks[i];
-			const pathVariables = menuItemLink.getAttribute("path-variables");
-			if(pathVariables!=""){
-				
+			const pathVariableString = menuItemLink.getAttribute("path-variables");
+			if(pathVariableString!=null && pathVariableString!=""){
+				 
+				menuItemLink.href = "#";
+				menuItemLink.onclick = function(e){
+					
+					e.preventDefault();
+					const link = e.target.getAttribute("href-original");
+					const pathVariables = JSON.parse(pathVariableString);
+					console.debug(pathVariables);
+				}
 			}
 		}
 	}

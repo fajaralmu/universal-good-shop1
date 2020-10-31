@@ -60,19 +60,23 @@ public class Menu extends BaseEntity {
 	@Column(name = "icon_url")
 	private String iconUrl;
 	
+	/**
+	 * the return value must be started and ended by double quotes character
+	 * @return
+	 */
 	public String pathVariableAsJson() {
 		if(pathVariables == null || pathVariables.isEmpty()) {
-			return "";
+			return "\"\"";
 		}
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
 			String json = objectMapper.writeValueAsString(pathVariables.split(","));
-//			String JSON_Replaced = objectMapper.writeValueAsString(json);
-			return json;// (JSON_Replaced.replace("\"[", "[").replace("]\"", "]"));
+			String jsonStringified = objectMapper.writeValueAsString(json);
+			return jsonStringified;// (JSON_Replaced.replace("\"[", "[").replace("]\"", "]"));
 		}catch (Exception e) {
 			// TODO: handle exception
 		}
-		return "";
+		return "\"\"";
 	}
 	
 	public static void main(String[] args) throws JsonProcessingException {
