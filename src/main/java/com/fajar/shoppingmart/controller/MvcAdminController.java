@@ -80,19 +80,25 @@ public class MvcAdminController extends BaseController {
 		return basePage;
 	}
 
-	@RequestMapping(value = { "/product/{code}" })
+	@RequestMapping(value = { "/product/{productCode}" })
 	@CustomRequestInfo(pageUrl = "webpage/product-detail-page")
-	public String productDetail(@PathVariable(required = true) String code, Model model, HttpServletRequest request)  {
+	public String productDetail(@PathVariable(required = true) String productCode, Model model, HttpServletRequest request, HttpServletResponse response)  {
 		Calendar cal = Calendar.getInstance();
 
 		Map<String, Object> fieldsFilter = new HashMap<String, Object>();
-		fieldsFilter.put("code", code);
+		fieldsFilter.put("code", productCode);
 		fieldsFilter.put("withStock", true);
 		fieldsFilter.put("withSupplier", true);
 		Filter filter = Filter.builder().exacts(true).limit(1).contains(false).fieldsFilter(fieldsFilter).build();
 		WebRequest requestObject = WebRequest.builder().entity("product").filter(filter).build();
 		WebResponse productResponse = productService.getProductsCatalog(requestObject, request.getHeader("requestId"));
-
+		
+		if(null == productResponse.getEntities() || productResponse.getEntities().size() == 0) {
+			
+			response.setStatus(HttpStatus.NOT_FOUND.value());
+			throw new RuntimeException("Product with code: "+productCode+" not found"); 
+		}
+		
 		Product product = (Product) productResponse.getEntities().get(0);
 
 		List<String> imageUrlList = CollectionUtil.arrayToList(product.getImageUrl().split("~"));

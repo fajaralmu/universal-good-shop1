@@ -7,6 +7,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
@@ -60,30 +62,21 @@ public class Menu extends BaseEntity {
 	@Column(name = "icon_url")
 	private String iconUrl;
 	
-	/**
-	 * the return value must be started and ended by double quotes character
-	 * @return
-	 */
-	public String pathVariableAsJson() {
+	 
+	public String pathVariablesString() {
 		if(pathVariables == null || pathVariables.isEmpty()) {
-			return "\"\"";
+			return "";
 		}
-		try {
-			ObjectMapper objectMapper = new ObjectMapper();
-			String json = objectMapper.writeValueAsString(pathVariables.split(","));
-			String jsonStringified = objectMapper.writeValueAsString(json);
-			return jsonStringified;// (JSON_Replaced.replace("\"[", "[").replace("]\"", "]"));
-		}catch (Exception e) {
-			// TODO: handle exception
-		}
-		return "\"\"";
+		return pathVariables;
 	}
 	
 	public static void main(String[] args) throws JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		String JSON = objectMapper.writeValueAsString("FAJAR,ALMU".split(","));
 		String JSON_2 = objectMapper.writeValueAsString(JSON);
-		System.out.println(JSON_2.replace("\"[", "[").replace("]\"", "]"));
+		String escaped = (StringEscapeUtils.escapeHtml4(JSON_2));
+		escaped = escaped.replaceAll("\\&quot;", "\\\\&quot;");
+		System.out.println(escaped);
 	}
 	
 	@PrePersist

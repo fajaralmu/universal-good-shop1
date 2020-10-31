@@ -33,7 +33,7 @@
 						<h6><a style="color:${menu.fontColor }"
 							class="menu-item-link"
 							data-toggle="tooltip" data-placement="bottom"
-							path-variables=${menu.pathVariableAsJson() }
+							path-variables="${menu.pathVariablesString() }"
 							title="${menu.description }" 
 							href-original="<spring:url value= "${menu.url }" />"
 							href="<spring:url value= "${menu.url }" />">${menu.name }</a></h6>
@@ -49,20 +49,41 @@
 	
 	const menuItemLinks = document.getElementsByClassName("menu-item-link");
 	
+	function setMenuItemHavingPathVariablesOnclick(menuItemLink, pathVariableString){  
+			 
+		menuItemLink.href = "#";
+		menuItemLink.onclick = function(e){
+			 
+			const pathVariables = pathVariableString.split(",");
+			const rawLink = e.target.getAttribute("href-original");
+			
+			promptDialogMultiple("Provide Path Variables", pathVariables)
+			.then(function(result){
+				if(result.ok){
+					console.debug("result.value:",result.value);
+					let finalLink = rawLink;
+					for (var key in result.value) {
+						const value = result.value[key];
+						if(value == null || value == ""){
+							alert("Please provide the "+key+"!");
+							return;
+						}
+						finalLink = finalLink.replace("{"+key+"}", value);
+						window.location.href = finalLink;
+						
+					}
+				}
+			});
+		}
+	}
+	
 	function initMenuItemEvents(){
 		for (var i = 0; i < menuItemLinks.length; i++) {
 			const menuItemLink = menuItemLinks[i];
 			const pathVariableString = menuItemLink.getAttribute("path-variables");
+			
 			if(pathVariableString!=null && pathVariableString!=""){
-				 
-				menuItemLink.href = "#";
-				menuItemLink.onclick = function(e){
-					
-					e.preventDefault();
-					const link = e.target.getAttribute("href-original");
-					const pathVariables = JSON.parse(pathVariableString);
-					console.debug(pathVariables);
-				}
+				setMenuItemHavingPathVariablesOnclick(menuItemLink, pathVariableString); 
 			}
 		}
 	}
