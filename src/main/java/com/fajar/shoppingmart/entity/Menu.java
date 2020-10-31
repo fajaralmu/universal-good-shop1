@@ -11,6 +11,8 @@ import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
 import com.fajar.shoppingmart.service.entity.EntityUpdateInterceptor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,6 +59,28 @@ public class Menu extends BaseEntity {
 	@FormField(type = FieldType.FIELD_TYPE_IMAGE, required = false, defaultValue = "DefaultIcon.BMP")
 	@Column(name = "icon_url")
 	private String iconUrl;
+	
+	public String pathVariableAsJson() {
+		if(pathVariables == null || pathVariables.isEmpty()) {
+			return "";
+		}
+		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			String json = objectMapper.writeValueAsString(pathVariables.split(","));
+//			String JSON_Replaced = objectMapper.writeValueAsString(json);
+			return json;// (JSON_Replaced.replace("\"[", "[").replace("]\"", "]"));
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		return "";
+	}
+	
+	public static void main(String[] args) throws JsonProcessingException {
+		ObjectMapper objectMapper = new ObjectMapper();
+		String JSON = objectMapper.writeValueAsString("FAJAR,ALMU".split(","));
+		String JSON_2 = objectMapper.writeValueAsString(JSON);
+		System.out.println(JSON_2.replace("\"[", "[").replace("]\"", "]"));
+	}
 	
 	@PrePersist
 	public void pre() {

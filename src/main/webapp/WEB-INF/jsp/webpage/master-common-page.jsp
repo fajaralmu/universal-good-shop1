@@ -31,7 +31,9 @@
 					<img style="margin-top: 10px" width="50" height="50" src="${host}/${contextPath}/${imagePath}/${menu.iconUrl }">
 					<div>
 						<h6><a style="color:${menu.fontColor }"
+							class="menu-item-link"
 							data-toggle="tooltip" data-placement="bottom"
+							path-variables=${menu.pathVariableAsJson() }
 							title="${menu.description }" 
 							href="<spring:url value= "${menu.url }" />">${menu.name }</a></h6>
 					</div>
@@ -43,4 +45,18 @@
 </div>
 <script type="text/javascript">
 	byId("content-wrapper").style.padding= 0;
+	
+	const menuItemLinks = document.getElementsByClassName("menu-item-link");
+	
+	function initMenuItemEvents(){
+		for (var i = 0; i < menuItemLinks.length; i++) {
+			const menuItemLink = menuItemLinks[i];
+			const pathVariables = menuItemLink.getAttribute("path-variables");
+			if(pathVariables!=""){
+				
+			}
+		}
+	}
+	
+	initMenuItemEvents();
 </script>
