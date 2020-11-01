@@ -87,7 +87,7 @@ function createCategoryTag(entity) {
 
 function createProductIconElement(entity) {
 	const imageUrl = entity.imageUrl;
-	const src = IMAGE_PATH + imageUrl.split("~")[0];
+	const src = imageUrl ? IMAGE_PATH + imageUrl.split("~")[0] : IMAGE_PATH+"/Default.BMP";
 	const elementId = "icon-" + entity.id;
 
 	const iconImage = createImgTag(elementId, "card-img-top", "100", "200", src);
@@ -164,7 +164,7 @@ function createProductDisplayList(product) {
 	}
 	// ICON
 	const imageUrl = product.imageUrl;
-	const src = IMAGE_PATH + imageUrl.split("~")[0];
+	const src = imageUrl ? IMAGE_PATH + imageUrl.split("~")[0] : IMAGE_PATH+"/Default.BMP";
 	const imgDiv = createHtmlTag({
 		tagName : "div",
 		className : "col-md-2",
