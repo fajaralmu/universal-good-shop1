@@ -193,7 +193,7 @@
 			const bar = "<div class=\"rounded-right\" style=\"width: "
 					+ sales.percentage
 					+ "%;color:white; height:25px; background-color: green \"></div>ATTRIBUTE>>colspan=5";
-			const period = sales.month + "-" + sales.year;
+			const period = sales.monthName + " " + sales.year;
 			const number = 1 + i;
 			tableColumns.push([
 					number,

@@ -244,6 +244,17 @@ public class DateUtil {
 	}
 	
 	/**
+	 * get difference day from now
+	 * @param date
+	 * @return
+	 */
+	public static long getDiffDaysFromNow(Date date) {
+		long diff = new Date().getTime() - date.getTime();
+		long diffDays = diff / (24 * 60 * 60 * 1000);
+		return diffDays;
+	}
+	
+	/**
 	 * get list of months with length: diff
 	 * @param calendar
 	 * @param diff

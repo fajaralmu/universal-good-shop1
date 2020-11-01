@@ -261,7 +261,7 @@ public class ProductServiceImpl implements ProductService{
 		boolean firstTransactionExists = null != firstTransactionIn && null != firstTransactionIn.getTransactionDate();
 
 		if (firstTransactionExists) {
-			long diffDays = getDiffDays(firstTransactionIn.getTransactionDate());
+			long diffDays = DateUtil.getDiffDaysFromNow(firstTransactionIn.getTransactionDate());
 			if (diffDays <= 14) {
 				return true;
 			}
@@ -270,11 +270,7 @@ public class ProductServiceImpl implements ProductService{
 		return false;
 	}
  
-	private long getDiffDays(Date date) {
-		long diff = new Date().getTime() - date.getTime();
-		long diffDays = diff / (24 * 60 * 60 * 1000);
-		return diffDays;
-	}
+
 	
 
 	private List<Supplier> getProductSupplier(long longValue, Integer page) {
@@ -294,7 +290,7 @@ public class ProductServiceImpl implements ProductService{
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			return new ProductSales();
+			return new ProductSales(month, year);
 		}
 	}
  
