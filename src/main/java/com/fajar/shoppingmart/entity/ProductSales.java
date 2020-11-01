@@ -38,7 +38,11 @@ public class ProductSales extends BaseEntity {
 	public void setMonth(int month2) {
 		 
 		this.month = month2;
-		this.monthName = DateUtil.MONTH_NAMES[month-2];
+		try {
+			this.monthName = DateUtil.MONTH_NAMES[month-1];
+		}catch (Exception e) {
+			this.monthName = "-";
+		}
 	}
 
 }
