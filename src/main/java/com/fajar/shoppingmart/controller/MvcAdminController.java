@@ -1,7 +1,6 @@
 package com.fajar.shoppingmart.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -72,7 +71,7 @@ public class MvcAdminController extends BaseController {
 		model.addAttribute("page", "dashboard");
 		model.addAttribute("currentMonth", cal.get(Calendar.MONTH) + 1);
 		model.addAttribute("currentYear", cal.get(Calendar.YEAR));
-		int minYear = transactionService.getMinTransactionYear();
+		int minYear = transactionHistoryService.getMinTransactionYear();
 		model.addAttribute("minYear", minYear);
 		model.addAttribute("maxYear", cal.get(Calendar.YEAR));
 		model.addAttribute("months", DateUtil.months());
@@ -80,18 +79,23 @@ public class MvcAdminController extends BaseController {
 		return basePage;
 	}
 
-	@RequestMapping(value = { "/product/{productCode}" })
-	@CustomRequestInfo(pageUrl = "webpage/product-detail-page")
-	public String productDetail(@PathVariable(required = true) String productCode, Model model, HttpServletRequest request, HttpServletResponse response)  {
-		Calendar cal = Calendar.getInstance();
-
+	private WebRequest getProductDetailRequest(String productCode) {
 		Map<String, Object> fieldsFilter = new HashMap<String, Object>();
 		fieldsFilter.put("code", productCode);
 		fieldsFilter.put("withStock", true);
 		fieldsFilter.put("withSupplier", true);
 		Filter filter = Filter.builder().exacts(true).limit(1).contains(false).fieldsFilter(fieldsFilter).build();
 		WebRequest requestObject = WebRequest.builder().entity("product").filter(filter).build();
-		WebResponse productResponse = productService.getProductsCatalog(requestObject, request.getHeader("requestId"));
+		return requestObject;
+	}
+	
+	@RequestMapping(value = { "/product/{productCode}" })
+	@CustomRequestInfo(pageUrl = "webpage/product-detail-page")
+	public String productDetail(@PathVariable(required = true) String productCode, Model model, HttpServletRequest request, HttpServletResponse response)  {
+		
+		
+		WebResponse productResponse = productService.getProductsCatalog(getProductDetailRequest(productCode), 
+				request.getHeader("requestId"));
 		
 		if(null == productResponse.getEntities() || productResponse.getEntities().size() == 0) {
 			
@@ -102,30 +106,19 @@ public class MvcAdminController extends BaseController {
 		Product product = (Product) productResponse.getEntities().get(0);
 
 		List<String> imageUrlList = CollectionUtil.arrayToList(product.getImageUrl().split("~"));
-		List<Map<String, Object>> imageUrlObjects = new ArrayList<>();
-		for (String string : imageUrlList) {
-			imageUrlObjects.add(new HashMap<String, Object>() { 
-				private static final long serialVersionUID = 1055027585947531920L;
-
-				{
-					put("value", string);
-				}
-			});
-		}
+		
 		model.addAttribute("product", product);
-		model.addAttribute("contextPath", request.getContextPath());
 		model.addAttribute("title", product.getName());
 
 		model.addAttribute("imageUrlList", imageUrlList);
 		model.addAttribute("productUnit", product.getUnit().getName());
 		model.addAttribute("productCategory", product.getCategory().getName());
-		model.addAttribute("page", "management");
-		model.addAttribute("currentMonth", cal.get(Calendar.MONTH) + 1);
-		model.addAttribute("currentYear", cal.get(Calendar.YEAR));
-		model.addAttribute("productId", product.getId());
-		int minYear = transactionService.getMinTransactionYear();
+		model.addAttribute("currentMonth", DateUtil.getCurrentMonth()+1);
+		model.addAttribute("currentYear", DateUtil.getCurrentYear());
+		
+		int minYear = transactionHistoryService.getMinTransactionYear();
 		model.addAttribute("minYear", minYear);
-		model.addAttribute("maxYear", cal.get(Calendar.YEAR));
+		model.addAttribute("maxYear", DateUtil.getCurrentYear());
 //		model.addAttribute("maxYear", transactionYears[1]);
 		return basePage;
 
@@ -142,39 +135,7 @@ public class MvcAdminController extends BaseController {
 		model.addAttribute("currentDay", DateUtil.getCalendarDayOfMonth(now));
 		return basePage;
 	}
-
-//	@RequestMapping(value = { "/management" })
-//	public String menuManagement(Model model, HttpServletRequest request, HttpServletResponse response)
-//			throws IOException {
-//
-//		if (!userService.hasSession(request)) {
-//			sendRedirectLogin(request, response);
-//			return basePage;
-//		}
-//		model.addAttribute("menus", componentService.getManagementMenus(request));
-//		model.addAttribute("contextPath", request.getContextPath());
-//		model.addAttribute("title", "Shop::Management");
-//		model.addAttribute("pageUrl", "webpage/management-page");
-//		model.addAttribute("page", "management");
-//		return basePage;
-//	}
-
-//	@RequestMapping(value = { "/transaction" })
-//	public String transaction(Model model, HttpServletRequest request, HttpServletResponse response)
-//			throws IOException {
-//
-//		if (!userService.hasSession(request)) {
-//			sendRedirectLogin(request, response);
-//			return basePage;
-//		}
-//		model.addAttribute("menus", componentService.getTransactionMenus(request));
-//		model.addAttribute("imagePath", webAppConfiguration.getUploadedImagePath());
-//		model.addAttribute("title", "Shop::Transaction");
-//		model.addAttribute("pageUrl", "webpage/transaction-page");
-//		model.addAttribute("page", "transaction");
-//		return basePage;
-//	}
-
+	
 	@RequestMapping(value = { "/transaction/in", "/transaction/in/", "/transaction/in/{transactionCode}" })
 	@CustomRequestInfo(scriptPaths = { "transaction" }, stylePaths = {
 			"transaction-sell-purc" }, title = "Purchase", pageUrl = "transaction-component/transaction-purchasing-page")

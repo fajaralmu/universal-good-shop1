@@ -53,7 +53,7 @@ public class BaseController {
 	@Autowired
 	protected RuntimeService registryService; 
 	@Autowired
-	protected TransactionHistoryService transactionService;
+	protected TransactionHistoryService transactionHistoryService;
 	@Autowired
 	protected ProductService productService;
 	@Autowired

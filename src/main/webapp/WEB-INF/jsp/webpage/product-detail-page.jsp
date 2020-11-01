@@ -174,7 +174,7 @@
 		};
 		infoLoading();
 		loadEntityList(
-				"<spring:url value="/api/transaction/productsalesdetail/" />${productId}",
+				"<spring:url value="/api/transaction/productsalesdetail/" />${product.id}",
 				requestObject, function(entities) {
 					infoDone();
 					populateTableSales(entities);

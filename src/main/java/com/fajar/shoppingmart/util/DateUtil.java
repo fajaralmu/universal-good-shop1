@@ -66,6 +66,18 @@ public class DateUtil {
 		return getCalendarItem(date, Calendar.MONTH);
 	}
 	
+	public static int getCurrentYear() {
+		return getCalendarYear(new Date());
+	}
+	
+	/**
+	 * month starts at 0
+	 * @return
+	 */
+	public static int getCurrentMonth() {
+		return getCalendarMonth(new Date());
+	}
+	
 	public static int getCalendarDayOfMonth(Date date) {
 		return getCalendarItem(date, Calendar.DAY_OF_MONTH);
 	}
