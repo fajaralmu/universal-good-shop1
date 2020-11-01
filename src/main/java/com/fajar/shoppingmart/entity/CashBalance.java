@@ -12,14 +12,13 @@ import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.CashType;
 import com.fajar.shoppingmart.dto.FieldType;
-import com.fajar.shoppingmart.service.entity.BaseEntityUpdateService;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Dto(updateService = BaseEntityUpdateService.class)
+@Dto(updateService = "baseEntityUpdateService")
 @Entity
 @Table(name="cash_balance")
 @Data

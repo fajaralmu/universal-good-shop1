@@ -19,10 +19,10 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.entity.custom.EntityUpdateInterceptor;
 import com.fajar.shoppingmart.entity.setting.EntityManagementConfig;
 import com.fajar.shoppingmart.service.WebConfigService;
 import com.fajar.shoppingmart.service.entity.BaseEntityUpdateService;
-import com.fajar.shoppingmart.service.entity.EntityUpdateInterceptor;
 import com.fajar.shoppingmart.util.CollectionUtil;
 import com.fajar.shoppingmart.util.EntityUtil;
 import com.fajar.shoppingmart.util.StringUtil;
@@ -79,8 +79,9 @@ public class EntityRepository {
 				if (null == dtoInfo) {
 					continue;
 				}
-				Class<? extends BaseEntityUpdateService> updateServiceClass = dtoInfo.updateService();
-				String beanName = StringUtil.lowerCaseFirstChar(updateServiceClass.getSimpleName());
+//				Class<? extends BaseEntityUpdateService> updateServiceClass = dtoInfo.updateService();
+				String beanName = dtoInfo.updateService();
+//				String beanName = StringUtil.lowerCaseFirstChar(updateServiceClass.getSimpleName());
 
 				BaseEntityUpdateService updateServiceBean = (BaseEntityUpdateService) applicationContext
 						.getBean(beanName);

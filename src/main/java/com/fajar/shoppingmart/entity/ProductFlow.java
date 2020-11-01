@@ -16,7 +16,6 @@ import com.fajar.shoppingmart.dto.FieldType;
 import com.fajar.shoppingmart.entity.custom.BalanceJournalInfo;
 import com.fajar.shoppingmart.entity.custom.FinancialEntity;
 import com.fajar.shoppingmart.entity.custom.JournalInfoProductFlow;
-import com.fajar.shoppingmart.service.entity.BaseEntityUpdateService;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
@@ -24,7 +23,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-@Dto(updateService = BaseEntityUpdateService.class)
+@Dto(updateService = "baseEntityUpdateService")
 @Entity
 @Table(name = "product_flow")
 @Data

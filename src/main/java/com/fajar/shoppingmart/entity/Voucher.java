@@ -16,7 +16,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Dto(updateService = VoucherUpdateService.class)
+@Dto(updateService = "voucherUpdateService")
 @Table(name="voucher")
 public class Voucher extends BaseEntity {
  

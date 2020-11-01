@@ -17,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
-import com.fajar.shoppingmart.service.entity.UserUpdateService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -25,7 +24,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Dto(commonManagementPage = false, updateService = UserUpdateService.class)
+@Dto(commonManagementPage = false, updateService = "userUpdateService")
 @Entity
 @Table(name = "user")
 @Builder

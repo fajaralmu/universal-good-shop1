@@ -7,24 +7,18 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.aspectj.lang.annotation.Before;
 
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
 import com.fajar.shoppingmart.dto.FontAwesomeIcon;
-import com.fajar.shoppingmart.service.entity.ShopProfileUpdateService;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Dto(ignoreBaseField = false, updateService = ShopProfileUpdateService.class)
+@Dto(ignoreBaseField = false, updateService = "shopProfileUpdateService")
 @Entity
 @Table(name = "shop_profile")
 @Data

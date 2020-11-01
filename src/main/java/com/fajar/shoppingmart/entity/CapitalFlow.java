@@ -21,7 +21,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Dto(updateService = CapitalFlowUpdateService.class)
+@Dto(updateService = "capitalFlowUpdateService")
 @Entity
 @Table(name="capital_flow")
 @Builder

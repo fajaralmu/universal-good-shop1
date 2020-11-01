@@ -1,4 +1,4 @@
-package com.fajar.shoppingmart.service.entity;
+package com.fajar.shoppingmart.entity.custom;
 
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Menu;

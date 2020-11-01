@@ -10,7 +10,6 @@ import com.fajar.shoppingmart.entity.Customer;
 import com.fajar.shoppingmart.entity.CustomerVoucher;
 import com.fajar.shoppingmart.entity.Voucher;
 import com.fajar.shoppingmart.repository.CustomerRepository;
-import com.fajar.shoppingmart.repository.CustomerVoucherRepository;
 import com.fajar.shoppingmart.repository.VoucherRepository;
 import com.fajar.shoppingmart.util.ThreadUtil;
 
@@ -23,9 +22,7 @@ public class VoucherUpdateService extends BaseEntityUpdateService<Voucher>{
 	@Autowired
 	private VoucherRepository voucherRepository; 
 	@Autowired
-	private CustomerRepository customerRepository;
-	@Autowired
-	private CustomerVoucherRepository CustomerVoucherRepository;
+	private CustomerRepository customerRepository; 
 	 
 	@Override
 	public WebResponse saveEntity(Voucher baseEntity, boolean newRecord) {

@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.entity.custom.EntityUpdateInterceptor;
 import com.fajar.shoppingmart.service.entity.BaseEntityUpdateService;
-import com.fajar.shoppingmart.service.entity.EntityUpdateInterceptor;
 import com.fajar.shoppingmart.util.EntityUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

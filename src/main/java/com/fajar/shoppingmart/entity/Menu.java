@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import com.fajar.shoppingmart.annotation.Dto;
 import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.dto.FieldType;
-import com.fajar.shoppingmart.service.entity.EntityUpdateInterceptor;
+import com.fajar.shoppingmart.entity.custom.EntityUpdateInterceptor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

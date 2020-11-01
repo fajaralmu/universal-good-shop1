@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.entity.custom.EntityUpdateInterceptor;
 
 import lombok.extern.slf4j.Slf4j;
 

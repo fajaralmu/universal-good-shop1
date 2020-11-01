@@ -15,6 +15,7 @@ import com.fajar.shoppingmart.annotation.FormField;
 import com.fajar.shoppingmart.annotation.StoreValueTo;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.entity.custom.EntityUpdateInterceptor;
 import com.fajar.shoppingmart.repository.EntityRepository;
 import com.fajar.shoppingmart.service.FileService;
 import com.fajar.shoppingmart.service.LogProxyFactory;

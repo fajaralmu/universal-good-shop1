@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-@Dto(formInputColumn = FormInputColumn.ONE_COLUMN, updateService =  ProductUpdateService.class)
+@Dto(formInputColumn = FormInputColumn.ONE_COLUMN, updateService =  "productUpdateService")
 @Entity
 @Table(name = "product")
 @Data

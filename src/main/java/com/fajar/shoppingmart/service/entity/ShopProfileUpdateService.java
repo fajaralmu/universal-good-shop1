@@ -1,21 +1,13 @@
 package com.fajar.shoppingmart.service.entity;
 
-import java.io.IOException;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.dto.WebResponse;
-import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Profile;
-import com.fajar.shoppingmart.repository.AppProfileRepository;
 
 @Service
 public class ShopProfileUpdateService extends BaseEntityUpdateService<Profile>{
-
-	@Autowired
-	private AppProfileRepository shopProfileRepository;
+ 
 	
 	@Override
 	public WebResponse saveEntity(Profile baseEntity, boolean newRecord){
