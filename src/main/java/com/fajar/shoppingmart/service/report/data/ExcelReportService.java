@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class ReportService { 
+public class ExcelReportService { 
 	@Autowired
 	private ReportDataService reportDataService; 
 	@Autowired
@@ -64,7 +64,7 @@ public class ReportService {
 		ReportData reportData = balanceReportDataService.getBalanceReportData(request);
 		initProgress(httpRequest);
 		 
-		return writeTransactionReport(new BalanceReportBuilder( reportData), httpRequest);
+		return writeTransactionReport(new BalanceReportBuilder(reportData), httpRequest);
 	}
 	
 	private CustomWorkbook writeTransactionReport(ReportBuilder reportBuilder, HttpServletRequest httpRequest) {
@@ -79,12 +79,15 @@ public class ReportService {
 		return new OnProgress() {
 			
 			@Override
-			public void onProgress(int taxProportion, int totalProportion, int generalProportion, String message) {
-				 progressService.sendProgress(taxProportion, totalProportion, generalProportion, httpRequest);
+			public void onProgress(int taskProportion, int totalProportion, int generalProportion, String message) {
+				 progressService.sendProgress(taskProportion, totalProportion, generalProportion, httpRequest);
 				
 			}
 		};
 	}
+	
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
 
 	public CustomWorkbook generateEntityReport(WebRequest request, HttpServletRequest httpRequest) throws Exception {
 		log.info("generateEntityReport, request: {}", request); 

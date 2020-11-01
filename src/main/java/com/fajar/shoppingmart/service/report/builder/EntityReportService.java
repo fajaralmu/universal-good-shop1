@@ -34,7 +34,7 @@ public class EntityReportService {
 		EntityProperty entityProperty = EntityUtil.createEntityProperty(entityClass, null);
 		ReportData reportData = ReportData.builder().entities(entities).entityProperty(entityProperty).requestId(requestId).build(); 
 	
-		EntityReportBuilder reportBuilder = new EntityReportBuilder( reportData);
+		ReportBuilder reportBuilder = new EntityReportBuilder( reportData);
 		reportBuilder.setProgressService(progressService);
 		
 		progressService.sendProgress(1, 1, 10, false, httpRequest);

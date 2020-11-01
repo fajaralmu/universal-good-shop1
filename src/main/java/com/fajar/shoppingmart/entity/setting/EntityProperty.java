@@ -72,28 +72,7 @@ public class EntityProperty implements Serializable {
 		this.currencyElementsJson = MyJsonUtil.listToJson(currencyElements);
 		this.multipleSelectElementsJson = MyJsonUtil.listToJson(multipleSelectElements);
 	}
-
-	public void removeElements(String... fieldNames) {
-		if (this.elements == null)
-			return;
-		for (int i = 0; i < fieldNames.length; i++) {
-			String fieldName = fieldNames[i];
-			loop: for (String fName : fieldNameList) {
-				if (fieldName.equals(fName)) {
-					fieldNameList.remove(fName);
-					break loop;
-				}
-			}
-			loop2: for (EntityElement entityElement : this.elements) {
-				if (entityElement.getId().equals(fieldName)) {
-					this.elements.remove(entityElement);
-					break loop2;
-				}
-			}
-		}
-		this.fieldNames = MyJsonUtil.listToJson(fieldNameList);
-	}
-
+ 
 	public void setGroupNames(String[] groupNamesArray) {
 		int removedIndex = 0;
 		for (int i = 0; i < groupNamesArray.length; i++) {

@@ -4,9 +4,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
 <div class="content" style="background-color: ${page.color}; height: 100%; padding: 10px">
-	<h2><i class="fa fa-${page.getIconClass() }" aria-hidden="false"></i> ${page.name}</h2>
-	<p>Good ${timeGreeting}, ${loggedUser.displayName}. Have a great day!</p>
-	<p>${page.description }</p>
+	<div class="common-page-header">
+		<h2><i class="fa fa-${page.getIconClass() }" aria-hidden="false"></i> ${page.name}</h2>
+		<p>Good ${timeGreeting}, ${loggedUser.displayName}. Have a great day!</p>
+		<p>${page.description }</p>
+	</div>
 	<div class="row" style="grid-row-gap: 10px">
 		<%-- <c:forEach var="menu" items="${page.menus }">
 			<div class="col-sm-3">

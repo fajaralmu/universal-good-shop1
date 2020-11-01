@@ -21,7 +21,7 @@ import com.fajar.shoppingmart.annotation.CustomRequestInfo;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.service.LogProxyFactory;
 import com.fajar.shoppingmart.service.report.builder.CustomWorkbook;
-import com.fajar.shoppingmart.service.report.data.ReportService;
+import com.fajar.shoppingmart.service.report.data.ExcelReportService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RestReportController {
 	
 	@Autowired
-	private ReportService reportService;
+	private ExcelReportService reportService;
 	
 	@PostConstruct
 	public void init() {

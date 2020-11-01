@@ -79,19 +79,9 @@ public class MvcManagementController extends BaseController {
 	/**
 	 * RESTRICTED ACCESS
 	 * 
-	 * @throws Exception
+	 * 
 	 **/
-
-	@RequestMapping(value = { "/messages" })
-	public String messages(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
  
-		EntityProperty entityProperty = EntityUtil.createEntityProperty(Message.class, null);
-		entityProperty.setEditable(false);
-		entityProperty.removeElements("color", "fontColor");
-		System.out.println("================ELEMENTS:" + MyJsonUtil.listToJson(entityProperty.getElements()));
-		model = constructCommonModel(request, entityProperty, model, "message", "management");
-		return basePage;
-	}
 
 //	@RequestMapping(value = { "/productFlow" })
 //	public String productflow(Model model, HttpServletRequest request, HttpServletResponse response)

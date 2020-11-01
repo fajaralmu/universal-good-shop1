@@ -109,12 +109,8 @@ public class MvcUtil {
 	
 	public static void main(String[] args) throws NoSuchMethodException, SecurityException {
 		 
-		Method[] m = MvcAdminController.class.getMethods();
-		for (Method method : m) {
-			 if(method.getName().equals("productDetail")) {
-				 System.out.println(method.getName()+" path Variables: "+getPathVariables(method));
-			 }
-		}
+		String[] arr = new String[9];
+		System.out.println(arr[8]);
 		
 	}
 	
@@ -125,12 +121,9 @@ public class MvcUtil {
 		if(null == parameters) {
 			return pathVariables;
 		}
-		for (int i = 0; i < parameters.length; i++) {
-			Parameter parameter = parameters[i];
-			 
-			if(parameter.getAnnotation(PathVariable.class)!=null) {
-				 
-				String name = getPathVariableName(parameter, paramNames[i]);
+		for (int i = 0; i < parameters.length; i++) {			 
+			if(parameters[i].getAnnotation(PathVariable.class) != null) {				 
+				String name = getPathVariableName(parameters[i], paramNames[i]);
 				pathVariables.add(name);
 			}
 		}

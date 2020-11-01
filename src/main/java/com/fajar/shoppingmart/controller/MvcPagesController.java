@@ -34,14 +34,14 @@ public class MvcPagesController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/page/{code}" })
-	@CustomRequestInfo(pageUrl = "webpage/master-common-page")
+	@CustomRequestInfo(pageUrl = "webpage/master-common-page", stylePaths = "common-pages")
 	public String page(@PathVariable(name = "code") String code, Model model, HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 
 		Page page = componentService.getPage(code, request);
 
 		if (null == page) {
-			sendRedirect(response, request.getContextPath() + "/account/login");
+			sendRedirectLogin(request, response);
 			return basePage;
 		}
 
