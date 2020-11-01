@@ -13,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.fajar.shoppingmart.controller.MvcAccountController;
 import com.fajar.shoppingmart.controller.MvcAdminController;
 import com.fajar.shoppingmart.entity.Menu;
 import com.fajar.shoppingmart.entity.Page;
@@ -123,28 +122,34 @@ public class MvcUtil {
 		Parameter[] parameters = method.getParameters();
 		String[] paramNames = getParameterNames(method);
 		List<String> pathVariables = new ArrayList<>();
-		if(null != parameters) {
-			for (int i = 0; i < parameters.length; i++) {
-				Parameter parameter = parameters[i];
+		if(null == parameters) {
+			return pathVariables;
+		}
+		for (int i = 0; i < parameters.length; i++) {
+			Parameter parameter = parameters[i];
+			 
+			if(parameter.getAnnotation(PathVariable.class)!=null) {
 				 
-				if(parameter.getAnnotation(PathVariable.class)!=null) {
-					PathVariable pathVariable = parameter.getAnnotation(PathVariable.class);
-					final String name;
-					if(pathVariable.name().equals("")== false) {
-						name = pathVariable.name();
-					}else {
-						if(paramNames != null) {
-							name = paramNames[i];
-						 } else {
-							 name = parameter.getName();
-						 }
-						
-					}
-					pathVariables.add(name);
-				}
+				String name = getPathVariableName(parameter, paramNames[i]);
+				pathVariables.add(name);
 			}
-		} 
+		}
+		 
 		return pathVariables;
+	}
+	
+	private static String getPathVariableName(Parameter parameter, String paramName) {
+		PathVariable pathVariable = parameter.getAnnotation(PathVariable.class);
+		final String name;
+		if(pathVariable.name().equals("")== false) {
+			name = pathVariable.name();
+		}else if(paramName != null) {
+			name = paramName;
+		 } else {
+			 name = parameter.getName();
+		 }
+			
+		return name;
 	}
 	
 	public static String[] getParameterNames(Method method) {
@@ -152,8 +157,8 @@ public class MvcUtil {
 			String[] params = LogProxyFactory.discoverer.getParameterNames(method); 
 			return params;
 		}catch ( Exception |  NoSuchMethodError e) {
-			// TODO: handle exception
+			return new String[method.getParameters().length];
 		}
-		return null;
+		
 	}
 }
