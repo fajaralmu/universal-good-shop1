@@ -886,6 +886,7 @@
 			if (byId("filter-" + optionElement) == null)
 				continue;
 			byId("filter-" + optionElement).value = optionElements[optionElement];
+			SEARCH_FILTER[optionElement] = optionElements[optionElement];
 		}
 
 	}
