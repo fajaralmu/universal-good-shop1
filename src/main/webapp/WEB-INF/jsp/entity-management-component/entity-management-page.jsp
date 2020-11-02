@@ -1068,33 +1068,37 @@
 					clear();
 				}
 			}
-			initFilterFieldsOnKeyup(); 
+			
 
 		}
 		
-		function initFilterFieldsOnKeyup(){
-			for (var i = 0; i < filterFields.length; i++) {
-				const filterField = filterFields[i];
-				
-				filterField.onkeyup = function(e){
-					var fieldName = e.target.getAttribute("field");
-					const filterValue = e.target.value;
-					if (filterValue != "") {
-						const checkBoxExact = byId("checkbox-exact-" + fieldName);
-						if (checkBoxExact != null && checkBoxExact.checked) {
-							fieldName = fieldName + "[EXACTS]";
-						}
-						SEARCH_FILTER[fieldName] = filterValue;
-					} else {
-						SEARCH_FILTER[fieldName]  = null;
-					}
-					
-					loadEntity(-1);
-					
-				}
-			}
-		}
+		
 
 		initEvents();
 	</script>
 </c:if>
+<script type="text/javascript">
+function initFilterFieldsOnKeyup(){
+	for (var i = 0; i < filterFields.length; i++) {
+		const filterField = filterFields[i];
+		
+		filterField.onkeyup = function(e){
+			var fieldName = e.target.getAttribute("field");
+			const filterValue = e.target.value;
+			if (filterValue != "") {
+				const checkBoxExact = byId("checkbox-exact-" + fieldName);
+				if (checkBoxExact != null && checkBoxExact.checked) {
+					fieldName = fieldName + "[EXACTS]";
+				}
+				SEARCH_FILTER[fieldName] = filterValue;
+			} else {
+				SEARCH_FILTER[fieldName]  = null;
+			}
+			
+			loadEntity(-1);
+			
+		}
+	}
+}
+initFilterFieldsOnKeyup();
+</script>
