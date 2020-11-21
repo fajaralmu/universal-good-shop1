@@ -57,11 +57,13 @@ public class UserSessionServiceImpl implements UserSessionService {
 		
 		try {
 			User dbUser = this.getUserByUsernameAndPassword(request);
-
-			
 			dbUser.setLoginKeyAndPasswordNull(randomLoginKey()); 
+			String requestId = SessionUtil.getPageRequestId(httpRequest);
+			if(null == requestId) {
+				throw new RuntimeException("Invalid Request ID");
+			}
 
-			UserSessionModel storedUserSessionModel = setNewUserSessionModel(dbUser);  
+			UserSessionModel storedUserSessionModel = setNewUserSessionModel(dbUser , requestId);  
 
 			if (null == storedUserSessionModel) {
 				throw new RuntimeException("Error saving session");
@@ -69,11 +71,11 @@ public class UserSessionServiceImpl implements UserSessionService {
 
 			SessionUtil.setLoginKeyHeader(httpResponse,  storedUserSessionModel.getJwt());
 			SessionUtil.setAccessControlExposeHeader(httpResponse);
-			SessionUtil.setSessionUser(httpRequest, dbUser);
+			SessionUtil.setSessionUser(httpRequest, storedUserSessionModel.getUser());
 
 			log.info("success login");
 
-			return dbUser;
+			return storedUserSessionModel.getUser();
 		} catch (Exception e) {
 
 			e.printStackTrace();
@@ -136,8 +138,9 @@ public class UserSessionServiceImpl implements UserSessionService {
 		return match;
 	}
 	
-	private UserSessionModel setNewUserSessionModel(User user) {
-		UserSessionModel sessionModel = new UserSessionModel(user,user.getLoginKey()); 
+	private UserSessionModel setNewUserSessionModel(User user, String requestId) {
+		user.setRequestId(requestId);
+		UserSessionModel sessionModel = new UserSessionModel(user, user.getLoginKey(), requestId); 
 		String jwtKey = generateJwt(sessionModel);
 		sessionModel.setJwt(jwtKey);
 		boolean result = runtimeService.set(user.getLoginKey(), sessionModel);

@@ -107,12 +107,29 @@ public class RegisteredRequestServiceImpl implements RegisteredRequestService {
 	public WebResponse generateRequestId(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
 		
 		log.info("generateRequestId... ");
-		String requestId;
+		String requestId = null;
+		boolean loggedIn = false;
 		WebResponse response = new WebResponse();
+		
+		///////////Check if user is authenticated, get requestId from the userSessionModel
+		try {
+			String loginKey = SessionUtil.getLoginKey(servletRequest);
+			UserSessionModel userSessionModel = runtimeService.getUserSessionModel(loginKey); 
+			if (null != userSessionModel) {
+				loggedIn = true;
+				requestId = userSessionModel.getRequestId();
+				SessionUtil.setLoginKeyHeader(servletResponse, userSessionModel.getJwt());
+				response.setSessionData(SessionData.builder().user(userSessionModel.getUser()).build());
+				
+			}  
+		 }catch (Exception e) {
+			// TODO: handle exception
+		}
+		/////////
 
 		if (sessionValidationService.validatePageRequest(servletRequest)) {
 			requestId = SessionUtil.getPageRequestId(servletRequest);// servletRequest.getHeader(RuntimeService.PAGE_REQUEST_ID);
-		} else {
+		} else if(!loggedIn) {
 			requestId = generateRequestId();
 		}
 
@@ -124,19 +141,7 @@ public class RegisteredRequestServiceImpl implements RegisteredRequestService {
 		log.info("NEW Session Data Created: {}", (SessionData) getSessionData());
 		realtimeService.sendUpdateSession(getAvailableSessions());
 		
-		///////////
-		try {
-			String loginKey = SessionUtil.getLoginKey(servletRequest);
-			UserSessionModel userSessionModel = runtimeService.getUserSessionModel(loginKey); 
-			if (null != userSessionModel) {
-				SessionUtil.setLoginKeyHeader(servletResponse, userSessionModel.getJwt());
-				response.setSessionData(SessionData.builder().user(userSessionModel.getUser()).build());
-				response.setLoggedIn(true);
-			}  
-		 }catch (Exception e) {
-			// TODO: handle exception
-		}
-		/////////
+		response.setLoggedIn(loggedIn);
 		response.setMessage(requestId);
 		response.setApplicationProfile(webConfigService.getProfile());
 		return response;

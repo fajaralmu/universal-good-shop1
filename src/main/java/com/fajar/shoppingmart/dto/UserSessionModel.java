@@ -32,13 +32,18 @@ public class UserSessionModel implements Serializable{
 	 * 
 	 */
 	//private static final long serialVersionUID = 3868645032944633878L;
-	private User user;private String requestKey;
+	private User user;
+	//key using for storing flat file
+	private String requestKey;
+	//page ID
+	private String requestId;
 	private String jwt;
 	 
 	
-	public UserSessionModel(User user, String requestToken) {
+	public UserSessionModel(User user, String requestToken, String requestId) {
 		this.user = SerializationUtils.clone(user);
 		this.requestKey=(requestToken);
+		this.requestId = requestId;
 	}
 	
 	 
