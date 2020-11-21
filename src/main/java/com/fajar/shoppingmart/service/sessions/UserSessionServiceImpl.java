@@ -1,8 +1,6 @@
 package com.fajar.shoppingmart.service.sessions;
 
-import static com.fajar.shoppingmart.controller.BaseController.getJSessionIDCookie;
 import static com.fajar.shoppingmart.util.SessionUtil.getLoginKey;
-import static com.fajar.shoppingmart.util.SessionUtil.getPageRequestId;
 
 import java.util.UUID;
 
@@ -20,7 +18,6 @@ import com.fajar.shoppingmart.repository.UserRepository;
 import com.fajar.shoppingmart.service.runtime.RuntimeService;
 import com.fajar.shoppingmart.util.JwtUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
-import com.fajar.shoppingmart.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,8 +67,7 @@ public class UserSessionServiceImpl implements UserSessionService {
 				throw new RuntimeException("Error saving session");
 			}
 
-			String jwtKey = generateJwt(storedUserSessionModel);
-			SessionUtil.setLoginKeyHeader(httpResponse,  jwtKey);
+			SessionUtil.setLoginKeyHeader(httpResponse,  storedUserSessionModel.getJwt());
 			SessionUtil.setAccessControlExposeHeader(httpResponse);
 			SessionUtil.setSessionUser(httpRequest, dbUser);
 
@@ -144,6 +140,12 @@ public class UserSessionServiceImpl implements UserSessionService {
 		UserSessionModel sessionModel = new UserSessionModel(user,user.getLoginKey()); 
 		boolean result = runtimeService.set(user.getLoginKey(), sessionModel);
 		log.info("SET NEW USER SESSION MODEL TO TEMP DATA:{}", result);
+		
+		if(result) {
+			String jwtKey = generateJwt(sessionModel);
+			sessionModel.setJwt(jwtKey);
+		}
+		
 		return result ? sessionModel : null;
 	}
 	

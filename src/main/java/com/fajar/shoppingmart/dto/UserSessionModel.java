@@ -38,6 +38,7 @@ public class UserSessionModel implements Serializable{
 //	@Setter(value=AccessLevel.NONE)
 	private Map<String, String> cookieValues = new HashMap<>();
 	private String requestKey;
+	private String jwt;
 	 
 	public void addPageCookies(String pageId, String cookie) {
 		log.info("addPageCookies, pageId:{}, cookie:{}", pageId, cookie);

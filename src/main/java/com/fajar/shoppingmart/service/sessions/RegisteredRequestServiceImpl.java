@@ -112,14 +112,7 @@ public class RegisteredRequestServiceImpl implements RegisteredRequestService {
 
 		if (sessionValidationService.validatePageRequest(servletRequest)) {
 			requestId = SessionUtil.getPageRequestId(servletRequest);// servletRequest.getHeader(RuntimeService.PAGE_REQUEST_ID);
-
-			if (sessionValidationService.hasSession(servletRequest)) {
-				String loginKey = SessionUtil.getLoginKey(servletRequest);
-				SessionUtil.setLoginKeyHeader(servletResponse, loginKey);
-			}
-
 		} else {
-
 			requestId = generateRequestId();
 		}
 
@@ -136,7 +129,7 @@ public class RegisteredRequestServiceImpl implements RegisteredRequestService {
 			String loginKey = SessionUtil.getLoginKey(servletRequest);
 			UserSessionModel userSessionModel = runtimeService.getUserSessionModel(loginKey); 
 			if (null != userSessionModel) {
-				 
+				SessionUtil.setLoginKeyHeader(servletResponse, userSessionModel.getJwt());
 				response.setSessionData(SessionData.builder().user(userSessionModel.getUser()).build());
 				response.setLoggedIn(true);
 			}  

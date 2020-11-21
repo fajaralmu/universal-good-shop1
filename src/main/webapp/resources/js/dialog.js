@@ -1,3 +1,4 @@
+const Z_INDEX = 1500;
 function getRandomId(){
 	return new Date().getTime();
 }
@@ -33,7 +34,7 @@ function confirmDialog(msg, prop) {
 				tagName : 'div',
 				className : 'modal fade show',
 				role : 'dialog',
-				style : { display : 'block', 'text-align' : 'center', 'margin-top' : '30vh', },
+				style : { display : 'block', 'z-index': Z_INDEX+1, 'text-align' : 'center', 'margin-top' : '30vh', },
 				ch0 : {
 					tagName : 'div',
 					className : 'modal-dialog',
@@ -93,7 +94,7 @@ function promptDialog(msg, inputType) {
 				tagName : 'div',
 				className : 'modal fade show',
 				role : 'dialog',
-				style : { display : 'block', 'text-align' : 'center', 'margin-top' : '30vh', },
+				style : { display : 'block', 'z-index': Z_INDEX+1, 'text-align' : 'center', 'margin-top' : '30vh', },
 				ch0 : {
 					tagName : 'div',
 					className : 'modal-dialog',
@@ -170,7 +171,7 @@ function infoDialog(msg) {
 				tagName : 'div',
 				className : 'modal fade show',
 				role : 'dialog',
-				style : { display : 'block', 'text-align' : 'center', 'margin-top' : '30vh', },
+				style : { display : 'block', 'z-index': Z_INDEX+1, 'text-align' : 'center', 'margin-top' : '30vh', },
 				ch0 : {
 					tagName : 'div',
 					className : 'modal-dialog',
@@ -256,3 +257,94 @@ function modalBody(html){
 	
 	return obj;
 }
+
+function promptDialogMultiple(msg, variables) {
+	if(null == variables || variables.length == 0){
+		return  promptDialog(msg, text);
+	}
+	return new Promise(function(resolve, reject) {
+		const modalBodyProps = {
+				tagName:'div',
+				ch0:{
+					tagName:'p',
+					innerHTML: msg
+				}
+			};
+		for (let i = 0; i < variables.length; i++) {
+			const variable = variables[i];
+			modalBodyProps['ch'+(i+1)] = {
+					tagName: 'input',
+					type: 'text',
+					id: 'prompt-input-val-'+variable,
+					className: 'form-control',
+					placeholder: variable,
+					name: variable
+			};
+		}
+
+		const dialog = createHtmlTag({
+			tagName : 'div',
+
+			ch0 : modalBackdropJson(),
+			ch1 : {
+				tagName : 'div',
+				className : 'modal fade show',
+				role : 'dialog',
+				style : { display : 'block', 'text-align' : 'center', 'margin-top' : '30vh', 'z-index': Z_INDEX+1 },
+				ch0 : {
+					tagName : 'div',
+					className : 'modal-dialog',
+					style:{ 'z-index': Z_INDEX+2 },
+					role : "document",
+					ch1 : {
+						tagName : 'div',
+						className : 'modal-content',
+						ch1 : modalHeader("Prompt"),
+						ch2 :  modalBody(modalBodyProps),
+						ch3 : {
+							tagName : 'div',
+							className : 'modal-footer',
+							ch1 : {
+								tagName:'div',
+								style : { margin : 'auto',  width:'max-content' },
+								ch1:{
+									tagName : 'button',
+									innerHTML : 'Yes',
+									className : 'btn btn-primary',
+									style: {margin: '3px'},
+									onclick : function(e) {
+										const values = {};
+										for (let v = 0; v < variables.length; v++) {
+											const variable = variables[v];
+											const val = byId('prompt-input-val-'+variable).value;
+											values[variable]=(val);
+										}
+
+
+										console.log("Prompt Val: ", values);
+										resolve({ok:true, value:values} );
+										dialog.parentNode.removeChild(dialog);
+									}
+								},
+								ch2:{
+									tagName : 'button',
+									innerHTML : 'No',
+									style: {margin: '3px'},
+									className : 'btn btn-secondary',
+									onclick : function(e) {
+										resolve({ok:false, value: null});
+										dialog.parentNode.removeChild(dialog);
+									}
+								},
+							}
+						}
+					}
+				},
+
+			}
+		})
+
+		document.body.prepend(dialog);
+	});
+}
+
