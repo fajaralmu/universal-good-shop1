@@ -37,31 +37,18 @@ public class SessionValidationServiceImpl implements SessionValidationService {
 		if (setRequestURI && isSaveRequestUri(request)) { 
 			SessionUtil.setSessionRequestUri(request);
 		}
-
-		/**
-		 * handle standAlone Client
-		 */
 		String loginKey = SessionUtil.getLoginKey(request);
-		if (loginKey != null) {
-
-			String remoteAddress = request.getRemoteAddr();
-			int remotePort = request.getRemotePort();
-			log.info("remoteAddress:" + remoteAddress + ":" + remotePort);
-			
-			boolean registered = runtimeService.getUserSessionModel(loginKey) != null;
-			return registered;
+		if (loginKey != null) {			
+			return runtimeService.getUserSessionModel(loginKey) != null;
 		}
 
-		/**
-		 * end handle standAlone Client
-		 */  
 		try {
 			User sessionUser = SessionUtil.getSessionUser(request);
 			UserSessionModel sessionModel = runtimeService.getUserSessionModel(sessionUser.getLoginKey());
 
-			if (sessionUser == null || sessionModel == null || !userEquals(sessionUser, sessionModel.getUser())) {
+			if (sessionUser == null || sessionModel == null || !sessionUser.loginKeyEquals(sessionModel.getUser())) {
 				log.error("==========USER NOT EQUALS==========");
-				throw new Exception();
+				return false;
 			}
 			log.info("USER HAS SESSION, return true");
 			return true;
@@ -114,16 +101,6 @@ public class SessionValidationServiceImpl implements SessionValidationService {
 		}
 		String token = reqModel.getRequestKey();
 		return token;
-	}
-	
-	private boolean userEquals(User user1, User user2) {
-		try {
-			log.info("httpSession loginKey: {}, sessionModel loginKey: {}", user1.getLoginKey(), user2.getLoginKey());
-			return user1.getLoginKey().equals(user2.getLoginKey());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
 	}
 	
 	private boolean isSaveRequestUri(HttpServletRequest request) {

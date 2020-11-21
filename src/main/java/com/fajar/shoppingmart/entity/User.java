@@ -91,6 +91,15 @@ public class User extends BaseEntity implements UserDetails {
 		this.password = null;
 	}
 
+	
+	public boolean loginKeyEquals(User user) {
+		try {
+		return getLoginKey().equals(user.getLoginKey());
+		}catch (Exception e) {
+			// TODO: handle exception
+			return false;
+		}
+	}
 //	@Override
 //	@JsonIgnore
 //	public Collection<? extends GrantedAuthority> getAuthorities() {

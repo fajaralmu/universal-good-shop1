@@ -139,7 +139,7 @@ public class BaseController {
 		try {
 			Cookie cookie = getCookie(SessionUtil.JSESSSIONID, request.getCookies());
 			String cookieValue = cookie == null ? UUID.randomUUID().toString() : cookie.getValue();
-			return registryService.addPageRequest(cookieValue);
+			return registryService.addOrGetExistingPageId(cookieValue);
 		} catch (Exception e) {
 
 			return "";

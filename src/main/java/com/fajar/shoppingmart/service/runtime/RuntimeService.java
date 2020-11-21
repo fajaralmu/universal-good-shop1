@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fajar.shoppingmart.controller.BaseController;
+import com.fajar.shoppingmart.dto.PageCommonData;
 import com.fajar.shoppingmart.dto.SessionData;
 import com.fajar.shoppingmart.dto.UserSessionModel;
 import com.fajar.shoppingmart.service.LogProxyFactory;
@@ -95,21 +96,20 @@ public class RuntimeService {
 	 * @param cookieValue
 	 * @return
 	 */
-	public String addPageRequest(String cookieValue) {
-		String pageRequestId = generateIdKey();
+	public String addOrGetExistingPageId(String cookieValue) {
+		
 
-		UserSessionModel model;
-		if (getModel(PAGE_REQUEST, UserSessionModel.class) != null) {
-
-			model = getModel(PAGE_REQUEST, UserSessionModel.class);
-			model.addPageCookies(pageRequestId, cookieValue);
-			log.info("page_request_data_holder exist");
-		} else {
-
-			model = new UserSessionModel();
-			model.addPageCookies(pageRequestId, cookieValue);
-			log.info("create new page_request_data_holder");
+		PageCommonData model = getModel(PAGE_REQUEST, PageCommonData.class);
+		if (model == null) {
+			model = new PageCommonData();
 		}
+		if(model.isCookieRegistered(cookieValue)) {
+			return model.getCookieKey(cookieValue);
+		}
+		
+		String pageRequestId = generateIdKey();
+		model.addPageCookies(pageRequestId, cookieValue);
+		
 		if (set(PAGE_REQUEST, model)) {
 			log.info("GENERATED pageRequestId: {}", pageRequestId);
 			return pageRequestId;
@@ -130,7 +130,7 @@ public class RuntimeService {
 		log.info("Will validate page request");
 
 		try {
-			UserSessionModel model =  getModel(PAGE_REQUEST, UserSessionModel.class);
+			PageCommonData model =  getModel(PAGE_REQUEST, PageCommonData.class);
 
 			if (null == model) {
 				log.info("MODEL IS NULL");
@@ -140,7 +140,7 @@ public class RuntimeService {
 			Cookie jsessionCookie = BaseController.getJSessionIDCookie(httpServletRequest);
 			String pageRequestId = SessionUtil.getPageRequestId(httpServletRequest);
 
-			boolean exist = model.hasCookie(pageRequestId);
+			boolean exist = model.hasCookieWithRequestId(pageRequestId);
 
 			if (exist) {
 				String savedCookie = (String) model.getCookie(pageRequestId);

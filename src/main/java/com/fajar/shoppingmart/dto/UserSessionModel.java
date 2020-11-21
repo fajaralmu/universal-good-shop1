@@ -32,25 +32,9 @@ public class UserSessionModel implements Serializable{
 	 * 
 	 */
 	//private static final long serialVersionUID = 3868645032944633878L;
-	private User user;
-	@Default
-//	@Getter(value=AccessLevel.NONE)
-//	@Setter(value=AccessLevel.NONE)
-	private Map<String, String> cookieValues = new HashMap<>();
-	private String requestKey;
+	private User user;private String requestKey;
 	private String jwt;
 	 
-	public void addPageCookies(String pageId, String cookie) {
-		log.info("addPageCookies, pageId:{}, cookie:{}", pageId, cookie);
-		cookieValues.put(pageId, cookie);
-	}
-	
-	public boolean hasCookie(String pageID) {
-		return cookieValues.get(pageID) != null;
-	}
-	public String getCookie(String pageID) {
-		return cookieValues.get(pageID);
-	}
 	
 	public UserSessionModel(User user, String requestToken) {
 		this.user = SerializationUtils.clone(user);

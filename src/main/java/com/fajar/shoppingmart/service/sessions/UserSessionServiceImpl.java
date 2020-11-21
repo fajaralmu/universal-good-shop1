@@ -138,13 +138,10 @@ public class UserSessionServiceImpl implements UserSessionService {
 	
 	private UserSessionModel setNewUserSessionModel(User user) {
 		UserSessionModel sessionModel = new UserSessionModel(user,user.getLoginKey()); 
+		String jwtKey = generateJwt(sessionModel);
+		sessionModel.setJwt(jwtKey);
 		boolean result = runtimeService.set(user.getLoginKey(), sessionModel);
 		log.info("SET NEW USER SESSION MODEL TO TEMP DATA:{}", result);
-		
-		if(result) {
-			String jwtKey = generateJwt(sessionModel);
-			sessionModel.setJwt(jwtKey);
-		}
 		
 		return result ? sessionModel : null;
 	}
