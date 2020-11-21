@@ -1,6 +1,7 @@
 package com.fajar.shoppingmart.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import com.fajar.shoppingmart.entity.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 @Data
@@ -24,6 +26,8 @@ public class SessionData implements Serializable{
 	private Map<String, RegisteredRequest> registeredApps;
 	public static final String ATTR_REQUEST_URI = "requestURI";
 	private User user;
+	@Default
+	private Date date = new Date();
 	
 	public void registerNewRequest(RegisteredRequest registeredRequest) {
 		if(registeredApps == null) {

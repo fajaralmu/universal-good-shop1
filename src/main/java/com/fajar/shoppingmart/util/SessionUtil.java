@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fajar.shoppingmart.dto.UserSessionModel;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.RegisteredRequest;
 import com.fajar.shoppingmart.entity.User;
@@ -32,7 +33,14 @@ public class SessionUtil {
 
 	public static String getLoginKey(HttpServletRequest request) {
 
-		return request.getHeader(HEADER_LOGIN_KEY);
+		try {
+			String jwt = request.getHeader(HEADER_LOGIN_KEY);
+			UserSessionModel user = JwtUtil.getRegisteredRequest(jwt);
+			return user.getRequestKey();
+		} catch (Exception e) {
+			log.info("get login key errpr: {}", e);
+			return null;
+		}
 	}
 
 	public static void setLoginKeyHeader(HttpServletResponse servletResponse, String loginKey) {

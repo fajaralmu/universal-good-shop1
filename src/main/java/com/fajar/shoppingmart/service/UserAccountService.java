@@ -102,13 +102,13 @@ public class UserAccountService {
 		registerRequestId(httpRequest, httpResponse); 
 		setSessionRequestUri(httpRequest, httpResponse); 
 		
-		try {
-			httpRequest.login(dbUser.getUsername(), dbUser.getPassword());
-			httpRequest.authenticate(httpResponse);
-		}catch (Exception e) {
-			log.error("Error servlet login");
-			e.printStackTrace();
-		}
+//		try {
+//			httpRequest.login(dbUser.getUsername(), dbUser.getPassword());
+//			httpRequest.authenticate(httpResponse);
+//		}catch (Exception e) {
+//			log.error("Error servlet login");
+//			e.printStackTrace();
+//		}
 		
 		log.info("Login Success"); 
 		return WebResponse.success();

@@ -92,40 +92,32 @@ public class RuntimeService {
 	}
 
 	/**
-	 * @param value
+	 * @param cookieValue
 	 * @return
 	 */
-	public String addPageRequest(String value) {
+	public String addPageRequest(String cookieValue) {
 		String pageRequestId = generateIdKey();
 
 		UserSessionModel model;
 		if (getModel(PAGE_REQUEST, UserSessionModel.class) != null) {
 
 			model = getModel(PAGE_REQUEST, UserSessionModel.class);
-			model.getTokens().put(pageRequestId, value);
-
+			model.addPageCookies(pageRequestId, cookieValue);
+			log.info("page_request_data_holder exist");
 		} else {
 
 			model = new UserSessionModel();
-			model.setTokens(MapUtil.singleMap(pageRequestId, value));
+			model.addPageCookies(pageRequestId, cookieValue);
+			log.info("create new page_request_data_holder");
 		}
 		if (set(PAGE_REQUEST, model)) {
+			log.info("GENERATED pageRequestId: {}", pageRequestId);
 			return pageRequestId;
 		} else {
+			log.error("ERROR GENERATING PAGE REQUEST ID");
 			return null;
 		}
 
-	}
- 
-	public void updateSessionId(String newSessionId, String requestId) {
-		try {
-			((UserSessionModel) getModel(PAGE_REQUEST, UserSessionModel.class)).getTokens().put(requestId, newSessionId);
-			log.info("SessionID UPDATED!!");
-			
-		} catch (Exception e) {
-			log.error("runtime data error");
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -141,26 +133,26 @@ public class RuntimeService {
 			UserSessionModel model =  getModel(PAGE_REQUEST, UserSessionModel.class);
 
 			if (null == model) {
-				log.debug("MODEL IS NULL");
+				log.info("MODEL IS NULL");
 				return false;
 			}
 
 			Cookie jsessionCookie = BaseController.getJSessionIDCookie(httpServletRequest);
 			String pageRequestId = SessionUtil.getPageRequestId(httpServletRequest);
 
-			boolean exist = model.getTokens().get(pageRequestId) != null;
+			boolean exist = model.hasCookie(pageRequestId);
 
 			if (exist) {
-				String sessionId = (String) model.getTokens().get(pageRequestId);
+				String savedCookie = (String) model.getCookie(pageRequestId);
 
-				boolean requestIdMatchCookie = sessionId.equals(jsessionCookie.getValue());
+				boolean requestIdMatchCookie = savedCookie.equals(jsessionCookie.getValue());
 
-				log.debug("sessionId value: {} vs JSessionId cookie: {}", sessionId, jsessionCookie.getValue());
-				log.debug("sessionIdMatchCookie: {}", requestIdMatchCookie);
+				log.info("sessionId value: {} vs JSessionId cookie: {}", savedCookie, jsessionCookie.getValue());
+				log.info("sessionIdMatchCookie: {}", requestIdMatchCookie);
 
 				return requestIdMatchCookie;
 			} else {
-				log.debug("x x x x Request ID not found x x x x");
+				log.info("x x x x Request ID not found x x x x");
 				return false;
 			}
 		} catch (Exception e ) {
@@ -171,7 +163,7 @@ public class RuntimeService {
 	}
 
 	public boolean createNewSessionData() { 
-		return set(SessionValidationService.SESSION_DATA, new SessionData());
+		return  set(SessionValidationService.SESSION_DATA, new SessionData());
 	}
 	
 	private String generateIdKey() {

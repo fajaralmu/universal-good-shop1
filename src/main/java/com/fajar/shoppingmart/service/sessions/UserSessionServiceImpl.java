@@ -12,11 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.shoppingmart.dto.SessionData;
 import com.fajar.shoppingmart.dto.UserSessionModel;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.entity.User;
 import com.fajar.shoppingmart.repository.UserRepository;
 import com.fajar.shoppingmart.service.runtime.RuntimeService;
+import com.fajar.shoppingmart.util.JwtUtil;
 import com.fajar.shoppingmart.util.SessionUtil;
 import com.fajar.shoppingmart.util.StringUtil;
 
@@ -59,16 +61,17 @@ public class UserSessionServiceImpl implements UserSessionService {
 		try {
 			User dbUser = this.getUserByUsernameAndPassword(request);
 
-			String loginKey = generateLoginKey();
-			dbUser.setLoginKeyAndPasswordNull(loginKey); 
+			
+			dbUser.setLoginKeyAndPasswordNull(randomLoginKey()); 
 
-			boolean sessionIsSet = setNewUserSessionModel(dbUser);  
+			UserSessionModel storedUserSessionModel = setNewUserSessionModel(dbUser);  
 
-			if (!sessionIsSet) {
+			if (null == storedUserSessionModel) {
 				throw new RuntimeException("Error saving session");
 			}
 
-			SessionUtil.setLoginKeyHeader(httpResponse, loginKey);
+			String jwtKey = generateJwt(storedUserSessionModel);
+			SessionUtil.setLoginKeyHeader(httpResponse,  jwtKey);
 			SessionUtil.setAccessControlExposeHeader(httpResponse);
 			SessionUtil.setSessionUser(httpRequest, dbUser);
 
@@ -79,7 +82,7 @@ public class UserSessionServiceImpl implements UserSessionService {
 
 			e.printStackTrace();
 			log.error("failed login");
-			throw new IllegalAccessException("Login Failed");
+			throw new IllegalAccessException("Login Failed: "+e);
 		}
 	}
 
@@ -137,32 +140,29 @@ public class UserSessionServiceImpl implements UserSessionService {
 		return match;
 	}
 	
-	private boolean setNewUserSessionModel(User user) {
-		UserSessionModel sessionModel = new UserSessionModel(user, generateUserToken()); 
-		return runtimeService.set(user.getLoginKey(), sessionModel); 
+	private UserSessionModel setNewUserSessionModel(User user) {
+		UserSessionModel sessionModel = new UserSessionModel(user,user.getLoginKey()); 
+		boolean result = runtimeService.set(user.getLoginKey(), sessionModel);
+		log.info("SET NEW USER SESSION MODEL TO TEMP DATA:{}", result);
+		return result ? sessionModel : null;
 	}
 	
 	private void invalidateSessionUser(HttpServletRequest request) {
 		User user = getLoggedUser(request);
 		removeUserFromRuntime(user);
 		SessionUtil.removeSessionUserAndInvalidate(request);
-		try {
-			runtimeService.updateSessionId(getJSessionIDCookie(request).getValue(), getPageRequestId(request));
-		}catch (Exception e) {
-			// TODO: handle exception
-		}
 	}
 	
 	private void removeUserFromRuntime(User user) {
 		runtimeService.remove(user.getLoginKey(), UserSessionModel.class);
 	}
 	
-	private String generateLoginKey() {
-		return UUID.randomUUID().toString() + "-" + StringUtil.generateRandomNumber(10);
+	private String generateJwt(UserSessionModel dbUser) {
+		return JwtUtil.generateJWT(new SessionData(), dbUser);
 	}
 
-	private String generateUserToken() {
-		return StringUtil.generateRandomNumber(10) + "-" + UUID.randomUUID().toString();
+	private String randomLoginKey() {
+		return UUID.randomUUID().toString();
 	}
 	
 	

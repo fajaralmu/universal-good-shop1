@@ -44,8 +44,10 @@
 </script>
 <div class="content">
 	<p id="info" align="center"></p>
+	<form id="login-form">
 	<div class="card" style="max-width: 400px; margin: auto">
 		<div class="card-header">Please Login</div>
+		
 		<div class="card-body">
 			<div class="login-form">
 				<div class="input-group mb-3">
@@ -62,14 +64,17 @@
 				</div> 
 			</div>
 		</div>
+		
 		<div class="card-footer">
-			<button id="btn-login" class="btn btn-primary"  >Login</button>
+			<input id="btn-login" type="submit" class="btn btn-primary" value="Login"/>
 			<a role="button" class="btn btn-success"
 				href='<spring:url value="/account/register"></spring:url>'>Register</a>
 		</div>
+		
 	</div>
+	</form>
 </div>
-<script type="text/javascript">
+<script type="text/javascript"> 
 	const loginBtn = byId("btn-login");
 	
 	function loadingButton(){
@@ -77,8 +82,10 @@
 	}
 	function loadingButtonDone(){
 		loginBtn.innerHTML = "Login";
-	}
-	loginBtn.onclick = function(e){
+	} 
+	
+	byId("login-form").onsubmit = function(e){
+		e.preventDefault();
 		login();
 	}
 </script>

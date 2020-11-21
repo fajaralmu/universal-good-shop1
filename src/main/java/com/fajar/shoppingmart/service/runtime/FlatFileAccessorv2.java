@@ -39,10 +39,16 @@ public class FlatFileAccessorv2 {
 		try {
 
 			if (!fileExist(key)) {
-				makeFile(key);
+				boolean fileCreated = makeFile(key);
+				if(!fileCreated) {
+					throw new RuntimeException("File Created ERROR");
+				}
 			}
 
-			updateFile(key, json);
+			boolean updated = updateFile(key, json);
+			if(!updated) {
+				throw new RuntimeException("File Updated ERROR");
+			}
 		} catch (Exception e) {
 
 			e.printStackTrace();
@@ -62,7 +68,7 @@ public class FlatFileAccessorv2 {
 		}
 	}
 
-	private void makeFile(String key) {
+	private boolean makeFile(String key) {
 		String parentDir = sessionFile.getParent();
 		try {
 			File myObj = new File(parentDir.concat("/").concat(key).concat(EXTENSION));
@@ -71,10 +77,12 @@ public class FlatFileAccessorv2 {
 			} else {
 				System.out.println("File already exists.");
 			}
+			return true;
 		} catch (IOException e) {
 			System.out.println("makeFile error occurred.");
 			e.printStackTrace();
 		}
+		return false;
 
 	}
 
@@ -93,8 +101,9 @@ public class FlatFileAccessorv2 {
 
 	public String getFileContent(String key) {
 		String parentDir = sessionFile.getParent();
+		String path = parentDir.concat("/").concat(key).concat(EXTENSION);
 		try {
-			File myObj = new File(parentDir.concat("/").concat(key).concat(EXTENSION));
+			File myObj = new File(path);
 			log.debug("get file content v2, exist: {} | {}", myObj.exists(), myObj.getCanonicalPath());
 			if (myObj.exists() == false) {
 				return null;
@@ -103,22 +112,26 @@ public class FlatFileAccessorv2 {
 			String result = contents.size() > 0 ? contents.get(0).toString() : "";
 			return result.isEmpty() ? null : result;
 		} catch (Exception e) {
-			System.out.println("getFileContent error occurred.");
+			log.info("getFileContent error occurred.:"+ parentDir);
+			log.info("path: {}", path);
 			e.printStackTrace();
 			return null;
 		}
 	}
 
-	private void updateFile(String key, String value) {
+	private boolean updateFile(String key, String value) {
 		String parentDir = sessionFile.getParent();
 		try {
 			File myObj = new File(parentDir.concat("/").concat(key).concat(EXTENSION));
 			Collection lines = CollectionUtil.listOf(value);
 			FileUtils.writeLines(myObj, lines);
+			return true;
 		} catch (IOException e) {
 			System.out.println("updateFile error occurred.");
 			e.printStackTrace();
 		}
+		
+		return false;
 
 	}
 

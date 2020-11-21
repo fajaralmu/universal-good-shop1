@@ -112,7 +112,7 @@ public class SessionValidationServiceImpl implements SessionValidationService {
 		if (reqModel == null) {
 			throw new RuntimeErrorException(null, "Invalid Session");
 		}
-		String token = reqModel.getUserToken();
+		String token = reqModel.getRequestKey();
 		return token;
 	}
 	
