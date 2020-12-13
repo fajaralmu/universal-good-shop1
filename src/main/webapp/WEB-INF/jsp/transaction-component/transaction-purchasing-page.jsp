@@ -15,15 +15,16 @@
 					<div class="card">
 						<div class="card-header"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i> Product</div>
 						<div class="card-body">
+							<form onsubmit="event.preventDefault(); loadProductList('code', 'input-product-code', true) ">
 							<div class="dynamic-dropdown-form">
 								<input id="input-product" placeholder="product name"
 									type="text" onkeyup="loadProductList('name', 'input-product', false)" class="form-control" />
 								<input id="input-product-code" placeholder="product code"
-									type="text" on-enter="loadProductList('code', 'input-product-code', true)" class="form-control onenter" />
-								<select
-									id="product-dropdown" class="form-control" multiple="multiple">
-								</select>
+									type="text" class="form-control onenter" />
+								<select id="product-dropdown" class="form-control" multiple="multiple"></select>
 							</div>
+							<input type="submit" style="display: none"/>
+							</form>
 						</div>
 					</div>
 					<div class="panel trans-form">
