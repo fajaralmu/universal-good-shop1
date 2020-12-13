@@ -83,10 +83,7 @@
 
 	function updateCatalog() {
 		populateCatalog(products);
-		if(firstLoad){
-			showFilter();
-			firstLoad = false;
-		}
+		
 	}
 
 	function showproductsuppliers() {

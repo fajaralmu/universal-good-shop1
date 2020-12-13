@@ -13,8 +13,8 @@
 				class="btn btn-secondary  btn-sm  btn-filter-toggle"
 				onclick="closeFilter()">Close Filter</button>
 		</div>
-		<div class="card" id="filter-detail" hidden="true"
-			style="width: 300px">
+		<form id="period-filter-form" onsubmit="event.preventDefault()">
+		<div class="card" id="filter-detail" hidden="true" style="width: 300px">
 			<div class="card-header">Filter</div>
 			<div class="card-body">
 				<p>From</p>
@@ -54,6 +54,7 @@
 				<button id="btn-ok-filter-detail" class="btn btn-primary btn-sm">Search</button>
 			</div>
 		</div>
+		</form>
 	</div>
 </div>
 <script type="text/javascript">

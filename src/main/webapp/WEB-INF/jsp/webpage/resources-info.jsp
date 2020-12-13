@@ -8,23 +8,25 @@
 	<div class="row" style="grid-column-gap: 5px; grid-row-gap: 5px">
 
 		<div class="col-5">
-			<div class="card">
-				<div class="card-header">Filter Balance Date</div>
-				<div class="card-body">
-					<div style="display: grid; grid-template-columns: 30% 60%">
-						<label>Day</label> <input class="form-control"
-							value="${currentDay }" id="i_day" type="number" min="1" max="31" />
-						<label>Month</label> <input class="form-control"
-							value="${currentMonth }" id="i_month" type="number" min="1"
-							max="" /> <label>Year</label> <input class="form-control"
-							value="${currentYear }" id="i_year" type="number" />
-						
+			<form id="form-balance">
+				<div class="card">
+					<div class="card-header">Filter Balance Date</div>
+					<div class="card-body">
+						<div style="display: grid; grid-template-columns: 30% 60%">
+							<label>Day</label> <input class="form-control"
+								value="${currentDay }" id="i_day" type="number" min="1" max="31" />
+							<label>Month</label> <input class="form-control"
+								value="${currentMonth }" id="i_month" type="number" min="1"
+								max="" /> <label>Year</label> <input class="form-control"
+								value="${currentYear }" id="i_year" type="number" />
+
+						</div>
+					</div>
+					<div class="card-footer">
+						<button class="btn btn-primary" type="submit">Submit</button>
 					</div>
 				</div>
-				<div class="card-footer">
-					<button class="btn btn-primary" id="btn-submit">Submit</button>
-				</div>
-			</div>
+			</form>
 		</div>
 		<div class="col-6">
 			<div class="card">
@@ -41,35 +43,41 @@
 			</div>
 		</div>
 		<div class="col-5">
-			<div class="card">
-				<div class="card-header">Inventory Quantity</div>
-				<div class="card-body">
-					
-					<p>Current Quantity: </p>
-					<input id="current-qty" value="0" disabled="disabled" class="form-control" />
-					 
+			<form id="form-inventory">
+				<div class="card">
+					<div class="card-header">Inventory Quantity</div>
+					<div class="card-body">
+						<p>Current Quantity:</p>
+						<input id="current-qty" value="0" disabled="disabled"
+							class="form-control" />
+					</div>
+					<div class="card-footer">
+						<button class="btn btn-primary" type="submit">Load Quantity</button>
+					</div>
 				</div>
-				<div class="card-footer">
-					<button class="btn btn-primary" id="btn-submit-qty">Load Quantity</button>
-				</div>
-			</div>
+			</form>
 		</div>
 		<div class="col-6">
+			<form id="form-memory-usage">
 			<div class="card">
 				<div class="card-header">Memory Usage</div>
 				<div class="card-body">
-					
-					<p>Max Memory: </p>
-					<input id="max-memory" value="0" disabled="disabled" class="form-control" />
-					<p>Free Memory: </p>
-					<input id="free-memory" value="0" disabled="disabled" class="form-control" />
-					<p>Total Memory: </p>
-					<input id="total-memory" value="0" disabled="disabled" class="form-control" />
+
+					<p>Max Memory:</p>
+					<input id="max-memory" value="0" disabled="disabled"
+						class="form-control" />
+					<p>Free Memory:</p>
+					<input id="free-memory" value="0" disabled="disabled"
+						class="form-control" />
+					<p>Total Memory:</p>
+					<input id="total-memory" value="0" disabled="disabled"
+						class="form-control" />
 				</div>
 				<div class="card-footer">
-					<button class="btn btn-primary" id="btn-submit-memory-usage">Load Latest Usage</button>
+					<button class="btn btn-primary" type="submit">Load Latest Usage</button>
 				</div>
 			</div>
+			</form>
 		</div>
 	</div>
 </div>
@@ -87,19 +95,19 @@
 		byId("o_balance").value = beautifyNominal(balanceInfo.actualBalance);
 	}
 
-	function showInventoryQuantity(response){
+	function showInventoryQuantity(response) {
 		const qty = response.quantity;
 		byId("current-qty").value = beautifyNominal(qty);
 	}
-	
-	function showResourceUsage(response){
+
+	function showResourceUsage(response) {
 		const memoryInfo = response.memoryInfo;
 		//heapFreeSize(heapFreeSize).heapMaxSize(heapMaxSize).heapSize(heapSize).build()
 		byId("max-memory").value = beautifyNominal(memoryInfo.heapMaxSize);
 		byId("free-memory").value = beautifyNominal(memoryInfo.heapFreeSize);
 		byId("total-memory").value = beautifyNominal(memoryInfo.heapSize);
 	}
-	
+
 	function loadBalance() {
 		const request = {
 			filter : {
@@ -123,11 +131,11 @@
 				infoDone();
 			}
 
-		}); 
+		});
 	}
-	
-	function loadInventoryQuantity(){
-		postReq(URL_GET_INVENTORY_QTY, {}, function(xhr){
+
+	function loadInventoryQuantity() {
+		postReq(URL_GET_INVENTORY_QTY, {}, function(xhr) {
 			const response = (xhr.data);
 			if (response.code != "00") {
 				alert("Error requesting data");
@@ -136,9 +144,9 @@
 			showInventoryQuantity(response);
 		})
 	}
-	
-	function loadMemoryUsage(){
-		postReq(URL_GET_MEMORY_USAGE, {}, function(xhr){
+
+	function loadMemoryUsage() {
+		postReq(URL_GET_MEMORY_USAGE, {}, function(xhr) {
 			const response = (xhr.data);
 			if (response == null) {
 				alert("Error requesting data");
@@ -149,15 +157,18 @@
 	}
 
 	function init() {
-		byId("btn-submit").onclick = function(e) {
+		byId("form-balance").onsubmit = function(e) {
+			e.preventDefault();
 			loadBalance();
 		}
-		
-		byId("btn-submit-qty").onclick = function(e) {
+
+		byId("form-inventory").onsubmit = function(e) {
+			e.preventDefault();
 			loadInventoryQuantity();
 		}
-		
-		byId("btn-submit-memory-usage").onclick = function(e) {
+
+		byId("form-memory-usage").onsubmit = function(e) {
+			e.preventDefault();
 			loadMemoryUsage();
 		}
 	}
